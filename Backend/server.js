@@ -7,6 +7,7 @@ import {
   errorHandler,
 } from './middlewares/errorHandlerMiddleware.js';
 import userRoutes from './Routes/userRoutes.js';
+import logger from './utils/logger.js';
 const port = process.env.PORT;
 const host = process.env.HOST;
 const app = express();
@@ -24,5 +25,5 @@ app.use(errorHandler);
 
 await connectDB();
 app.listen(port, () => {
-  console.log(`server is listenting http://${host}:${port}`);
+  logger.info(`server is listenting http://${host}:${port}`);
 });
