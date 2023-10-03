@@ -10,8 +10,10 @@ import userRoutes from './Routes/userRoutes.js';
 const port = process.env.PORT;
 const host = process.env.HOST;
 const app = express();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); //form data
+
 app.use(cookieParser())
 app.use('/api/users', userRoutes);
 app.get('/', (req, res) => {
