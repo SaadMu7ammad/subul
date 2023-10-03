@@ -8,6 +8,7 @@ import {
 } from './middlewares/errorHandlerMiddleware.js';
 import userRoutes from './Routes/userRoutes.js';
 const port = process.env.PORT;
+const host = process.env.HOST;
 const app = express();
 
 app.use(express.json());
@@ -23,5 +24,5 @@ app.use(errorHandler);
 
 await connectDB();
 app.listen(port, () => {
-  console.log('server is listenting now on port ' + port);
+  console.log(`server is listenting http://${host}:${port}`);
 });
