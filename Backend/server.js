@@ -14,15 +14,10 @@ app.use(express.urlencoded({ extended: true })); //form data
 app.use(cookieParser())
 app.use('/api/users', userRoutes);
 app.get('/', (req, res) => {
-  res.send('hello saadoon');
+  res.send('subul charity');
 });
 app.use(NotFound);
 app.use(errorHandler);
-// const start = async () => {
-//   // console.log('server is listenting now on port ' + port);
-
-// }
-// start()
 
 await connectDB();
 app.listen(port, () => {
