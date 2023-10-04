@@ -35,8 +35,8 @@ const registerUser = asyncHandler(async (req, res, next) => {
     generateToken(res, user._id);
     res.status(201).json({
       _id: user._id,
-      name: user.name,
-      email: user.email,
+      name,
+      email
     });
   } else {
     throw new BadRequestError({ msg: 'Invalid data' });
