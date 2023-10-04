@@ -16,7 +16,11 @@ const loginValidation = [
       .trim()
       .isLength({ min: 6,max:20 })
       .withMessage('Password must be at least 6 characters long'),
-  ];
+];
+  
+const resetValidation = [
+  body('email').trim().isEmail().withMessage('Invalid email to reset its password'),
+];
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -32,4 +36,4 @@ const validate = (req, res, next) => {
   }
   next();
 };
-export { registerValidation, validate ,loginValidation};
+export { registerValidation, validate ,loginValidation,resetValidation};
