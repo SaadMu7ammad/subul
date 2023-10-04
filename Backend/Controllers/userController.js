@@ -1,4 +1,5 @@
 // import { BadRequestError } from '../errors/bad-request.js';
+import nodemailer from 'nodemailer';
 import {
   BadRequestError,
   NotFoundError,
@@ -12,7 +13,7 @@ const authUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) throw new NotFoundError('email not found');
-  
+
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     throw new UnauthenticatedError('invalid password');
@@ -42,6 +43,30 @@ const registerUser = asyncHandler(async (req, res, next) => {
   }
 });
 
+const resetUser = asyncHandler(async (req, res, next) => {
+  const emailIsExist = await User.findOne({ email: req.body.email });
+  if (!emailIsExist) {
+    throw new Error('email not found Please use another one');
+  }
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_KEY,
+    },
+  });
+  const mailOptions = {
+    from: process.env.EMAIL_FROM,
+    to: req.body.email,
+    subject: 'reset alert',
+    html: 'go to that link to reset the password',
+  };
+  await transporter.sendMail(mailOptions);
+  // console.log('email sent successfully');
+
+  res.status(200).json({ msg: 'email sent successfully to reset the password' });
+});
+
 //post /api/users/logout
 const logoutUser = asyncHandler(async (req, res, next) => {
   res.cookie('jwt', '', {
@@ -51,9 +76,4 @@ const logoutUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({ msg: 'logout' });
 });
 
-
-export {
-  registerUser,
-  authUser,
-  logoutUser,
-};
+export { registerUser, authUser, logoutUser, resetUser };
