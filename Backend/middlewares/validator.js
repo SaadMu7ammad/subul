@@ -7,19 +7,28 @@ const registerValidation = [
   body('email').trim().isEmail().withMessage('Invalid email'),
   body('password')
     .trim()
-    .isLength({ min: 6,max:20 })
+    .isLength({ min: 6, max: 20 })
     .withMessage('Password must be at least 6 characters long'),
 ];
 const loginValidation = [
-    body('email').trim().isEmail().withMessage('Invalid email'),
-    body('password')
-      .trim()
-      .isLength({ min: 6,max:20 })
-      .withMessage('Password must be at least 6 characters long'),
+  body('email').trim().isEmail().withMessage('Invalid email'),
+  body('password')
+    .trim()
+    .isLength({ min: 6, max: 20 })
+    .withMessage('Password must be at least 6 characters long'),
 ];
-  
-const resetValidation = [
-  body('email').trim().isEmail().withMessage('Invalid email to reset its password'),
+
+const resetValidationEmailToReset = [
+  body('email')
+    .trim()
+    .isEmail()
+    .withMessage('Invalid email to reset its password'),
+];
+const resetValidationPassToConfirmReset = [
+  body('password')
+    .trim()
+    .isLength({ min: 6, max: 20 })
+    .withMessage('Password must be at least 6 characters long'),
 ];
 const validate = (req, res, next) => {
   const errors = validationResult(req);
@@ -36,4 +45,10 @@ const validate = (req, res, next) => {
   }
   next();
 };
-export { registerValidation, validate ,loginValidation,resetValidation};
+export {
+  registerValidation,
+  validate,
+  loginValidation,
+  resetValidationEmailToReset,
+  resetValidationPassToConfirmReset,
+};

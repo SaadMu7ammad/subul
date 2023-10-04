@@ -7,16 +7,19 @@ import {
   registerUser,
   logoutUser,
   resetUser,
+  confrimReset,
 } from '../Controllers/userController.js';
 import {
   loginValidation,
   registerValidation,
-  resetValidation,
+  resetValidationEmailToReset,
+  resetValidationPassToConfirmReset,
   validate,
 } from '../middlewares/validator.js';
 import { auth } from '../middlewares/authMiddleware.js';
 router.post('/', registerValidation, validate, registerUser);
 router.post('/auth', loginValidation, validate, authUser);
-router.post('/reset', resetValidation, validate, resetUser);
+router.post('/reset', resetValidationEmailToReset, validate, resetUser);
+router.post('/reset/confirm', resetValidationPassToConfirmReset, validate, confrimReset);
 
 export default router;

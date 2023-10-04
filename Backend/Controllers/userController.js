@@ -1,5 +1,5 @@
 // import { BadRequestError } from '../errors/bad-request.js';
-import nodemailer from 'nodemailer';
+
 import {
   BadRequestError,
   NotFoundError,
@@ -8,6 +8,8 @@ import {
 import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken.js';
 import { User } from '../models/userModel.js';
+import { async } from 'rxjs';
+import { generateResetTokenTemp, setupMailSender } from '../utils/mailer.js';
 //post /api/users/auth
 const authUser = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
@@ -33,6 +35,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
   const user = await User.create(req.body);
   if (user) {
     generateToken(res, user._id);
+    await setupMailSender(req,'welcome alert','hi '+user.name+' we are happy that you joined our community ... keep spreading goodness with us')
     res.status(201).json({
       _id: user._id,
       name,
@@ -43,28 +46,30 @@ const registerUser = asyncHandler(async (req, res, next) => {
   }
 });
 
+//post /api/users/reset
 const resetUser = asyncHandler(async (req, res, next) => {
   const emailIsExist = await User.findOne({ email: req.body.email });
   if (!emailIsExist) {
     throw new Error('email not found Please use another one');
   }
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_KEY,
-    },
-  });
-  const mailOptions = {
-    from: process.env.EMAIL_FROM,
-    to: req.body.email,
-    subject: 'reset alert',
-    html: 'go to that link to reset the password',
-  };
-  await transporter.sendMail(mailOptions);
+  await setupMailSender(req,'reset alert','go to that link to reset the password (www.dummy.com) '+ `<h3>use that token to confirm the new password</h3> <h2>${await generateResetTokenTemp()}</h2>`)
   // console.log('email sent successfully');
 
   res.status(200).json({ msg: 'email sent successfully to reset the password' });
+});
+//post /api/users/reset
+const confrimReset = asyncHandler(async (req, res, next) => {
+  
+  const emailIsExist = await User.findOne({ email: req.body.email });
+  if (!emailIsExist) {
+    throw new Error('email not found Please use another one');
+  }
+  let updatedUser=emailIsExist
+  updatedUser.password = req.body.password
+   updatedUser = await updatedUser.save()
+   await setupMailSender(req,'password changed alert','<h3>contact us if you did not changed the password</h3>'+ `<h3>go to link(www.dummy.com) to freeze your account</h3>`)
+
+  res.status(200).json({ msg: 'user changed successfully' });
 });
 
 //post /api/users/logout
@@ -76,4 +81,4 @@ const logoutUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({ msg: 'logout' });
 });
 
-export { registerUser, authUser, logoutUser, resetUser };
+export { registerUser, authUser, logoutUser, resetUser,confrimReset };
