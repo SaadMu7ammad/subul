@@ -1,5 +1,4 @@
 import express, { Router } from 'express';
-import { body, check, validationResult } from 'express-validator';
 
 const router = express.Router();
 import {
@@ -9,17 +8,22 @@ import {
   resetUser,
   confrimReset,
 } from '../Controllers/userController.js';
-import {
-  loginValidation,
-  registerValidation,
-  resetValidationEmailToReset,
-  resetValidationPassToConfirmReset,
-  validate,
-} from '../middlewares/validator.js';
+import { validate } from '../middlewares/validatorMiddleware.js';
 import { auth } from '../middlewares/authMiddleware.js';
+import registerValidation from '../utils/validatorComponents/registerValidation.js';
+import loginValidation from '../utils/validatorComponents/loginValidation.js';
+import resetValidationEmailToReset from '../utils/validatorComponents/requestResetEmailValidation.js';
+import resetValidationPassToConfirmReset from '../utils/validatorComponents/confirmResetValidation.js';
+
 router.post('/', registerValidation, validate, registerUser);
 router.post('/auth', loginValidation, validate, authUser);
+router.post('/logout', logoutUser);
 router.post('/reset', resetValidationEmailToReset, validate, resetUser);
-router.post('/reset/confirm', resetValidationPassToConfirmReset, validate, confrimReset);
+router.post(
+  '/reset/confirm',
+  resetValidationPassToConfirmReset,
+  validate,
+  confrimReset
+);
 
 export default router;

@@ -1,14 +1,12 @@
-// import { BadRequestError } from '../errors/bad-request.js';
-
 import {
   BadRequestError,
+  CustomAPIError,
   NotFoundError,
   UnauthenticatedError,
 } from '../errors/index.js';
 import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken.js';
 import { User } from '../models/userModel.js';
-import { async } from 'rxjs';
 import { generateResetTokenTemp, setupMailSender } from '../utils/mailer.js';
 //post /api/users/auth
 const authUser = asyncHandler(async (req, res, next) => {
@@ -42,7 +40,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
       email
     });
   } else {
-    throw new BadRequestError({ msg: 'Invalid data' });
+    throw new BadRequestError('Invalid data' );
   }
 });
 
@@ -55,7 +53,7 @@ const resetUser = asyncHandler(async (req, res, next) => {
   await setupMailSender(req,'reset alert','go to that link to reset the password (www.dummy.com) '+ `<h3>use that token to confirm the new password</h3> <h2>${await generateResetTokenTemp()}</h2>`)
   // console.log('email sent successfully');
 
-  res.status(200).json({ msg: 'email sent successfully to reset the password' });
+  res.status(200).json({ message: 'email sent successfully to reset the password' });
 });
 //post /api/users/reset
 const confrimReset = asyncHandler(async (req, res, next) => {
@@ -69,16 +67,18 @@ const confrimReset = asyncHandler(async (req, res, next) => {
    updatedUser = await updatedUser.save()
    await setupMailSender(req,'password changed alert','<h3>contact us if you did not changed the password</h3>'+ `<h3>go to link(www.dummy.com) to freeze your account</h3>`)
 
-  res.status(200).json({ msg: 'user changed successfully' });
+  res.status(200).json({ message: 'user changed successfully' });
 });
 
 //post /api/users/logout
 const logoutUser = asyncHandler(async (req, res, next) => {
+  throw new BadRequestError('Invalid data' );
+
   res.cookie('jwt', '', {
     httpOnly: true,
     expires: new Date(0),
   });
-  res.status(200).json({ msg: 'logout' });
+  res.status(200).json({ message: 'logout' });
 });
 
 export { registerUser, authUser, logoutUser, resetUser,confrimReset };

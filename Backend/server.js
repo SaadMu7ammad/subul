@@ -15,7 +15,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); //form data
 
-app.use(cookieParser())
+app.use(cookieParser());
 app.use('/api/users', userRoutes);
 app.get('/', (req, res) => {
   res.send('subul charity');
@@ -24,6 +24,15 @@ app.use(NotFound);
 app.use(errorHandler);
 
 await connectDB();
-app.listen(port, () => {
+const server = app.listen(port, () => {
   logger.info(`server is listenting http://${host}:${port}`);
 });
+//handling errors outside express
+// process.on('unhandledRejection', (err) => {
+//   console.log(`unhandledRejection Errors + ${err.name} | ${err.message}`);
+//   server.close(() => {
+//     //do exit to the program after the server their pending requests
+//     console.log('shutting down...');
+//     process.exit(1);
+//   });
+// });
