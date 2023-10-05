@@ -49,7 +49,10 @@ const userSchema = new mongoose.Schema(
             required: true,
         },
         location: locationSchema,
-        profileImage: {},
+        // profileImage: {
+        //     type: String,
+        //     required: false,
+        // },
         gender: {
             type: String,
             required: false,
@@ -75,6 +78,11 @@ const userSchema = new mongoose.Schema(
                 default: null,
             },
         },
+        isEnabled :{
+            type: Boolean,
+            default: true,
+            required: true,
+        },
         transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' }],
     },
     { timestamps: true }
@@ -87,6 +95,9 @@ userSchema.pre('save', async function (next) {
     const salt = await bcrypt.genSalt(+process.env.SALT);
     this.password = await bcrypt.hash(this.password, salt);
 });
+
+
+
 userSchema.methods.comparePassword = async function (enteredPassword) {
     const isMatch = await bcrypt.compare(enteredPassword, this.password);
     return isMatch;
