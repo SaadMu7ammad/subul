@@ -85,8 +85,10 @@ const userSchema = new mongoose.Schema(
       default: 0,
       required: false,
     },
-    location:{ locationSchema},
-    // profileImage: {
+    location: {
+      type: locationSchema, // Use locationSchema here
+      required: true,
+    },    // profileImage: {
     //     type: String,
     //     required: false,
     // },
@@ -97,7 +99,7 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: true,
+      required: false,
     },
 
     verificationCode: {

@@ -11,6 +11,8 @@ const registerValidation = [
     .withMessage('Invalid email'),
   body('phone')
     .notEmpty()
+    .isMobilePhone()
+    .withMessage('Invalid PhoneNumber')
     .isLength({ min: 11, max: 11 })
     .withMessage('Invalid PhoneNumber'),
   body('gender')
