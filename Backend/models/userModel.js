@@ -46,7 +46,6 @@ const userSchema = new mongoose.Schema(
         points: {
             type: Number,
             default: 0,
-            required: true,
         },
         location: locationSchema,
         // profileImage: {

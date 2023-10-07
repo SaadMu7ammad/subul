@@ -1,25 +1,42 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
-const transactionSchema = new Schema({
-    case:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'Case'
+const paymentMethodSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
     },
-    user:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:'User'
+    bankAccount: {
+        accNumber: String,
+        iban: String,
+        swiftCode: String,
     },
-    moneyPaid:{
-        type:Number,
-        required:true
+    fawry: {
+        number: String,
     },
-    paymentMethod:{
-        type:String,
-        required:true
+    vodafoneCash: {
+        number: String,
     },
-    
-},{ timestamps: true });
+});
+
+const transactionSchema = new Schema(
+    {
+        case: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Case',
+        },
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        moneyPaid: {
+            type: Number,
+            required: true,
+        },
+        paymentMethod: paymentMethodSchema,
+    },
+    { timestamps: true }
+);
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 

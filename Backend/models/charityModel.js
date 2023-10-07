@@ -16,6 +16,26 @@ const locationSchema = new mongoose.Schema({
     },
 });
 
+const paymentMethodSchema = new Schema({
+    bankAccount: [
+        {
+            accNumber: String,
+            iban: String,
+            swiftCode: String,
+        },
+    ],
+    fawry: [
+        {
+            number: String,
+        },
+    ],
+    vodafoneCash: [
+        {
+            number: String,
+        },
+    ],
+});
+
 const charitySchema = new Schema(
     {
         cases: [
@@ -80,12 +100,7 @@ const charitySchema = new Schema(
             default: true,
             required: true,
         },
-        paymentMethods: [
-            {
-                type: String,
-                required: true,
-            },
-        ],
+        paymentMethods: paymentMethodSchema,
         rate: {
             type: Number,
             default: 0,
@@ -107,28 +122,24 @@ const charitySchema = new Schema(
                 },
             },
         ],
-        currency:[
+        currency: [
             {
-                type:String,
-                required:true
-            }
-        ],
-        location:[
-            locationSchema
-        ],
-        files:[{
-
-        }],
-        charityInfo:{
-            registeredNumber:{
-                type:String,
-                required:true
+                type: String,
+                required: true,
             },
-            establishedDate:{
-                type:String,
-                required:true
-            }
-        }
+        ],
+        location: [locationSchema],
+        files: [{}],
+        charityInfo: {
+            registeredNumber: {
+                type: String,
+                required: true,
+            },
+            establishedDate: {
+                type: String,
+                required: true,
+            },
+        },
     },
     { timestamps: true }
 );
