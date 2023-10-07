@@ -7,6 +7,7 @@ import {
   errorHandler,
 } from './middlewares/errorHandlerMiddleware.js';
 import userRoutes from './Routes/userRoutes.js';
+import charityRoutes from './Routes/charityRoutes.js';
 import logger from './utils/logger.js';
 const port = process.env.PORT;
 const host = process.env.HOST;
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true })); //form data
 
 app.use(cookieParser());
 app.use('/api/users', userRoutes);
+app.use('/api/charity',charityRoutes);
 app.get('/', (req, res) => {
   res.send('subul charity');
 });
