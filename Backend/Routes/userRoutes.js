@@ -7,6 +7,7 @@ import {
   logoutUser,
   resetUser,
   confrimReset,
+  changePassword,
 } from '../Controllers/userController.js';
 import { validate } from '../middlewares/validatorMiddleware.js';
 import { auth } from '../middlewares/authMiddleware.js';
@@ -14,6 +15,7 @@ import registerValidation from '../utils/validatorComponents/registerValidation.
 import loginValidation from '../utils/validatorComponents/loginValidation.js';
 import resetValidationEmailToReset from '../utils/validatorComponents/requestResetEmailValidation.js';
 import resetValidationPassToConfirmReset from '../utils/validatorComponents/confirmResetValidation.js';
+import changePasswordValidation from '../utils/validatorComponents/changePasswordValidation.js';
 
 router.post('/', registerValidation, validate, registerUser);
 router.post('/auth', loginValidation, validate, authUser);
@@ -25,5 +27,6 @@ router.post(
   validate,
   confrimReset
 );
+router.put('/changepassword', changePasswordValidation,validate, auth, changePassword);
 
 export default router;

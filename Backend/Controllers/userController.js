@@ -89,7 +89,11 @@ const confrimReset = asyncHandler(async (req, res, next) => {
   }
   let updatedUser = emailIsExist;
   if (updatedUser.verificationCode !== req.body.token) {
-    throw new UnauthenticatedError('invalid token');
+    updatedUser.verificationCode = null;
+    updatedUser = await updatedUser.save();
+    throw new UnauthenticatedError(
+      'invalid token send request again to reset a password'
+    );
   }
   updatedUser.password = req.body.password;
   updatedUser.verificationCode = null;
@@ -101,13 +105,29 @@ const confrimReset = asyncHandler(async (req, res, next) => {
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
   );
 
-  res.status(200).json({ message: 'user changed successfully' });
+  res.status(200).json({ message: 'user password changed successfully' });
 });
 
 //@desc   change password
-//@route  POST /api/users/:id/changepassword
+//@route  POST /api/users/changepassword
 //@access private
+const changePassword = asyncHandler(async (req, res, next) => {
+  const userIsExist = await User.findById(req.user._id);
+  if (!userIsExist) {
+    throw new Error('you are not authorized to change the password');
+  }
+  let updatedUser = userIsExist;
+  updatedUser.password = req.body.password;
+  updatedUser = await updatedUser.save();
+  await setupMailSender(
+    req,
+    'password changed alert',
+    '<h3>contact us if you did not changed the password</h3>' +
+      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+  );
 
+  res.status(200).json({ message: 'user password changed successfully' });
+});
 //@desc   logout user
 //@route  POST /api/users/logout
 //@access public
@@ -119,4 +139,11 @@ const logoutUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: 'logout' });
 });
 
-export { registerUser, authUser, logoutUser, resetUser, confrimReset };
+export {
+  registerUser,
+  authUser,
+  logoutUser,
+  resetUser,
+  confrimReset,
+  changePassword,
+};
