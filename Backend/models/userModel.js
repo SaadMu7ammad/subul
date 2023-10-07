@@ -5,7 +5,38 @@ import dotenv from 'dotenv/config';
 const locationSchema = new mongoose.Schema({
     governorate: {
         type: String,
-        required: false,
+        enum: [
+            'Alexandria',
+            'Assiut',
+            'Aswan',
+            'Beheira',
+            'Bani Suef',
+            'Cairo',
+            'Daqahliya',
+            'Damietta',
+            'Fayyoum',
+            'Gharbiya',
+            'Giza',
+            'Helwan',
+            'Ismailia',
+            'Kafr El Sheikh',
+            'Luxor',
+            'Marsa Matrouh',
+            'Minya',
+            'Monofiya',
+            'New Valley',
+            'North Sinai',
+            'Port Said',
+            'Qalioubiya',
+            'Qena',
+            'Red Sea',
+            'Sharqiya',
+            'Sohag',
+            'South Sinai',
+            'Suez',
+            'Tanta',
+        ],
+        required: true,
     },
     city: {
         type: String,
@@ -43,25 +74,33 @@ const userSchema = new mongoose.Schema(
             default: false,
             required: true,
         },
-        points: {
+        pointsOnDonations: {
             type: Number,
             default: 0,
+            required: true,
         },
-        location: locationSchema,
-        // profileImage: {
+        totalDonationsAmount: {
+            type: Number,
+            default: 0,
+            required: false,
+        },
+        location: {
+            type: locationSchema, // Use locationSchema here
+            required: true,
+        }, // profileImage: {
         //     type: String,
         //     required: false,
         // },
         gender: {
             type: String,
+            enum: ['male', 'female'],
+            required: true,
+        },
+        phone: {
+            type: String,
             required: false,
         },
-        phone: [
-            {
-                type: Number,
-                required: true,
-            },
-        ],
+
         verificationCode: {
             type: String,
             required: false,
@@ -77,12 +116,24 @@ const userSchema = new mongoose.Schema(
                 default: null,
             },
         },
-        isEnabled :{
+        phoneVerification: {
+            isVerified: {
+                type: Boolean,
+                default: false,
+            },
+            verificationDate: {
+                type: Date,
+                default: null,
+            },
+        },
+        isEnabled: {
             type: Boolean,
             default: true,
             required: true,
         },
-        transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' }],
+        transactions: [
+            { type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' },
+        ],
     },
     { timestamps: true }
 );
@@ -94,8 +145,6 @@ userSchema.pre('save', async function (next) {
     const salt = await bcrypt.genSalt(+process.env.SALT);
     this.password = await bcrypt.hash(this.password, salt);
 });
-
-
 
 userSchema.methods.comparePassword = async function (enteredPassword) {
     const isMatch = await bcrypt.compare(enteredPassword, this.password);

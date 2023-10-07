@@ -44,8 +44,8 @@ const charitySchema = new Schema(
                 ref: 'Case',
             },
         ],
-        logoImg: {},
-        profileImg: {},
+        // logoImg: {},
+        // profileImg: {},
         email: {
             type: String,
             required: true,
@@ -100,7 +100,10 @@ const charitySchema = new Schema(
             default: true,
             required: true,
         },
-        paymentMethods: paymentMethodSchema,
+        paymentMethods: {
+            type: paymentMethodSchema,
+            required: true,
+        },
         rate: {
             type: Number,
             default: 0,
@@ -128,8 +131,8 @@ const charitySchema = new Schema(
                 required: true,
             },
         ],
-        location: [locationSchema],
-        files: [{}],
+        location: [{type:locationSchema,required:true}],
+        // files: [{}],
         charityInfo: {
             registeredNumber: {
                 type: String,

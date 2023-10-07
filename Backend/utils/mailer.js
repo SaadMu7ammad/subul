@@ -26,7 +26,7 @@ const setupMailSender = async (req, subject, html) => {
   });
   const mailOptions = {
     from: process.env.EMAIL_FROM,
-    to: req.body.email,
+    to: req.body.email||req.user.email,
     subject: subject,
     html: html,
   };
