@@ -22,6 +22,19 @@ const authUser = asyncHandler(async (req, res, next) => {
     throw new UnauthenticatedError('invalid password');
   }
   generateToken(res, user._id);
+  if (!user.emailVerification.isVerified) {
+    //not verified(activated)
+    const token = await generateResetTokenTemp();
+    user.verificationCode = token;
+    await user.save();
+    await setupMailSender(
+      req,
+      'login alert',
+      'it seems that your account still not verified or activated please go to that link to activate the account ' +
+        `<h3>(www.activate.com)</h3>` +
+        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+    );
+  }
   res.status(201).json({
     _id: user._id,
     name: user.name,
@@ -128,6 +141,46 @@ const changePassword = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({ message: 'user password changed successfully' });
 });
+
+//@desc   activate account email
+//@route  POST /api/users/activate
+//@access private
+const activateAccount = asyncHandler(async (req, res, next) => {
+  const userIsExist = await User.findById(req.user._id);
+  if (!userIsExist) {
+    throw new Error('you are not authorized to activate the account');
+  }
+  if (userIsExist.emailVerification.isVerified) {
+    return res.status(200).json({ message: 'account already is activated' });
+  }
+  let updatedUser = userIsExist;
+  if (updatedUser.verificationCode !== req.body.token) {
+    updatedUser.verificationCode = null;
+    updatedUser = await updatedUser.save();
+    // logoutUser(req, res, next);
+    res.cookie('jwt', '', {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+    // await setupMailSender(
+    //   req,
+    //   'account still not activated',
+    //   '<h3>contact us if there is another issue about </h3>' );
+    throw new UnauthenticatedError('invalid token you have been logged out');
+  }
+
+  updatedUser.verificationCode = null;
+  updatedUser.emailVerification.isVerified = true;
+  updatedUser.emailVerification.verificationDate = Date.now();
+  updatedUser = await updatedUser.save();
+  await setupMailSender(
+    req,
+    'account has been activated ',
+    `<h2>now you are ready to spread the goodness with us </h2>`
+  );
+
+  res.status(200).json({ message: 'account has been activated successfully' });
+});
 //@desc   logout user
 //@route  POST /api/users/logout
 //@access public
@@ -146,4 +199,5 @@ export {
   resetUser,
   confrimReset,
   changePassword,
+  activateAccount,
 };

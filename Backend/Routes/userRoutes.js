@@ -8,6 +8,7 @@ import {
   resetUser,
   confrimReset,
   changePassword,
+  activateAccount,
 } from '../Controllers/userController.js';
 import { validate } from '../middlewares/validatorMiddleware.js';
 import { auth } from '../middlewares/authMiddleware.js';
@@ -28,5 +29,6 @@ router.post(
   confrimReset
 );
 router.put('/changepassword', changePasswordValidation,validate, auth, changePassword);
+router.post('/activate', auth, activateAccount);
 
 export default router;
