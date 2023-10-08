@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
 const Schema = mongoose.Schema;
 
 const locationSchema = new mongoose.Schema({
@@ -19,19 +20,34 @@ const locationSchema = new mongoose.Schema({
 const paymentMethodSchema = new Schema({
     bankAccount: [
         {
-            accNumber: String,
-            iban: String,
-            swiftCode: String,
+            accNumber: {
+                type: String,
+                required: true,
+            },
+            iban: {
+                type: String,
+                required: true,
+            },
+            swiftCode: {
+                type: String,
+                required: true,
+            },
         },
     ],
     fawry: [
         {
-            number: String,
+            number: {
+                type: String,
+                required: true,
+            },
         },
     ],
     vodafoneCash: [
         {
-            number: String,
+            number: {
+                type: String,
+                required: true,
+            },
         },
     ],
 });
@@ -131,7 +147,7 @@ const charitySchema = new Schema(
                 required: true,
             },
         ],
-        location: [{type:locationSchema,required:true}],
+        location: [{ type: locationSchema, required: true }],
         // files: [{}],
         charityInfo: {
             registeredNumber: {
@@ -146,6 +162,20 @@ const charitySchema = new Schema(
     },
     { timestamps: true }
 );
+
+charitySchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
+        //to not change password every time we edit the user data
+        next();
+    }
+    const salt = await bcrypt.genSalt(+process.env.SALT);
+    this.password = await bcrypt.hash(this.password, salt);
+});
+
+charitySchema.methods.comparePassword = async function (enteredPassword) {
+    const isMatch = await bcrypt.compare(enteredPassword, this.password);
+    return isMatch;
+};
 
 const Charity = mongoose.model('Charity', charitySchema);
 
