@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import logger from './logger.js';
 const generateResetTokenTemp = async (userId) => {
   // console.log('ahpe');
   let token; //= await Token.findOne({ userId});
@@ -17,6 +18,11 @@ const generateResetTokenTemp = async (userId) => {
   return token;
 };
 const setupMailSender = async (req, subject, html) => {
+  let emailReceiver;
+  if(req.body)emailReceiver=req.body.email;
+  if(req.charity)emailReceiver=req.charity.email;
+  if(req.user)emailReceiver=req.user.email;
+  logger.info(`sending mail to ${emailReceiver}`);
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -26,7 +32,7 @@ const setupMailSender = async (req, subject, html) => {
   });
   const mailOptions = {
     from: process.env.EMAIL_FROM,
-    to: req.body.email||req.user.email,
+    to:emailReceiver,
     subject: subject,
     html: html,
   };

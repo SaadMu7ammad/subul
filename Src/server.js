@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true })); //form data
 
 app.use(cookieParser());
 app.use('/api/users', userRoutes);
-app.use('/api/charity',charityRoutes);
+app.use('/api/charities',charityRoutes);
 app.get('/', (req, res) => {
   res.send('subul charity');
 });
