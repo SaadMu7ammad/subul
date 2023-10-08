@@ -17,7 +17,7 @@ const registerCharity = asyncHandler(async (req, res, next) => {
     }
     charity = await Charity.create(req.body);
     if (!charity) throw new Error('Something went wrong');
-    generateToken(res, charity._id,'charity');
+    generateToken(res, charity._id, 'charity');
     await setupMailSender(
         req,
         'welcome alert',
@@ -41,7 +41,7 @@ const authCharity = asyncHandler(async (req, res, next) => {
     if (!charity) throw new NotFoundError('No charity found with this email');
     const isMatch = await charity.comparePassword(password);
     if (!isMatch) throw new UnauthenticatedError('Invalid password!');
-    generateToken(res, charity._id,'charity');
+    generateToken(res, charity._id, 'charity');
     if (!charity.emailVerification.isVerified) {
         //not verified(activated)
         const token = await generateResetTokenTemp();
@@ -105,4 +105,23 @@ const activateCharityAccount = asyncHandler(async (req, res, next) => {
         message: 'account has been activated successfully',
     });
 });
-export { registerCharity, authCharity, activateCharityAccount };
+
+const requestResetPassword = asyncHandler(async (req, res, next) => {
+    const { email } = req.body;
+    const charity = await Charity.findOne({ email });
+    if (!charity) throw new NotFoundError('No charity found with this email');
+    const token = await generateResetTokenTemp();
+    await setupMailSender(
+        req,
+        'Password Reset Alert',
+        'go to that link to reset the password (www.dummy.com) ' +
+            `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+    );
+    charity.verificationCode = token;
+    await charity.save();
+    res.status(200).json({
+        message: 'email sent successfully to reset the password',
+    });
+
+});
+export { registerCharity, authCharity, activateCharityAccount,requestResetPassword };
