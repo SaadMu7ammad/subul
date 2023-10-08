@@ -1,4 +1,4 @@
-import Charity from '../models/Charity.js';
+import Charity from '../models/charityModel.js';
 import asyncHandler from 'express-async-handler';
 import {
     BadRequestError,

@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 
-import { registerCharity } from '../controllers/charity.js';
+import { registerCharity } from '../controllers/charityController.js';
 
 const router = express.Router();
 
