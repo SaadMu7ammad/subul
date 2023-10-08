@@ -71,8 +71,10 @@ const charitySchema = new Schema(
         ref: 'Case',
       },
     ],
-    logoImg: { type: String, required: true },
-    // profileImg: {},
+    logoImg: {
+      type: String,
+      required: true, // Ensure it's required
+    }, // profileImg: {},
     email: {
       type: String,
       required: true,
