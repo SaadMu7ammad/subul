@@ -37,7 +37,7 @@ const multerFilter = (req, file, cb) => {
     cb(new BadRequestError('invalid type,Only images allowed'));
   }
 };
-const resizeImg = asyncHandler(async(req, res, next) => {
+const resizeImg = asyncHandler(async (req, res, next) => {
   // const ex = file.mimetype.split('/')[1];
   const uniqueSuffix = 'LogoCharity' + uuidv4() + '-' + Date.now();
   const filename = uniqueSuffix + '.jpeg';
@@ -45,9 +45,14 @@ const resizeImg = asyncHandler(async(req, res, next) => {
     .resize(320, 240)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile('./uploads/LogoCharities/' + filename, (err, info) => {});
+    .toFile('./uploads/LogoCharities/' + filename, (err, info) => {
+      console.log(err);
+    });
+  //adding the filename in the req.body
+  req.body.image = filename;
   next();
 });
+//diskStorage
 // const upload = multer({ storage: multerStorage,fileFilter:multerFilter });
 // const uploadCoverImage = upload.single('image');
 //memoryStorage
@@ -58,19 +63,13 @@ const uploadCoverImage = upload.single('image');
 const registerCharity = asyncHandler(async (req, res, next) => {
   // logger.info(req.file.path);
   // req.file.path=req.file.path.replace("\\","/")
-  const { image, email, logoImg } = req.body;
-  // console.log(image);
+  const { email } = req.body;
 
   let charity = await Charity.findOne({ email });
   if (charity) {
     throw new BadRequestError('An Account with this Email already exists');
-  }
-  // charity.image = req.file.path;
-  req.body = {
-    ...req.body,
-    // image: req.file.path, //+"."+ req.file.mimetype.split('/')[1],
-    image: req.file.buffer, 
-  };
+  } 
+
   charity = await Charity.create(req.body);
   if (!charity) throw new Error('Something went wrong');
   generateToken(res, charity._id, 'charity');
@@ -87,7 +86,6 @@ const registerCharity = asyncHandler(async (req, res, next) => {
     email,
   });
 
-  //   logoImg.replace('\\', '/');
 });
 
 const authCharity = asyncHandler(async (req, res, next) => {

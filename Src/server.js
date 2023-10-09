@@ -19,7 +19,9 @@ const host = process.env.HOST;
 const app = express();
 
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true })); //form data
+//to access the img as path http://localhost:5000/LogoCharities/imgName_In_DB.jpeg
 app.use(express.static(path.join(__dirname, `uploads`)));
 // app.use('/uploads',express.static( `uploads`));
 
