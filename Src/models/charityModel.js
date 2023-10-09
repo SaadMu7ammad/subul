@@ -125,8 +125,15 @@ const charitySchema = new Schema(
       },
     },
     isEnabled: {
+      //to freeze account or not
       type: Boolean,
       default: true,
+      required: true,
+    },
+    isConfirmed: {
+      //to confirm the docs of the charities
+      type: Boolean,
+      default: false,
       required: true,
     },
     paymentMethods: {
