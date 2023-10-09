@@ -8,6 +8,7 @@ import generateToken from '../utils/generateToken.js';
 import asyncHandler from 'express-async-handler';
 import { setupMailSender, generateResetTokenTemp } from '../utils/mailer.js';
 import multer from 'multer';
+import sharp from 'sharp';
 import {
   BadRequestError,
   CustomAPIError,
@@ -16,23 +17,46 @@ import {
 } from '../errors/index.js';
 import logger from '../utils/logger.js';
 //disk Storage solution
-const multerStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    // cb(null, 'uploads/');
-    cb(null, './uploads/LogoCharities');
-  },
-  filename: function (req, file, cb) {
-    // const imageUrl = file.path.replace("\\", "/");
-    const ex = file.mimetype.split('/')[1];
-    const uniqueSuffix ="LogoCharity"+uuidv4()+"-"+ Date.now() ;
-    cb(null, uniqueSuffix + '.' + ex);
-  },
+// const multerStorage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     // cb(null, 'uploads/');
+//     cb(null, './uploads/LogoCharities');
+//   },
+//   filename: function (req, file, cb) {
+//     // const imageUrl = file.path.replace("\\", "/");
+//     const ex = file.mimetype.split('/')[1];
+//     const uniqueSuffix ="LogoCharity"+uuidv4()+"-"+ Date.now() ;
+//     cb(null, uniqueSuffix + '.' + ex);
+//   },
+// });
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    //accepts imgs only
+    cb(null, true);
+  } else {
+    cb(new BadRequestError('invalid type,Only images allowed'));
+  }
+};
+const resizeImg = asyncHandler(async(req, res, next) => {
+  // const ex = file.mimetype.split('/')[1];
+  const uniqueSuffix = 'LogoCharity' + uuidv4() + '-' + Date.now();
+  const filename = uniqueSuffix + '.jpeg';
+  await sharp(req.file.buffer)
+    .resize(320, 240)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile('./uploads/LogoCharities/' + filename, (err, info) => {});
+  next();
 });
-const upload = multer({ storage: multerStorage });
+// const upload = multer({ storage: multerStorage,fileFilter:multerFilter });
+// const uploadCoverImage = upload.single('image');
+//memoryStorage
+const multerStorage = multer.memoryStorage();
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 const uploadCoverImage = upload.single('image');
 
 const registerCharity = asyncHandler(async (req, res, next) => {
-  logger.info(req.file.path);
+  // logger.info(req.file.path);
   // req.file.path=req.file.path.replace("\\","/")
   const { image, email, logoImg } = req.body;
   // console.log(image);
@@ -44,7 +68,8 @@ const registerCharity = asyncHandler(async (req, res, next) => {
   // charity.image = req.file.path;
   req.body = {
     ...req.body,
-    image: req.file.path //+"."+ req.file.mimetype.split('/')[1],
+    // image: req.file.path, //+"."+ req.file.mimetype.split('/')[1],
+    image: req.file.buffer, 
   };
   charity = await Charity.create(req.body);
   if (!charity) throw new Error('Something went wrong');
@@ -158,4 +183,5 @@ export {
   activateCharityAccount,
   requestResetPassword,
   uploadCoverImage,
+  resizeImg,
 };

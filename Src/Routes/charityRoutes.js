@@ -8,6 +8,7 @@ import {
   authCharity,
   activateCharityAccount,
   requestResetPassword,
+  resizeImg,
 } from '../Controllers/charityController.js';
 
 const router = express.Router();
@@ -21,7 +22,7 @@ router.post(
   //   console.log(req.file);
   //   next();
   // },
-  uploadCoverImage,
+  uploadCoverImage,resizeImg,
   registerCharity
 );
 router.post('/auth', authCharity);
