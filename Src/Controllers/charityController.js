@@ -1,14 +1,8 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { v4 as uuidv4 } from 'uuid';
-
 import Charity from '../models/charityModel.js';
 import generateToken from '../utils/generateToken.js';
 import asyncHandler from 'express-async-handler';
 import { setupMailSender, generateResetTokenTemp } from '../utils/mailer.js';
-import multer from 'multer';
-import sharp from 'sharp';
+
 import {
     BadRequestError,
     CustomAPIError,
@@ -16,56 +10,13 @@ import {
     UnauthenticatedError,
 } from '../errors/index.js';
 import logger from '../utils/logger.js';
-//disk Storage solution
-// const multerStorage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     // cb(null, 'uploads/');
-//     cb(null, './uploads/LogoCharities');
-//   },
-//   filename: function (req, file, cb) {
-//     // const imageUrl = file.path.replace("\\", "/");
-//     const ex = file.mimetype.split('/')[1];
-//     const uniqueSuffix ="LogoCharity"+uuidv4()+"-"+ Date.now() ;
-//     cb(null, uniqueSuffix + '.' + ex);
-//   },
-// });
-const multerFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image')) {
-        //accepts imgs only
-        cb(null, true);
-    } else {
-        cb(new BadRequestError('invalid type,Only images allowed'));
-    }
-};
-const resizeImg = asyncHandler(async (req, res, next) => {
-    // const ex = file.mimetype.split('/')[1];
-    console.log('hey')
-    const uniqueSuffix = 'LogoCharity' + uuidv4() + '-' + Date.now();
-    const filename = uniqueSuffix + '.jpeg';
-    await sharp(req.file.buffer)
-        .resize(320, 240)
-        .toFormat('jpeg')
-        .jpeg({ quality: 90 })
-        .toFile('./uploads/LogoCharities/' + filename, (err, info) => {
-            console.log(err);
-        });
-    //adding the filename in the req.body
-    req.body.image = filename;
-    next();
-});
-//diskStorage
-// const upload = multer({ storage: multerStorage,fileFilter:multerFilter });
-// const uploadCoverImage = upload.single('image');
-//memoryStorage
-const multerStorage = multer.memoryStorage();
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-const uploadCoverImage = upload.single('image');
+import { async } from 'rxjs';
 
 const registerCharity = asyncHandler(async (req, res, next) => {
     // logger.info(req.file.path);
     // req.file.path=req.file.path.replace("\\","/")
     const { email } = req.body;
-    logger.info("hey!")
+
     let charity = await Charity.findOne({ email });
     if (charity) {
         throw new BadRequestError('An Account with this Email already exists');
@@ -85,6 +36,7 @@ const registerCharity = asyncHandler(async (req, res, next) => {
         _id: charity._id,
         name: charity.name,
         email,
+        image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
     });
 });
 
@@ -179,11 +131,34 @@ const requestResetPassword = asyncHandler(async (req, res, next) => {
         message: 'email sent successfully to reset the password',
     });
 });
+
+const confirmResetPasswordRequest = asyncHandler(async (req, res, next) => {
+    const { token, email } = req.body;
+    let charity = await Charity.findOne({ email });
+    if (!charity) throw new NotFoundError('No charity found with this email');
+    if (charity.verificationCode !== token) {
+        charity.verificationCode = null;
+        charity = await charity.save();
+        throw new UnauthenticatedError(
+            'invalid token send request again to reset a password'
+        );
+    }
+    charity.verificationCode = null;
+    charity.password = req.body.password;
+    await charity.save();
+    await setupMailSender(
+        req,
+        'password changed alert',
+        '<h3>contact us if you did not changed the password</h3>' +
+          `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+      );
+    
+      res.status(201).json({ message: 'charity password changed successfully' });
+});
 export {
     registerCharity,
     authCharity,
     activateCharityAccount,
     requestResetPassword,
-    uploadCoverImage,
-    resizeImg,
+    confirmResetPasswordRequest
 };

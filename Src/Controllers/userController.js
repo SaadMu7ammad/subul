@@ -139,7 +139,7 @@ const changePassword = asyncHandler(async (req, res, next) => {
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
   );
 
-  res.status(200).json({ message: 'user password changed successfully' });
+  res.status(201).json({ message: 'user password changed successfully' });
 });
 
 //@desc   activate account email

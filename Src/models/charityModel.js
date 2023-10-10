@@ -191,7 +191,20 @@ charitySchema.pre('save', async function (next) {
   const salt = await bcrypt.genSalt(+process.env.SALT);
   this.password = await bcrypt.hash(this.password, salt);
 });
-
+const editImgUrl = (doc) => {
+  if (doc.image) {
+    const urlImg = `http://${process.env.HOST}:${process.env.PORT}/LogoCharities/${doc.image}`;
+    doc.image = urlImg;
+  }
+};
+charitySchema.post('init', (doc) => {
+  //after initialized the doc in db
+  editImgUrl(doc);
+});
+charitySchema.post('save', (doc) => {
+  //after save the doc in db
+  editImgUrl(doc);
+});
 charitySchema.methods.comparePassword = async function (enteredPassword) {
   const isMatch = await bcrypt.compare(enteredPassword, this.password);
   return isMatch;
