@@ -45,9 +45,10 @@ const resizeImg = asyncHandler(async (req, res, next) => {
     .resize(320, 240)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
-    .toFile('./uploads/LogoCharities/' + filename, (err, info) => {
-      console.log(err);
-    });
+    .toFile('./uploads/LogoCharities/' + filename); //, (err, info) => {
+  //   console.log('err');
+  //   console.log(err);
+  // });
   //adding the filename in the req.body
   req.body.image = filename;
   next();
@@ -68,7 +69,7 @@ const registerCharity = asyncHandler(async (req, res, next) => {
   let charity = await Charity.findOne({ email });
   if (charity) {
     throw new BadRequestError('An Account with this Email already exists');
-  } 
+  }
 
   charity = await Charity.create(req.body);
   if (!charity) throw new Error('Something went wrong');
@@ -84,8 +85,8 @@ const registerCharity = asyncHandler(async (req, res, next) => {
     _id: charity._id,
     name: charity.name,
     email,
+    image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
   });
-
 });
 
 const authCharity = asyncHandler(async (req, res, next) => {
