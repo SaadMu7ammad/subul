@@ -2,6 +2,7 @@ import { CustomAPIError } from '../errors/index.js';
 import logger from '../utils/logger.js';
 //global error handling middleware
 const NotFound = (req, res, next) => {
+  logger.error('Not Found Error');
   res.status(404); //.json({ message: 'page not found' });
   next(new Error(`not found' ${req.originalUrl}`));
 };
