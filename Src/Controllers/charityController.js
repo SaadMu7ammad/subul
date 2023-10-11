@@ -10,7 +10,6 @@ import {
     UnauthenticatedError,
 } from '../errors/index.js';
 import logger from '../utils/logger.js';
-import { async } from 'rxjs';
 
 const registerCharity = asyncHandler(async (req, res, next) => {
     // logger.info(req.file.path);
