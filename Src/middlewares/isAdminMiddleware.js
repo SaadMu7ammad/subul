@@ -1,7 +1,7 @@
 import { UnauthenticatedError } from '../errors/unauthenticated.js';
 
 const isAdmin = (req, res, next) => {
-  console.log(req.user);
+//   console.log(req.user);
   if (!req.charity) {
     //no isAdmin attribure in req.charity to prevent error of undefined isAdmin
     if (req.user.isAdmin && req.user) {
