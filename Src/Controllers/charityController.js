@@ -85,7 +85,7 @@ const authCharity = asyncHandler(async (req, res, next) => {
         email: charity.email,
         name: charity.name,
       },
-      { message: 'you must upload docs to auth the c' }]
+      { message: 'you must upload docs to auth the charity' }]
     );
     //isPending = false and isConfirmed= true
     //done
