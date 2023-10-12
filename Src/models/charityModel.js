@@ -124,6 +124,16 @@ const charitySchema = new Schema(
         default: null,
       },
     },
+    phoneVerification: {
+      isVerified: {
+          type: Boolean,
+          default: false,
+      },
+      verificationDate: {
+          type: Date,
+          default: null,
+      },
+  },
     isEnabled: {
       //to freeze account or not
       type: Boolean,
@@ -132,6 +142,12 @@ const charitySchema = new Schema(
     },
     isConfirmed: {
       //to confirm the docs of the charities
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    isPending: {
+      //to check if the charity sends its docs 
       type: Boolean,
       default: false,
       required: true,
