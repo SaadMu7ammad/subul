@@ -38,7 +38,6 @@ const resizeImg = asyncHandler(async (req, res, next) => {
     //   console.log(err);
     // });
     //adding the filename in the req.body
-    logger.warn('???')
   req.body.image = filename;
   next();
 });
