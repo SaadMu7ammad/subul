@@ -235,24 +235,24 @@ const editImgUrl = (doc) => {
 charitySchema.post('init', (doc) => {
   //after initialized the doc in db
   console.log('after init');
-  console.log('accessing data');
+  // console.log('accessing data');
   if (!doc.isModified('image')) {
     console.log('NOTTT modifieddd');
 
-    console.log(doc.image);
+    // console.log(doc.image);
   } else {
     console.log('modifieddd');
-    console.log(doc.image);
+    // console.log(doc.image);
     editImgUrl(doc);
-    console.log(doc.image);
+    // console.log(doc.image);
   }
 });
 charitySchema.post('save', (doc) => {
   //after save the doc in db
   console.log('after first time we create the data');
-  console.log(doc.image);
+  // console.log(doc.image);
   editImgUrl(doc);
-  console.log(doc.image);
+  // console.log(doc.image);
 });
 charitySchema.methods.comparePassword = async function (enteredPassword) {
   const isMatch = await bcrypt.compare(enteredPassword, this.password);

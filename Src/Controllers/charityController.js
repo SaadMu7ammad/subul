@@ -210,6 +210,7 @@ const logout = asyncHandler((req, res, next) => {
     res.status(200).json({ message: 'Loggedout Successfully!' });
 });
 
+
 const sendDocs = asyncHandler(async (req, res, next) => {
   // console.log(req.body);
   // console.log('fsdfsadf');
