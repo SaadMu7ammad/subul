@@ -78,6 +78,7 @@ const charitySchema = new Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -126,14 +127,14 @@ const charitySchema = new Schema(
     },
     phoneVerification: {
       isVerified: {
-          type: Boolean,
-          default: false,
+        type: Boolean,
+        default: false,
       },
       verificationDate: {
-          type: Date,
-          default: null,
+        type: Date,
+        default: null,
       },
-  },
+    },
     isEnabled: {
       //to freeze account or not
       type: Boolean,
@@ -147,7 +148,7 @@ const charitySchema = new Schema(
       required: true,
     },
     isPending: {
-      //to check if the charity sends its docs 
+      //to check if the charity sends its docs
       type: Boolean,
       default: false,
       required: true,
@@ -195,6 +196,24 @@ const charitySchema = new Schema(
         required: true,
       },
     },
+    charityDocs: {
+      docs1: {
+        type: String,
+        required: false,
+      },
+      docs2: {
+        type: String,
+        required: false,
+      },
+      docs3: {
+        type: String,
+        required: false,
+      },
+      docs4: {
+        type: String,
+        required: false,
+      },
+    },
   },
   { timestamps: true }
 );
@@ -215,11 +234,25 @@ const editImgUrl = (doc) => {
 };
 charitySchema.post('init', (doc) => {
   //after initialized the doc in db
-  editImgUrl(doc);
+  console.log('after init');
+  console.log('accessing data');
+  if (!doc.isModified('image')) {
+    console.log('NOTTT modifieddd');
+
+    console.log(doc.image);
+  } else {
+    console.log('modifieddd');
+    console.log(doc.image);
+    editImgUrl(doc);
+    console.log(doc.image);
+  }
 });
 charitySchema.post('save', (doc) => {
   //after save the doc in db
+  console.log('after first time we create the data');
+  console.log(doc.image);
   editImgUrl(doc);
+  console.log(doc.image);
 });
 charitySchema.methods.comparePassword = async function (enteredPassword) {
   const isMatch = await bcrypt.compare(enteredPassword, this.password);
