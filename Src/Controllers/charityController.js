@@ -182,10 +182,39 @@ const confirmResetPasswordRequest = asyncHandler(async (req, res, next) => {
 
   res.status(201).json({ message: 'charity password changed successfully' });
 });
+
+const changePassword = asyncHandler(async (req, res, next) => {
+    const { password } = req.body;
+    const charity = await Charity.findById(req.charity._id);
+    charity.password = password;
+    console.log(charity instanceof Charity);
+    await charity.save();
+    await setupMailSender(
+        req,
+        'password changed alert',
+        '<h3>contact us if you did not changed the password</h3>' +
+            `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+    );
+
+    res.status(201).json({ message: 'Charity password changed successfully' });
+});
+
+const logout = asyncHandler((req, res, next) => {
+    if (!req.cookies.jwt)
+        throw new UnauthenticatedError('you are not logged in');
+
+    res.cookie('jwt', '', {
+        expires: new Date(0),
+        httpOnly: true,
+    });
+    res.status(200).json({ message: 'Loggedout Successfully!' });
+});
 export {
-  registerCharity,
-  authCharity,
-  activateCharityAccount,
-  requestResetPassword,
-  confirmResetPasswordRequest,
+    registerCharity,
+    authCharity,
+    activateCharityAccount,
+    requestResetPassword,
+    confirmResetPasswordRequest,
+    changePassword,
+    logout,
 };
