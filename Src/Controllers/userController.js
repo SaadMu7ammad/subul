@@ -21,7 +21,7 @@ const authUser = asyncHandler(async (req, res, next) => {
   if (!isMatch) {
     throw new UnauthenticatedError('invalid password');
   }
-  generateToken(res, user._id);
+  generateToken(res, user._id,'user');
   if (!user.emailVerification.isVerified) {
     //not verified(activated)
     const token = await generateResetTokenTemp();
@@ -50,7 +50,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
   if (userExist) throw new BadRequestError('user is registered already');
   const user = await User.create(req.body);
   if (user) {
-    generateToken(res, user._id);
+    generateToken(res, user._id,'user');
     await setupMailSender(
       req,
       'welcome alert',
@@ -139,7 +139,7 @@ const changePassword = asyncHandler(async (req, res, next) => {
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
   );
 
-  res.status(200).json({ message: 'user password changed successfully' });
+  res.status(201).json({ message: 'user password changed successfully' });
 });
 
 //@desc   activate account email

@@ -5,8 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node Backend/server.js",
-    "server": "nodemon Backend/server.js",
+    "start": "node Src/server.js",
+    "server": "nodemon Src/server.js",
     "client": "npm run dev --prefix Frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
@@ -32,7 +32,10 @@
     "http-status-codes": "^2.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.1",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.5",
+    "sharp": "^0.32.6",
+    "uuid": "^9.0.1",
     "winston": "^3.10.0"
   },
   "devDependencies": {

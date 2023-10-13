@@ -1,17 +1,17 @@
 import { CustomAPIError } from '../errors/index.js';
+import logger from '../utils/logger.js';
 //global error handling middleware
 const NotFound = (req, res, next) => {
+  logger.error('Not Found Error');
   res.status(404); //.json({ message: 'page not found' });
   next(new Error(`not found' ${req.originalUrl}`));
 };
 
 const errorHandler = (err, req, res, next) => {
   // console.log(err);
-  console.log('err handler2');
-
+  logger.error('Reached error handler');
   if (err instanceof CustomAPIError) {
-    console.log('errorHandlerMiddleware1');
-
+    logger.error('instanse of custom api error');
     return res
       .status(err.statusCode || 500)
       .json({
@@ -19,7 +19,7 @@ const errorHandler = (err, req, res, next) => {
         stack: process.env.NODE_ENV !== 'production' ? null : err.stack,
       });
   }
-  console.log('err handler');
+  logger.error('still in error handler');
   // console.log(err.message);
   // console.log(err.statusCode);
   res
