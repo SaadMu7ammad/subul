@@ -30,7 +30,7 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 app.use(cookieParser());
 app.use('/api/users', userRoutes);
 app.use('/api/charities',charityRoutes);
-app.use('/admin',adminRoutes);
+app.use('/api/admin',adminRoutes);
 app.get('/', (req, res) => {
   res.send('subul charity');
 });
