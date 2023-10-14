@@ -8,6 +8,7 @@ import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken.js';
 import { User } from '../models/userModel.js';
 import { generateResetTokenTemp, setupMailSender } from '../utils/mailer.js';
+import logger from '../utils/logger.js';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -192,6 +193,21 @@ const logoutUser = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: 'logout' });
 });
 
+const editUserProfile = asyncHandler(async(req,res,next)=>{
+  const user = await User.findById(req.user._id);
+  if(!user)throw new NotFoundError('User not found');
+  for(const [key,value] of Object.entries(req.body)){
+    user[key] = value;
+  }
+  await user.save();
+  res.status(201).json({
+    _id: user._id,
+    name: user.name,
+    email:user.email,
+    message:"User Data Changed Successfully"
+  });
+});
+
 export {
   registerUser,
   authUser,
@@ -200,4 +216,5 @@ export {
   confrimReset,
   changePassword,
   activateAccount,
+  editUserProfile
 };
