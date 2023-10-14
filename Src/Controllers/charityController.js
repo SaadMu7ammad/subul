@@ -9,7 +9,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../errors/index.js';
-import logger from '../utils/logger.js';
+// import logger from '../utils/logger.js';
 
 const registerCharity = asyncHandler(async (req, res, next) => {
   // logger.info(req.file.path);
@@ -75,8 +75,8 @@ const authCharity = asyncHandler(async (req, res, next) => {
         email: charity.email,
         name: charity.name,
       },
-      { message: 'charity docs will be reviewed' }]
-    );
+      { message: 'charity docs will be reviewed' },
+    ]);
   } //isPending = false and isConfirmed= false
   else if (!charity.isConfirmed && !charity.isPending) {
     res.status(200).json([
@@ -85,8 +85,8 @@ const authCharity = asyncHandler(async (req, res, next) => {
         email: charity.email,
         name: charity.name,
       },
-      { message: 'you must upload docs to auth the charity' }]
-    );
+      { message: 'you must upload docs to auth the charity' },
+    ]);
     //isPending = false and isConfirmed= true
     //done
   } else if (charity.isConfirmed && !charity.isPending) {
@@ -209,6 +209,41 @@ const logout = asyncHandler((req, res, next) => {
     });
     res.status(200).json({ message: 'Loggedout Successfully!' });
 });
+
+
+const sendDocs = asyncHandler(async (req, res, next) => {
+  // console.log(req.body);
+  // console.log('fsdfsadf');
+  // Charity.schema.path('charityDocs').required(true)
+  // await Charity.schema.save()
+
+  const charity = await Charity.findById(req.charity._id);
+  // console.log(charity);
+  if (!charity) throw new NotFoundError('No charity found ');
+
+  if (
+    (charity.emailVerification.isVerified ||
+      charity.phoneVerification.isVerified) &&
+    !charity.isConfirmed &&
+    !charity.isPending
+  ) {
+    charity.charityDocs = { ...req.body.charityDocs };
+    // console.log({...req.body});
+    await charity.save();
+    res.json([charity.charityDocs, { message: 'sent successfully' }]);
+  } else if (
+    !charity.emailVerification.isVerified ||
+    !charity.phoneVerification.isVerified
+  ) {
+    throw new UnauthenticatedError('you must verify your account again');
+  } else if (charity.isConfirmed) {
+    throw new BadRequestError('you already has been confirmed');
+  } else if (charity.isPending) {
+    throw new BadRequestError('soon response... still reviewing docs');
+  } else {
+    throw new BadRequestError('error occured, try again later');
+  }
+});
 export {
     registerCharity,
     authCharity,
@@ -217,4 +252,5 @@ export {
     confirmResetPasswordRequest,
     changePassword,
     logout,
+  sendDocs,
 };
