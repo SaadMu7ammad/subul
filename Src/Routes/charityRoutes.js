@@ -31,8 +31,8 @@ router.post(
   '/',
   uploadCoverImage,
   resizeImg,
-  // charityRegisterValidation,
-  // validate,
+  charityRegisterValidation,
+  validate,
   registerCharity
 );
 router.post('/auth', loginValidation, validate, authCharity);
