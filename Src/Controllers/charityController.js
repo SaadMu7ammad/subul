@@ -228,9 +228,9 @@ const sendDocs = asyncHandler(async (req, res, next) => {
     !charity.isPending
   ) {
     charity.charityDocs = { ...req.body.charityDocs };
-    console.log({...req.body});
+    // console.log({...req.body});
     await charity.save();
-    res.json([req.body, { message: 'sent successfully' }]);
+    res.json([charity.charityDocs, { message: 'sent successfully' }]);
   } else if (
     !charity.emailVerification.isVerified ||
     !charity.phoneVerification.isVerified

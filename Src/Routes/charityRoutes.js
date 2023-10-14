@@ -31,8 +31,8 @@ router.post(
   '/',
   uploadCoverImage,
   resizeImg,
-  charityRegisterValidation,
-  validate,
+  // charityRegisterValidation,
+  // validate,
   registerCharity
 );
 router.post('/auth', loginValidation, validate, authCharity);
@@ -59,7 +59,7 @@ router.post(
   auth,
   changePassword
 );
-const upload = multer({ dest: 'uploads/docsCharities/' });
+// const upload = multer({ dest: 'uploads/docsCharities/' });
 router.post('/logout', logout);
 router.post(
   '/send-docs',
@@ -72,7 +72,6 @@ router.post(
   //   console.log(req.files);
   //   next();
   // },
-
   sendDocs
 );
 

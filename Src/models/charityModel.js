@@ -197,22 +197,10 @@ const charitySchema = new Schema(
       },
     },
     charityDocs: {
-      docs1: {
-        type: String,
-        required: false,
-      },
-      docs2: {
-        type: String,
-        required: false,
-      },
-      docs3: {
-        type: String,
-        required: false,
-      },
-      docs4: {
-        type: String,
-        required: false,
-      },
+      docs1: [String],
+      docs2: [String],
+      docs3: [String],
+      docs4: [String],
     },
   },
   { timestamps: true }
@@ -232,28 +220,69 @@ const editImgUrl = (doc) => {
     doc.image = urlImg;
   }
 };
+const editDocUrl = function (ref, field) {
+  ref[field].map((img,indx) => {
+    // console.log(img);//before adding localhost
+    const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${img}`;
+    img = url;
+    // console.log(img);//after adding localhost
+    ref[field][indx]=img
+  });
+};
 charitySchema.post('init', (doc) => {
-  //after initialized the doc in db
+  //after initialized the doc in db when a document is created or retrieved from the database.
   console.log('after init');
   // console.log('accessing data');
   if (!doc.isModified('image')) {
     console.log('NOTTT modifieddd');
-
-    // console.log(doc.image);
   } else {
     console.log('modifieddd');
-    // console.log(doc.image);
     editImgUrl(doc);
-    // console.log(doc.image);
   }
+  // if (
+  //   !doc.isModified('charityDocs[docs1]') &&
+  //   !doc.isModified('charityDocs[docs2]') &&
+  //   !doc.isModified('charityDocs[docs3]') &&
+  //   !doc.isModified('charityDocs[docs4]')
+  // ) {
+  //   console.log('NOTTT modifieddd docs');
+  //   console.log(doc.charityDocs.docs1);
+  //   // console.log(doc.image);
+  // } else {
+  //   console.log('modifieddd docs');
+  //   // console.log(doc.image);
+  //   editImgUrl(doc);
+  //   // console.log(doc.image);
+  // }
 });
 charitySchema.post('save', (doc) => {
-  //after save the doc in db
-  console.log('after first time we create the data');
-  // console.log(doc.image);
+  // after a new document is created and saved for the first time or when an existing document is updated and saved.  // console.log('after first time we create the data');
+  console.log('after created');
   editImgUrl(doc);
-  // console.log(doc.image);
+  if (
+    !doc.charityDocs.docs1 &&
+    !doc.charityDocs.docs2 &&
+    !doc.charityDocs.docs3 &&
+    !doc.charityDocs.docs4
+  ) {
+    // console.log(doc.charityDocs);
+    console.log('docs is empty');
+  } else {
+    editDocUrl(doc.charityDocs, 'docs1');
+    editDocUrl(doc.charityDocs, 'docs2');
+    editDocUrl(doc.charityDocs, 'docs3');
+    editDocUrl(doc.charityDocs, 'docs4');
+  }
 });
+
+// charitySchema.pre('save', function (next) {
+//   editDocUrl(this.charityDocs, 'docs1', 1);
+//   editDocUrl(this.charityDocs, 'docs2', 2);
+//   editDocUrl(this.charityDocs, 'docs3', 3);
+//   editDocUrl(this.charityDocs, 'docs4', 4);
+//   next(); // Continue with the save operation
+// });
+
 charitySchema.methods.comparePassword = async function (enteredPassword) {
   const isMatch = await bcrypt.compare(enteredPassword, this.password);
   return isMatch;
