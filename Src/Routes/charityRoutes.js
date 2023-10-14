@@ -11,6 +11,8 @@ import {
   changePassword,
   logout,
   sendDocs,
+  showCharityProfile,
+  editCharityProfile
 } from '../Controllers/charityController.js';
 import { resizeImg, uploadCoverImage } from '../middlewares/imageMiddleware.js';
 // import logger from '../utils/logger.js';
@@ -58,6 +60,16 @@ router.post(
   validate,
   auth,
   changePassword
+);
+router.get(
+  '/profile',
+  auth,
+  showCharityProfile,
+);
+router.put(
+  '/edit-profile',
+  auth,
+  editCharityProfile,
 );
 // const upload = multer({ dest: 'uploads/docsCharities/' });
 router.post('/logout', logout);
