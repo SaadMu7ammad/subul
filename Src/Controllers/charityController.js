@@ -184,32 +184,68 @@ const confirmResetPasswordRequest = asyncHandler(async (req, res, next) => {
 });
 
 const changePassword = asyncHandler(async (req, res, next) => {
-    const { password } = req.body;
-    const charity = await Charity.findById(req.charity._id);
-    charity.password = password;
-    console.log(charity instanceof Charity);
-    await charity.save();
-    await setupMailSender(
-        req,
-        'password changed alert',
-        '<h3>contact us if you did not changed the password</h3>' +
-            `<h3>go to link(www.dummy.com) to freeze your account</h3>`
-    );
+  const { password } = req.body;
+  const charity = await Charity.findById(req.charity._id);
+  charity.password = password;
+  console.log(charity instanceof Charity);
+  await charity.save();
+  await setupMailSender(
+    req,
+    'password changed alert',
+    '<h3>contact us if you did not changed the password</h3>' +
+      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+  );
 
-    res.status(201).json({ message: 'Charity password changed successfully' });
+  res.status(201).json({ message: 'Charity password changed successfully' });
 });
+const showCharityProfile = asyncHandler(async (req, res, next) => {
+  const charity = await Charity.findById(req.charity._id);
+  if (!charity) throw new NotFoundError('charity not found');
 
+  res.status(201).json({
+    _id: charity._id,
+    name: charity.name,
+    email: charity.email,
+    message: 'charity Data retrieved Successfully',
+  });
+});
+const editCharityProfile = asyncHandler(async (req, res, next) => {
+  let charity = await Charity.findById(req.charity._id);
+  if (!charity) throw new NotFoundError('charity not found');
+  console.log(req.body);
+  // charity={...charity,...req.body}
+  for (const [key, valueObj] of Object.entries(req.body)) {
+    console.log('---');
+    console.log(key);
+    console.log(valueObj);
+    if (typeof valueObj === 'object') {
+      for (const [subKey, val] of Object.entries(valueObj)) {
+        console.log(subKey);
+        console.log(val);
+        charity[key][subKey] = val;
+      }
+    } else {
+      // If the value is not an object, assign it directly
+      charity[key] = valueObj;
+    }
+  }
+  await charity.save();
+  res.status(201).json({
+    _id: charity._id,
+    name: charity.name,
+    email: charity.email,
+    message: 'charity Data Changed Successfully',
+  });
+});
 const logout = asyncHandler((req, res, next) => {
-    if (!req.cookies.jwt)
-        throw new UnauthenticatedError('you are not logged in');
+  if (!req.cookies.jwt) throw new UnauthenticatedError('you are not logged in');
 
-    res.cookie('jwt', '', {
-        expires: new Date(0),
-        httpOnly: true,
-    });
-    res.status(200).json({ message: 'Loggedout Successfully!' });
+  res.cookie('jwt', '', {
+    expires: new Date(0),
+    httpOnly: true,
+  });
+  res.status(200).json({ message: 'Loggedout Successfully!' });
 });
-
 
 const sendDocs = asyncHandler(async (req, res, next) => {
   // console.log(req.body);
@@ -245,12 +281,14 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   }
 });
 export {
-    registerCharity,
-    authCharity,
-    activateCharityAccount,
-    requestResetPassword,
-    confirmResetPasswordRequest,
-    changePassword,
-    logout,
+  registerCharity,
+  authCharity,
+  activateCharityAccount,
+  requestResetPassword,
+  confirmResetPasswordRequest,
+  changePassword,
+  logout,
   sendDocs,
+  editCharityProfile,
+  showCharityProfile,
 };
