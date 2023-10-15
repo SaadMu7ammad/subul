@@ -10,6 +10,7 @@ import {
     changePassword,
     activateAccount,
     editUserProfile,
+    getUserProfileData,
 } from '../Controllers/userController.js';
 import { validate } from '../middlewares/validatorMiddleware.js';
 import { auth } from '../middlewares/authMiddleware.js';
@@ -40,6 +41,7 @@ router.put(
     changePassword
 );
 router.post('/activate', auth, activateAccount);
+router.get('/profile', auth, getUserProfileData);
 router.post(
     '/profile/edit',
     (req, res, next) => {
