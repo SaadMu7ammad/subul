@@ -12,7 +12,7 @@ import {
   logout,
   sendDocs,
   showCharityProfile,
-  editCharityProfile
+  editCharityProfile,
 } from '../Controllers/charityController.js';
 import { resizeImg, uploadCoverImage } from '../middlewares/imageMiddleware.js';
 // import logger from '../utils/logger.js';
@@ -27,6 +27,7 @@ import confirmResetValidation from '../utils/validatorComponents/confirmResetVal
 import { charityRegisterValidation } from '../utils/validatorComponents/charityRegisterValidation.js';
 import multer from 'multer';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
+import charityUpdateProfileValidation from '../utils/validatorComponents/charity/editProfileValidation.js';
 const router = express.Router();
 
 router.post(
@@ -61,15 +62,13 @@ router.post(
   auth,
   changePassword
 );
-router.get(
-  '/profile',
-  auth,
-  showCharityProfile,
-);
+router.get('/profile', auth, showCharityProfile);
 router.put(
   '/edit-profile',
   auth,
-  editCharityProfile,
+  charityUpdateProfileValidation,
+  validate,
+  editCharityProfile
 );
 // const upload = multer({ dest: 'uploads/docsCharities/' });
 router.post('/logout', logout);

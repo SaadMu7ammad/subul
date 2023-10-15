@@ -214,14 +214,21 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
   if (!charity) throw new NotFoundError('charity not found');
   console.log(req.body);
   // charity={...charity,...req.body}
+
   for (const [key, valueObj] of Object.entries(req.body)) {
     console.log('---');
     console.log(key);
     console.log(valueObj);
-    for (const [subKey, val] of Object.entries(valueObj)) {
-      console.log(subKey);
-      console.log(val);
-      charity[key][subKey] = val;
+  
+    if (typeof valueObj === 'object') {
+      for (const [subKey, val] of Object.entries(valueObj)) {
+        console.log(subKey);
+        console.log(val);
+        charity[key][subKey] = val;
+      }
+    } else {
+      // If the value is not an object, assign it directly
+      charity[key] = valueObj;
     }
   }
   await charity.save();
