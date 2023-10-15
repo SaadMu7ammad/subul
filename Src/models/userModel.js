@@ -46,7 +46,7 @@ const locationSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-});
+},{_id:false});
 
 const userSchema = new mongoose.Schema(
     {
