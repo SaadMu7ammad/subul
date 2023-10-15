@@ -9,6 +9,7 @@ import generateToken from '../utils/generateToken.js';
 import { User } from '../models/userModel.js';
 import { generateResetTokenTemp, setupMailSender } from '../utils/mailer.js';
 import logger from '../utils/logger.js';
+import dot  from 'dot-object';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -200,12 +201,18 @@ const logoutUser = asyncHandler(async (req, res, next) => {
 });
 
 const editUserProfile = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.user._id);
+    const updateUserArgs = dot.dot(req.body);
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                ...updateUserArgs,
+            },
+        },
+        { new: true },
+    );
     if (!user) throw new NotFoundError('User not found');
-    for (const [key, value] of Object.entries(req.body)) {
-        user[key] = value;
-    }
-    await user.save();
+
     res.status(201).json({
         _id: user._id,
         name: user.name,
@@ -215,8 +222,10 @@ const editUserProfile = asyncHandler(async (req, res, next) => {
 });
 
 const getUserProfileData = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user._id).select('-password -verificationCode');
-  if (!user) throw new NotFoundError('User not found');
+    const user = await User.findById(req.user._id).select(
+        '-password -verificationCode'
+    );
+    if (!user) throw new NotFoundError('User not found');
     res.status(201).json(user);
 });
 
@@ -229,5 +238,5 @@ export {
     changePassword,
     activateAccount,
     editUserProfile,
-    getUserProfileData
+    getUserProfileData,
 };
