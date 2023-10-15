@@ -199,13 +199,12 @@ const changePassword = asyncHandler(async (req, res, next) => {
   res.status(201).json({ message: 'Charity password changed successfully' });
 });
 const showCharityProfile = asyncHandler(async (req, res, next) => {
-  const charity = await Charity.findById(req.charity._id);
+  const charity = await Charity.findById(req.charity._id).select(
+    '-_id -password -verificationCode -emailVerification -phoneVerification -isEnabled -isConfirmed -isPending'
+  );
   if (!charity) throw new NotFoundError('charity not found');
-
   res.status(201).json({
-    _id: charity._id,
-    name: charity.name,
-    email: charity.email,
+    charity,
     message: 'charity Data retrieved Successfully',
   });
 });
