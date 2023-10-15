@@ -25,6 +25,7 @@
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "crypto": "^1.0.1",
+    "dot-object": "^2.1.4",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",

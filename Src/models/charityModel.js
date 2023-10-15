@@ -15,7 +15,7 @@ const locationSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-});
+},{_id:false});
 
 const paymentMethodSchema = new Schema({
   bankAccount: [
@@ -50,7 +50,7 @@ const paymentMethodSchema = new Schema({
       },
     },
   ],
-});
+},{_id:false});
 paymentMethodSchema.path('bankAccount').validate(function (value) {
   return value.length > 0;
 }, 'At least one bank account must be provided.');
