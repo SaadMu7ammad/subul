@@ -10,6 +10,7 @@ import {
 } from './middlewares/errorHandlerMiddleware.js';
 import userRoutes from './Routes/userRoutes.js';
 import charityRoutes from './Routes/charityRoutes.js';
+import casesRoutes from './Routes/casesRoutes.js';
 import adminRoutes from './Routes/adminRoutes.js';
 import logger from './utils/logger.js';
 // const imageUrl = req.file.path.replace("\\" ,"/");
@@ -29,7 +30,7 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 
 app.use(cookieParser());
 app.use('/api/users', userRoutes);
-app.use('/api/charities',charityRoutes);
+app.use('/api/charities',charityRoutes,casesRoutes);
 app.use('/api/admin',adminRoutes);
 app.get('/', (req, res) => {
   res.send('subul charity');
