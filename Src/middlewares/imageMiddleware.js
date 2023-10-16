@@ -17,6 +17,7 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import logger from '../utils/logger.js';
+import { BadRequestError } from '../errors/bad-request.js';
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
     //accepts imgs only
@@ -27,6 +28,7 @@ const multerFilter = (req, file, cb) => {
 };
 const resizeImg = asyncHandler(async (req, res, next) => {
   // const ex = file.mimetype.split('/')[1];
+  if(!req.file)throw new BadRequestError('no cover/logo image uploaded')
   const uniqueSuffix = 'LogoCharity' + uuidv4() + '-' + Date.now();
   const filename = uniqueSuffix + '.jpeg';
   await sharp(req.file.buffer)
