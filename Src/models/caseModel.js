@@ -1,46 +1,49 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-const locationSchema = new mongoose.Schema({
-  governorate: {
-    type: String,
-    enum: [
-      'Alexandria',
-      'Assiut',
-      'Aswan',
-      'Beheira',
-      'Bani Suef',
-      'Cairo',
-      'Daqahliya',
-      'Damietta',
-      'Fayyoum',
-      'Gharbiya',
-      'Giza',
-      'Helwan',
-      'Ismailia',
-      'Kafr El Sheikh',
-      'Luxor',
-      'Marsa Matrouh',
-      'Minya',
-      'Monofiya',
-      'New Valley',
-      'North Sinai',
-      'Port Said',
-      'Qalioubiya',
-      'Qena',
-      'Red Sea',
-      'Sharqiya',
-      'Sohag',
-      'South Sinai',
-      'Suez',
-      'Tanta',
-    ],
-    required: true,
+const locationSchema = new mongoose.Schema(
+  {
+    governorate: {
+      type: String,
+      enum: [
+        'Alexandria',
+        'Assiut',
+        'Aswan',
+        'Beheira',
+        'Bani Suef',
+        'Cairo',
+        'Daqahliya',
+        'Damietta',
+        'Fayyoum',
+        'Gharbiya',
+        'Giza',
+        'Helwan',
+        'Ismailia',
+        'Kafr El Sheikh',
+        'Luxor',
+        'Marsa Matrouh',
+        'Minya',
+        'Monofiya',
+        'New Valley',
+        'North Sinai',
+        'Port Said',
+        'Qalioubiya',
+        'Qena',
+        'Red Sea',
+        'Sharqiya',
+        'Sohag',
+        'South Sinai',
+        'Suez',
+        'Tanta',
+      ],
+      required: true,
+    },
+    city: {
+      type: String,
+      required: false,
+    },
   },
-  city: {
-    type: String,
-    required: false,
-  },
-},{_id:false});
+  { _id: false }
+);
 const caseSchema = new mongoose.Schema(
   {
     chariyName: {
@@ -55,9 +58,8 @@ const caseSchema = new mongoose.Schema(
       type: String,
       required: [true, 'description must provided'],
     },
-    Maintype: {
+    MainType: {
       type: String,
-      required: [true, 'Maintype for that case must provided'],
       enum: [
         'Sadaqa',
         'Zakah',
@@ -67,6 +69,7 @@ const caseSchema = new mongoose.Schema(
         'Campains',
         'UsedProperties',
       ],
+      required:  [true, 'Maintype for that case must provided'],
     },
     imageCover: {
       type: String,
@@ -144,7 +147,6 @@ const caseSchema = new mongoose.Schema(
     helpedNumbers: {
       type: Number,
       required: [true, 'must helpedNumbers provided'],
-      //   default: 0,
     },
     freezed: {
       //for admin decisions
@@ -158,7 +160,8 @@ const caseSchema = new mongoose.Schema(
     },
     currentDonationAmount: {
       type: Number,
-      required: [true, 'must currentDonationAmount provided'],
+      required: false,
+      default:0
     },
     //last time donated from timestamps
   },
@@ -169,4 +172,4 @@ const caseSchema = new mongoose.Schema(
 // });
 
 const Case = mongoose.model('Cases', caseSchema);
-export { Case };
+export default Case;
