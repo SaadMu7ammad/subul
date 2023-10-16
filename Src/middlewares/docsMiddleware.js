@@ -17,6 +17,7 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import logger from '../utils/logger.js';
+import { BadRequestError } from '../errors/bad-request.js';
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
     //accepts imgs only
@@ -25,32 +26,30 @@ const multerFilter = (req, file, cb) => {
     cb(new BadRequestError('invalid type,Only images allowed'));
   }
 };
-async function processDocs(docsKey,ref, req) {
-  
+async function processDocs(docsKey, ref, req) {
   return Promise.all(
     ref.map(async (obj, indx) => {
       const ex = obj.mimetype.split('/')[1];
       const uniquePrefix = uuidv4();
-      const filename =
-        `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
+      const filename = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
 
       await sharp(obj.buffer)
         .resize(320, 240)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
         .toFile(`./uploads/docsCharities/` + filename);
-        if(docsKey==='docs1') req.body.charityDocs.docs1.push(filename);
-        if(docsKey==='docs2') req.body.charityDocs.docs2.push(filename);
-        if(docsKey==='docs3') req.body.charityDocs.docs3.push(filename);
-        if(docsKey==='docs4') req.body.charityDocs.docs4.push(filename);
+      if (docsKey === 'docs1') req.body.charityDocs.docs1.push(filename);
+      if (docsKey === 'docs2') req.body.charityDocs.docs2.push(filename);
+      if (docsKey === 'docs3') req.body.charityDocs.docs3.push(filename);
+      if (docsKey === 'docs4') req.body.charityDocs.docs4.push(filename);
 
       // body.charityDocs = { ...body.charityDocs, [docsKey]: filename };
     })
-  )//.then(() => next());
+  ); //.then(() => next());
 }
 // req.files['charityDocs[docs1]'].map((obj, indx)
 const resizeDoc = asyncHandler(async (req, res, next) => {
-  req.body.charityDocs={}
+  req.body.charityDocs = {};
   // await Promise.all(
   //   req.files['charityDocs[docs1]'].map(async (obj, indx) => {
   //     const ex = obj.mimetype.split('/')[1];
@@ -84,17 +83,26 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
   //   })
   // );
 
-
-
   // console.log(typeof(req.files));//obj
   // req.files['charityDocs[docs1]'].map((obj, indx) => {
   //   console.log(obj.buffer);
   // });
-  req.body.charityDocs={}
-  req.body.charityDocs.docs1=[]
-  req.body.charityDocs.docs2=[]
-  req.body.charityDocs.docs3=[]
-  req.body.charityDocs.docs4=[]
+  req.body.charityDocs = {};
+  req.body.charityDocs.docs1 = [];
+  req.body.charityDocs.docs2 = [];
+  req.body.charityDocs.docs3 = [];
+  req.body.charityDocs.docs4 = [];
+  if (!req.files) {
+    throw new BadRequestError('docs are required');
+  }
+  if (//if not upload docs
+    !req.files['charityDocs[docs1]'] ||
+    !req.files['charityDocs[docs2]'] ||
+    !req.files['charityDocs[docs3]'] ||
+    !req.files['charityDocs[docs4]']
+  ) {
+    throw new BadRequestError('docs are required');
+  }
   await processDocs('docs1', req.files['charityDocs[docs1]'], req);
   await processDocs('docs2', req.files['charityDocs[docs2]'], req);
   await processDocs('docs3', req.files['charityDocs[docs3]'], req);

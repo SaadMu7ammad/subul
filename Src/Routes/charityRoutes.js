@@ -11,19 +11,21 @@ import {
   changePassword,
   logout,
   sendDocs,
+  showCharityProfile,
+  editCharityProfile,
 } from '../Controllers/charityController.js';
 import { resizeImg, uploadCoverImage } from '../middlewares/imageMiddleware.js';
 // import logger from '../utils/logger.js';
 import changePasswordValidation from '../utils/validatorComponents/changePasswordValidation.js';
-import { validate } from '../middlewares/validatorMiddleware.js';
-import {
-  emailValidation,
-  tokenValidation,
-} from '../utils/validatorComponents/validatorComponents.js';
-import loginValidation from '../utils/validatorComponents/loginValidation.js';
 import confirmResetValidation from '../utils/validatorComponents/confirmResetValidation.js';
-import { charityRegisterValidation } from '../utils/validatorComponents/charityRegisterValidation.js';
-import multer from 'multer';
+import { validate } from '../middlewares/validatorMiddleware.js';
+import loginValidation from '../utils/validatorComponents/loginValidation.js';
+import { charityRegisterValidation } from '../utils/validatorComponents/charity/charityRegisterValidation.js';
+import {
+  tokenValidation,
+  emailValidation,
+} from '../utils/validatorComponents/charity/allCharityValidation.js';
+import editProfileValidation from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
 const router = express.Router();
 
@@ -61,6 +63,14 @@ router.post(
 );
 // const upload = multer({ dest: 'uploads/docsCharities/' });
 router.post('/logout', logout);
+router.get('/profile', auth, showCharityProfile);
+router.put(
+  '/edit-profile',
+  editProfileValidation,
+  validate,
+  auth,
+  editCharityProfile
+);
 router.post(
   '/send-docs',
   auth,

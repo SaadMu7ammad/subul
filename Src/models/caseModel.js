@@ -40,7 +40,7 @@ const locationSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-});
+},{_id:false});
 const caseSchema = new mongoose.Schema(
   {
     chariyName: {
@@ -125,12 +125,12 @@ const caseSchema = new mongoose.Schema(
       required: false,
       default: 0,
     },
-    status: {
-      //still open or not
-      type: Boolean,
-      required: false,
-      default: true,
-    },
+    // status: {
+    //   //still open or not
+    //   type: Boolean,
+    //   required: false,
+    //   default: true,
+    // },
     dateFinished: {
       type: Date,
       required: false,

@@ -2,6 +2,7 @@ import Charity from '../models/charityModel.js';
 import generateToken from '../utils/generateToken.js';
 import asyncHandler from 'express-async-handler';
 import { setupMailSender, generateResetTokenTemp } from '../utils/mailer.js';
+import dot  from 'dot-object';
 
 import {
   BadRequestError,
@@ -184,32 +185,62 @@ const confirmResetPasswordRequest = asyncHandler(async (req, res, next) => {
 });
 
 const changePassword = asyncHandler(async (req, res, next) => {
-    const { password } = req.body;
-    const charity = await Charity.findById(req.charity._id);
-    charity.password = password;
-    console.log(charity instanceof Charity);
-    await charity.save();
-    await setupMailSender(
-        req,
-        'password changed alert',
-        '<h3>contact us if you did not changed the password</h3>' +
-            `<h3>go to link(www.dummy.com) to freeze your account</h3>`
-    );
+  const { password } = req.body;
+  const charity = await Charity.findById(req.charity._id);
+  charity.password = password;
+  console.log(charity instanceof Charity);
+  await charity.save();
+  await setupMailSender(
+    req,
+    'password changed alert',
+    '<h3>contact us if you did not changed the password</h3>' +
+      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+  );
 
-    res.status(201).json({ message: 'Charity password changed successfully' });
+  res.status(201).json({ message: 'Charity password changed successfully' });
 });
-
+const showCharityProfile = asyncHandler(async (req, res, next) => {
+  const charity = await Charity.findById(req.charity._id).select(
+    '-_id -password -verificationCode -emailVerification -phoneVerification -isEnabled -isConfirmed -isPending'
+  );
+  if (!charity) throw new NotFoundError('charity not found');
+  res.status(201).json({
+    charity,
+    message: 'charity Data retrieved Successfully',
+  });
+});
+const editCharityProfile = asyncHandler(async (req, res, next) => {
+  const updateCharityArgs = dot.dot(req.body);
+  console.log(updateCharityArgs);
+  console.log(req.body);
+  // console.log(...updateCharityArgs);
+  const charity = await Charity.findByIdAndUpdate(
+    req.charity._id,
+    {
+        $set: {
+            ...updateCharityArgs,
+        },
+    },
+    { new: true } // return the updated document after the changes have been applied.
+   
+);
+  if (!charity) throw new NotFoundError('charity not found');
+  res.status(201).json({
+    _id: charity._id,
+    name: charity.name,
+    email: charity.email,
+    message: 'charity Data Changed Successfully',
+  });
+});
 const logout = asyncHandler((req, res, next) => {
-    if (!req.cookies.jwt)
-        throw new UnauthenticatedError('you are not logged in');
+  if (!req.cookies.jwt) throw new UnauthenticatedError('you are not logged in');
 
-    res.cookie('jwt', '', {
-        expires: new Date(0),
-        httpOnly: true,
-    });
-    res.status(200).json({ message: 'Loggedout Successfully!' });
+  res.cookie('jwt', '', {
+    expires: new Date(0),
+    httpOnly: true,
+  });
+  res.status(200).json({ message: 'Loggedout Successfully!' });
 });
-
 
 const sendDocs = asyncHandler(async (req, res, next) => {
   // console.log(req.body);
@@ -229,6 +260,7 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   ) {
     charity.charityDocs = { ...req.body.charityDocs };
     // console.log({...req.body});
+    charity.isPending = true;
     await charity.save();
     res.json([charity.charityDocs, { message: 'sent successfully' }]);
   } else if (
@@ -245,12 +277,14 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   }
 });
 export {
-    registerCharity,
-    authCharity,
-    activateCharityAccount,
-    requestResetPassword,
-    confirmResetPasswordRequest,
-    changePassword,
-    logout,
+  registerCharity,
+  authCharity,
+  activateCharityAccount,
+  requestResetPassword,
+  confirmResetPasswordRequest,
+  changePassword,
+  logout,
   sendDocs,
+  editCharityProfile,
+  showCharityProfile,
 };
