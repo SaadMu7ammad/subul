@@ -264,6 +264,7 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   ) {
     charity.charityDocs = { ...req.body.charityDocs };
     // console.log({...req.body});
+    charity.isPending = true;
     await charity.save();
     res.json([charity.charityDocs, { message: 'sent successfully' }]);
   } else if (
