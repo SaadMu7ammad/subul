@@ -40,7 +40,7 @@ const locationSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-});
+},{_id:false});
 const caseSchema = new mongoose.Schema(
   {
     chariyName: {
