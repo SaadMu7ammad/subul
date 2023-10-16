@@ -2,6 +2,7 @@ import Charity from '../models/charityModel.js';
 import generateToken from '../utils/generateToken.js';
 import asyncHandler from 'express-async-handler';
 import { setupMailSender, generateResetTokenTemp } from '../utils/mailer.js';
+import dot  from 'dot-object';
 
 import {
   BadRequestError,
@@ -209,26 +210,21 @@ const showCharityProfile = asyncHandler(async (req, res, next) => {
   });
 });
 const editCharityProfile = asyncHandler(async (req, res, next) => {
-  let charity = await Charity.findById(req.charity._id);
-  if (!charity) throw new NotFoundError('charity not found');
+  const updateCharityArgs = dot.dot(req.body);
+  console.log(updateCharityArgs);
   console.log(req.body);
-  // charity={...charity,...req.body}
-  for (const [key, valueObj] of Object.entries(req.body)) {
-    console.log('---');
-    console.log(key);
-    console.log(valueObj);
-    if (typeof valueObj === 'object') {
-      for (const [subKey, val] of Object.entries(valueObj)) {
-        console.log(subKey);
-        console.log(val);
-        charity[key][subKey] = val;
-      }
-    } else {
-      // If the value is not an object, assign it directly
-      charity[key] = valueObj;
-    }
-  }
-  await charity.save();
+  // console.log(...updateCharityArgs);
+  const charity = await Charity.findByIdAndUpdate(
+    req.charity._id,
+    {
+        $set: {
+            ...updateCharityArgs,
+        },
+    },
+    { new: true } // return the updated document after the changes have been applied.
+   
+);
+  if (!charity) throw new NotFoundError('charity not found');
   res.status(201).json({
     _id: charity._id,
     name: charity.name,
