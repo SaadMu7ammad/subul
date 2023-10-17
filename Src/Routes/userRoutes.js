@@ -42,7 +42,7 @@ router.put(
 );
 router.post('/activate', auth, activateAccount);
 router.get('/profile', auth, getUserProfileData);
-router.post(
+router.put(
     '/profile/edit',
     (req, res, next) => {
         editUserProfileValidators = editUserProfileValidation(req, res, next);

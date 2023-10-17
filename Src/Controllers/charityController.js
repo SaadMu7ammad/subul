@@ -210,10 +210,13 @@ const showCharityProfile = asyncHandler(async (req, res, next) => {
   });
 });
 const editCharityProfile = asyncHandler(async (req, res, next) => {
+  if(req.body.email){
+    const alreadyRegisteredEmail = await Charity.findOne({email: req.body.email});
+    if(alreadyRegisteredEmail){
+        throw new BadRequestError('Email is already taken!');
+    }
+}
   const updateCharityArgs = dot.dot(req.body);
-  console.log(updateCharityArgs);
-  console.log(req.body);
-  // console.log(...updateCharityArgs);
   const charity = await Charity.findByIdAndUpdate(
     req.charity._id,
     {
@@ -222,7 +225,6 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
         },
     },
     { new: true } // return the updated document after the changes have been applied.
-   
 );
   if (!charity) throw new NotFoundError('charity not found');
   res.status(201).json({
