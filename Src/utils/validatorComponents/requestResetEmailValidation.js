@@ -1,11 +1,8 @@
 import { body, validationResult } from 'express-validator';
+import {emailValidation} from './validatorComponents.js'
+
 const requestResetEmailValidation = [
-  body('email')
-    .trim()
-    .notEmpty()
-    .withMessage('email required')
-    .isEmail()
-    .withMessage('Invalid email to reset its password'),
+  emailValidation
 ];
 
 export default requestResetEmailValidation;
