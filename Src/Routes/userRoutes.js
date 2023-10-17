@@ -14,15 +14,12 @@ import {
 } from '../Controllers/userController.js';
 import { validate } from '../middlewares/validatorMiddleware.js';
 import { auth } from '../middlewares/authMiddleware.js';
-import registerValidation from '../utils/validatorComponents/registerValidation.js';
+import registerValidation from '../utils/validatorComponents/user/userRegisterValidation.js';
 import loginValidation from '../utils/validatorComponents/loginValidation.js';
 import resetValidationEmailToReset from '../utils/validatorComponents/requestResetEmailValidation.js';
 import resetValidationPassToConfirmReset from '../utils/validatorComponents/confirmResetValidation.js';
 import changePasswordValidation from '../utils/validatorComponents/changePasswordValidation.js';
-import editUserProfileValidation from '../utils/validatorComponents/editUserProfileValidation.js';
-
-let editUserProfileValidators = [];
-
+import editUserProfileValidation from '../utils/validatorComponents/user/editUserProfileValidation.js';
 router.post('/', registerValidation, validate, registerUser);
 router.post('/auth', loginValidation, validate, authUser);
 router.post('/logout', logoutUser);
@@ -42,13 +39,9 @@ router.put(
 );
 router.post('/activate', auth, activateAccount);
 router.get('/profile', auth, getUserProfileData);
-router.post(
+router.put(
     '/profile/edit',
-    (req, res, next) => {
-        editUserProfileValidators = editUserProfileValidation(req, res, next);
-        next();
-    },
-    editUserProfileValidators,
+    editUserProfileValidation,
     validate,
     auth,
     editUserProfile

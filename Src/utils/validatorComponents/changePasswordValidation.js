@@ -1,11 +1,7 @@
 import { body, validationResult } from 'express-validator';
+import {passwordValidation} from './validatorComponents.js'
+
 const changePasswordValidation = [
-  body('password')
-    .trim()
-    .notEmpty()
-    .withMessage('Password Required')
-    .isLength({ min: 6, max: 20 })
-    .withMessage('Password must be at least 6 characters long'),
-  
+  passwordValidation
 ];
 export default changePasswordValidation;
