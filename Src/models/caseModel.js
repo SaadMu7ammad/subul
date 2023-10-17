@@ -46,7 +46,7 @@ const locationSchema = new mongoose.Schema(
 );
 const caseSchema = new mongoose.Schema(
   {
-    chariyName: {
+    charityName: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Charity',
     },

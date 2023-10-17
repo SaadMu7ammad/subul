@@ -11,6 +11,7 @@ import {
   vodafoneCashValidation,
   contactValidation,
   charityInfoValidation,
+  phoneValidation,
 } from './allCharityValidation.js';
 
 const charityRegisterValidation = [
@@ -25,5 +26,6 @@ const charityRegisterValidation = [
   ...bankAccountValidation,
   vodafoneCashValidation,
   fawryValidation,
+  phoneValidation,
 ];
 export { charityRegisterValidation };
