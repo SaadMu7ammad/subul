@@ -201,6 +201,12 @@ const logoutUser = asyncHandler(async (req, res, next) => {
 });
 
 const editUserProfile = asyncHandler(async (req, res, next) => {
+    if(req.body.email){
+        const alreadyRegisteredEmail = await User.findOne({email: req.body.email});
+        if(alreadyRegisteredEmail){
+            throw new BadRequestError('Email is already taken!');
+        }
+    }
     const updateUserArgs = dot.dot(req.body);
     const user = await User.findByIdAndUpdate(
         req.user._id,
