@@ -66,6 +66,8 @@ router.post('/logout', logout);
 router.get('/profile', auth, showCharityProfile);
 router.put(
   '/edit-profile',
+  uploadCoverImage,
+  resizeImg,
   editProfileValidation,
   validate,
   auth,

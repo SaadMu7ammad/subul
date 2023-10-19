@@ -1,3 +1,6 @@
+import fs from 'fs'
+import path from 'path';
+
 import Charity from '../models/charityModel.js';
 import generateToken from '../utils/generateToken.js';
 import asyncHandler from 'express-async-handler';
@@ -256,7 +259,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
   let charity = await Charity.findById(req.charity._id);
   console.log(req.body);
 
-  const { location, currency } = req.body; // location: [ { governorate: 'Helwan' },{},.. ]
+  const { location, currency, image } = req.body; 
   // if (currency) throw new BadRequestError('cant change currency at this time');
   if (location) {
     //for editing location only
@@ -315,8 +318,17 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
   //     charity[key] = valueObj;
   //   }
   // }
+  console.log(req.charity.image);//old image profile
+  const oldImagePath = path.join('./uploads/LogoCharities', req.charity.image);
+  if (fs.existsSync(oldImagePath)) {
+    // Delete the file
+    fs.unlinkSync(oldImagePath);
+    console.log('Old image deleted successfully.');
+  } else {
+    console.log('Old image does not exist.');
+  }
+  console.log(image);//new img profile
   const updateCharityArgs = dot.dot(req.body);
-  // console.log(updateCharityArgs);
   charity = await Charity.findByIdAndUpdate(
     req.charity._id,
     {
@@ -331,6 +343,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
     _id: charity._id,
     name: charity.name,
     email: charity.email,
+    image:charity.image,
     message: 'charity Data Changed Successfully',
   });
 });
