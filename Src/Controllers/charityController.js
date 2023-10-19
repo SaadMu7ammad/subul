@@ -2,7 +2,7 @@ import Charity from '../models/charityModel.js';
 import generateToken from '../utils/generateToken.js';
 import asyncHandler from 'express-async-handler';
 import { setupMailSender, generateResetTokenTemp } from '../utils/mailer.js';
-import dot  from 'dot-object';
+import dot from 'dot-object';
 
 import {
   BadRequestError,
@@ -209,24 +209,124 @@ const showCharityProfile = asyncHandler(async (req, res, next) => {
     message: 'charity Data retrieved Successfully',
   });
 });
-const editCharityProfile = asyncHandler(async (req, res, next) => {
-  if(req.body.email){
-    const alreadyRegisteredEmail = await Charity.findOne({email: req.body.email});
-    if(alreadyRegisteredEmail){
-        throw new BadRequestError('Email is already taken!');
+
+const editCharityProfileAdresses = asyncHandler(
+  async (req, res, next, indx) => {
+    const tempLocation = {}; // Create a tempLocation object
+    const { governorate, city, street } = { ...req.body.location[0] };
+    if (indx !== -1) {
+      console.log(req.body.location[0]);
+      if (governorate) {
+        // req.charity.location[indx].governorate = governorate;
+        tempLocation.governorate = governorate;
+      }
+      console.log(city === ''); //true
+      console.log(city === true); //false
+      if (city) {
+        // req.charity.location[indx].city = city;
+        tempLocation.city = city;
+      }
+      if (street) {
+        // req.charity.location[indx].street = street;
+        tempLocation.street = street;
+      }
+      req.charity.location[indx] = tempLocation; //assign the object
+      await req.charity.save();
+      return res.json(req.charity.location[indx]);
+    } else if (indx === -1 && (governorate || city || street)) {
+      //add a new address
+
+      if (governorate) {
+        tempLocation.governorate = governorate;
+      }
+      if (city) {
+        tempLocation.city = city;
+      }
+      if (street) {
+        tempLocation.street = street;
+      }
+      req.charity.location.push(tempLocation); // Push the tempLocation object into the array
+      await req.charity.save(); // Save the charity document
+      const len = req.charity.location.length - 1;
+      return res.json(req.charity.location[len]);
     }
-}
+  }
+);
+const editCharityProfile = asyncHandler(async (req, res, next) => {
+  let charity = await Charity.findById(req.charity._id);
+  console.log(req.body);
+
+  const { location, currency } = req.body; // location: [ { governorate: 'Helwan' },{},.. ]
+  // if (currency) throw new BadRequestError('cant change currency at this time');
+  if (location) {
+    //for editing location only
+    let indx = req.charity.location.findIndex(
+      (location) => location._id.toString() === req.body.location_id
+    );
+    return await editCharityProfileAdresses(req, res, next, indx);
+  }
+  if (currency) {
+    console.log(currency[0]);
+    let indx = req.charity.currency.find((it) => {
+      console.log(it);
+      if (it === currency[0]) {
+        return res.json({ message: 'currency is exist' });
+      }
+    });
+    req.charity.currency.push(currency[0]);
+    await req.charity.save();
+    const len = req.charity.currency.length - 1;
+    return res.json(req.charity.currency[len]);
+  }
+
+  if (!charity) throw new NotFoundError('charity not found');
+  for (const [key, valueObj] of Object.entries(req.body)) {
+    if (key === 'paymentMethods' || key.split('.')[0] === 'paymentMethods')
+      throw new BadRequestError(
+        'Cant edit it,You must request to Change payment account or Add a new one'
+      );
+    if (key === 'charityDocs' || key.split('.')[0] === 'charityDocs')
+      throw new BadRequestError('Cant edit it,You must contact us');
+  }
+  // for (const [key, valueObj] of Object.entries(req.body)) {
+
+  //   if (key === 'paymentMethods'|| key.split('.')[0]==='paymentMethods')
+  //     throw new BadRequestError(
+  //       'Cant edit it,You must request to Change payment account or Add a new one'
+  //     );
+  //   console.log('--');
+  //   console.log(key);
+  //   console.log(valueObj);
+  //   if (typeof valueObj === 'object') {
+  //     for (const [subKey, val] of Object.entries(valueObj)) {
+  //       if (!isNaN(subKey)) {
+  //         console.log('arr of objects'); //for location
+  //         charity[key][subKey] = { val };
+  //       } else {
+  //         console.log('an obj');
+  //       }
+
+  //       // console.log(typeof subKey);
+  //       console.log(val);
+  //       charity[key][subKey] = val;
+  //     }
+  //   } else {
+  //     // If the value is not an object, assign it directly
+  //     charity[key] = valueObj;
+  //   }
+  // }
   const updateCharityArgs = dot.dot(req.body);
-  const charity = await Charity.findByIdAndUpdate(
+  // console.log(updateCharityArgs);
+  charity = await Charity.findByIdAndUpdate(
     req.charity._id,
     {
-        $set: {
-            ...updateCharityArgs,
-        },
+      $set: {
+        ...updateCharityArgs,
+      },
     },
     { new: true } // return the updated document after the changes have been applied.
-);
-  if (!charity) throw new NotFoundError('charity not found');
+  );
+  await charity.save();
   res.status(201).json({
     _id: charity._id,
     name: charity.name,
