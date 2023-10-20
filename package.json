@@ -23,6 +23,7 @@
   "homepage": "https://github.com/SaadMu7ammad/subul#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "crypto": "^1.0.1",
     "dot-object": "^2.1.4",

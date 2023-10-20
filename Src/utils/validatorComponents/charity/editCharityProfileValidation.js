@@ -12,6 +12,7 @@ import {
   phoneValidation,
   vodafoneCashValidation,
 } from './allCharityValidation.js';
+import { charityRegisterValidation } from './charityRegisterValidation.js';
 
 const _contactValidation = contactValidation.map((validator) =>
   validator.optional()
@@ -22,19 +23,32 @@ const _charityInfoValidation = charityInfoValidation.map((validator) =>
 const _bankAccountValidation = bankAccountValidation.map((validator) =>
   validator.optional()
 );
+// const editProfileValidation = [
+//   emailValidation.optional(),
+//   nameValidation.optional(),
+//   phoneValidation.optional(),
+//   governorateValidation.optional(),
+//   currencyValidation.optional(),
+//   passwordValidation.optional(),
+//   descriptionValidation.optional(),
+//   ..._contactValidation,
+//   ..._charityInfoValidation,
+//   ..._bankAccountValidation,
+//   vodafoneCashValidation.optional(),
+//   fawryValidation.optional(),
+// ];
 
 const editProfileValidation = [
-  emailValidation.optional(),
-  nameValidation.optional(),
-  phoneValidation.optional(),
-  governorateValidation.optional(),
-  currencyValidation.optional(),
-  passwordValidation.optional(),
-  descriptionValidation.optional(),
-  ..._contactValidation,
-  ..._charityInfoValidation,
-  ..._bankAccountValidation,
-  vodafoneCashValidation.optional(),
-  fawryValidation.optional(),
+  ...charityRegisterValidation,
+  ...bankAccountValidation,
+  ...charityInfoValidation,
+  ...contactValidation,
 ];
+
+// console.log(...editProfileValidation);
+editProfileValidation.map((validator) => {
+  // console.log('---');
+  // console.log(validator);
+  validator.optional();
+});
 export default editProfileValidation;

@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'fs';
 import path from 'path';
 
 import Charity from '../models/charityModel.js';
@@ -259,16 +259,17 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
   let charity = await Charity.findById(req.charity._id);
   console.log(req.body);
 
-  const { location, currency, image } = req.body; 
+  const { location, currency, image } = req.body;
   // if (currency) throw new BadRequestError('cant change currency at this time');
   if (location) {
-    //for editing location only
+    //for editing location
     let indx = req.charity.location.findIndex(
       (location) => location._id.toString() === req.body.location_id
     );
     return await editCharityProfileAdresses(req, res, next, indx);
   }
   if (currency) {
+    //editing currency
     console.log(currency[0]);
     let indx = req.charity.currency.find((it) => {
       console.log(it);
@@ -291,34 +292,9 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
     if (key === 'charityDocs' || key.split('.')[0] === 'charityDocs')
       throw new BadRequestError('Cant edit it,You must contact us');
   }
-  // for (const [key, valueObj] of Object.entries(req.body)) {
 
-  //   if (key === 'paymentMethods'|| key.split('.')[0]==='paymentMethods')
-  //     throw new BadRequestError(
-  //       'Cant edit it,You must request to Change payment account or Add a new one'
-  //     );
-  //   console.log('--');
-  //   console.log(key);
-  //   console.log(valueObj);
-  //   if (typeof valueObj === 'object') {
-  //     for (const [subKey, val] of Object.entries(valueObj)) {
-  //       if (!isNaN(subKey)) {
-  //         console.log('arr of objects'); //for location
-  //         charity[key][subKey] = { val };
-  //       } else {
-  //         console.log('an obj');
-  //       }
-
-  //       // console.log(typeof subKey);
-  //       console.log(val);
-  //       charity[key][subKey] = val;
-  //     }
-  //   } else {
-  //     // If the value is not an object, assign it directly
-  //     charity[key] = valueObj;
-  //   }
-  // }
-  console.log(req.charity.image);//old image profile
+  //to delete the old image locally
+  console.log(req.charity.image); //old image profile
   const oldImagePath = path.join('./uploads/LogoCharities', req.charity.image);
   if (fs.existsSync(oldImagePath)) {
     // Delete the file
@@ -327,7 +303,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
   } else {
     console.log('Old image does not exist.');
   }
-  console.log(image);//new img profile
+  console.log(image); //new img profile
   const updateCharityArgs = dot.dot(req.body);
   charity = await Charity.findByIdAndUpdate(
     req.charity._id,
@@ -343,10 +319,145 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
     _id: charity._id,
     name: charity.name,
     email: charity.email,
-    image:charity.image,
+    image: charity.image,
     message: 'charity Data Changed Successfully',
   });
 });
+
+const editCharityProfilePaymentMethods = asyncHandler(
+  async (req, res, next, indx, selector) => {
+    const temp = {}; // Create a tempLocation object
+    if (selector === 'bankAccount') {
+      const { accNumber, iban, swiftCode } =
+        req.body.paymentMethods.bankAccount[0];
+
+      console.log(accNumber);
+      console.log(iban);
+      console.log(swiftCode);
+      temp.accNumber = accNumber;
+      temp.iban = iban;
+      temp.swiftCode = swiftCode;
+    } else if (selector === 'fawry') {
+      const { number } = req.body.paymentMethods.fawry[0];
+      console.log(number);
+      temp.number = number;
+    } else if (selector === 'vodafoneCash') {
+      const { number } = req.body.paymentMethods.vodafoneCash[0];
+      console.log(number);
+      temp.number = number;
+    }
+    if (indx !== -1) {
+      if (selector === 'bankAccount') {
+        req.charity.paymentMethods.bankAccount[indx].accNumber = temp.accNumber; //assign the object
+        req.charity.paymentMethods.bankAccount[indx].iban = temp.iban; //assign the object
+        req.charity.paymentMethods.bankAccount[indx].swiftCode = temp.swiftCode; //assign the object
+        await req.charity.save();
+        return res.json(req.charity.paymentMethods.bankAccount[indx]);
+      } else if (selector === 'fawry') {
+        req.charity.paymentMethods.fawry[indx].number = temp.number; //assign the object
+        await req.charity.save();
+        return res.json(req.charity.paymentMethods.fawry[indx]);
+      } else if (selector === 'vodafoneCash') {
+        req.charity.paymentMethods.vodafoneCash[indx].number = temp.number; //assign the object
+        await req.charity.save();
+        return res.json(req.charity.paymentMethods.vodafoneCash[indx]);
+      }
+    } else if (indx === -1) {
+      //add a new address
+      if (selector === 'bankAccount') {
+        const len = req.charity.paymentMethods.bankAccount.length - 1;
+        req.charity.paymentMethods.bankAccount.push(temp); //assign the object
+        await req.charity.save();
+        return res.json(req.charity.paymentMethods.bankAccount[len]);
+      } else if (selector === 'fawry') {
+        const len = req.charity.paymentMethods.fawry.length - 1;
+        req.charity.paymentMethods.fawry.push(temp); //assign the object
+        await req.charity.save();
+        return res.json(req.charity.paymentMethods.fawry[len]);
+      } else if (selector === 'vodafoneCash') {
+        const len = req.charity.paymentMethods.vodafoneCash.length - 1;
+        req.charity.paymentMethods.vodafoneCash.push(temp); //assign the object
+        await req.charity.save();
+        return res.json(req.charity.paymentMethods.vodafoneCash[len]);
+      }
+    }
+  }
+);
+const requestEditCharityProfilePayments = asyncHandler(
+  async (req, res, next) => {
+    const { bankAccount, fawry, vodafoneCash } = req.body.paymentMethods;
+    // 1-> bankAccount
+    // console.log(bankAccount[0]);
+    // console.log(req.body.paymentMethods);
+    if (bankAccount) {
+      let indx = req.charity.paymentMethods.bankAccount.findIndex(
+        (paymentMethods) =>
+          paymentMethods._id.toString() === req.body.payment_id
+      );
+      console.log('indx=' + indx);
+      return await editCharityProfilePaymentMethods(
+        req,
+        res,
+        next,
+        indx,
+        'bankAccount'
+      );
+    } else if (fawry) {
+      console.log('ff');
+      let indx = req.charity.paymentMethods.fawry.findIndex(
+        (paymentMethods) =>
+          paymentMethods._id.toString() === req.body.payment_id
+      );
+      console.log('indx=' + indx);
+      return await editCharityProfilePaymentMethods(
+        req,
+        res,
+        next,
+        indx,
+        'fawry'
+      );
+    } else if (vodafoneCash) {
+      let indx = req.charity.paymentMethods.vodafoneCash.findIndex(
+        (paymentMethods) =>
+          paymentMethods._id.toString() === req.body.payment_id
+      );
+      console.log('indx=' + indx);
+      return await editCharityProfilePaymentMethods(
+        req,
+        res,
+        next,
+        indx,
+        'vodafoneCash'
+      );
+    }
+    // console.log(req);
+    // console.log(req.body);
+    // for (const [key, valueObj] of Object.entries(req.body)) {
+
+    //   console.log('--');
+    //   console.log(key);
+    //   console.log(valueObj);
+    //   if (typeof valueObj === 'object') {
+    //     for (const [subKey, val] of Object.entries(valueObj)) {
+    //       if (!isNaN(subKey)) {
+    //         console.log('arr of objects'); //for location
+    //         charity[key][subKey] = { val };
+    //       } else {
+    //         console.log('an obj');
+    //       }
+
+    //       // console.log(typeof subKey);
+    //       console.log(val);
+    //       charity[key][subKey] = val;
+    //     }
+    //   } else {
+    //     // If the value is not an object, assign it directly
+    //     charity[key] = valueObj;
+    //   }
+    // }
+    res.json(req.body);
+  }
+);
 const logout = asyncHandler((req, res, next) => {
   if (!req.cookies.jwt) throw new UnauthenticatedError('you are not logged in');
 
@@ -402,4 +513,5 @@ export {
   sendDocs,
   editCharityProfile,
   showCharityProfile,
+  requestEditCharityProfilePayments,
 };

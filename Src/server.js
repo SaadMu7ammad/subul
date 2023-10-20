@@ -2,6 +2,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import express from 'express';
 import dotenv from 'dotenv/config';
+import bodyparser from 'body-parser';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import {
@@ -19,10 +20,9 @@ const __dirname = path.resolve();
 const port = process.env.PORT;
 const host = process.env.HOST;
 const app = express();
+app.use(bodyparser.urlencoded({ extended: true })); //form data
+app.use(bodyparser.json());
 
-app.use(express.json());
-
-app.use(express.urlencoded({ extended: true })); //form data
 //to access the img as path http://localhost:5000/LogoCharities/imgName_In_DB.jpeg
 //http://localhost:5000/docsCharities/docs1-sss--.jpeg
 app.use(express.static(path.join(__dirname, `uploads`)));
@@ -30,7 +30,8 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 
 app.use(cookieParser());
 app.use('/api/users', userRoutes);
-app.use('/api/charities',charityRoutes,casesRoutes);
+app.use('/api/charities',charityRoutes);
+app.use('/api/charities',casesRoutes);
 app.use('/api/admin',adminRoutes);
 app.get('/', (req, res) => {
   res.send('subul charity');

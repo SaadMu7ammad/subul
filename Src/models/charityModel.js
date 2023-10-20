@@ -35,7 +35,7 @@ const locationSchema = new mongoose.Schema({
       'South Sinai',
       'Suez',
       'Tanta',
-  ],
+    ],
     required: true,
   },
   city: {
@@ -51,6 +51,10 @@ const locationSchema = new mongoose.Schema({
 const paymentMethodSchema = new Schema({
   bankAccount: [
     {
+      enable: {
+        type: Boolean,
+        default: false,
+      },
       accNumber: {
         type: String,
         required: true,
@@ -67,6 +71,10 @@ const paymentMethodSchema = new Schema({
   ],
   fawry: [
     {
+      enable: {
+        type: Boolean,
+        default: false,
+      },
       number: {
         type: String,
         required: true,
@@ -75,13 +83,17 @@ const paymentMethodSchema = new Schema({
   ],
   vodafoneCash: [
     {
+      enable: {
+        type: Boolean,
+        default: false,
+      },
       number: {
         type: String,
         required: true,
       },
     },
   ],
-},{_id:false});
+});
 paymentMethodSchema.path('bankAccount').validate(function (value) {
   return value.length > 0;
 }, 'At least one bank account must be provided.');
@@ -233,6 +245,10 @@ const charitySchema = new Schema(
       docs3: [String],
       docs4: [String],
     },
+    charityReqDocs: {
+      docs: [String],
+     
+    },
   },
   { timestamps: true }
 );
@@ -252,12 +268,12 @@ const editImgUrl = (doc) => {
   }
 };
 const editDocUrl = function (ref, field) {
-  ref[field].map((img,indx) => {
+  ref[field].map((img, indx) => {
     // console.log(img);//before adding localhost
     const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${img}`;
     img = url;
     // console.log(img);//after adding localhost
-    ref[field][indx]=img
+    ref[field][indx] = img;
   });
 };
 charitySchema.post('init', (doc) => {
