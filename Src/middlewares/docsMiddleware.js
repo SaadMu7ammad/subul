@@ -42,6 +42,7 @@ async function processDocs(docsKey, ref, req) {
       if (docsKey === 'docs2') req.body.charityDocs.docs2.push(filename);
       if (docsKey === 'docs3') req.body.charityDocs.docs3.push(filename);
       if (docsKey === 'docs4') req.body.charityDocs.docs4.push(filename);
+      if (docsKey === 'docs') req.body.paymentMethods.bankAccount.docs.push(filename);
 
       // body.charityDocs = { ...body.charityDocs, [docsKey]: filename };
     })
@@ -87,11 +88,15 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
   // req.files['charityDocs[docs1]'].map((obj, indx) => {
   //   console.log(obj.buffer);
   // });
+  // console.log(req.files);
   req.body.charityDocs = {};
+  // req.body.paymentMethods.bankAccount={}
   req.body.charityDocs.docs1 = [];
   req.body.charityDocs.docs2 = [];
   req.body.charityDocs.docs3 = [];
   req.body.charityDocs.docs4 = [];
+  req.body.paymentMethods.bankAccount.docs = [];
+
   if (!req.files) {
     throw new BadRequestError('docs are required');
   }
@@ -99,7 +104,8 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
     !req.files['charityDocs[docs1]'] ||
     !req.files['charityDocs[docs2]'] ||
     !req.files['charityDocs[docs3]'] ||
-    !req.files['charityDocs[docs4]']
+    !req.files['charityDocs[docs4]'] ||
+    !req.files['paymentMethods.bankAccount[0][docs]']
   ) {
     throw new BadRequestError('docs are required');
   }
@@ -107,6 +113,7 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
   await processDocs('docs2', req.files['charityDocs[docs2]'], req);
   await processDocs('docs3', req.files['charityDocs[docs3]'], req);
   await processDocs('docs4', req.files['charityDocs[docs4]'], req);
+  await processDocs('docs', req.files['paymentMethods.bankAccount[0][docs]'], req);
 
   next();
 });
@@ -121,6 +128,9 @@ const uploadDocs = upload.fields([
   { name: 'charityDocs[docs2]', maxCount: 2 },
   { name: 'charityDocs[docs3]', maxCount: 2 },
   { name: 'charityDocs[docs4]', maxCount: 10 },
+  { name: 'paymentMethods.bankAccount[0][docs]', maxCount: 2 },
+  // { name: 'paymentMethods.fawry[0][docs]', maxCount: 2 },
+  // { name: 'paymentMethods.vodafoneCash[0][docs]', maxCount: 2 },
 ]);
 
 export { uploadDocs, resizeDoc };

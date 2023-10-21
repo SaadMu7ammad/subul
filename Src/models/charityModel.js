@@ -57,16 +57,20 @@ const paymentMethodSchema = new Schema({
       },
       accNumber: {
         type: String,
-        required: true,
+        // required: true,
       },
       iban: {
         type: String,
-        required: true,
+        // required: true,
       },
       swiftCode: {
         type: String,
-        required: true,
+        // required: true,
       },
+      docs: {
+        type: [String], // Define it as an array of strings
+        // required: true, // The entire array is required
+      }
     },
   ],
   fawry: [
@@ -77,8 +81,13 @@ const paymentMethodSchema = new Schema({
       },
       number: {
         type: String,
-        required: true,
+        // required: true,
       },
+      
+      docs: {
+        type: [String], 
+        // required: true, 
+      }
     },
   ],
   vodafoneCash: [
@@ -89,22 +98,27 @@ const paymentMethodSchema = new Schema({
       },
       number: {
         type: String,
-        required: true,
+        // required: true,
       },
+     
+      docs: {
+        type: [String], 
+        // required: true, 
+      }
     },
   ],
 });
-paymentMethodSchema.path('bankAccount').validate(function (value) {
-  return value.length > 0;
-}, 'At least one bank account must be provided.');
+// paymentMethodSchema.path('bankAccount').validate(function (value) {
+//   return value.length > 0;
+// }, 'At least one bank account must be provided.');
 
-paymentMethodSchema.path('fawry').validate(function (value) {
-  return value.length > 0;
-}, 'At least one fawry account must be provided.');
+// paymentMethodSchema.path('fawry').validate(function (value) {
+//   return value.length > 0;
+// }, 'At least one fawry account must be provided.');
 
-paymentMethodSchema.path('vodafoneCash').validate(function (value) {
-  return value.length > 0;
-}, 'At least one vodafoneCash account must be provided.');
+// paymentMethodSchema.path('vodafoneCash').validate(function (value) {
+//   return value.length > 0;
+// }, 'At least one vodafoneCash account must be provided.');
 
 const charitySchema = new Schema(
   {
@@ -198,7 +212,7 @@ const charitySchema = new Schema(
     },
     paymentMethods: {
       type: paymentMethodSchema,
-      required: true,
+      // required: true,
     },
     rate: {
       type: Number,
@@ -247,7 +261,6 @@ const charitySchema = new Schema(
     },
     charityReqDocs: {
       docs: [String],
-     
     },
   },
   { timestamps: true }

@@ -58,7 +58,7 @@ const caseSchema = new mongoose.Schema(
       type: String,
       required: [true, 'description must provided'],
     },
-    MainType: {
+    mainType: {
       type: String,
       enum: [
         'Sadaqa',
@@ -69,7 +69,7 @@ const caseSchema = new mongoose.Schema(
         'Campains',
         'UsedProperties',
       ],
-      required:  [true, 'Maintype for that case must provided'],
+      required:  [true, 'maintype for that case must provided'],
     },
     imageCover: {
       type: String,

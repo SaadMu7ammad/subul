@@ -23,9 +23,9 @@ const charityRegisterValidation = [
   currencyValidation,
   governorateValidation,
   ...charityInfoValidation,
-  ...bankAccountValidation,
-  vodafoneCashValidation,
-  fawryValidation,
+  // ...bankAccountValidation,
+  // vodafoneCashValidation,
+  // fawryValidation,
   phoneValidation,
 ];
 export { charityRegisterValidation };
