@@ -327,9 +327,11 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
 const editCharityProfilePaymentMethods = asyncHandler(
   async (req, res, next, indx, selector) => {
     const temp = {}; // Create a tempLocation object
+    // temp.docsBank=[]
     if (selector === 'bankAccount') {
       const { accNumber, iban, swiftCode } =
         req.body.paymentMethods.bankAccount[0];
+        const  docsBank  = req.body.paymentMethods.bankAccount.docsBank[0];
 
       console.log(accNumber);
       console.log(iban);
@@ -337,47 +339,57 @@ const editCharityProfilePaymentMethods = asyncHandler(
       temp.accNumber = accNumber;
       temp.iban = iban;
       temp.swiftCode = swiftCode;
+      temp.docsBank=docsBank
     } else if (selector === 'fawry') {
       const { number } = req.body.paymentMethods.fawry[0];
+      const docsFawry= req.body.paymentMethods.fawry.docsFawry[0];
+
       console.log(number);
       temp.number = number;
+      temp.docsFawry = docsFawry;
     } else if (selector === 'vodafoneCash') {
       const { number } = req.body.paymentMethods.vodafoneCash[0];
-      console.log(number);
+      const  docsVodafoneCash = req.body.paymentMethods.vodafoneCash.docsVodafoneCash[0];
       temp.number = number;
+      temp.docsVodafoneCash = docsVodafoneCash;
     }
     if (indx !== -1) {
       if (selector === 'bankAccount') {
         req.charity.paymentMethods.bankAccount[indx].accNumber = temp.accNumber; //assign the object
         req.charity.paymentMethods.bankAccount[indx].iban = temp.iban; //assign the object
         req.charity.paymentMethods.bankAccount[indx].swiftCode = temp.swiftCode; //assign the object
+        req.charity.paymentMethods.bankAccount[indx].docsBank=[temp.docsBank]
         await req.charity.save();
         return res.json(req.charity.paymentMethods.bankAccount[indx]);
       } else if (selector === 'fawry') {
         req.charity.paymentMethods.fawry[indx].number = temp.number; //assign the object
+        req.charity.paymentMethods.fawry[indx].docsFawry=temp.docsFawry
         await req.charity.save();
         return res.json(req.charity.paymentMethods.fawry[indx]);
       } else if (selector === 'vodafoneCash') {
         req.charity.paymentMethods.vodafoneCash[indx].number = temp.number; //assign the object
+        req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash=temp.docsVodafoneCash
         await req.charity.save();
         return res.json(req.charity.paymentMethods.vodafoneCash[indx]);
       }
     } else if (indx === -1) {
       //add a new address
       if (selector === 'bankAccount') {
-        const len = req.charity.paymentMethods.bankAccount.length - 1;
+        // const { docsVodafoneCash} = req.body.paymentMethods.docsVodafoneCash[0];
+        // req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash=docsVodafoneCash
         req.charity.paymentMethods.bankAccount.push(temp); //assign the object
         await req.charity.save();
+        const len = req.charity.paymentMethods.bankAccount.length - 1;
         return res.json(req.charity.paymentMethods.bankAccount[len]);
       } else if (selector === 'fawry') {
-        const len = req.charity.paymentMethods.fawry.length - 1;
         req.charity.paymentMethods.fawry.push(temp); //assign the object
         await req.charity.save();
+        const len = req.charity.paymentMethods.fawry.length - 1;
         return res.json(req.charity.paymentMethods.fawry[len]);
       } else if (selector === 'vodafoneCash') {
-        const len = req.charity.paymentMethods.vodafoneCash.length - 1;
         req.charity.paymentMethods.vodafoneCash.push(temp); //assign the object
         await req.charity.save();
+        const len = req.charity.paymentMethods.vodafoneCash.length - 1;
         return res.json(req.charity.paymentMethods.vodafoneCash[len]);
       }
     }
@@ -385,6 +397,10 @@ const editCharityProfilePaymentMethods = asyncHandler(
 );
 const requestEditCharityProfilePayments = asyncHandler(
   async (req, res, next) => {
+    if (!req.body.paymentMethods) {
+      deleteOldImgs(req, res, next);
+      throw new BadRequestError('you must upload complete data to be sent');
+    }
     const { bankAccount, fawry, vodafoneCash } = req.body.paymentMethods;
     // 1-> bankAccount
     // console.log(bankAccount[0]);
@@ -458,24 +474,23 @@ const requestEditCharityProfilePayments = asyncHandler(
     res.json(req.body);
   }
 );
-const deleteOldImgs = ( (req, res, next) => {
- 
-    req.temp.map(async (img) => {
-      const oldImagePath = path.join('./uploads/docsCharities', img);
-      if (fs.existsSync(oldImagePath)) {
-        // Delete the file
-        fs.unlinkSync(oldImagePath);
-        console.log('Old image deleted successfully.');
-      } else {
-        console.log('Old image does not exist.');
-      }
-    })
+const deleteOldImgs = (req, res, next) => {
+  req.temp.map(async (img) => {
+    const oldImagePath = path.join('./uploads/docsCharities', img);
+    if (fs.existsSync(oldImagePath)) {
+      // Delete the file
+      fs.unlinkSync(oldImagePath);
+      console.log('Old image deleted successfully.');
+    } else {
+      console.log('Old image does not exist.');
+    }
+  });
   req.temp = [];
-});
+};
 
 const addCharityPayments = asyncHandler(async (req, res, next) => {
   if (!req.body.paymentMethods) {
-     deleteOldImgs(req, res, next);
+    deleteOldImgs(req, res, next);
     throw new BadRequestError(
       'must send one of payment gateways inforamtions..'
     );
@@ -499,7 +514,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       req.charity.paymentMethods['bankAccount'].push(temp);
     } else {
       console.log(req.temp);
-       deleteOldImgs(req, res, next);
+      deleteOldImgs(req, res, next);
       throw new BadRequestError('must provide complete information');
     }
     // console.log(req.charity.paymentMethods);
@@ -515,7 +530,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       };
       req.charity.paymentMethods['fawry'].push(temp);
     } else {
-       deleteOldImgs(req, res, next);
+      deleteOldImgs(req, res, next);
 
       throw new BadRequestError('must provide complete information');
     }
@@ -532,7 +547,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
 
       req.charity.paymentMethods['vodafoneCash'].push(temp);
     } else {
-       deleteOldImgs(req, res, next);
+      deleteOldImgs(req, res, next);
       throw new BadRequestError('must provide complete information');
     }
   }
@@ -574,7 +589,7 @@ const sendDocs = asyncHandler(async (req, res, next) => {
     console.log('---');
     // console.log(req.body.paymentMethods);
     // console.log({...req.body});
-    // charity.isPending = true;
+    charity.isPending = true;
     // await charity.save();
     next();
     // res.json([charity.charityDocs, { message: 'sent successfully' }]);
