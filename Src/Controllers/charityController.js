@@ -474,12 +474,12 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       swiftCode,
       docsBank,
     };
-    console.log(temp);
+    // console.log(temp);
     if (accNumber && iban && swiftCode && docsBank) {
       req.charity.paymentMethods['bankAccount'].push(temp);
     }
     else throw new BadRequestError('must provide complete information');
-    console.log(req.charity.paymentMethods);
+    // console.log(req.charity.paymentMethods);
   }
   if (fawry) {
     
@@ -544,7 +544,7 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   ) {
     charity.charityDocs = { ...req.body.charityDocs };
     console.log('---');
-    console.log(req.body.paymentMethods);
+    // console.log(req.body.paymentMethods);
     // console.log({...req.body});
     // charity.isPending = true;
     // await charity.save();

@@ -70,7 +70,7 @@ const paymentMethodSchema = new Schema({
       docsBank: {
         type: [String], // Define it as an array of strings
         // required: true, // The entire array is required
-      }
+      },
     },
   ],
   fawry: [
@@ -83,11 +83,11 @@ const paymentMethodSchema = new Schema({
         type: String,
         // required: true,
       },
-      
+
       docsFawry: {
-        type: [String], 
-        // required: true, 
-      }
+        type: [String],
+        // required: true,
+      },
     },
   ],
   vodafoneCash: [
@@ -100,11 +100,11 @@ const paymentMethodSchema = new Schema({
         type: String,
         // required: true,
       },
-     
+
       docsVodafoneCash: {
-        type: [String], 
-        // required: true, 
-      }
+        type: [String],
+        // required: true,
+      },
     },
   ],
 });
@@ -289,6 +289,32 @@ const editDocUrl = function (ref, field) {
     ref[field][indx] = img;
   });
 };
+const editDocUrlPayment = function (ref, field) {
+  // console.log(ref);
+  ref.forEach((account, index) => {
+    // console.log(account);
+    // account.forEach((img, indx) => {
+    // console.log(img);//before adding localhost
+    if (field === 'docsBank') {
+      const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${account.docsBank}`;
+      account.docsBank = url;
+    }
+
+    if (field === 'docsFawry') {
+      const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${account.docsFawry}`;
+      account.docsFawry = url;
+    }
+
+    if (field === 'docsVodafoneCash') {
+      const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${account.docsVodafoneCash}`;
+      account.docsVodafoneCash = url;
+    }
+
+    // console.log(img);//after adding localhost
+    // ref.account[index] =  account.docsBank;
+  });
+  // })
+};
 charitySchema.post('init', (doc) => {
   //after initialized the doc in db when a document is created or retrieved from the database.
   console.log('after init');
@@ -332,6 +358,15 @@ charitySchema.post('save', (doc) => {
     editDocUrl(doc.charityDocs, 'docs2');
     editDocUrl(doc.charityDocs, 'docs3');
     editDocUrl(doc.charityDocs, 'docs4');
+    if ((doc.paymentMethods.bankAccount, 'docsBank')) {
+      editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+    }
+    if ((doc.paymentMethods.fawry, 'docsFawry')) {
+      editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+    }
+    if ((doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
+      editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
+    }
   }
 });
 
