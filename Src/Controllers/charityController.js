@@ -458,8 +458,8 @@ const requestEditCharityProfilePayments = asyncHandler(
     res.json(req.body);
   }
 );
-const deleteOldImgs = asyncHandler(async (req, res, next) => {
-  Promise.all(
+const deleteOldImgs = ( (req, res, next) => {
+ 
     req.temp.map(async (img) => {
       const oldImagePath = path.join('./uploads/docsCharities', img);
       if (fs.existsSync(oldImagePath)) {
@@ -470,13 +470,12 @@ const deleteOldImgs = asyncHandler(async (req, res, next) => {
         console.log('Old image does not exist.');
       }
     })
-  );
   req.temp = [];
 });
 
 const addCharityPayments = asyncHandler(async (req, res, next) => {
   if (!req.body.paymentMethods) {
-    await deleteOldImgs(req, res, next);
+     deleteOldImgs(req, res, next);
     throw new BadRequestError(
       'must send one of payment gateways inforamtions..'
     );
@@ -500,7 +499,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       req.charity.paymentMethods['bankAccount'].push(temp);
     } else {
       console.log(req.temp);
-      await deleteOldImgs(req, res, next);
+       deleteOldImgs(req, res, next);
       throw new BadRequestError('must provide complete information');
     }
     // console.log(req.charity.paymentMethods);
@@ -516,7 +515,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       };
       req.charity.paymentMethods['fawry'].push(temp);
     } else {
-      await deleteOldImgs(req, res, next);
+       deleteOldImgs(req, res, next);
 
       throw new BadRequestError('must provide complete information');
     }
@@ -533,7 +532,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
 
       req.charity.paymentMethods['vodafoneCash'].push(temp);
     } else {
-      await deleteOldImgs(req, res, next);
+       deleteOldImgs(req, res, next);
       throw new BadRequestError('must provide complete information');
     }
   }
