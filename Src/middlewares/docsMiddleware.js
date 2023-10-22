@@ -42,12 +42,27 @@ async function processDocs(docsKey, ref, req) {
       if (docsKey === 'docs2') req.body.charityDocs.docs2.push(filename);
       if (docsKey === 'docs3') req.body.charityDocs.docs3.push(filename);
       if (docsKey === 'docs4') req.body.charityDocs.docs4.push(filename);
-      if (docsKey === 'docsBank')
+      if (
+        req.body.paymentMethods &&
+        req.body.paymentMethods.bankAccount &&
+        docsKey === 'docsBank'
+      ) {
         req.body.paymentMethods.bankAccount.docsBank.push(filename);
-      if (docsKey === 'docsFawry')
+      }
+      if (
+        req.body.paymentMethods &&
+        req.body.paymentMethods.fawry &&
+        docsKey === 'docsFawry'
+      ) {
         req.body.paymentMethods.fawry.docsFawry.push(filename);
-      if (docsKey === 'docsVodafoneCash')
+      }
+      if (
+        req.body.paymentMethods &&
+        req.body.paymentMethods.vodafoneCash &&
+        docsKey === 'docsVodafoneCash'
+      ) {
         req.body.paymentMethods.vodafoneCash.docsVodafoneCash.push(filename);
+      }
 
       // body.charityDocs = { ...body.charityDocs, [docsKey]: filename };
     })
@@ -94,7 +109,7 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
   //   console.log(obj.buffer);
   // });
   // console.log(req.files);
-  req.temp=[]//container for deleting imgs
+  req.temp = []; //container for deleting imgs
 
   req.body.charityDocs = {};
   // req.body.paymentMethods.bankAccount={}
