@@ -329,15 +329,13 @@ const phoneValidation = body('phone')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
 
-const _bankAccountValidation = bankAccountValidation.map((validator) =>
-  validator.optional().not().isEmpty()
-);
+// const _bankAccountValidation = bankAccountValidation.map((validator) =>
+//   // validator.optional()//.not().isEmpty()
+// );
 const paymentValidation = [
-  bankAccountNumberValidation.not().isEmpty(),
-  ibanValidation.not().isEmpty(),
-  switfCodeValidation.not().isEmpty(),
-  vodafoneCashValidation.optional(),
-  fawryValidation.optional(),
+  ...bankAccountValidation,
+  vodafoneCashValidation,
+  fawryValidation,
 ];
 export {
   tokenValidation,

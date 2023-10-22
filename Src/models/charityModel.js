@@ -67,7 +67,7 @@ const paymentMethodSchema = new Schema({
         type: String,
         // required: true,
       },
-      docs: {
+      docsBank: {
         type: [String], // Define it as an array of strings
         // required: true, // The entire array is required
       }
@@ -84,7 +84,7 @@ const paymentMethodSchema = new Schema({
         // required: true,
       },
       
-      docs: {
+      docsFawry: {
         type: [String], 
         // required: true, 
       }
@@ -101,7 +101,7 @@ const paymentMethodSchema = new Schema({
         // required: true,
       },
      
-      docs: {
+      docsVodafoneCash: {
         type: [String], 
         // required: true, 
       }

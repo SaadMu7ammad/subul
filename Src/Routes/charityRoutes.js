@@ -92,8 +92,8 @@ router.post(
 router.post(
   '/send-docs',
   auth,
-  paymentValidation,
-  validate,
+  // paymentValidation,
+  // validate,
   uploadDocs,
   resizeDoc,
   // , upload.single('charityDocs[docs1]'),

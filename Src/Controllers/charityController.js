@@ -459,82 +459,61 @@ const requestEditCharityProfilePayments = asyncHandler(
   }
 );
 const addCharityPayments = asyncHandler(async (req, res, next) => {
+  if(!req.body.paymentMethods)throw new BadRequestError('must send one of payment gateways inforamtions..')
   const { bankAccount, fawry, vodafoneCash } = req.body.paymentMethods;
-  // 1-> bankAccount
-  // console.log(bankAccount[0]);
-  // console.log(req.charity.paymentMethods);
-  // console.log(bankAccount[0]);
-  // console.log(fawry[0]);
+
   if (req.charity.paymentMethods === undefined) req.charity.paymentMethods = {};
-  // if(req.charity.paymentMethods.bankAccount===undefined)req.charity.paymentMethods.bankAccount = {};
-  // if(req.charity.paymentMethods.vodafoneCash===undefined)req.charity.paymentMethods.vodafoneCash = {};
-  // if (req.charity.paymentMethods.fawry === undefined) req.charity.paymentMethods.fawry = {};
-  // await req.charity.save()
+  
   console.log('-------------------');
   if (bankAccount) {
-    // console.log(bankAccount);
     const { accNumber, iban, swiftCode } = bankAccount[0];
-    // console.log(bankAccount.docs[0]);
-    let docs = bankAccount.docs[0];
+    let docsBank = bankAccount.docsBank[0];
     let temp = {
       accNumber,
       iban,
       swiftCode,
-      docs,
+      docsBank,
     };
     console.log(temp);
-    //  const{docs}= bankAccount[1]
-    if (accNumber && iban && swiftCode && docs) {
+    if (accNumber && iban && swiftCode && docsBank) {
       req.charity.paymentMethods['bankAccount'].push(temp);
-      // req.charity.paymentMethods['bankAccount'].push(docs);
     }
-    // req.charity.paymentMethods['bankAccount'][]
     else throw new BadRequestError('must provide complete information');
-    // await req.charity.save()
     console.log(req.charity.paymentMethods);
-  } else if (fawry) {
-    // req.charity.paymentMethods = {};
-    // req.charity.paymentMethods['fawry'].push(fawry[0]);
-    const { number, docs } = fawry[0];
-    if (number && docs) req.charity.paymentMethods['fawry'].push(fawry[0]);
-    else throw new BadRequestError('must provide complete information');
-  } else if (vodafoneCash) {
-    const { number, docs } = vodafoneCash[0];
-    if (number && docs)
-      req.charity.paymentMethods['vodafoneCash'].push(vodafoneCash[0]);
-    else throw new BadRequestError('must provide complete information');
-  } else {
-    throw new BadRequestError(
-      'must send one of payment gateways inforamtions..'
-    );
   }
+  if (fawry) {
+    
+    const { number } = fawry[0];
+    let docsFawry = fawry.docsFawry[0];
+
+    if (number && docsFawry) {
+      const temp = {
+        number,
+        docsFawry,
+      };
+      req.charity.paymentMethods['fawry'].push(temp);
+    }
+    else throw new BadRequestError('must provide complete information');
+  }
+  if (vodafoneCash) {
+    const { number } = vodafoneCash[0];
+    let docsVodafoneCash = vodafoneCash.docsVodafoneCash[0];
+
+    if (number && docsVodafoneCash) {
+      const temp = {
+        number,
+        docsVodafoneCash,
+      };
+
+      req.charity.paymentMethods['vodafoneCash'].push(temp);
+    } else throw new BadRequestError('must provide complete information');
+  }
+  
   await req.charity.save();
-  // console.log(req);
-  // console.log(req.body);
-  // for (const [key, valueObj] of Object.entries(req.body)) {
-
-  //   console.log('--');
-  //   console.log(key);
-  //   console.log(valueObj);
-  //   if (typeof valueObj === 'object') {
-  //     for (const [subKey, val] of Object.entries(valueObj)) {
-  //       if (!isNaN(subKey)) {
-  //         console.log('arr of objects'); //for location
-  //         charity[key][subKey] = { val };
-  //       } else {
-  //         console.log('an obj');
-  //       }
-
-  //       // console.log(typeof subKey);
-  //       console.log(val);
-  //       charity[key][subKey] = val;
-  //     }
-  //   } else {
-  //     // If the value is not an object, assign it directly
-  //     charity[key] = valueObj;
-  //   }
-  // }
-  res.json(req.body);
+  
+  // res.json(req.body);
+  
+  res.json(req.charity.paymentMethods);
 });
 
 const logout = asyncHandler((req, res, next) => {
