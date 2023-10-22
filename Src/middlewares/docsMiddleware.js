@@ -32,7 +32,7 @@ async function processDocs(docsKey, ref, req) {
       const ex = obj.mimetype.split('/')[1];
       const uniquePrefix = uuidv4();
       const filename = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
-
+      req.temp.push(filename);
       await sharp(obj.buffer)
         .resize(320, 240)
         .toFormat('jpeg')
@@ -94,6 +94,8 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
   //   console.log(obj.buffer);
   // });
   // console.log(req.files);
+  req.temp=[]//container for deleting imgs
+
   req.body.charityDocs = {};
   // req.body.paymentMethods.bankAccount={}
   req.body.charityDocs.docs1 = [];
@@ -101,16 +103,16 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
   req.body.charityDocs.docs3 = [];
   req.body.charityDocs.docs4 = [];
   // req.body.paymentMethods.bankAccount ?  : null
-  if (req.body.paymentMethods&&req.body.paymentMethods.bankAccount) {
-    req.body.paymentMethods.bankAccount.docsBank = []
+  if (req.body.paymentMethods && req.body.paymentMethods.bankAccount) {
+    req.body.paymentMethods.bankAccount.docsBank = [];
   }
-  if (req.body.paymentMethods&&req.body.paymentMethods.fawry) {
-    req.body.paymentMethods.fawry.docsFawry = []
+  if (req.body.paymentMethods && req.body.paymentMethods.fawry) {
+    req.body.paymentMethods.fawry.docsFawry = [];
   }
-  if (req.body.paymentMethods&&req.body.paymentMethods.vodafoneCash) {
-    req.body.paymentMethods.vodafoneCash.docsVodafoneCash = []
+  if (req.body.paymentMethods && req.body.paymentMethods.vodafoneCash) {
+    req.body.paymentMethods.vodafoneCash.docsVodafoneCash = [];
   }
- 
+
   // req.body.paymentMethods.fawry.docs = [];
   if (!req.files) {
     throw new BadRequestError('docs are required');
@@ -145,7 +147,7 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
       req.files['paymentMethods.fawry[0][docsFawry]'],
       req
     );
-  
+
   if (req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]'])
     await processDocs(
       'docsVodafoneCash',

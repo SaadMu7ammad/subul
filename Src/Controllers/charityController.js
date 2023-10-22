@@ -459,11 +459,14 @@ const requestEditCharityProfilePayments = asyncHandler(
   }
 );
 const addCharityPayments = asyncHandler(async (req, res, next) => {
-  if(!req.body.paymentMethods)throw new BadRequestError('must send one of payment gateways inforamtions..')
+  if (!req.body.paymentMethods)
+    throw new BadRequestError(
+      'must send one of payment gateways inforamtions..'
+    );
   const { bankAccount, fawry, vodafoneCash } = req.body.paymentMethods;
 
   if (req.charity.paymentMethods === undefined) req.charity.paymentMethods = {};
-  
+
   console.log('-------------------');
   if (bankAccount) {
     const { accNumber, iban, swiftCode } = bankAccount[0];
@@ -477,12 +480,27 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
     // console.log(temp);
     if (accNumber && iban && swiftCode && docsBank) {
       req.charity.paymentMethods['bankAccount'].push(temp);
+    } else {
+      console.log(req.temp);
+      Promise.all(
+        req.temp.map(async(img) => {
+          const oldImagePath = path.join('./uploads/docsCharities', img);
+          if (fs.existsSync(oldImagePath)) {
+            // Delete the file
+            fs.unlinkSync(oldImagePath);
+            console.log('Old image deleted successfully.');
+          } else {
+            console.log('Old image does not exist.');
+          }
+        })
+      );
+      req.temp = [];
+
+      throw new BadRequestError('must provide complete information');
     }
-    else throw new BadRequestError('must provide complete information');
     // console.log(req.charity.paymentMethods);
   }
   if (fawry) {
-    
     const { number } = fawry[0];
     let docsFawry = fawry.docsFawry[0];
 
@@ -492,8 +510,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
         docsFawry,
       };
       req.charity.paymentMethods['fawry'].push(temp);
-    }
-    else throw new BadRequestError('must provide complete information');
+    } else throw new BadRequestError('must provide complete information');
   }
   if (vodafoneCash) {
     const { number } = vodafoneCash[0];
@@ -508,11 +525,11 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       req.charity.paymentMethods['vodafoneCash'].push(temp);
     } else throw new BadRequestError('must provide complete information');
   }
-  
+
   await req.charity.save();
-  
+
   // res.json(req.body);
-  
+
   res.json(req.charity.paymentMethods);
 });
 
