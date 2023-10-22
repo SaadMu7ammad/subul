@@ -329,14 +329,18 @@ const phoneValidation = body('phone')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
 
-// const _bankAccountValidation = bankAccountValidation.map((validator) =>
-//   // validator.optional()//.not().isEmpty()
-// );
-const paymentValidation = [
-  ...bankAccountValidation,
-  vodafoneCashValidation,
-  fawryValidation,
-];
+const _bankAccountValidation = bankAccountValidation.map((validator) =>
+  validator.optional()//.not().isEmpty()
+);
+// const paymentValidation = [
+//   ..._bankAccountValidation,
+//   vodafoneCashValidation.optional(),
+//   fawryValidation.optional(),
+// ];
+// const paymentValidation = validate(function (value) {
+// value.iban()
+// },'Validation input bank not completed')
+
 export {
   tokenValidation,
   emailValidation,
@@ -351,5 +355,8 @@ export {
   vodafoneCashValidation,
   fawryValidation,
   contactValidation,
-  paymentValidation,
+  // paymentValidation,
+  bankAccountNumberValidation,
+  ibanValidation,
+  switfCodeValidation,
 };

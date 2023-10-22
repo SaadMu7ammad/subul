@@ -109,6 +109,15 @@ const paymentMethodSchema = new Schema({
   ],
 });
 // paymentMethodSchema.path('bankAccount').validate(function (value) {
+//   for (const bankAccount of value) {
+//     if (bankAccount.accNumber && bankAccount.iban&&bankAccount.swiftCode) {
+//       return true;
+//     }
+//   }
+//   return false
+// }, 'Validation input bank not completed');
+
+// paymentMethodSchema.path('bankAccount').validate(function (value) {
 //   return value.length > 0;
 // }, 'At least one bank account must be provided.');
 

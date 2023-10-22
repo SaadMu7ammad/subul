@@ -26,7 +26,7 @@ import { charityRegisterValidation } from '../utils/validatorComponents/charity/
 import {
   tokenValidation,
   emailValidation,
-  paymentValidation,
+  // paymentValidation,
 } from '../utils/validatorComponents/charity/allCharityValidation.js';
 import editProfileValidation from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
@@ -92,8 +92,8 @@ router.post(
 router.post(
   '/send-docs',
   auth,
-  paymentValidation,
-  validate,
+  // paymentValidation,
+  // validate,
   uploadDocs,
   resizeDoc,
   // , upload.single('charityDocs[docs1]'),
