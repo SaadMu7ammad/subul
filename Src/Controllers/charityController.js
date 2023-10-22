@@ -551,7 +551,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       throw new BadRequestError('must provide complete information');
     }
   }
-
+// await charity.save()
   await req.charity.save();
 
   // res.json(req.body);
@@ -575,32 +575,32 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   // Charity.schema.path('charityDocs').required(true)
   // await Charity.schema.save()
 
-  const charity = await Charity.findById(req.charity._id);
+  // const charity = await Charity.findById(req.charity._id);
   // console.log(charity);
-  if (!charity) throw new NotFoundError('No charity found ');
+  if (!req.charity) throw new NotFoundError('No charity found ');
 
   if (
-    (charity.emailVerification.isVerified ||
-      charity.phoneVerification.isVerified) &&
-    !charity.isConfirmed &&
-    !charity.isPending
+    (req.charity.emailVerification.isVerified ||
+      req.charity.phoneVerification.isVerified) &&
+    !req.charity.isConfirmed &&
+    !req.charity.isPending
   ) {
-    charity.charityDocs = { ...req.body.charityDocs };
+    req.charity.charityDocs = { ...req.body.charityDocs };
     console.log('---');
     // console.log(req.body.paymentMethods);
     // console.log({...req.body});
-    charity.isPending = true;
+    req.charity.isPending = true;
     // await charity.save();
     next();
     // res.json([charity.charityDocs, { message: 'sent successfully' }]);
   } else if (
-    !charity.emailVerification.isVerified &&
-    !charity.phoneVerification.isVerified
+    !req.charity.emailVerification.isVerified &&
+    !req.charity.phoneVerification.isVerified
   ) {
     throw new UnauthenticatedError('you must verify your account again');
-  } else if (charity.isConfirmed) {
+  } else if (req.charity.isConfirmed) {
     throw new BadRequestError('you already has been confirmed');
-  } else if (charity.isPending) {
+  } else if (req.charity.isPending) {
     throw new BadRequestError('soon response... still reviewing docs');
   } else {
     throw new BadRequestError('error occured, try again later');
