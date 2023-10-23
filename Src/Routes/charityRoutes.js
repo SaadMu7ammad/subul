@@ -27,6 +27,7 @@ import {
 } from '../utils/validatorComponents/charity/allCharityValidation.js';
 import editProfileValidation from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
+import { pdfUpload } from '../middlewares/pdfMiddleware.js';
 const router = express.Router();
 
 router.post(
