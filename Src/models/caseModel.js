@@ -52,11 +52,11 @@ const caseSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      required: [true, 'title must provided'],
+      required: [true, 'title must be provided'],
     },
     description: {
       type: String,
-      required: [true, 'description must provided'],
+      required: [true, 'description must be provided'],
     },
     mainType: {
       type: String,
@@ -69,16 +69,16 @@ const caseSchema = new mongoose.Schema(
         'Campains',
         'UsedProperties',
       ],
-      required:  [true, 'maintype for that case must provided'],
+      required:  [true, 'maintype for that case must be provided'],
     },
     imageCover: {
       type: String,
-      required: [true, 'imageCover for that case must provided'],
+      required: [true, 'imageCover for that case must be provided'],
     },
     location: [{ type: locationSchema, required: true }],
     subType: {
       type: String,
-      required: [true, 'subType for that case must provided'],
+      required: [true, 'subType for that case must be provided'],
       enum: [
         'Aqeeqa',
         'BloodDonation',
@@ -146,7 +146,7 @@ const caseSchema = new mongoose.Schema(
     // number of beneficiaries
     helpedNumbers: {
       type: Number,
-      required: [true, 'must helpedNumbers provided'],
+      required: [true, 'must be helpedNumbers provided'],
     },
     freezed: {
       //for admin decisions
@@ -156,7 +156,7 @@ const caseSchema = new mongoose.Schema(
     },
     targetDonationAmount: {
       type: Number,
-      required: [true, 'must targetDonationAmount provided'],
+      required: [true, 'must be targetDonationAmount provided'],
     },
     currentDonationAmount: {
       type: Number,
