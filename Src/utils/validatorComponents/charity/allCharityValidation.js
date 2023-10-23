@@ -23,18 +23,23 @@ const bankAccountNumberValidation = body(
 )
   .trim()
   .notEmpty()
+  // .if(body('paymentMethods.bankAccount[0].iban').exists()) 
+  // .if(body('paymentMethods.bankAccount[0].swiftCode').exists()) 
   .withMessage('Account Number is Required')
   .isNumeric()
   .isLength({ min: 19, max: 19 });
 
 const ibanValidation = body('paymentMethods.bankAccount[0].iban')
   .trim()
+  // .if(body('paymentMethods.bankAccount[0].swiftCode').exists()) 
+  // .if(body('paymentMethods.bankAccount[0].accNumber').exists()) 
   .notEmpty()
   .withMessage('iban is Required')
   .isLength({ min: 29, max: 29 });
-
 const switfCodeValidation = body('paymentMethods.bankAccount[0].swiftCode')
   .trim()
+  // .if(body('paymentMethods.bankAccount[0].iban').exists()) 
+  // .if(body('paymentMethods.bankAccount[0].accNumber').exists()) 
   .notEmpty()
   .withMessage('Swift Code is Required')
   .isLength({ min: 8, max: 11 });
@@ -323,6 +328,19 @@ const phoneValidation = body('phone')
   .withMessage('Invalid PhoneNumber')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
+
+const _bankAccountValidation = bankAccountValidation.map((validator) =>
+  validator.optional()//.not().isEmpty()
+);
+// const paymentValidation = [
+//   ..._bankAccountValidation,
+//   vodafoneCashValidation.optional(),
+//   fawryValidation.optional(),
+// ];
+// const paymentValidation = validate(function (value) {
+// value.iban()
+// },'Validation input bank not completed')
+
 export {
   tokenValidation,
   emailValidation,
@@ -337,4 +355,8 @@ export {
   vodafoneCashValidation,
   fawryValidation,
   contactValidation,
+  // paymentValidation,
+  bankAccountNumberValidation,
+  ibanValidation,
+  switfCodeValidation,
 };
