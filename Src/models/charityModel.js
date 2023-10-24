@@ -51,7 +51,7 @@ const locationSchema = new mongoose.Schema({
 const paymentMethodSchema = new Schema({
   bankAccount: [
     {
-      enable: {
+      enable: {//account is valid to use or not (freezed or in reviewing)
         type: Boolean,
         default: false,
       },
@@ -219,6 +219,12 @@ const charitySchema = new Schema(
       default: false,
       required: true,
     },
+    // modifyPaymentMethodsRequest: {
+    //   //if the charity admin request to add a new payment account or edit existing one 
+    //   type: Boolean,
+    //   default: false,
+    //   required: true,
+    // },
     paymentMethods: {
       type: paymentMethodSchema,
       // required: true,
@@ -333,6 +339,14 @@ charitySchema.post('init', (doc) => {
   } else {
     console.log('modifieddd');
     editImgUrl(doc);
+  }if ((doc.paymentMethods.bankAccount, 'docsBank')) {
+    editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+  }
+  if ((doc.paymentMethods.fawry, 'docsFawry')) {
+    editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+  }
+  if ((doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
+    editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
   }
   // if (
   //   !doc.isModified('charityDocs[docs1]') &&
