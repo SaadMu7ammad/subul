@@ -5,6 +5,37 @@ const Schema = mongoose.Schema;
 const locationSchema = new mongoose.Schema({
   governorate: {
     type: String,
+    enum: [
+      'Alexandria',
+      'Assiut',
+      'Aswan',
+      'Beheira',
+      'Bani Suef',
+      'Cairo',
+      'Daqahliya',
+      'Damietta',
+      'Fayyoum',
+      'Gharbiya',
+      'Giza',
+      'Helwan',
+      'Ismailia',
+      'Kafr El Sheikh',
+      'Luxor',
+      'Marsa Matrouh',
+      'Minya',
+      'Monofiya',
+      'New Valley',
+      'North Sinai',
+      'Port Said',
+      'Qalioubiya',
+      'Qena',
+      'Red Sea',
+      'Sharqiya',
+      'Sohag',
+      'South Sinai',
+      'Suez',
+      'Tanta',
+    ],
     required: true,
   },
   city: {
@@ -15,53 +46,88 @@ const locationSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-},{_id:false});
+});
 
 const paymentMethodSchema = new Schema({
   bankAccount: [
     {
+      enable: {
+        type: Boolean,
+        default: false,
+      },
       accNumber: {
         type: String,
-        required: true,
+        // required: true,
       },
       iban: {
         type: String,
-        required: true,
+        // required: true,
       },
       swiftCode: {
         type: String,
-        required: true,
+        // required: true,
+      },
+      docsBank: {
+        type: [String], // Define it as an array of strings
+        // required: true, // The entire array is required
       },
     },
   ],
   fawry: [
     {
+      enable: {
+        type: Boolean,
+        default: false,
+      },
       number: {
         type: String,
-        required: true,
+        // required: true,
+      },
+
+      docsFawry: {
+        type: [String],
+        // required: true,
       },
     },
   ],
   vodafoneCash: [
     {
+      enable: {
+        type: Boolean,
+        default: false,
+      },
       number: {
         type: String,
-        required: true,
+        // required: true,
+      },
+
+      docsVodafoneCash: {
+        type: [String],
+        // required: true,
       },
     },
   ],
-},{_id:false});
-paymentMethodSchema.path('bankAccount').validate(function (value) {
-  return value.length > 0;
-}, 'At least one bank account must be provided.');
+});
+// paymentMethodSchema.path('bankAccount').validate(function (value) {
+//   for (const bankAccount of value) {
+//     if (bankAccount.accNumber && bankAccount.iban&&bankAccount.swiftCode) {
+//       return true;
+//     }
+//   }
+//   return false
+// }, 'Validation input bank not completed');
 
-paymentMethodSchema.path('fawry').validate(function (value) {
-  return value.length > 0;
-}, 'At least one fawry account must be provided.');
+// paymentMethodSchema.path('bankAccount').validate(function (value) {
+//   return value.length > 0;
+// }, 'At least one bank account must be provided.');
 
-paymentMethodSchema.path('vodafoneCash').validate(function (value) {
-  return value.length > 0;
-}, 'At least one vodafoneCash account must be provided.');
+// paymentMethodSchema.path('fawry').validate(function (value) {
+//   return value.length > 0;
+// }, 'At least one fawry account must be provided.');
+
+// paymentMethodSchema.path('vodafoneCash').validate(function (value) {
+//   return value.length > 0;
+// }, 'At least one vodafoneCash account must be provided.');
 
 const charitySchema = new Schema(
   {
@@ -155,7 +221,7 @@ const charitySchema = new Schema(
     },
     paymentMethods: {
       type: paymentMethodSchema,
-      required: true,
+      // required: true,
     },
     rate: {
       type: Number,
@@ -202,6 +268,9 @@ const charitySchema = new Schema(
       docs3: [String],
       docs4: [String],
     },
+    charityReqDocs: {
+      docs: [String],
+    },
   },
   { timestamps: true }
 );
@@ -221,13 +290,39 @@ const editImgUrl = (doc) => {
   }
 };
 const editDocUrl = function (ref, field) {
-  ref[field].map((img,indx) => {
+  ref[field].map((img, indx) => {
     // console.log(img);//before adding localhost
     const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${img}`;
     img = url;
     // console.log(img);//after adding localhost
-    ref[field][indx]=img
+    ref[field][indx] = img;
   });
+};
+const editDocUrlPayment = function (ref, field) {
+  // console.log(ref);
+  ref.forEach((account, index) => {
+    // console.log(account);
+    // account.forEach((img, indx) => {
+    // console.log(img);//before adding localhost
+    if (field === 'docsBank') {
+      const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${account.docsBank}`;
+      account.docsBank = url;
+    }
+
+    if (field === 'docsFawry') {
+      const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${account.docsFawry}`;
+      account.docsFawry = url;
+    }
+
+    if (field === 'docsVodafoneCash') {
+      const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${account.docsVodafoneCash}`;
+      account.docsVodafoneCash = url;
+    }
+
+    // console.log(img);//after adding localhost
+    // ref.account[index] =  account.docsBank;
+  });
+  // })
 };
 charitySchema.post('init', (doc) => {
   //after initialized the doc in db when a document is created or retrieved from the database.
@@ -272,6 +367,15 @@ charitySchema.post('save', (doc) => {
     editDocUrl(doc.charityDocs, 'docs2');
     editDocUrl(doc.charityDocs, 'docs3');
     editDocUrl(doc.charityDocs, 'docs4');
+    if ((doc.paymentMethods.bankAccount, 'docsBank')) {
+      editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+    }
+    if ((doc.paymentMethods.fawry, 'docsFawry')) {
+      editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+    }
+    if ((doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
+      editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
+    }
   }
 });
 

@@ -13,6 +13,8 @@ import {
   sendDocs,
   showCharityProfile,
   editCharityProfile,
+  requestEditCharityProfilePayments,
+  addCharityPayments,
 } from '../Controllers/charityController.js';
 import { resizeImg, uploadCoverImage } from '../middlewares/imageMiddleware.js';
 // import logger from '../utils/logger.js';
@@ -24,9 +26,14 @@ import { charityRegisterValidation } from '../utils/validatorComponents/charity/
 import {
   tokenValidation,
   emailValidation,
+  // paymentValidation,
 } from '../utils/validatorComponents/charity/allCharityValidation.js';
 import editProfileValidation from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
+import {
+  resizeDocReq,
+  uploadDocsReq,
+} from '../middlewares/reqDocPaymentMiddleware.js';
 const router = express.Router();
 
 router.post(
@@ -66,14 +73,27 @@ router.post('/logout', logout);
 router.get('/profile', auth, showCharityProfile);
 router.put(
   '/edit-profile',
+  uploadCoverImage,
+  resizeImg,
   editProfileValidation,
   validate,
   auth,
   editCharityProfile
 );
 router.post(
+  '/request-edit-payment',
+  auth,
+  uploadDocsReq,
+  editProfileValidation,
+  validate,
+  resizeDocReq,
+  requestEditCharityProfilePayments
+);
+router.post(
   '/send-docs',
   auth,
+  // paymentValidation,
+  // validate,
   uploadDocs,
   resizeDoc,
   // , upload.single('charityDocs[docs1]'),
@@ -82,7 +102,8 @@ router.post(
   //   console.log(req.files);
   //   next();
   // },
-  sendDocs
+  sendDocs,
+  addCharityPayments
 );
 
 export default router;
