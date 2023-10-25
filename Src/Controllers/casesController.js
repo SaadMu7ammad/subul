@@ -6,6 +6,8 @@ import { setupMailSender } from '../utils/mailer.js';
 import { UnauthenticatedError } from '../errors/unauthenticated.js';
 import { NotFoundError } from '../errors/not-found.js';
 import logger from '../utils/logger.js';
+import { deleteFile } from '../utils/deleteFile.js';
+
 const addCase = asyncHandler(async (req, res, next) => {
     if (!req.charity) {
         throw new UnauthenticatedError(
@@ -15,11 +17,19 @@ const addCase = asyncHandler(async (req, res, next) => {
     const newCase = Case(req.body);
     newCase.charity = req.charity._id;
     newCase.imageCover = req.body.image;
-    await newCase.save();
-    req.charity.cases.push(newCase._id);
-    await req.charity.save();
-    res.json(newCase);
+    try {
+        await newCase.save();
+        req.charity.cases.push(newCase._id);
+        await req.charity.save();
+        res.json(newCase);
+    } catch (err) {
+        if (err) {
+            deleteFile('./uploads/casesCoverImages/' + req.body.image);
+            next(err);
+        }
+    }
 });
+
 const getAllCases = asyncHandler(async (req, res, next) => {
     const populatedCharityObject = await req.charity.populate({
         path: 'cases',
@@ -33,8 +43,8 @@ const getAllCases = asyncHandler(async (req, res, next) => {
 const getCaseById = asyncHandler(async (req, res, next) => {
     //caseId ,then fetch it from DB
     const caseIdsArray = req.charity.cases;
-    const caseId = caseIdsArray.find(function(id){
-      return id.toString() === req.params.caseId;
+    const caseId = caseIdsArray.find(function (id) {
+        return id.toString() === req.params.caseId;
     });
     if (!caseId) {
         throw new NotFoundError('No Such Case With this Id!');

@@ -28,14 +28,17 @@ const multerFilter = (req, file, cb) => {
 };
 const resizeImg = asyncHandler(async (req, res, next) => {
   // const ex = file.mimetype.split('/')[1];
+  let destinationFolder,suffix ;
+  if(req.path === '/addCase')destinationFolder = 'casesCoverImages',suffix = 'caseCoveImage';
+  else if (req.path === '/')destinationFolder = 'LogoCharities',suffix = 'LogoCharity';
   if(!req.file)throw new BadRequestError('no cover/logo image uploaded')
-  const uniqueSuffix = 'LogoCharity' + uuidv4() + '-' + Date.now();
+  const uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
   const filename = uniqueSuffix + '.jpeg';
   await sharp(req.file.buffer)
   .resize(320, 240)
   .toFormat('jpeg')
   .jpeg({ quality: 90 })
-  .toFile('./uploads/LogoCharities/' + filename); //, (err, info) => {
+  .toFile(`./uploads/${destinationFolder}/` + filename); //, (err, info) => {
     //   console.log('err');
     //   console.log(err);
     // });
