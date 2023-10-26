@@ -70,6 +70,8 @@ async function processDocs(docsKey, ref, req) {
 }
 // req.files['charityDocs[docs1]'].map((obj, indx)
 const resizeDoc = asyncHandler(async (req, res, next) => {
+  req.temp = []; //container for deleting imgs
+
   req.body.charityDocs = {};
   // await Promise.all(
   //   req.files['charityDocs[docs1]'].map(async (obj, indx) => {

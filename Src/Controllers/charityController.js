@@ -593,8 +593,11 @@ const sendDocs = asyncHandler(async (req, res, next) => {
 
   // const charity = await Charity.findById(req.charity._id);
   // console.log(charity);
-  if (!req.charity) throw new NotFoundError('No charity found ');
+  if (!req.charity) {
+    deleteOldImgs(req, res, next);
+    throw new NotFoundError('No charity found ');
 
+  }
   if (
     (req.charity.emailVerification.isVerified ||
       req.charity.phoneVerification.isVerified) &&
@@ -613,12 +616,20 @@ const sendDocs = asyncHandler(async (req, res, next) => {
     !req.charity.emailVerification.isVerified &&
     !req.charity.phoneVerification.isVerified
   ) {
+    deleteOldImgs(req, res, next);
+
     throw new UnauthenticatedError('you must verify your account again');
   } else if (req.charity.isConfirmed) {
+    deleteOldImgs(req, res, next);
+
     throw new BadRequestError('you already has been confirmed');
   } else if (req.charity.isPending) {
+    deleteOldImgs(req, res, next);
+
     throw new BadRequestError('soon response... still reviewing docs');
   } else {
+    deleteOldImgs(req, res, next);
+
     throw new BadRequestError('error occured, try again later');
   }
 });
