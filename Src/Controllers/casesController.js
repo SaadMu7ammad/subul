@@ -41,7 +41,6 @@ const getAllCases = asyncHandler(async (req, res, next) => {
 });
 
 const getCaseById = asyncHandler(async (req, res, next) => {
-    //caseId ,then fetch it from DB
     const caseIdsArray = req.charity.cases;
     const caseId = caseIdsArray.find(function (id) {
         return id.toString() === req.params.caseId;
@@ -53,4 +52,25 @@ const getCaseById = asyncHandler(async (req, res, next) => {
     res.json(_case);
 });
 
-export { addCase, getAllCases, getCaseById };
+const deleteCase = asyncHandler(async (req, res, next) => {
+    const caseIdsArray = req.charity.cases;
+    const caseIdIndex = caseIdsArray.findIndex(function (id) {
+        return id.toString() === req.params.caseId;
+    });
+    console.log(caseIdsArray);
+    if (caseIdIndex === -1) {
+        throw new NotFoundError('No Such Case With this Id!');
+    }
+    const caseId = req.charity.cases[caseIdIndex];
+    const deletedCase = await Case.findByIdAndDelete(caseId);
+    caseIdsArray.splice(caseIdIndex, 1);
+    req.charity.cases = caseIdsArray;
+    await req.charity.save();
+    res.json(deletedCase);
+});
+
+const editCase = asyncHandler(async (req, res, next) => {
+    
+});
+
+export { addCase, getAllCases, getCaseById, deleteCase };

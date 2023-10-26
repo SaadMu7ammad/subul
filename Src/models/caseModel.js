@@ -146,7 +146,7 @@ const caseSchema = new mongoose.Schema(
     // number of beneficiaries
     helpedNumbers: {
       type: Number,
-      required: [true, 'must be helpedNumbers provided'],
+      required: [true, 'helpedNumbers must be provided'],
     },
     freezed: {
       //for admin decisions
@@ -156,7 +156,7 @@ const caseSchema = new mongoose.Schema(
     },
     targetDonationAmount: {
       type: Number,
-      required: [true, 'must be targetDonationAmount provided'],
+      required: [true, 'targetDonationAmount must be provided'],
     },
     currentDonationAmount: {
       type: Number,
