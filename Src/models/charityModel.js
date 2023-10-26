@@ -310,19 +310,37 @@ const editDocUrlPayment = function (ref, field) {
     // console.log(account);
     // account.forEach((img, indx) => {
     // console.log(img);//before adding localhost
+    // console.log('acc=');
+    // console.log(account.docsBank[0]);
     if (field === 'docsBank') {
-      const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${account.docsBank}`;
-      account.docsBank = url;
+      console.log('fdsfdfd');
+      account.docsBank.forEach((sub, indx) => {
+        console.log('before '+sub);
+        const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${sub}`;
+        sub = url;
+        account.docsBank[indx] = sub;
+        console.log('after '+sub);
+
+      })
+      // account.docsBank[0] = url;
     }
 
-    if (field === 'docsFawry') {
-      const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${account.docsFawry}`;
-      account.docsFawry = url;
+    else if (field === 'docsFawry') {
+      account.docsFawry.forEach((sub, indx) => {
+        // console.log(sub);
+        const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${sub}`;
+        sub = url;
+        account.docsFawry[indx] = sub;
+      })
     }
 
-    if (field === 'docsVodafoneCash') {
-      const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${account.docsVodafoneCash}`;
-      account.docsVodafoneCash = url;
+   else if (field === 'docsVodafoneCash') {
+      account.docsVodafoneCash.forEach((sub, indx) => {
+        // console.log(sub);
+        const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${sub}`;
+        sub = url;
+        account.docsVodafoneCash[indx] = sub;
+      })
     }
 
     // console.log(img);//after adding localhost
@@ -339,15 +357,17 @@ charitySchema.post('init', (doc) => {
   } else {
     console.log('modifieddd');
     editImgUrl(doc);
-  }if ((doc.paymentMethods.bankAccount, 'docsBank')) {
-    editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
   }
-  if ((doc.paymentMethods.fawry, 'docsFawry')) {
-    editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
-  }
-  if ((doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
-    editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
-  }
+  // if (doc.paymentMethods && (doc.paymentMethods.bankAccount, 'docsBank')) {
+  //   console.log('xcxcxc');
+  //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+  // }
+  // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
+  //   editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+  // }
+  // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
+  //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
+  // }
   // if (
   //   !doc.isModified('charityDocs[docs1]') &&
   //   !doc.isModified('charityDocs[docs2]') &&
@@ -381,13 +401,13 @@ charitySchema.post('save', (doc) => {
     editDocUrl(doc.charityDocs, 'docs2');
     editDocUrl(doc.charityDocs, 'docs3');
     editDocUrl(doc.charityDocs, 'docs4');
-    if ((doc.paymentMethods.bankAccount, 'docsBank')) {
+    if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
       editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
     }
-    if ((doc.paymentMethods.fawry, 'docsFawry')) {
+    if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
       editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
     }
-    if ((doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
+    if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
       editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
     }
   }
