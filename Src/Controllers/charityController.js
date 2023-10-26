@@ -353,41 +353,56 @@ const editCharityProfilePaymentMethods = asyncHandler(
       temp.number = number;
       temp.docsVodafoneCash = docsVodafoneCash;
     }
-    if (indx !== -1) {
+    if (indx !== -1) {//edit a payment account && enable attribute will be reset to false again
       if (selector === 'bankAccount') {
         req.charity.paymentMethods.bankAccount[indx].accNumber = temp.accNumber; //assign the object
         req.charity.paymentMethods.bankAccount[indx].iban = temp.iban; //assign the object
         req.charity.paymentMethods.bankAccount[indx].swiftCode = temp.swiftCode; //assign the object
-        req.charity.paymentMethods.bankAccount[indx].docsBank=[temp.docsBank]
+        req.charity.paymentMethods.bankAccount[indx].docsBank = [temp.docsBank]
+        req.charity.paymentMethods.bankAccount[indx].enable=false//reset again to review it again
+        // req.charity.modifyPaymentMethodsRequest = true;
+        
         await req.charity.save();
         return res.json(req.charity.paymentMethods.bankAccount[indx]);
       } else if (selector === 'fawry') {
         req.charity.paymentMethods.fawry[indx].number = temp.number; //assign the object
-        req.charity.paymentMethods.fawry[indx].docsFawry=temp.docsFawry
+        req.charity.paymentMethods.fawry[indx].docsFawry = temp.docsFawry
+        req.charity.paymentMethods.fawry[indx].enable=false//reset again to review it again
+        // req.charity.modifyPaymentMethodsRequest = true;
+        
         await req.charity.save();
         return res.json(req.charity.paymentMethods.fawry[indx]);
       } else if (selector === 'vodafoneCash') {
         req.charity.paymentMethods.vodafoneCash[indx].number = temp.number; //assign the object
-        req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash=temp.docsVodafoneCash
+        req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash = temp.docsVodafoneCash
+        req.charity.paymentMethods.vodafoneCash[indx].enable=false//reset again to review it again
+        // req.charity.modifyPaymentMethodsRequest = true;
+
         await req.charity.save();
         return res.json(req.charity.paymentMethods.vodafoneCash[indx]);
       }
-    } else if (indx === -1) {
+    } else if (indx === -1) {//add a new payment account
       //add a new address
       if (selector === 'bankAccount') {
         // const { docsVodafoneCash} = req.body.paymentMethods.docsVodafoneCash[0];
         // req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash=docsVodafoneCash
         req.charity.paymentMethods.bankAccount.push(temp); //assign the object
+        // req.charity.modifyPaymentMethodsRequest = true;
+
         await req.charity.save();
         const len = req.charity.paymentMethods.bankAccount.length - 1;
         return res.json(req.charity.paymentMethods.bankAccount[len]);
       } else if (selector === 'fawry') {
         req.charity.paymentMethods.fawry.push(temp); //assign the object
+        // req.charity.modifyPaymentMethodsRequest = true;
+
         await req.charity.save();
         const len = req.charity.paymentMethods.fawry.length - 1;
         return res.json(req.charity.paymentMethods.fawry[len]);
       } else if (selector === 'vodafoneCash') {
         req.charity.paymentMethods.vodafoneCash.push(temp); //assign the object
+        // req.charity.modifyPaymentMethodsRequest = true;
+
         await req.charity.save();
         const len = req.charity.paymentMethods.vodafoneCash.length - 1;
         return res.json(req.charity.paymentMethods.vodafoneCash[len]);
@@ -411,6 +426,7 @@ const requestEditCharityProfilePayments = asyncHandler(
           paymentMethods._id.toString() === req.body.payment_id
       );
       console.log('indx=' + indx);
+
       return await editCharityProfilePaymentMethods(
         req,
         res,
