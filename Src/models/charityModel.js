@@ -349,6 +349,7 @@ const editDocUrlPayment = function (ref, field) {
   // })
 };
 charitySchema.post('init', (doc) => {
+  //findone,findall,update
   //after initialized the doc in db when a document is created or retrieved from the database.
   console.log('after init');
   // console.log('accessing data');
@@ -385,6 +386,7 @@ charitySchema.post('init', (doc) => {
   // }
 });
 charitySchema.post('save', (doc) => {
+  //create
   // after a new document is created and saved for the first time or when an existing document is updated and saved.  // console.log('after first time we create the data');
   console.log('after created');
   editImgUrl(doc);
@@ -401,25 +403,30 @@ charitySchema.post('save', (doc) => {
     editDocUrl(doc.charityDocs, 'docs2');
     editDocUrl(doc.charityDocs, 'docs3');
     editDocUrl(doc.charityDocs, 'docs4');
-    if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
-      editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
-    }
-    if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
-      editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
-    }
-    if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
-      editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
-    }
+    // if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
+    //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+    // }
+    // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
+    //   editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+    // }
+    // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
+    //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
+    // }
   }
 });
 
-// charitySchema.pre('save', function (next) {
-//   editDocUrl(this.charityDocs, 'docs1', 1);
-//   editDocUrl(this.charityDocs, 'docs2', 2);
-//   editDocUrl(this.charityDocs, 'docs3', 3);
-//   editDocUrl(this.charityDocs, 'docs4', 4);
-//   next(); // Continue with the save operation
-// });
+charitySchema.pre('init', (doc) => {
+  
+  if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
+    editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+  }
+  if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
+    editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+  }
+  if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
+    editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
+  }
+});
 
 charitySchema.methods.comparePassword = async function (enteredPassword) {
   const isMatch = await bcrypt.compare(enteredPassword, this.password);
