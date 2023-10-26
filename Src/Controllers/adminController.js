@@ -3,19 +3,22 @@ import Charity from '../models/charityModel.js';
 import { BadRequestError } from '../errors/bad-request.js';
 import { setupMailSender } from '../utils/mailer.js';
 
-const getAllCharityPaymentsMethods = asyncHandler(async (req, res, next) => {
-  const charitiesPending = await Charity.find({
-    $and: [
-      { isPending: true },
-      { isEnabled: true },
-      {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    ],
-  },'-paymentMethods._id')
+const getAllPendingRequestsCharities = asyncHandler(async (req, res, next) => {
+  const charitiesPending = await Charity.find(
+    {
+      $and: [
+        { isPending: true },
+        { isEnabled: true },
+        {
+          $or: [
+            { 'emailVerification.isVerified': true },
+            { 'phoneVerification.isVerified': true },
+          ],
+        },
+      ],
+    },
+    '-paymentMethods._id'
+  )
     // .select('name')
     .select(
       '-contactInfo -contactInfo -isConfirmed -phoneVerification -rate -currency -location -donorRequests -createdAt -updatedAt -__v -emailVerification -charityInfo -charityDocs -charityReqDocs -cases -image -email -password -description -totalDonationsIncome -verificationCode -isEnabled -isEnabled -isPending '
@@ -24,7 +27,7 @@ const getAllCharityPaymentsMethods = asyncHandler(async (req, res, next) => {
   // .exec();
   res.status(200).json(charitiesPending);
 });
-const getCharityPendingRequestsById = asyncHandler(async (req, res, next) => {
+const getPendingRequestCharityById = asyncHandler(async (req, res, next) => {
   const charity = await Charity.findOne({
     _id: req.params.id,
     $and: [
@@ -37,7 +40,9 @@ const getCharityPendingRequestsById = asyncHandler(async (req, res, next) => {
         ],
       },
     ],
-  }).select('name paymentMethods').exec();
+  })
+    .select('name paymentMethods')
+    .exec();
   if (!charity) throw new BadRequestError('charity not found');
   res.status(200).json(charity);
 });
@@ -48,12 +53,12 @@ const getCharityPaymentsRequestsById = asyncHandler(async (req, res, next) => {
   ).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
   res.json(paymentRequests);
 });
-// const getAllCharityPaymentsMethods = asyncHandler(async (req, res, next) => {
-//   const paymentRequests = await Charity.find({}, 'paymentMethods _id').select(
-//     '-_id'
-//   ); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
-//   res.json(paymentRequests);
-// });
+const getAllCharityPaymentsMethods = asyncHandler(async (req, res, next) => {
+  const paymentRequests = await Charity.find({}, 'paymentMethods _id').select(
+    '-_id'
+  ); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
+  res.json(paymentRequests);
+});
 const confirmcharity = asyncHandler(async (req, res, next) => {
   const charity = await Charity.findOne({
     _id: req.params.id,
@@ -67,7 +72,9 @@ const confirmcharity = asyncHandler(async (req, res, next) => {
         ],
       },
     ],
-  }).select('name paymentMethods').exec();
+  })
+    .select('name paymentMethods')
+    .exec();
   if (!charity) throw new BadRequestError('charity not found');
   charity.isPending = false;
   charity.isConfirmed = true;
@@ -109,9 +116,9 @@ const rejectcharity = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: 'Charity failed to be confirmed', charity });
 });
 export {
-  getAllCharityPaymentsMethods,
+  getAllPendingRequestsCharities,
   confirmcharity,
   rejectcharity,
-  getCharityPendingRequestsById,
-  getCharityPaymentsRequestsById,
+  getPendingRequestCharityById,
+  getCharityPaymentsRequestsById,getAllCharityPaymentsMethods
 };
