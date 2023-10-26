@@ -1,8 +1,23 @@
+import fs from 'fs';
+import path from 'path';
 import asyncHandler from 'express-async-handler';
 import Charity from '../models/charityModel.js';
 import { BadRequestError } from '../errors/bad-request.js';
 import { setupMailSender } from '../utils/mailer.js';
-
+const deleteOldImgs = (arr, selector) => {
+  
+ arr.map( (img) => {
+    const oldImagePath = path.join('./uploads/docsCharities', img);
+    if (fs.existsSync(oldImagePath)) {
+      // Delete the file
+      fs.unlinkSync(oldImagePath);
+      console.log('Old image deleted successfully.');
+    } else {
+      console.log('Old image does not exist.');
+    }
+  });
+ arr = [];
+};
 const getAllPendingRequestsCharities = asyncHandler(async (req, res, next) => {
   const charitiesPending = await Charity.find(
     {
@@ -78,6 +93,8 @@ const confirmcharity = asyncHandler(async (req, res, next) => {
   if (!charity) throw new BadRequestError('charity not found');
   charity.isPending = false;
   charity.isConfirmed = true;
+
+  // deleteOldImgs(arr)
   await charity.save();
   await setupMailSender(
     req,
@@ -90,6 +107,7 @@ const confirmcharity = asyncHandler(async (req, res, next) => {
 });
 
 const rejectcharity = asyncHandler(async (req, res, next) => {
+  console.log('reh');
   const charity = await Charity.findOne({
     _id: req.params.id,
     $and: [
@@ -106,6 +124,32 @@ const rejectcharity = asyncHandler(async (req, res, next) => {
   if (!charity) throw new BadRequestError('charity not found');
   charity.isPending = false;
   charity.isConfirmed = false;
+      deleteOldImgs(charity.charityDocs.docs1)
+      deleteOldImgs(charity.charityDocs.docs2)
+      deleteOldImgs(charity.charityDocs.docs3)
+      deleteOldImgs(charity.charityDocs.docs4)
+  
+  charity.paymentMethods.bankAccount.map(acc => {
+    console.log('loop');
+    // acc.docsBank.map(img => {
+    //   console.log(img);
+      deleteOldImgs(acc.docsBank)
+     
+      // })
+  })
+  charity.paymentMethods.fawry.map(acc => {
+    console.log('loop');
+    // acc.docsBank.map(img => {
+    //   console.log(img);
+      deleteOldImgs(acc.docsFawry)
+      // })
+  })
+  charity.paymentMethods.vodafoneCash.map(acc => {
+    console.log('loop');
+  
+      deleteOldImgs(acc.docsVodafoneCash)
+      // })
+    })
   await charity.save();
   await setupMailSender(
     req,
