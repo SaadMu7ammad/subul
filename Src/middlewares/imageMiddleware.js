@@ -29,8 +29,10 @@ const multerFilter = (req, file, cb) => {
 const resizeImg = asyncHandler(async (req, res, next) => {
   // const ex = file.mimetype.split('/')[1];
   let destinationFolder,suffix ;
-  if(req.path === '/addCase')destinationFolder = 'casesCoverImages',suffix = 'caseCoveImage';
-  else if (req.path === '/')destinationFolder = 'LogoCharities',suffix = 'LogoCharity';
+  //Saif:This Should Be Handled Better Than that , but we will go with it for now 
+  //waiting to see :what other routes will upload images ?
+   if (req.path === '/')destinationFolder = 'LogoCharities',suffix = 'LogoCharity';
+   else destinationFolder = 'casesCoverImages',suffix = 'caseCoveImage';
   if(!req.file)throw new BadRequestError('no cover/logo image uploaded')
   const uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
   const filename = uniqueSuffix + '.jpeg';

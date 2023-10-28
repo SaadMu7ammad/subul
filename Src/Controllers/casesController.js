@@ -9,11 +9,6 @@ import logger from '../utils/logger.js';
 import { deleteFile } from '../utils/deleteFile.js';
 
 const addCase = asyncHandler(async (req, res, next) => {
-    if (!req.charity) {
-        throw new UnauthenticatedError(
-            'Users Are Not Authorized To Upload Cases!'
-        );
-    }
     const newCase = Case(req.body);
     newCase.charity = req.charity._id;
     newCase.imageCover = req.body.image;
@@ -57,7 +52,6 @@ const deleteCase = asyncHandler(async (req, res, next) => {
     const caseIdIndex = caseIdsArray.findIndex(function (id) {
         return id.toString() === req.params.caseId;
     });
-    console.log(caseIdsArray);
     if (caseIdIndex === -1) {
         throw new NotFoundError('No Such Case With this Id!');
     }
@@ -70,7 +64,43 @@ const deleteCase = asyncHandler(async (req, res, next) => {
 });
 
 const editCase = asyncHandler(async (req, res, next) => {
-    
+    const caseIdsArray = req.charity.cases;
+    const caseIdIndex = caseIdsArray.findIndex(function (id) {
+        return id.toString() === req.params.caseId;
+    });
+    if (caseIdIndex === -1) {
+        throw new NotFoundError('No Such Case With this Id!');
+    }
+    const caseId = req.charity.cases[caseIdIndex];
+    let oldCoverImage;
+    if (req.file) {
+        req.body.imageCover = req.body.image;
+        const caseObject = await Case.findById(caseId);
+        if (caseObject.imageCover) {
+            oldCoverImage = caseObject.imageCover;
+        }
+    }
+    let updatedCase;
+    try {
+        updatedCase = await Case.findByIdAndUpdate(
+            caseId,
+            { $set: { ...req.body } },
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+        if(oldCoverImage){
+            deleteFile('./uploads/casesCoverImages/' + oldCoverImage);
+        }
+    } catch (err) {
+        if (err) {
+            deleteFile('./uploads/casesCoverImages/' + req.body.imageCover);
+            next(err);
+        }
+    }
+
+    res.json(updatedCase);
 });
 
-export { addCase, getAllCases, getCaseById, deleteCase };
+export { addCase, getAllCases, getCaseById, deleteCase, editCase };
