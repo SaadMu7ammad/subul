@@ -191,7 +191,7 @@ const activateAccount = asyncHandler(async (req, res, next) => {
 });
 //@desc   logout user
 //@route  POST /api/users/logout
-//@access public
+//@access private
 const logoutUser = asyncHandler(async (req, res, next) => {
     res.cookie('jwt', '', {
         httpOnly: true,
@@ -199,7 +199,9 @@ const logoutUser = asyncHandler(async (req, res, next) => {
     });
     res.status(200).json({ message: 'logout' });
 });
-
+//@desc   edit user profile
+//@route  POST /api/users/profile/edit
+//@access private
 const editUserProfile = asyncHandler(async (req, res, next) => {
     if(req.body.email){
         const alreadyRegisteredEmail = await User.findOne({email: req.body.email});
@@ -226,7 +228,9 @@ const editUserProfile = asyncHandler(async (req, res, next) => {
         message: 'User Data Changed Successfully',
     });
 });
-
+//@desc   get user profile
+//@route  GET /api/users/profile
+//@access private
 const getUserProfileData = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.user._id).select(
         '-password -verificationCode'
