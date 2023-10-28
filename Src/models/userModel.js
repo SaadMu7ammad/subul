@@ -147,7 +147,8 @@ userSchema.pre('save', async function (next) {
 });
 userSchema.pre('findOneAndUpdate', async function (next) {
     // the update operation object is stored within this.getUpdate()
-    console.log( this.getUpdate())
+    console.log('userSchemaMiddleWare')
+    console.log(this.getUpdate())
     // console.log( this.getUpdate().$set.password);
     const passwordToUpdate = this.getUpdate().$set.password;
   

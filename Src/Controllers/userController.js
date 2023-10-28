@@ -199,25 +199,14 @@ const logoutUser = asyncHandler(async (req, res, next) => {
 //@route  POST /api/users/profile/edit
 //@access private
 const editUserProfile = asyncHandler(async (req, res, next) => {
-  if (req.body.email) {
-    const alreadyRegisteredEmail = await User.findOne({
-      email: req.body.email,
-    });
+  const updateUserArgs = dot.dot(req.body);
+  const { email } = { ...updateUserArgs };
+  if (email) {
+    const alreadyRegisteredEmail = await User.findOne({ email });
     if (alreadyRegisteredEmail) {
       throw new BadRequestError('Email is already taken!');
     }
   }
-  const updateUserArgs = dot.dot(req.body);
-//   const { password } = { ...updateUserArgs };
-//   // console.log(password);
-//   if (password) {
-//     console.log(updateUserArgs);
-//     // console.log(updateUserArgs.password);
-//     req.user.password = password;
-//     delete updateUserArgs.password;
-//     await req.user.save();
-//   }
-//   console.log(updateUserArgs);
 
   const user = await User.findByIdAndUpdate(
     req.user._id,
@@ -229,6 +218,11 @@ const editUserProfile = asyncHandler(async (req, res, next) => {
     { new: true }
   );
   if (!user) throw new NotFoundError('User not found');
+  if (email) {
+    user.emailVerification.isVerified = false;
+    user.emailVerification.verificationDate = null;
+    await user.save();
+  }
 
   res.status(201).json({
     _id: user._id,
