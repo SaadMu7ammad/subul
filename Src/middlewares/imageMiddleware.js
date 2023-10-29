@@ -11,8 +11,8 @@
 //     cb(null, uniqueSuffix + '.' + ex);
 //   },
 // });
-import path from 'path'
-import fs from 'fs'
+import path from 'path';
+import fs from 'fs';
 
 import asyncHandler from 'express-async-handler';
 import multer from 'multer';
@@ -31,24 +31,55 @@ const multerFilter = (req, file, cb) => {
 
 const resizeImg = asyncHandler(async (req, res, next) => {
   let uniqueSuffix;
-  req.temp=[]//container for deleting imgs
+  req.temp = []; //container for deleting imgs
   // const ex = file.mimetype.split('/')[1];
-  if (!req.file) throw new BadRequestError('no cover/logo image uploaded')
+  if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
   if (req.body && req.body.name) {
-     uniqueSuffix = 'LogoCharity-'+req.body.name + uuidv4() + '-' + Date.now();
+    uniqueSuffix = 'LogoCharity-' + req.body.name + uuidv4() + '-' + Date.now();
   }
   const filename = uniqueSuffix + '.jpeg';
-req.temp.push(filename)
+  req.temp.push(filename);
   await sharp(req.file.buffer)
-  .resize(320, 240)
-  .toFormat('jpeg')
-  .jpeg({ quality: 90 })
-  .toFile('./uploads/LogoCharities/' + filename); //, (err, info) => {
+    .resize(320, 240)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile('./uploads/LogoCharities/' + filename); //, (err, info) => {
+  //   console.log('err');
+  //   console.log(err);
+  // });
+  //adding the filename in the req.body
+  req.body.image = filename;
+  next();
+});
+const resizeImgUpdated = asyncHandler(async (req, res, next) => {
+  let uniqueSuffix;
+  req.temp = []; //container for deleting imgs
+  // const ex = file.mimetype.split('/')[1];
+  // if (!req.file) throw new BadRequestError('no cover/logo image uploaded')
+  console.log('reeeessss');
+  console.log(req.body);
+  console.log(req.file);
+  if (req.file && req.file.buffer) {
+    if (req.body && req.body.name) {
+      uniqueSuffix =
+        'LogoCharity-' + req.body.name + uuidv4() + '-' + Date.now();
+    } else if (req.charity.name) {
+      uniqueSuffix =
+        'LogoCharity-' + req.charity.name + uuidv4() + '-' + Date.now();
+    }
+    const filename = uniqueSuffix + '.jpeg';
+    req.temp.push(filename);
+    await sharp(req.file.buffer)
+      .resize(320, 240)
+      .toFormat('jpeg')
+      .jpeg({ quality: 90 })
+      .toFile('./uploads/LogoCharities/' + filename); //, (err, info) => {
     //   console.log('err');
     //   console.log(err);
     // });
     //adding the filename in the req.body
-  req.body.image = filename;
+    req.body.image = filename;
+  }
   next();
 });
 const deleteOldImgsLogos = (req, res, next) => {
@@ -71,5 +102,12 @@ const deleteOldImgsLogos = (req, res, next) => {
 const multerStorage = multer.memoryStorage();
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 const uploadCoverImage = upload.single('image');
+const updateuploadCoverImage = upload.single('image');
 
-export { uploadCoverImage, resizeImg ,deleteOldImgsLogos};
+export {
+  uploadCoverImage,
+  resizeImg,
+  resizeImgUpdated,
+  deleteOldImgsLogos,
+  updateuploadCoverImage,
+};

@@ -262,7 +262,8 @@ const editCharityProfileAdresses = asyncHandler(
   }
 );
 const editCharityProfile = asyncHandler(async (req, res, next) => {
-  console.log(req.body);
+  console.log('editCharityProfile');
+  // console.log(req.body);
   
   const { location, currency, image, email } = req.body;
   if (email) {
@@ -330,19 +331,26 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
     if (key === 'charityDocs' || key.split('.')[0] === 'charityDocs')
       throw new BadRequestError('Cant edit it,You must contact us');
   }
+  if (image) {
+    console.log('old img');
+    //to delete the old image locally
+    console.log(req.charity.image); //old image profile
+    const oldImagePath = path.join('./uploads/LogoCharities', req.charity.image);
+    if (fs.existsSync(oldImagePath)) {
+      // Delete the file
+      fs.unlinkSync(oldImagePath);
+      console.log('Old image deleted successfully.');
+    } else {
+      console.log('Old image does not exist.');
+    }
+    console.log('new img');
 
-  //to delete the old image locally
-  console.log(req.charity.image); //old image profile
-  const oldImagePath = path.join('./uploads/LogoCharities', req.charity.image);
-  if (fs.existsSync(oldImagePath)) {
-    // Delete the file
-    fs.unlinkSync(oldImagePath);
-    console.log('Old image deleted successfully.');
-  } else {
-    console.log('Old image does not exist.');
+    console.log(image); //new img profile
   }
-  console.log(image); //new img profile
   const updateCharityArgs = dot.dot(req.body);
+  // if (updateCharityArgs.image) {
+  //   delete updateCharityArgs.image
+  // }
   charity = await Charity.findByIdAndUpdate(
     req.charity._id,
     {

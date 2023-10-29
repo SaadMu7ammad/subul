@@ -16,7 +16,7 @@ import {
   requestEditCharityProfilePayments,
   addCharityPayments,
 } from '../Controllers/charityController.js';
-import { resizeImg, uploadCoverImage } from '../middlewares/imageMiddleware.js';
+import { resizeImg, resizeImgUpdated, updateuploadCoverImage, uploadCoverImage } from '../middlewares/imageMiddleware.js';
 // import logger from '../utils/logger.js';
 import changePasswordValidation from '../utils/validatorComponents/changePasswordValidation.js';
 import confirmResetValidation from '../utils/validatorComponents/confirmResetValidation.js';
@@ -80,13 +80,13 @@ router.post('/logout', logout);
 router.get('/profile', auth, showCharityProfile);
 router.put(
   '/edit-profile',
-  // uploadCoverImage,
-  // resizeImg,
-  // editProfileValidation,
-  // validate,
   auth,
   isActivated,
   isConfirmed,
+  updateuploadCoverImage,
+  resizeImgUpdated,
+  // editProfileValidation,
+  // validate,
   editCharityProfile
 );
 router.post(
