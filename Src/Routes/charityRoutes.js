@@ -39,9 +39,9 @@ const router = express.Router();
 router.post(
   '/',
   uploadCoverImage,
-  resizeImg,
   charityRegisterValidation,
   validate,
+  resizeImg,
   registerCharity
 );
 router.post('/auth', loginValidation, validate, authCharity);

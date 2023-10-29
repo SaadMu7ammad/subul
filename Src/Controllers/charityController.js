@@ -13,6 +13,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../errors/index.js';
+import { deleteOldImgsLogos } from '../middlewares/imageMiddleware.js';
 // import logger from '../utils/logger.js';
 
 const registerCharity = asyncHandler(async (req, res, next) => {
@@ -22,11 +23,16 @@ const registerCharity = asyncHandler(async (req, res, next) => {
 
   let charity = await Charity.findOne({ email });
   if (charity) {
+    deleteOldImgsLogos(req,res,next)
     throw new BadRequestError('An Account with this Email already exists');
   }
 
   charity = await Charity.create(req.body);
-  if (!charity) throw new Error('Something went wrong');
+  if (!charity) {
+    deleteOldImgsLogos(req,res,next)
+    throw new Error('Something went wrong');
+
+  }
   generateToken(res, charity._id, 'charity');
   await setupMailSender(
     req,
