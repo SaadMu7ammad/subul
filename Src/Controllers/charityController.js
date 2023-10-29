@@ -272,14 +272,23 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
     } else {
       req.charity.email = email;
       req.charity.emailVerification.isVerified = false;
-      req.charity.emailVerification.verificationDate =null;
+      req.charity.emailVerification.verificationDate = null;
+      const token = await generateResetTokenTemp();
+      req.charity.verificationCode = token;
       await req.charity.save()
+      await setupMailSender(
+        req,
+        'email changed alert',
+        'email has been changed You must Re activate account ' +
+          `<h3>(www.activate.com)</h3>` +
+          `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+      );
       return res.status(201).json({
         _id: req.charity._id,
         name: req.charity.name,
         email: req.charity.email,
         image: req.charity.image,
-        message: 'Email Changed Successfully,But you must Re Activate the account by login again'// to access editing your other information again',
+        message: 'Email Changed Successfully,But you must Re Activate the account with the token sent to your email'// to access editing your other information again',
       });
     }
   }
