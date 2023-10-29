@@ -262,10 +262,33 @@ const editCharityProfileAdresses = asyncHandler(
   }
 );
 const editCharityProfile = asyncHandler(async (req, res, next) => {
-  let charity = await Charity.findById(req.charity._id);
   console.log(req.body);
-
-  const { location, currency, image } = req.body;
+  
+  const { location, currency, image, email } = req.body;
+  if (email) {
+    const alreadyRegisteredEmail = await Charity.findOne({ email });
+    if (alreadyRegisteredEmail) {
+      throw new BadRequestError('Email is already taken!');
+    } else {
+      req.charity.email = email;
+      req.charity.emailVerification.isVerified = false;
+      req.charity.emailVerification.verificationDate =null;
+      await req.charity.save()
+      return res.status(201).json({
+        _id: req.charity._id,
+        name: req.charity.name,
+        email: req.charity.email,
+        image: req.charity.image,
+        message: 'Email Changed Successfully,But you must Re Activate the account by login again'// to access editing your other information again',
+      });
+    }
+  }
+  let charity = await Charity.findById(req.charity._id);
+  // if (image) {
+  //   console.log('img');
+  //   uploadCoverImage(req, res, next);
+  //   await resizeImg(req, res, next);
+  // }
   // if (currency) throw new BadRequestError('cant change currency at this time');
   if (location) {
     //for editing location
@@ -319,7 +342,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
       },
     },
     { new: true } // return the updated document after the changes have been applied.
-  );
+    );
   await charity.save();
   res.status(201).json({
     _id: charity._id,
@@ -367,7 +390,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         req.charity.paymentMethods.bankAccount[indx].docsBank = [temp.docsBank]
         req.charity.paymentMethods.bankAccount[indx].enable=false//reset again to review it again
         // req.charity.modifyPaymentMethodsRequest = true;
-        
+
         await req.charity.save();
         return res.json(req.charity.paymentMethods.bankAccount[indx]);
       } else if (selector === 'fawry') {
@@ -375,7 +398,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         req.charity.paymentMethods.fawry[indx].docsFawry = temp.docsFawry
         req.charity.paymentMethods.fawry[indx].enable=false//reset again to review it again
         // req.charity.modifyPaymentMethodsRequest = true;
-        
+
         await req.charity.save();
         return res.json(req.charity.paymentMethods.fawry[indx]);
       } else if (selector === 'vodafoneCash') {
@@ -573,7 +596,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       throw new BadRequestError('must provide complete information');
     }
   }
-// await charity.save()
+  // await charity.save()
   await req.charity.save();
 
   // res.json(req.body);
@@ -602,7 +625,7 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   if (!req.charity) {
     deleteOldImgs(req, res, next);
     throw new NotFoundError('No charity found ');
-
+  
   }
   if (
     (req.charity.emailVerification.isVerified ||
