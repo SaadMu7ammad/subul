@@ -205,6 +205,17 @@ const editUserProfile = asyncHandler(async (req, res, next) => {
     const alreadyRegisteredEmail = await User.findOne({ email });
     if (alreadyRegisteredEmail) {
       throw new BadRequestError('Email is already taken!');
+    }else {
+      req.user.email = email;
+      req.user.emailVerification.isVerified = false;
+      req.user.emailVerification.verificationDate =null;
+      await req.user.save()
+      return res.status(201).json({
+        _id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
+        message: 'Email Changed Successfully,But you must Re Activate the account by login again'// to access editing your other information again',
+      });
     }
   }
 
