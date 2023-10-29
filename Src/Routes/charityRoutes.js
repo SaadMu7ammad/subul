@@ -28,6 +28,11 @@ import {
   emailValidation,
   // paymentValidation,
 } from '../utils/validatorComponents/charity/allCharityValidation.js';
+import {
+  isConfirmed,
+  isActivated,
+} from '../middlewares/authStage2Middleware.js';
+
 import editProfileValidation from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
 import {
@@ -66,6 +71,8 @@ router.post(
   changePasswordValidation,
   validate,
   auth,
+  isActivated,
+  isConfirmed,
   changePassword
 );
 // const upload = multer({ dest: 'uploads/docsCharities/' });
@@ -73,16 +80,20 @@ router.post('/logout', logout);
 router.get('/profile', auth, showCharityProfile);
 router.put(
   '/edit-profile',
-  uploadCoverImage,
-  resizeImg,
-  editProfileValidation,
-  validate,
+  // uploadCoverImage,
+  // resizeImg,
+  // editProfileValidation,
+  // validate,
   auth,
+  isActivated,
+  isConfirmed,
   editCharityProfile
 );
 router.post(
   '/request-edit-payment',
   auth,
+  isActivated,
+  isConfirmed,
   uploadDocsReq,
   editProfileValidation,
   validate,
