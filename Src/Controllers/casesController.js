@@ -8,6 +8,23 @@ import { NotFoundError } from '../errors/not-found.js';
 import logger from '../utils/logger.js';
 import { deleteFile } from '../utils/deleteFile.js';
 
+const calculateDonationCompletionPercentage = (_case) => {
+    return (_case.currentDonationAmount / _case.targetDonationAmount) * 100;
+};
+const defaultCasesCompareFunction = (caseA, caseB) => {// it may be slow , we can try to use another way.
+    const upvotesWeight = 2;
+    const viewsWeight = 1;
+    const caseAScore =
+        caseA.upVotes * upvotesWeight +
+        calculateDonationCompletionPercentage(caseA) +
+        caseA.views * viewsWeight;
+    const caseBScore =
+        caseB.upVotes * upvotesWeight +
+        calculateDonationCompletionPercentage(caseB) +
+        caseB.views * viewsWeight;
+    return caseBScore - caseAScore;
+};
+
 const addCase = asyncHandler(async (req, res, next) => {
     const newCase = Case(req.body);
     newCase.charity = req.charity._id;
@@ -26,12 +43,15 @@ const addCase = asyncHandler(async (req, res, next) => {
 });
 
 const getAllCases = asyncHandler(async (req, res, next) => {
+    const sortBy = req.params.sort||"";
     const populatedCharityObject = await req.charity.populate({
         path: 'cases',
         model: 'Cases',
         select: '-_id',
     });
-    const charityCases = populatedCharityObject.cases;
+    const charityCases = populatedCharityObject.cases.sort(
+        defaultCasesCompareFunction
+    );
     res.json(charityCases);
 });
 
@@ -90,7 +110,7 @@ const editCase = asyncHandler(async (req, res, next) => {
                 runValidators: true,
             }
         );
-        if(oldCoverImage){
+        if (oldCoverImage) {
             deleteFile('./uploads/casesCoverImages/' + oldCoverImage);
         }
     } catch (err) {
