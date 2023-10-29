@@ -13,6 +13,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../errors/index.js';
+import { deleteOldImgsLogos } from '../middlewares/imageMiddleware.js';
 // import logger from '../utils/logger.js';
 
 const registerCharity = asyncHandler(async (req, res, next) => {
@@ -22,11 +23,16 @@ const registerCharity = asyncHandler(async (req, res, next) => {
 
   let charity = await Charity.findOne({ email });
   if (charity) {
+    deleteOldImgsLogos(req,res,next)
     throw new BadRequestError('An Account with this Email already exists');
   }
 
   charity = await Charity.create(req.body);
-  if (!charity) throw new Error('Something went wrong');
+  if (!charity) {
+    deleteOldImgsLogos(req,res,next)
+    throw new Error('Something went wrong');
+
+  }
   generateToken(res, charity._id, 'charity');
   await setupMailSender(
     req,
@@ -55,7 +61,7 @@ const authCharity = asyncHandler(async (req, res, next) => {
   generateToken(res, charity._id, 'charity');
   //first stage
   if (
-    !charity.emailVerification.isVerified ||
+    !charity.emailVerification.isVerified &&
     !charity.phoneVerification.isVerified
   ) {
     //not verified(activated)
@@ -256,10 +262,43 @@ const editCharityProfileAdresses = asyncHandler(
   }
 );
 const editCharityProfile = asyncHandler(async (req, res, next) => {
+  console.log('editCharityProfile');
+  // console.log(req.body);
+  
+  const { location, currency, image, email } = req.body;
+  if (email) {
+    const alreadyRegisteredEmail = await Charity.findOne({ email });
+    if (alreadyRegisteredEmail) {
+      throw new BadRequestError('Email is already taken!');
+    } else {
+      req.charity.email = email;
+      req.charity.emailVerification.isVerified = false;
+      req.charity.emailVerification.verificationDate = null;
+      const token = await generateResetTokenTemp();
+      req.charity.verificationCode = token;
+      await req.charity.save()
+      await setupMailSender(
+        req,
+        'email changed alert',
+        'email has been changed You must Re activate account ' +
+          `<h3>(www.activate.com)</h3>` +
+          `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+      );
+      return res.status(201).json({
+        _id: req.charity._id,
+        name: req.charity.name,
+        email: req.charity.email,
+        image: req.charity.image,
+        message: 'Email Changed Successfully,But you must Re Activate the account with the token sent to your email'// to access editing your other information again',
+      });
+    }
+  }
   let charity = await Charity.findById(req.charity._id);
-  console.log(req.body);
-
-  const { location, currency, image } = req.body;
+  // if (image) {
+  //   console.log('img');
+  //   uploadCoverImage(req, res, next);
+  //   await resizeImg(req, res, next);
+  // }
   // if (currency) throw new BadRequestError('cant change currency at this time');
   if (location) {
     //for editing location
@@ -292,19 +331,26 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
     if (key === 'charityDocs' || key.split('.')[0] === 'charityDocs')
       throw new BadRequestError('Cant edit it,You must contact us');
   }
+  if (image) {
+    console.log('old img');
+    //to delete the old image locally
+    console.log(req.charity.image); //old image profile
+    const oldImagePath = path.join('./uploads/LogoCharities', req.charity.image);
+    if (fs.existsSync(oldImagePath)) {
+      // Delete the file
+      fs.unlinkSync(oldImagePath);
+      console.log('Old image deleted successfully.');
+    } else {
+      console.log('Old image does not exist.');
+    }
+    console.log('new img');
 
-  //to delete the old image locally
-  console.log(req.charity.image); //old image profile
-  const oldImagePath = path.join('./uploads/LogoCharities', req.charity.image);
-  if (fs.existsSync(oldImagePath)) {
-    // Delete the file
-    fs.unlinkSync(oldImagePath);
-    console.log('Old image deleted successfully.');
-  } else {
-    console.log('Old image does not exist.');
+    console.log(image); //new img profile
   }
-  console.log(image); //new img profile
   const updateCharityArgs = dot.dot(req.body);
+  // if (updateCharityArgs.image) {
+  //   delete updateCharityArgs.image
+  // }
   charity = await Charity.findByIdAndUpdate(
     req.charity._id,
     {
@@ -313,7 +359,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
       },
     },
     { new: true } // return the updated document after the changes have been applied.
-  );
+    );
   await charity.save();
   res.status(201).json({
     _id: charity._id,
@@ -361,7 +407,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         req.charity.paymentMethods.bankAccount[indx].docsBank = [temp.docsBank]
         req.charity.paymentMethods.bankAccount[indx].enable=false//reset again to review it again
         // req.charity.modifyPaymentMethodsRequest = true;
-        
+
         await req.charity.save();
         return res.json(req.charity.paymentMethods.bankAccount[indx]);
       } else if (selector === 'fawry') {
@@ -369,7 +415,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         req.charity.paymentMethods.fawry[indx].docsFawry = temp.docsFawry
         req.charity.paymentMethods.fawry[indx].enable=false//reset again to review it again
         // req.charity.modifyPaymentMethodsRequest = true;
-        
+
         await req.charity.save();
         return res.json(req.charity.paymentMethods.fawry[indx]);
       } else if (selector === 'vodafoneCash') {
@@ -567,7 +613,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       throw new BadRequestError('must provide complete information');
     }
   }
-// await charity.save()
+  // await charity.save()
   await req.charity.save();
 
   // res.json(req.body);
@@ -596,7 +642,7 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   if (!req.charity) {
     deleteOldImgs(req, res, next);
     throw new NotFoundError('No charity found ');
-
+  
   }
   if (
     (req.charity.emailVerification.isVerified ||

@@ -16,7 +16,7 @@ import {
   requestEditCharityProfilePayments,
   addCharityPayments,
 } from '../Controllers/charityController.js';
-import { resizeImg, uploadCoverImage } from '../middlewares/imageMiddleware.js';
+import { resizeImg, resizeImgUpdated, updateuploadCoverImage, uploadCoverImage } from '../middlewares/imageMiddleware.js';
 // import logger from '../utils/logger.js';
 import changePasswordValidation from '../utils/validatorComponents/changePasswordValidation.js';
 import confirmResetValidation from '../utils/validatorComponents/confirmResetValidation.js';
@@ -28,6 +28,11 @@ import {
   emailValidation,
   // paymentValidation,
 } from '../utils/validatorComponents/charity/allCharityValidation.js';
+import {
+  isConfirmed,
+  isActivated,
+} from '../middlewares/authStage2Middleware.js';
+
 import editProfileValidation from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
 import {
@@ -39,9 +44,9 @@ const router = express.Router();
 router.post(
   '/',
   uploadCoverImage,
-  resizeImg,
   charityRegisterValidation,
   validate,
+  resizeImg,
   registerCharity
 );
 router.post('/auth', loginValidation, validate, authCharity);
@@ -66,6 +71,8 @@ router.post(
   changePasswordValidation,
   validate,
   auth,
+  isActivated,
+  isConfirmed,
   changePassword
 );
 // const upload = multer({ dest: 'uploads/docsCharities/' });
@@ -73,16 +80,20 @@ router.post('/logout', logout);
 router.get('/profile', auth, showCharityProfile);
 router.put(
   '/edit-profile',
-  uploadCoverImage,
-  resizeImg,
-  editProfileValidation,
-  validate,
   auth,
+  isActivated,
+  isConfirmed,
+  updateuploadCoverImage,
+  resizeImgUpdated,
+  // editProfileValidation,
+  // validate,
   editCharityProfile
 );
 router.post(
   '/request-edit-payment',
   auth,
+  isActivated,
+  isConfirmed,
   uploadDocsReq,
   editProfileValidation,
   validate,

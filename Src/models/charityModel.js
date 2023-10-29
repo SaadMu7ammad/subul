@@ -313,7 +313,7 @@ const editDocUrlPayment = function (ref, field) {
     // console.log('acc=');
     // console.log(account.docsBank[0]);
     if (field === 'docsBank') {
-      console.log('fdsfdfd');
+      console.log('editDocUrlPayment');
       account.docsBank.forEach((sub, indx) => {
         console.log('before '+sub);
         const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${sub}`;
@@ -416,7 +416,20 @@ charitySchema.post('save', (doc) => {
 });
 
 charitySchema.pre('init', (doc) => {
-  
+  if (
+    !doc.charityDocs.docs1 &&
+    !doc.charityDocs.docs2 &&
+    !doc.charityDocs.docs3 &&
+    !doc.charityDocs.docs4
+  ) {
+    // console.log(doc.charityDocs);
+    console.log('docs is empty');
+  } else {
+    editDocUrl(doc.charityDocs, 'docs1');
+    editDocUrl(doc.charityDocs, 'docs2');
+    editDocUrl(doc.charityDocs, 'docs3');
+    editDocUrl(doc.charityDocs, 'docs4');
+  }
   if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
     editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
   }
@@ -427,7 +440,19 @@ charitySchema.pre('init', (doc) => {
     editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
   }
 });
+charitySchema.pre('findOneAndUpdate', async function (next) {
+  // the update operation object is stored within this.getUpdate()
+  console.log('charitySchemaMiddleWare')
+  console.log(this.getUpdate())
+  // console.log( this.getUpdate().$set.password);
+  const passwordToUpdate = this.getUpdate().$set.password;
 
+  if (passwordToUpdate) {
+    const salt = await bcrypt.genSalt(+process.env.SALT);
+    this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
+  }
+
+});
 charitySchema.methods.comparePassword = async function (enteredPassword) {
   const isMatch = await bcrypt.compare(enteredPassword, this.password);
   return isMatch;
