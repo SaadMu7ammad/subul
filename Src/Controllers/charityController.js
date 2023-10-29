@@ -61,7 +61,7 @@ const authCharity = asyncHandler(async (req, res, next) => {
   generateToken(res, charity._id, 'charity');
   //first stage
   if (
-    !charity.emailVerification.isVerified ||
+    !charity.emailVerification.isVerified &&
     !charity.phoneVerification.isVerified
   ) {
     //not verified(activated)
