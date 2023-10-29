@@ -440,7 +440,19 @@ charitySchema.pre('init', (doc) => {
     editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
   }
 });
+charitySchema.pre('findOneAndUpdate', async function (next) {
+  // the update operation object is stored within this.getUpdate()
+  console.log('charitySchemaMiddleWare')
+  console.log(this.getUpdate())
+  // console.log( this.getUpdate().$set.password);
+  const passwordToUpdate = this.getUpdate().$set.password;
 
+  if (passwordToUpdate) {
+    const salt = await bcrypt.genSalt(+process.env.SALT);
+    this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
+  }
+
+});
 charitySchema.methods.comparePassword = async function (enteredPassword) {
   const isMatch = await bcrypt.compare(enteredPassword, this.password);
   return isMatch;
