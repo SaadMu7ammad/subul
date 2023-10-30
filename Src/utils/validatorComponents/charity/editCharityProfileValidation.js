@@ -2,27 +2,20 @@ import {
   bankAccountValidation,
   charityInfoValidation,
   contactValidation,
-  currencyValidation,
-  descriptionValidation,
-  emailValidation,
   fawryValidation,
-  governorateValidation,
-  nameValidation,
-  passwordValidation,
-  phoneValidation,
   vodafoneCashValidation,
 } from './allCharityValidation.js';
 import { charityRegisterValidation } from './charityRegisterValidation.js';
 
-const _contactValidation = contactValidation.map((validator) =>
-  validator.optional()
-);
-const _charityInfoValidation = charityInfoValidation.map((validator) =>
-  validator.optional()
-);
-const _bankAccountValidation = bankAccountValidation.map((validator) =>
-  validator.optional()
-);
+// const _contactValidation = contactValidation.map((validator) =>
+//   validator.optional()
+// );
+// const _charityInfoValidation = charityInfoValidation.map((validator) =>
+//   validator.optional()
+// );
+// const _bankAccountValidation = bankAccountValidation.map((validator) =>
+//   validator.optional()
+// );
 // const editProfileValidation = [
 //   emailValidation.optional(),
 //   nameValidation.optional(),
@@ -40,15 +33,20 @@ const _bankAccountValidation = bankAccountValidation.map((validator) =>
 
 const editProfileValidation = [
   ...charityRegisterValidation,
-  ...bankAccountValidation,
-  ...charityInfoValidation,
-  ...contactValidation,
+  // ...bankAccountValidation,
+  // ...charityInfoValidation,
+  // ...contactValidation,
 ];
-
+const reqEditPaymentMethods=[...bankAccountValidation,vodafoneCashValidation,fawryValidation]
 // console.log(...editProfileValidation);
 editProfileValidation.map((validator) => {
   // console.log('---');
   // console.log(validator);
   validator.optional();
 });
-export default editProfileValidation;
+reqEditPaymentMethods.map((validator) => {
+  // console.log('---');
+  // console.log(validator);
+  validator.optional();
+});
+export { editProfileValidation ,reqEditPaymentMethods};

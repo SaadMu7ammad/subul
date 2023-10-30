@@ -33,7 +33,7 @@ import {
   isActivated,
 } from '../middlewares/authStage2Middleware.js';
 
-import editProfileValidation from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
+import {editProfileValidation,reqEditPaymentMethods} from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
 import {
   resizeDocReq,
@@ -85,8 +85,8 @@ router.put(
   isConfirmed,
   updateuploadCoverImage,
   resizeImgUpdated,
-  // editProfileValidation,
-  // validate,
+  editProfileValidation,
+  validate,
   editCharityProfile
 );
 router.post(
@@ -95,9 +95,9 @@ router.post(
   isActivated,
   isConfirmed,
   uploadDocsReq,
-  editProfileValidation,
-  validate,
   resizeDocReq,
+  reqEditPaymentMethods,
+  validate,
   requestEditCharityProfilePayments
 );
 router.post(
