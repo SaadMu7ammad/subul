@@ -21,79 +21,85 @@ import sharp from 'sharp';
 import logger from '../utils/logger.js';
 import { BadRequestError } from '../errors/bad-request.js';
 const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith('image')) {
-    //accepts imgs only
-    cb(null, true);
-  } else {
-    cb(new BadRequestError('invalid type,Only images allowed'));
-  }
+    if (file.mimetype.startsWith('image')) {
+        //accepts imgs only
+        cb(null, true);
+    } else {
+        cb(new BadRequestError('invalid type,Only images allowed'));
+    }
 };
 
 const resizeImg = asyncHandler(async (req, res, next) => {
-  let uniqueSuffix;
-  req.temp = []; //container for deleting imgs
-  // const ex = file.mimetype.split('/')[1];
-  if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
-  if (req.body && req.body.name) {
-    uniqueSuffix = 'LogoCharity-' + req.body.name + uuidv4() + '-' + Date.now();
-  }
-  const filename = uniqueSuffix + '.jpeg';
-  req.temp.push(filename);
-  await sharp(req.file.buffer)
-    .resize(320, 240)
-    .toFormat('jpeg')
-    .jpeg({ quality: 90 })
-    .toFile('./uploads/LogoCharities/' + filename); //, (err, info) => {
-  //   console.log('err');
-  //   console.log(err);
-  // });
-  //adding the filename in the req.body
-  req.body.image = filename;
-  next();
-});
-const resizeImgUpdated = asyncHandler(async (req, res, next) => {
-  let uniqueSuffix;
-  req.temp = []; //container for deleting imgs
-  // const ex = file.mimetype.split('/')[1];
-  // if (!req.file) throw new BadRequestError('no cover/logo image uploaded')
-  console.log('reeeessss');
-  console.log(req.body);
-  console.log(req.file);
-  if (req.file && req.file.buffer) {
+    let uniqueSuffix;
+    req.temp = []; //container for deleting imgs
+    // const ex = file.mimetype.split('/')[1];
+    let destinationFolder, suffix;
+    //Saif:This Should Be Handled Better Than that , but we will go with it for now
+    //waiting to see :what other routes will upload images ?
+    if (req.path === '/')
+        (destinationFolder = 'LogoCharities'), (suffix = 'LogoCharity');
+    else (destinationFolder = 'casesCoverImages'), (suffix = 'caseCoveImage');
+    if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
     if (req.body && req.body.name) {
-      uniqueSuffix =
-        'LogoCharity-' + req.body.name + uuidv4() + '-' + Date.now();
-    } else if (req.charity.name) {
-      uniqueSuffix =
-        'LogoCharity-' + req.charity.name + uuidv4() + '-' + Date.now();
+        uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
     }
     const filename = uniqueSuffix + '.jpeg';
     req.temp.push(filename);
     await sharp(req.file.buffer)
-      .resize(320, 240)
-      .toFormat('jpeg')
-      .jpeg({ quality: 90 })
-      .toFile('./uploads/LogoCharities/' + filename); //, (err, info) => {
+        .resize(320, 240)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`./uploads/${destinationFolder}/` + filename); //, (err, info) => {
     //   console.log('err');
     //   console.log(err);
     // });
     //adding the filename in the req.body
     req.body.image = filename;
-  }
-  next();
+    next();
+});
+const resizeImgUpdated = asyncHandler(async (req, res, next) => {
+    let uniqueSuffix;
+    req.temp = []; //container for deleting imgs
+    // const ex = file.mimetype.split('/')[1];
+    // if (!req.file) throw new BadRequestError('no cover/logo image uploaded')
+    console.log('reeeessss');
+    console.log(req.body);
+    console.log(req.file);
+    if (req.file && req.file.buffer) {
+        if (req.body && req.body.name) {
+            uniqueSuffix =
+                'LogoCharity-' + req.body.name + uuidv4() + '-' + Date.now();
+        } else if (req.charity.name) {
+            uniqueSuffix =
+                'LogoCharity-' + req.charity.name + uuidv4() + '-' + Date.now();
+        }
+        const filename = uniqueSuffix + '.jpeg';
+        req.temp.push(filename);
+        await sharp(req.file.buffer)
+            .resize(320, 240)
+            .toFormat('jpeg')
+            .jpeg({ quality: 90 })
+            .toFile('./uploads/LogoCharities/' + filename); //, (err, info) => {
+        //   console.log('err');
+        //   console.log(err);
+        // });
+        //adding the filename in the req.body
+        req.body.image = filename;
+    }
+    next();
 });
 const deleteOldImgsLogos = (req, res, next) => {
-  req.temp.map(async (img) => {
-    const oldImagePath = path.join('./uploads/LogoCharities', img);
-    if (fs.existsSync(oldImagePath)) {
-      // Delete the file
-      fs.unlinkSync(oldImagePath);
-      console.log('Old image deleted successfully.');
-    } else {
-      console.log('Old image does not exist.');
-    }
-  });
-  req.temp = [];
+    req.temp.map(async (img) => {
+        const oldImagePath = path.join('./uploads/LogoCharities', img);
+        if (fs.existsSync(oldImagePath)) {
+            // Delete the file
+            fs.unlinkSync(oldImagePath);
+            console.log('Old image deleted successfully.');
+        } else {
+            console.log('Old image does not exist.');
+        }
+    });
+    req.temp = [];
 };
 //diskStorage
 // const upload = multer({ storage: multerStorage,fileFilter:multerFilter });
@@ -105,9 +111,9 @@ const uploadCoverImage = upload.single('image');
 const updateuploadCoverImage = upload.single('image');
 
 export {
-  uploadCoverImage,
-  resizeImg,
-  resizeImgUpdated,
-  deleteOldImgsLogos,
-  updateuploadCoverImage,
+    uploadCoverImage,
+    resizeImg,
+    resizeImgUpdated,
+    deleteOldImgsLogos,
+    updateuploadCoverImage,
 };
