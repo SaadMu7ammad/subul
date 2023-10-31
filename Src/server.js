@@ -10,6 +10,7 @@ import {
 } from './middlewares/errorHandlerMiddleware.js';
 import userRoutes from './Routes/userRoutes.js';
 import charityRoutes from './Routes/charityRoutes.js';
+import casesRoutes from './Routes/casesRoutes.js';
 import adminRoutes from './Routes/adminRoutes.js';
 import logger from './utils/logger.js';
 // const imageUrl = req.file.path.replace("\\" ,"/");
@@ -18,10 +19,9 @@ const __dirname = path.resolve();
 const port = process.env.PORT;
 const host = process.env.HOST;
 const app = express();
-
+app.use(express.urlencoded({ extended: true })); //form data
 app.use(express.json());
 
-app.use(express.urlencoded({ extended: true })); //form data
 //to access the img as path http://localhost:5000/LogoCharities/imgName_In_DB.jpeg
 //http://localhost:5000/docsCharities/docs1-sss--.jpeg
 app.use(express.static(path.join(__dirname, `uploads`)));
@@ -29,8 +29,9 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 
 app.use(cookieParser());
 app.use('/api/users', userRoutes);
-app.use('/api/charities',charityRoutes);
-app.use('/api/admin',adminRoutes);
+app.use('/api/charities', charityRoutes);
+app.use('/api/charities', casesRoutes);
+app.use('/api/admin', adminRoutes);
 app.get('/', (req, res) => {
   res.send('subul charity');
 });

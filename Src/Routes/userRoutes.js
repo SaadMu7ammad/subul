@@ -20,9 +20,11 @@ import resetValidationEmailToReset from '../utils/validatorComponents/requestRes
 import resetValidationPassToConfirmReset from '../utils/validatorComponents/confirmResetValidation.js';
 import changePasswordValidation from '../utils/validatorComponents/changePasswordValidation.js';
 import editUserProfileValidation from '../utils/validatorComponents/user/editUserProfileValidation.js';
+import { isActivated } from '../middlewares/authStage2Middleware.js';
 router.post('/', registerValidation, validate, registerUser);
 router.post('/auth', loginValidation, validate, authUser);
 router.post('/logout', logoutUser);
+//notice reset and /reset/confirm without isActivated coz the if the user didnt activate his account and want to reset the pass
 router.post('/reset', resetValidationEmailToReset, validate, resetUser);
 router.post(
     '/reset/confirm',
@@ -35,6 +37,7 @@ router.put(
     changePasswordValidation,
     validate,
     auth,
+    isActivated,
     changePassword
 );
 router.post('/activate', auth, activateAccount);
@@ -44,7 +47,10 @@ router.put(
     editUserProfileValidation,
     validate,
     auth,
+    isActivated,
     editUserProfile
 );
+//other route will be added after that must be isActivated checker first...
+
 
 export default router;
