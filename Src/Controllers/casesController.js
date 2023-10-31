@@ -8,26 +8,6 @@ import { NotFoundError } from '../errors/not-found.js';
 import logger from '../utils/logger.js';
 import { deleteFile } from '../utils/deleteFile.js';
 
-const calculateDonationCompletionPercentage = (_case) => {
-    return (_case.currentDonationAmount / _case.targetDonationAmount) * 100;
-};
-const defaultCasesCompareFunction = (caseA, caseB) => {
-    // it may be slow , we can try to use another way.
-    const upvotesWeight = 2;
-    const viewsWeight = 1;
-    const caseAScore =
-        caseA.upVotes * upvotesWeight +
-        calculateDonationCompletionPercentage(caseA) +
-        caseA.views * viewsWeight;
-    const caseBScore =
-        caseB.upVotes * upvotesWeight +
-        calculateDonationCompletionPercentage(caseB) +
-        caseB.views * viewsWeight;
-    return caseBScore - caseAScore;
-};
-
-const casesCompareFunction = (caseA, caseB) => {};
-
 const addCase = asyncHandler(async (req, res, next) => {
     const newCase = Case(req.body);
     newCase.charity = req.charity._id;
@@ -45,7 +25,8 @@ const addCase = asyncHandler(async (req, res, next) => {
     }
 });
 
-const getAllCases = asyncHandler(async (req, res, next) => {//ToDo : Sanitizing Req Query Params
+const getAllCases = asyncHandler(async (req, res, next) => {
+    //ToDo : Sanitizing Req Query Params
     ///////Sorting//////
     const sortBy = req.query.sort || 'upVotes';
     const sortArray = sortBy.split(',');
@@ -77,7 +58,12 @@ const getAllCases = asyncHandler(async (req, res, next) => {//ToDo : Sanitizing 
         {
             $sort: sortObject,
         },
-    ]).skip((page-1)*pageLimit).limit(pageLimit);
+    ])
+        .skip((page - 1) * pageLimit)
+        .limit(pageLimit)
+        .project(
+            '-gender -upVotes -views -dateFinished -donationNumbers -helpedNumbers -freezed -createdAt -updatedAt -__v'
+        );
 
     res.json(charityCases);
 });
