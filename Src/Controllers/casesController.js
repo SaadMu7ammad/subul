@@ -11,7 +11,8 @@ import { deleteFile } from '../utils/deleteFile.js';
 const calculateDonationCompletionPercentage = (_case) => {
     return (_case.currentDonationAmount / _case.targetDonationAmount) * 100;
 };
-const defaultCasesCompareFunction = (caseA, caseB) => {// it may be slow , we can try to use another way.
+const defaultCasesCompareFunction = (caseA, caseB) => {
+    // it may be slow , we can try to use another way.
     const upvotesWeight = 2;
     const viewsWeight = 1;
     const caseAScore =
@@ -24,6 +25,8 @@ const defaultCasesCompareFunction = (caseA, caseB) => {// it may be slow , we ca
         caseB.views * viewsWeight;
     return caseBScore - caseAScore;
 };
+
+const casesCompareFunction = (caseA, caseB) => {};
 
 const addCase = asyncHandler(async (req, res, next) => {
     const newCase = Case(req.body);
@@ -42,16 +45,40 @@ const addCase = asyncHandler(async (req, res, next) => {
     }
 });
 
-const getAllCases = asyncHandler(async (req, res, next) => {
-    const sortBy = req.params.sort||"";
-    const populatedCharityObject = await req.charity.populate({
-        path: 'cases',
-        model: 'Cases',
-        select: '-_id',
+const getAllCases = asyncHandler(async (req, res, next) => {//ToDo : Sanitizing Req Query Params
+    ///////Sorting//////
+    const sortBy = req.query.sort || 'upVotes';
+    const sortArray = sortBy.split(',');
+    const sortObject = {};
+    sortArray.forEach(function (sort) {
+        if (sort[0] === '-') {
+            sortObject[sort.substring(1)] = -1;
+        } else {
+            sortObject[sort] = 1;
+        }
     });
-    const charityCases = populatedCharityObject.cases.sort(
-        defaultCasesCompareFunction
-    );
+    ///////Filtering///////
+    const filterObject = { charity: req.charity._id };
+    const queryParameters = ['mainType', 'subType', 'nestedSubType'];
+
+    for (const param of queryParameters) {
+        if (req.query[param]) {
+            filterObject[param] = req.query[param];
+        }
+    }
+    //////Paginating/////
+    const pageLimit = +req.query.limit || 10;
+    const page = +req.query.page || 1;
+    ///////////////////////
+    const charityCases = await Case.aggregate([
+        {
+            $match: filterObject,
+        },
+        {
+            $sort: sortObject,
+        },
+    ]).skip((page-1)*pageLimit).limit(pageLimit);
+
     res.json(charityCases);
 });
 
