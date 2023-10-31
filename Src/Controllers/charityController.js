@@ -20,13 +20,11 @@ const registerCharity = asyncHandler(async (req, res, next) => {
   // logger.info(req.file.path);
   // req.file.path=req.file.path.replace("\\","/")
   const { email } = req.body;
-
   let charity = await Charity.findOne({ email });
   if (charity) {
     deleteOldImgsLogos(req,res,next)
     throw new BadRequestError('An Account with this Email already exists');
   }
-
   charity = await Charity.create(req.body);
   if (!charity) {
     deleteOldImgsLogos(req,res,next)
