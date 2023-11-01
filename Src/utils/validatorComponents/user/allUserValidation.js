@@ -1,11 +1,13 @@
 import { body } from 'express-validator';
 
-const tokenValidation = body('token')
+const tokenUserValidation = body('token')
   .trim()
   .notEmpty()
   .isLength({ min: 64, max: 64 })
   .withMessage('Invalid Token!');
-
+const firstName=  body('name.firstName').trim().notEmpty().withMessage('firstName is required')
+const lastName=body('name.lastName').trim().notEmpty().withMessage('lastName is required')
+const nameUserValidation=[firstName,lastName]
 const emailValidation = body('email')
   .trim()
   .notEmpty()
@@ -27,6 +29,10 @@ const phoneValidation = body('phone')
   .withMessage('Invalid PhoneNumber')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
+
+const genderValidtion= body('gender')
+.isIn(['male', 'female'])
+  .withMessage('Gender must be "male" or "female"')
 
 const governorateValidation = body('location.governorate')
   .isIn([
@@ -287,8 +293,20 @@ const fawryValidation = body('paymentMethods.fawry[0].number')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
 
+//for changing password
+const changePasswordUserValidation = [passwordValidation];
+//for confirming reset password for user
+const confirmResetUserValidation = [
+  emailValidation,
+  passwordValidation,
+  tokenUserValidation,
+];
+//for requesting reset email for User
+const requestResetEmailUserValidation = [emailValidation];
+
 export {
-  tokenValidation,
+  nameUserValidation,
+  tokenUserValidation,
   emailValidation,
   passwordValidation,
   phoneValidation,
@@ -299,4 +317,8 @@ export {
   bankAccountValidation,
   vodafoneCashValidation,
   fawryValidation,
+  changePasswordUserValidation,
+  confirmResetUserValidation,
+  requestResetEmailUserValidation,
+  genderValidtion
 };

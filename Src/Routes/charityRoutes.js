@@ -1,6 +1,8 @@
 import express, { Router } from 'express';
 
 import { auth } from '../middlewares/authMiddleware.js';
+import logger from '../utils/logger.js';
+import { validate } from '../middlewares/validatorMiddleware.js';
 
 import {
   registerCharity,
@@ -16,59 +18,51 @@ import {
   requestEditCharityProfilePayments,
   addCharityPayments,
 } from '../Controllers/charityController.js';
+
 import { resizeImg, resizeImgUpdated, updateuploadCoverImage, uploadCoverImage } from '../middlewares/imageMiddleware.js';
-// import logger from '../utils/logger.js';
-import changePasswordValidation from '../utils/validatorComponents/changePasswordValidation.js';
-import confirmResetValidation from '../utils/validatorComponents/confirmResetValidation.js';
-import { validate } from '../middlewares/validatorMiddleware.js';
-import loginValidation from '../utils/validatorComponents/loginValidation.js';
-import { charityRegisterValidation } from '../utils/validatorComponents/charity/charityRegisterValidation.js';
-import {
-  tokenValidation,
-  emailValidation,
-  // paymentValidation,
-} from '../utils/validatorComponents/charity/allCharityValidation.js';
+import { registerCharityValidation, loginCharityValidation } from '../utils/validatorComponents/charity/charityAuthValidation.js'
 import {
   isConfirmed,
   isActivated,
 } from '../middlewares/authStage2Middleware.js';
 
-import {editProfileValidation,reqEditPaymentMethods} from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
+import {editCharityProfileValidation,reqEditPaymentMethodsValidation} from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
 import {
   resizeDocReq,
   uploadDocsReq,
 } from '../middlewares/reqDocPaymentMiddleware.js';
+import { changePasswordCharityValidation, confirmResetCharityValidation, requestResetEmailCharityValidation, tokenCharityValidation } from '../utils/validatorComponents/charity/allCharityValidation.js';
 const router = express.Router();
 
 router.post(
   '/',
   uploadCoverImage,
-  charityRegisterValidation,
+  registerCharityValidation,
   validate,
   resizeImg,
   registerCharity
 );
-router.post('/auth', loginValidation, validate, authCharity);
+router.post('/auth', loginCharityValidation, validate, authCharity);
 
 router.post(
   '/activate',
-  tokenValidation,
+  tokenCharityValidation,
   validate,
   auth,
   activateCharityAccount
 );
-router.post('/reset', emailValidation, validate, requestResetPassword);
+router.post('/reset', requestResetEmailCharityValidation, validate, requestResetPassword);
 
 router.post(
   '/reset/confirm',
-  confirmResetValidation,
+  confirmResetCharityValidation,
   validate,
   confirmResetPasswordRequest
 );
 router.post(
   '/change-password',
-  changePasswordValidation,
+  changePasswordCharityValidation,
   validate,
   auth,
   isActivated,
@@ -85,7 +79,7 @@ router.put(
   isConfirmed,
   updateuploadCoverImage,
   resizeImgUpdated,
-  editProfileValidation,
+  editCharityProfileValidation,
   validate,
   editCharityProfile
 );
@@ -96,7 +90,7 @@ router.post(
   isConfirmed,
   uploadDocsReq,
   resizeDocReq,
-  reqEditPaymentMethods,
+  reqEditPaymentMethodsValidation,
   validate,
   requestEditCharityProfilePayments
 );
