@@ -2,28 +2,21 @@ import {
   bankAccountValidation,
   charityInfoValidation,
   contactValidation,
-  currencyValidation,
-  descriptionValidation,
-  emailValidation,
   fawryValidation,
-  governorateValidation,
-  nameValidation,
-  passwordValidation,
-  phoneValidation,
   vodafoneCashValidation,
 } from './allCharityValidation.js';
-import { charityRegisterValidation } from './charityRegisterValidation.js';
+import { registerCharityValidation } from './charityAuthValidation.js';
 
-const _contactValidation = contactValidation.map((validator) =>
-  validator.optional()
-);
-const _charityInfoValidation = charityInfoValidation.map((validator) =>
-  validator.optional()
-);
-const _bankAccountValidation = bankAccountValidation.map((validator) =>
-  validator.optional()
-);
-// const editProfileValidation = [
+// const _contactValidation = contactValidation.map((validator) =>
+//   validator.optional()
+// );
+// const _charityInfoValidation = charityInfoValidation.map((validator) =>
+//   validator.optional()
+// );
+// const _bankAccountValidation = bankAccountValidation.map((validator) =>
+//   validator.optional()
+// );
+// const editCharityProfileValidation = [
 //   emailValidation.optional(),
 //   nameValidation.optional(),
 //   phoneValidation.optional(),
@@ -38,17 +31,22 @@ const _bankAccountValidation = bankAccountValidation.map((validator) =>
 //   fawryValidation.optional(),
 // ];
 
-const editProfileValidation = [
-  ...charityRegisterValidation,
-  ...bankAccountValidation,
-  ...charityInfoValidation,
-  ...contactValidation,
+const editCharityProfileValidation = [
+  ...registerCharityValidation,
+  // ...bankAccountValidation,
+  // ...charityInfoValidation,
+  // ...contactValidation,
 ];
-
-// console.log(...editProfileValidation);
-editProfileValidation.map((validator) => {
+const reqEditPaymentMethodsValidation=[...bankAccountValidation,vodafoneCashValidation,fawryValidation]
+// console.log(...editCharityProfileValidation);
+editCharityProfileValidation.map((validator) => {
   // console.log('---');
   // console.log(validator);
   validator.optional();
 });
-export default editProfileValidation;
+reqEditPaymentMethodsValidation.map((validator) => {
+  // console.log('---');
+  // console.log(validator);
+  validator.optional();
+});
+export { editCharityProfileValidation ,reqEditPaymentMethodsValidation};

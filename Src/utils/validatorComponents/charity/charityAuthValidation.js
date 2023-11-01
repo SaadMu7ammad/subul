@@ -14,7 +14,7 @@ import {
   phoneValidation,
 } from './allCharityValidation.js';
 
-const charityRegisterValidation = [
+const registerCharityValidation = [
   emailValidation,
   passwordValidation,
   nameValidation,
@@ -28,4 +28,6 @@ const charityRegisterValidation = [
   // fawryValidation,
   phoneValidation,
 ];
-export { charityRegisterValidation };
+const loginCharityValidation = [emailValidation, passwordValidation];
+
+export { registerCharityValidation, loginCharityValidation };

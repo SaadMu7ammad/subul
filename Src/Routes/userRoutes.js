@@ -14,33 +14,30 @@ import {
 } from '../Controllers/userController.js';
 import { validate } from '../middlewares/validatorMiddleware.js';
 import { auth } from '../middlewares/authMiddleware.js';
-import registerValidation from '../utils/validatorComponents/user/userRegisterValidation.js';
-import loginValidation from '../utils/validatorComponents/loginValidation.js';
-import resetValidationEmailToReset from '../utils/validatorComponents/requestResetEmailValidation.js';
-import resetValidationPassToConfirmReset from '../utils/validatorComponents/confirmResetValidation.js';
-import changePasswordValidation from '../utils/validatorComponents/changePasswordValidation.js';
-import editUserProfileValidation from '../utils/validatorComponents/user/editUserProfileValidation.js';
+import {editUserProfileValidation} from '../utils/validatorComponents/user/editUserProfileValidation.js';
+import {registerUserValidation,loginUserValidation} from '../utils/validatorComponents/user/userAuthValidation.js'
+import {changePasswordUserValidation, confirmResetUserValidation, requestResetEmailUserValidation, tokenUserValidation} from '../utils/validatorComponents/user/allUserValidation.js'
 import { isActivated } from '../middlewares/authStage2Middleware.js';
-router.post('/', registerValidation, validate, registerUser);
-router.post('/auth', loginValidation, validate, authUser);
+router.post('/', registerUserValidation, validate, registerUser);
+router.post('/auth', loginUserValidation, validate, authUser);
 router.post('/logout', logoutUser);
 //notice reset and /reset/confirm without isActivated coz the if the user didnt activate his account and want to reset the pass
-router.post('/reset', resetValidationEmailToReset, validate, resetUser);
+router.post('/reset', requestResetEmailUserValidation, validate, resetUser);
 router.post(
     '/reset/confirm',
-    resetValidationPassToConfirmReset,
+    confirmResetUserValidation,
     validate,
     confrimReset
 );
 router.put(
     '/changepassword',
-    changePasswordValidation,
+    changePasswordUserValidation,
     validate,
     auth,
     isActivated,
     changePassword
 );
-router.post('/activate', auth, activateAccount);
+router.post('/activate',tokenUserValidation,validate, auth, activateAccount);
 router.get('/profile', auth, getUserProfileData);
 router.put(
     '/profile/edit',

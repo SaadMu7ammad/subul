@@ -36,13 +36,13 @@ const resizeImg = asyncHandler(async (req, res, next) => {
     let destinationFolder, suffix;
     //Saif:This Should Be Handled Better Than that , but we will go with it for now
     //waiting to see :what other routes will upload images ?
-    if (req.path === '/')
+    if (req.path === '/') {
         (destinationFolder = 'LogoCharities'), (suffix = 'LogoCharity');
-    else (destinationFolder = 'casesCoverImages'), (suffix = 'caseCoveImage');
-    if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
-    if (req.body && req.body.name) {
-        uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
+    } else {
+        (destinationFolder = 'casesCoverImages'), (suffix = 'caseCoveImage');
     }
+    if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
+        uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
     const filename = uniqueSuffix + '.jpeg';
     req.temp.push(filename);
     await sharp(req.file.buffer)
@@ -59,6 +59,12 @@ const resizeImg = asyncHandler(async (req, res, next) => {
 });
 const resizeImgUpdated = asyncHandler(async (req, res, next) => {
     let uniqueSuffix;
+    let destinationFolder, suffix;
+    if (req.path === '/'|| req.path === '/edit-profile') {
+        (destinationFolder = 'LogoCharities'), (suffix = 'LogoCharity-');
+    } else {
+        (destinationFolder = 'casesCoverImages'), (suffix = 'caseCoveImage-');
+    }
     req.temp = []; //container for deleting imgs
     // const ex = file.mimetype.split('/')[1];
     // if (!req.file) throw new BadRequestError('no cover/logo image uploaded')
@@ -68,10 +74,10 @@ const resizeImgUpdated = asyncHandler(async (req, res, next) => {
     if (req.file && req.file.buffer) {
         if (req.body && req.body.name) {
             uniqueSuffix =
-                'LogoCharity-' + req.body.name + uuidv4() + '-' + Date.now();
+                suffix + req.body.name + uuidv4() + '-' + Date.now();
         } else if (req.charity.name) {
             uniqueSuffix =
-                'LogoCharity-' + req.charity.name + uuidv4() + '-' + Date.now();
+                suffix + req.charity.name + uuidv4() + '-' + Date.now();
         }
         const filename = uniqueSuffix + '.jpeg';
         req.temp.push(filename);
@@ -79,7 +85,7 @@ const resizeImgUpdated = asyncHandler(async (req, res, next) => {
             .resize(320, 240)
             .toFormat('jpeg')
             .jpeg({ quality: 90 })
-            .toFile('./uploads/LogoCharities/' + filename); //, (err, info) => {
+            .toFile(`./uploads/${destinationFolder}/` + filename); //, (err, info) => {
         //   console.log('err');
         //   console.log(err);
         // });

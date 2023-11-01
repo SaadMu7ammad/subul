@@ -23,23 +23,23 @@ const bankAccountNumberValidation = body(
 )
   .trim()
   .notEmpty()
-  // .if(body('paymentMethods.bankAccount[0].iban').exists()) 
-  // .if(body('paymentMethods.bankAccount[0].swiftCode').exists()) 
+  // .if(body('paymentMethods.bankAccount[0].iban').exists())
+  // .if(body('paymentMethods.bankAccount[0].swiftCode').exists())
   .withMessage('Account Number is Required')
   .isNumeric()
   .isLength({ min: 19, max: 19 });
 
 const ibanValidation = body('paymentMethods.bankAccount[0].iban')
   .trim()
-  // .if(body('paymentMethods.bankAccount[0].swiftCode').exists()) 
-  // .if(body('paymentMethods.bankAccount[0].accNumber').exists()) 
+  // .if(body('paymentMethods.bankAccount[0].swiftCode').exists())
+  // .if(body('paymentMethods.bankAccount[0].accNumber').exists())
   .notEmpty()
   .withMessage('iban is Required')
   .isLength({ min: 29, max: 29 });
 const switfCodeValidation = body('paymentMethods.bankAccount[0].swiftCode')
   .trim()
-  // .if(body('paymentMethods.bankAccount[0].iban').exists()) 
-  // .if(body('paymentMethods.bankAccount[0].accNumber').exists()) 
+  // .if(body('paymentMethods.bankAccount[0].iban').exists())
+  // .if(body('paymentMethods.bankAccount[0].accNumber').exists())
   .notEmpty()
   .withMessage('Swift Code is Required')
   .isLength({ min: 8, max: 11 });
@@ -315,7 +315,7 @@ const passwordValidation = body('password')
   .isLength({ min: 6, max: 20 })
   .withMessage('Password must be at least 6 characters long');
 
-const tokenValidation = body('token')
+const tokenCharityValidation = body('token')
   .trim()
   .notEmpty()
   .isLength({ min: 64, max: 64 })
@@ -329,8 +329,8 @@ const phoneValidation = body('phone')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
 
-const _bankAccountValidation = bankAccountValidation.map((validator) =>
-  validator.optional()//.not().isEmpty()
+const _bankAccountValidation = bankAccountValidation.map(
+  (validator) => validator.optional() //.not().isEmpty()
 );
 // const paymentValidation = [
 //   ..._bankAccountValidation,
@@ -341,8 +341,19 @@ const _bankAccountValidation = bankAccountValidation.map((validator) =>
 // value.iban()
 // },'Validation input bank not completed')
 
+//for changing password
+const changePasswordCharityValidation = [passwordValidation];
+
+//for confirming reset password for charity
+const confirmResetCharityValidation = [
+  emailValidation,
+  passwordValidation,
+  tokenCharityValidation,
+];
+//for requesting reset email for charity
+const requestResetEmailCharityValidation = [emailValidation];
 export {
-  tokenValidation,
+  tokenCharityValidation,
   emailValidation,
   passwordValidation,
   phoneValidation,
@@ -359,4 +370,7 @@ export {
   bankAccountNumberValidation,
   ibanValidation,
   switfCodeValidation,
+  changePasswordCharityValidation,
+  confirmResetCharityValidation,
+  requestResetEmailCharityValidation,
 };
