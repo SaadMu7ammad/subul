@@ -24,9 +24,9 @@ router
         auth,
         isConfirmed,
         uploadCoverImage,
-        resizeImgUpdated,
         editCaseValidation,
         validate,
+        resizeImgUpdated,
         editCase
     );
 router.post(
