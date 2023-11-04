@@ -36,6 +36,12 @@ const authUser = asyncHandler(async (req, res, next) => {
         `<h3>(www.activate.com)</h3>` +
         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
+    return res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      msg:'Your Account is not Activated Yet,A Token Was Sent To Your Email.'
+    });
   }
   res.status(201).json({
     _id: user._id,

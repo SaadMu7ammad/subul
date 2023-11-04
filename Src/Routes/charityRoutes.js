@@ -97,9 +97,10 @@ router.post(
 router.post(
   '/send-docs',
   auth,
-  // paymentValidation,
-  // validate,
   uploadDocs,
+  reqEditPaymentMethodsValidation,
+  validate,
+  sendDocs,
   resizeDoc,
   // , upload.single('charityDocs[docs1]'),
   // (req, res, next) => {
@@ -107,7 +108,6 @@ router.post(
   //   console.log(req.files);
   //   next();
   // },
-  sendDocs,
   addCharityPayments
 );
 
