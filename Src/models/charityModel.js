@@ -416,7 +416,7 @@ charitySchema.post('save', (doc) => {
 });
 
 charitySchema.pre('init', (doc) => {
-  if (
+  if (!doc.charityDocs||
     !doc.charityDocs.docs1 &&
     !doc.charityDocs.docs2 &&
     !doc.charityDocs.docs3 &&

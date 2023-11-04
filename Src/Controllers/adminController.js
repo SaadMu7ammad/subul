@@ -66,12 +66,16 @@ const getCharityPaymentsRequestsById = asyncHandler(async (req, res, next) => {
     { _id: req.params.id },
     'paymentMethods _id'
   ).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
+  if (!paymentRequests) throw new BadRequestError('charity not found');
+
   res.json(paymentRequests);
 });
 const getAllCharityPaymentsMethods = asyncHandler(async (req, res, next) => {
   const paymentRequests = await Charity.find({}, 'paymentMethods _id').select(
     '-_id'
   ); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
+  if (!paymentRequests) throw new BadRequestError('No paymentRequests found');
+
   res.json(paymentRequests);
 });
 const confirmcharity = asyncHandler(async (req, res, next) => {
@@ -88,12 +92,21 @@ const confirmcharity = asyncHandler(async (req, res, next) => {
       },
     ],
   })
-    .select('name paymentMethods')
+    .select('name charityDocs paymentMethods')
     .exec();
   if (!charity) throw new BadRequestError('charity not found');
   charity.isPending = false;
   charity.isConfirmed = true;
-
+  //enable all paymentMethods when first time the charity send the docs
+  charity.paymentMethods.bankAccount.map(item => {
+    item.enable = true;
+  })
+  charity.paymentMethods.fawry.map(item => {
+    item.enable = true;
+  })
+  charity.paymentMethods.vodafoneCash.map(item => {
+    item.enable = true;
+})
   // deleteOldImgs(arr)
   await charity.save();
   await setupMailSender(
@@ -159,6 +172,7 @@ const rejectcharity = asyncHandler(async (req, res, next) => {
   );
   res.status(200).json({ message: 'Charity failed to be confirmed', charity });
 });
+
 export {
   getAllPendingRequestsCharities,
   confirmcharity,
