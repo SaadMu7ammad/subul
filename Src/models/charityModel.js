@@ -415,31 +415,31 @@ charitySchema.post('save', (doc) => {
   }
 });
 
-charitySchema.pre('init', (doc) => {
-  if (!doc.charityDocs||
-    !doc.charityDocs.docs1 &&
-    !doc.charityDocs.docs2 &&
-    !doc.charityDocs.docs3 &&
-    !doc.charityDocs.docs4
-  ) {
-    // console.log(doc.charityDocs);
-    console.log('docs is empty');
-  } else {
-    editDocUrl(doc.charityDocs, 'docs1');
-    editDocUrl(doc.charityDocs, 'docs2');
-    editDocUrl(doc.charityDocs, 'docs3');
-    editDocUrl(doc.charityDocs, 'docs4');
-  }
-  if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
-    editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
-  }
-  if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
-    editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
-  }
-  if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
-    editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
-  }
-});
+// charitySchema.pre('init', (doc) => {
+//   if (!doc.charityDocs||
+//     !doc.charityDocs.docs1 &&
+//     !doc.charityDocs.docs2 &&
+//     !doc.charityDocs.docs3 &&
+//     !doc.charityDocs.docs4
+//   ) {
+//     // console.log(doc.charityDocs);
+//     console.log('docs is empty');
+//   } else {
+//     editDocUrl(doc.charityDocs, 'docs1');
+//     editDocUrl(doc.charityDocs, 'docs2');
+//     editDocUrl(doc.charityDocs, 'docs3');
+//     editDocUrl(doc.charityDocs, 'docs4');
+//   }
+//   if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
+//     editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+//   }
+//   if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
+//     editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+//   }
+//   if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
+//     editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
+//   }
+// });
 charitySchema.pre('findOneAndUpdate', async function (next) {
   // the update operation object is stored within this.getUpdate()
   console.log('charitySchemaMiddleWare')
