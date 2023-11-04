@@ -89,9 +89,9 @@ router.post(
   isActivated,
   isConfirmed,
   uploadDocsReq,
-  resizeDocReq,
   reqEditPaymentMethodsValidation,
   validate,
+  resizeDocReq,
   requestEditCharityProfilePayments
 );
 router.post(
