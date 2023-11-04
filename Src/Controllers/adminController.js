@@ -172,11 +172,55 @@ const rejectcharity = asyncHandler(async (req, res, next) => {
   );
   res.status(200).json({ message: 'Charity failed to be confirmed', charity });
 });
+const confirmPaymentAccountRequest= asyncHandler(async (req, res, next) => {
+  const charity = await Charity.findOne({
+    _id: req.params.id,
+    $and: [
+      { isPending: false },
+      { isEnabled: true },
+      { isConfirmed: true },
+      {
+        $or: [
+          { 'emailVerification.isVerified': true },
+          { 'phoneVerification.isVerified': true },
+        ],
+      },
+    ],
+  })
+    .select('name paymentMethods')
+    .exec();
+    if (!charity) throw new BadRequestError('charity not found');
+  if (req.body.paymentMethod !== 'bankAccount' && req.body.paymentMethod !== 'vodafoneCash' && req.body.paymentMethod !== 'fawry') {
+    throw new BadRequestError('Invalid Payment Method type'); 
+  } 
+  const idx=charity.paymentMethods[req.body.paymentMethod].findIndex(item => item._id == req.body.paymentAccountID)
+  if(idx===-1)throw new BadRequestError('not found Payment Method account'); 
 
+  if (charity.paymentMethods[req.body.paymentMethod][idx].enable === false) {
+    
+    charity.paymentMethods[req.body.paymentMethod][idx].enable = true;
+  } else {
+    throw new BadRequestError('Already this payment account is enabled'); 
+
+  }
+ 
+  // console.log(charity.paymentMethods[req.body.paymentMethod][idx]);
+  await charity.save();
+  await setupMailSender(
+    req,
+    'Charity payment account has been confirmed successfully',
+    `<h2>after reviewing the payment account docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
+  );
+  res
+    .status(200)
+    .json({ message: 'Charity payment account has been confirmed successfully', charity });
+});
 export {
   getAllPendingRequestsCharities,
   confirmcharity,
   rejectcharity,
   getPendingRequestCharityById,
-  getCharityPaymentsRequestsById,getAllCharityPaymentsMethods
+  getCharityPaymentsRequestsById,
+  getAllCharityPaymentsMethods,
+  confirmPaymentAccountRequest
 };
