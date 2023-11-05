@@ -88,7 +88,7 @@ const resetUser = asyncHandler(async (req, res, next) => {
   let user = emailIsExist;
   const token = await generateResetTokenTemp();
   await setupMailSender(
-    req,
+    req.body.email,
     'reset alert',
     'go to that link to reset the password (www.dummy.com) ' +
       `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
@@ -120,7 +120,7 @@ const confrimReset = asyncHandler(async (req, res, next) => {
   updatedUser.verificationCode = null;
   updatedUser = await updatedUser.save();
   await setupMailSender(
-    req,
+    req.body.email,
     'password changed alert',
     '<h3>contact us if you did not changed the password</h3>' +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`

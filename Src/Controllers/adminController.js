@@ -361,7 +361,7 @@ const rejectPaymentAccountRequest= asyncHandler(async (req, res, next) => {
   );
   res
     .status(200)
-    .json({ message: 'Charity payment account has been confirmed successfully', charity });
+    .json({ message: 'Charity payment account has been rejected successfully', charity });
 });
 export {
   getAllPendingRequestsCharities,
