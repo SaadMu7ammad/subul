@@ -37,7 +37,7 @@ const getAllPendingRequestsCharities = asyncHandler(async (req, res, next) => {
   )
     // .select('name')
     .select(
-      '-contactInfo -contactInfo -isConfirmed -phoneVerification -rate -currency -location -donorRequests -createdAt -updatedAt -__v -emailVerification -charityInfo -charityDocs -charityReqDocs -cases -image -email -password -description -totalDonationsIncome -verificationCode -isEnabled -isEnabled -isPending '
+      '-contactInfo -contactInfo -isConfirmed -phoneVerification -rate -currency -location -donorRequests -createdAt -updatedAt -__v -emailVerification -charityInfo -charityDocs -charityReqDocs -cases -image -password -description -totalDonationsIncome -verificationCode -isEnabled -isEnabled -isPending '
     );
 
   // .exec();
@@ -57,7 +57,7 @@ const getPendingRequestCharityById = asyncHandler(async (req, res, next) => {
       },
     ],
   })
-    .select('name paymentMethods')
+    .select('name email paymentMethods')
     .exec();
   if (!charity) throw new BadRequestError('charity not found');
   res.status(200).json(charity);
@@ -93,7 +93,7 @@ const confirmcharity = asyncHandler(async (req, res, next) => {
       },
     ],
   })
-    .select('name charityDocs paymentMethods')
+    .select('name email charityDocs paymentMethods')
     .exec();
   if (!charity) throw new BadRequestError('charity not found');
   charity.isPending = false;
@@ -188,7 +188,7 @@ const confirmPaymentAccountRequest= asyncHandler(async (req, res, next) => {
       },
     ],
   })
-    .select('name paymentMethods')
+    .select('name email paymentMethods')
     .exec();
     if (!charity) throw new BadRequestError('charity not found');
   if (req.body.paymentMethod !== 'bankAccount' && req.body.paymentMethod !== 'vodafoneCash' && req.body.paymentMethod !== 'fawry') {
@@ -231,7 +231,7 @@ const rejectPaymentAccountRequest= asyncHandler(async (req, res, next) => {
       },
     ],
   })
-    .select('name paymentMethods')
+    .select('name email paymentMethods')
     .exec();
     if (!charity) throw new BadRequestError('charity not found');
   if (req.body.paymentMethod !== 'bankAccount' && req.body.paymentMethod !== 'vodafoneCash' && req.body.paymentMethod !== 'fawry') {
