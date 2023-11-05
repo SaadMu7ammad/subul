@@ -71,13 +71,97 @@ const getCharityPaymentsRequestsById = asyncHandler(async (req, res, next) => {
 
   res.json(paymentRequests);
 });
-const getAllCharityPaymentsMethods = asyncHandler(async (req, res, next) => {
-  const paymentRequests = await Charity.find({}, 'paymentMethods _id').select(
-    '-_id'
-  ); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
-  if (!paymentRequests) throw new BadRequestError('No paymentRequests found');
+const getAllRequestsPaymentMethods = asyncHandler(async (req, res, next) => {
+  // const paymentRequests = await Charity.find({}, 'paymentMethods _id').select(
+  //   '-_id'
+  // ); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
 
-  res.json(paymentRequests);
+  const bankAccountRequests = await Charity.aggregate([
+    {
+      $match: {
+        isPending: false,
+        isEnabled: true,
+        isConfirmed: true,
+        $or: [
+          { 'emailVerification.isVerified': true },
+          { 'phoneVerification.isVerified': true },
+        ],
+      },
+    },
+    {
+      $unwind: '$paymentMethods.bankAccount',
+    },
+    {
+      $match: {
+        'paymentMethods.bankAccount.enable': false,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        'paymentMethods.bankAccount': 1,
+      },
+    },
+  ]).exec();
+
+  const fawryRequests = await Charity.aggregate([
+    {
+      $match: {
+        isPending: false,
+        isEnabled: true,
+        isConfirmed: true,
+        $or: [
+          { 'emailVerification.isVerified': true },
+          { 'phoneVerification.isVerified': true },
+        ],
+      },
+    },
+    {
+      $unwind: '$paymentMethods.fawry',
+    },
+    {
+      $match: {
+        'paymentMethods.fawry.enable': false,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        'paymentMethods.fawry': 1,
+      },
+    },
+  ]).exec();
+
+  const vodafoneCashRequests = await Charity.aggregate([
+    {
+      $match: {
+        isPending: false,
+        isEnabled: true,
+        isConfirmed: true,
+        $or: [
+          { 'emailVerification.isVerified': true },
+          { 'phoneVerification.isVerified': true },
+        ],
+      },
+    },
+    {
+      $unwind: '$paymentMethods.vodafoneCash',
+    },
+    {
+      $match: {
+        'paymentMethods.vodafoneCash.enable': false,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        'paymentMethods.vodafoneCash': 1,
+      },
+    },
+  ]).exec();
+  if (!bankAccountRequests&&!fawryRequests&&!vodafoneCashRequests) throw new BadRequestError('No paymentRequests found');
+
+  res.json({ bankAccountRequests, fawryRequests, vodafoneCashRequests });
 });
 const confirmcharity = asyncHandler(async (req, res, next) => {
   const charity = await Charity.findOne({
@@ -285,7 +369,7 @@ export {
   rejectcharity,
   getPendingRequestCharityById,
   getCharityPaymentsRequestsById,
-  getAllCharityPaymentsMethods,
+  getAllRequestsPaymentMethods,
   confirmPaymentAccountRequest,
   rejectPaymentAccountRequest
 };
