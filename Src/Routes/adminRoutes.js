@@ -8,9 +8,9 @@ router.get('/AllRequestsCharities',auth,isAdmin,getAllPendingRequestsCharities)
 router.get('/requestCharity/:id',auth,isAdmin,getPendingRequestCharityById)
 router.get('/AllRequestsPaymentMethods',auth,isAdmin,getAllCharityPaymentsMethods)
 router.get('/requestsPaymentMethods/:id',auth,isAdmin,getCharityPaymentsRequestsById)
-router.put('/requestsCharities/:id',auth,isAdmin,confirmcharity)
-router.post('/requestsCharities/:id',auth,isAdmin,rejectcharity)
-router.put('/requestPaymentMethod/:id',auth,isAdmin,confirmPaymentAccountRequest)
-router.post('/requestPaymentMethod/:id',auth,isAdmin,rejectPaymentAccountRequest)
+router.put('/confirmrequestsCharities/:id',auth,isAdmin,confirmcharity)
+router.put('/rejectrequestsCharities/:id',auth,isAdmin,rejectcharity)
+router.put('/confirmrequestPaymentMethod/:id',auth,isAdmin,confirmPaymentAccountRequest)
+router.put('/rejectrequestPaymentMethod/:id',auth,isAdmin,rejectPaymentAccountRequest)
 
 export default router;
