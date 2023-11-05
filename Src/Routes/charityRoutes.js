@@ -100,8 +100,8 @@ router.post(
   uploadDocs,
   reqEditPaymentMethodsValidation,
   validate,
-  sendDocs,
   resizeDoc,
+  sendDocs,
   // , upload.single('charityDocs[docs1]'),
   // (req, res, next) => {
   //   console.log('req.file=');
