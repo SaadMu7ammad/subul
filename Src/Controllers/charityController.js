@@ -14,6 +14,7 @@ import {
   UnauthenticatedError,
 } from '../errors/index.js';
 import { deleteOldImgsLogos } from '../middlewares/imageMiddleware.js';
+import { deleteFile } from '../utils/deleteFile.js';
 // import logger from '../utils/logger.js';
 
 const registerCharity = asyncHandler(async (req, res, next) => {
@@ -406,6 +407,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
       temp.number = number;
       temp.docsFawry = docsFawry;
     } else if (selector === 'vodafoneCash') {
+      
       const { number } = req.body.paymentMethods.vodafoneCash[0];
       const  docsVodafoneCash = req.body.paymentMethods.vodafoneCash.docsVodafoneCash[0];
       temp.number = number;
@@ -413,6 +415,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
     }
     if (indx !== -1) {//edit a payment account && enable attribute will be reset to false again
       if (selector === 'bankAccount') {
+      deleteFile('./uploads/docsCharities/' + req.charity.paymentMethods.bankAccount[indx].docsBank);
         req.charity.paymentMethods.bankAccount[indx].accNumber = temp.accNumber; //assign the object
         req.charity.paymentMethods.bankAccount[indx].iban = temp.iban; //assign the object
         req.charity.paymentMethods.bankAccount[indx].swiftCode = temp.swiftCode; //assign the object
@@ -423,6 +426,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         await req.charity.save();
         return res.json(req.charity.paymentMethods.bankAccount[indx]);
       } else if (selector === 'fawry') {
+      deleteFile('./uploads/docsCharities/' + req.charity.paymentMethods.fawry[indx].docsFawry);
         req.charity.paymentMethods.fawry[indx].number = temp.number; //assign the object
         req.charity.paymentMethods.fawry[indx].docsFawry = temp.docsFawry
         req.charity.paymentMethods.fawry[indx].enable=false//reset again to review it again
@@ -431,6 +435,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         await req.charity.save();
         return res.json(req.charity.paymentMethods.fawry[indx]);
       } else if (selector === 'vodafoneCash') {
+      deleteFile('./uploads/docsCharities/' + req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash);
         req.charity.paymentMethods.vodafoneCash[indx].number = temp.number; //assign the object
         req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash = temp.docsVodafoneCash
         req.charity.paymentMethods.vodafoneCash[indx].enable=false//reset again to review it again
