@@ -273,10 +273,10 @@ const charitySchema = new Schema(
       docs2: [String],
       docs3: [String],
       docs4: [String],
-    },
-    charityReqDocs: {
-      docs: [String],
-    },
+    }
+    //, charityReqDocs: {
+    //   docs: [String],
+    // },
   },
   { timestamps: true }
 );
