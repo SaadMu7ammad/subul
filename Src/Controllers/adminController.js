@@ -111,7 +111,7 @@ const confirmcharity = asyncHandler(async (req, res, next) => {
   // deleteOldImgs(arr)
   await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'Charity has been confirmed successfully',
     `<h2>after reviewing the charity docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
   );
@@ -166,7 +166,7 @@ const rejectcharity = asyncHandler(async (req, res, next) => {
     })
   await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'Charity has not been confirmed',
     `<h2>after reviewing the charity docs we reject it </h2>
         <h2>you must upload all the docs mentioned to auth the charity and always keep the quality of uploadings high and clear</h2>`
@@ -208,7 +208,7 @@ const confirmPaymentAccountRequest= asyncHandler(async (req, res, next) => {
   // console.log(charity.paymentMethods[req.body.paymentMethod][idx]);
   await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'Charity payment account has been confirmed successfully',
     `<h2>after reviewing the payment account docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
   );
@@ -271,7 +271,7 @@ const rejectPaymentAccountRequest= asyncHandler(async (req, res, next) => {
   // console.log(charity.paymentMethods[req.body.paymentMethod][idx]);
   await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'Charity payment account has been rejected',
     `<h2>after reviewing the payment account docs we reject it </h2><h2>you can re upload the docs again, BeCareful to add correct info</h2>`
   );

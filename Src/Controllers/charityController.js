@@ -39,7 +39,7 @@ const registerCharity = asyncHandler(async (req, res, next) => {
   }
   generateToken(res, charity._id, 'charity');
   await setupMailSender(
-    req,
+    charity.email,
     'welcome alert',
     'Hi ' +
       charity.name +
@@ -73,7 +73,7 @@ const authCharity = asyncHandler(async (req, res, next) => {
     charity.verificationCode = token;
     await charity.save();
     await setupMailSender(
-      req,
+      charity.email,
       'login alert',
       'it seems that your account still not verified or activated please go to that link to activate the account ' +
         `<h3>(www.activate.com)</h3>` +
@@ -153,7 +153,7 @@ const activateCharityAccount = asyncHandler(async (req, res, next) => {
   charity.emailVerification.verificationDate = Date.now();
   charity = await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'account has been activated ',
     `<h2>now you are ready to spread the goodness with us </h2>`
   );
@@ -169,7 +169,7 @@ const requestResetPassword = asyncHandler(async (req, res, next) => {
   if (!charity) throw new NotFoundError('No charity found with this email');
   const token = await generateResetTokenTemp();
   await setupMailSender(
-    req,
+    charity.email,
     'Password Reset Alert',
     'go to that link to reset the password (www.dummy.com) ' +
       `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
@@ -196,7 +196,7 @@ const confirmResetPasswordRequest = asyncHandler(async (req, res, next) => {
   charity.password = req.body.password;
   await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'password changed alert',
     '<h3>contact us if you did not changed the password</h3>' +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
@@ -212,7 +212,7 @@ const changePassword = asyncHandler(async (req, res, next) => {
   console.log(charity instanceof Charity);
   await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'password changed alert',
     '<h3>contact us if you did not changed the password</h3>' +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
@@ -290,7 +290,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
       req.charity.verificationCode = token;
       await req.charity.save()
       await setupMailSender(
-        req,
+        email,
         'email changed alert',
         'email has been changed You must Re activate account ' +
           `<h3>(www.activate.com)</h3>` +
@@ -549,17 +549,19 @@ const requestEditCharityProfilePayments = asyncHandler(
   }
 );
 const deleteOldImgs = (req, res, next) => {
-  req.temp.map(async (img) => {
-    const oldImagePath = path.join('./uploads/docsCharities', img);
-    if (fs.existsSync(oldImagePath)) {
-      // Delete the file
-      fs.unlinkSync(oldImagePath);
-      console.log('Old image deleted successfully.');
-    } else {
-      console.log('Old image does not exist.');
-    }
-  });
-  req.temp = [];
+  if (req.temp) {
+    req.temp.map(async (img) => {
+      const oldImagePath = path.join('./uploads/docsCharities', img);
+      if (fs.existsSync(oldImagePath)) {
+        // Delete the file
+        fs.unlinkSync(oldImagePath);
+        console.log('Old image deleted successfully.');
+      } else {
+        console.log('Old image does not exist.');
+      }
+    });
+    req.temp = [];
+  }
 };
 
 const addCharityPayments = asyncHandler(async (req, res, next) => {
