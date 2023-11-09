@@ -61,7 +61,7 @@ const authCharity = asyncHandler(async (req, res, next) => {
   //get email & password => checkthem
   //send activation token email if not activated
   //make a token ...
-  if (req.cookies.jwt) throw new UnauthenticatedError('you are already logged in , logout first!');
+  // if (req.cookies.jwt) throw new UnauthenticatedError('you are already logged in , logout first!');
   const { email, password } = req.body;
   const charity = await Charity.findOne({ email });
   if (!charity) throw new NotFoundError('No charity found with this email');
