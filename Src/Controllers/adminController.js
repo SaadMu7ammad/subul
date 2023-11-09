@@ -68,8 +68,10 @@ const getCharityPaymentsRequestsById = asyncHandler(async (req, res, next) => {
     'paymentMethods _id'
   ).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
   if (!paymentRequests) throw new BadRequestError('charity not found');
-
-  res.json(paymentRequests);
+  let bankAccount = paymentRequests.paymentMethods.bankAccount.filter(acc => acc.enable === false);
+  let fawry = paymentRequests.paymentMethods.fawry.filter(acc => acc.enable === false);
+  let vodafoneCash = paymentRequests.paymentMethods.vodafoneCash.filter(acc =>acc.enable === false);
+  res.status(200).json({bankAccount,fawry,vodafoneCash});
 });
 const getAllRequestsPaymentMethods = asyncHandler(async (req, res, next) => {
   // const paymentRequests = await Charity.find({}, 'paymentMethods _id').select(
