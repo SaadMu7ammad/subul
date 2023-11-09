@@ -66,7 +66,6 @@ router.post(
   validate,
   auth,
   isActivated,
-  isConfirmed,
   changePassword
 );
 // const upload = multer({ dest: 'uploads/docsCharities/' });
@@ -89,25 +88,25 @@ router.post(
   isActivated,
   isConfirmed,
   uploadDocsReq,
-  resizeDocReq,
   reqEditPaymentMethodsValidation,
   validate,
+  resizeDocReq,
   requestEditCharityProfilePayments
 );
 router.post(
   '/send-docs',
   auth,
-  // paymentValidation,
-  // validate,
   uploadDocs,
+  reqEditPaymentMethodsValidation,
+  validate,
   resizeDoc,
+  sendDocs,
   // , upload.single('charityDocs[docs1]'),
   // (req, res, next) => {
   //   console.log('req.file=');
   //   console.log(req.files);
   //   next();
   // },
-  sendDocs,
   addCharityPayments
 );
 

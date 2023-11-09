@@ -24,9 +24,9 @@ router
         auth,
         isConfirmed,
         uploadCoverImage,
-        resizeImgUpdated,
         editCaseValidation,
         validate,
+        resizeImgUpdated,
         editCase
     );
 router.post(
@@ -34,9 +34,9 @@ router.post(
     auth,
     isConfirmed,
     uploadCoverImage,
-    resizeImg,
     postCaseValidation,
     validate,
+    resizeImg,
     addCase
 );
 export default router;

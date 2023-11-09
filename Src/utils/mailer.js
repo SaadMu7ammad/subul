@@ -17,11 +17,7 @@ const generateResetTokenTemp = async (userId) => {
   // await resetPassowrdToken.save();
   return token;
 };
-const setupMailSender = async (req, subject, html) => {
-  let emailReceiver;
-  if(req.body)emailReceiver=req.body.email;
-  if(req.charity)emailReceiver=req.charity.email;
-  if(req.user)emailReceiver=req.user.email;
+const setupMailSender = async (emailReceiver, subject, html) => {
   logger.info(`sending mail to ${emailReceiver}`);
   const transporter = nodemailer.createTransport({
     service: 'gmail',

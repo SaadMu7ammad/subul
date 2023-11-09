@@ -14,6 +14,7 @@ import {
   UnauthenticatedError,
 } from '../errors/index.js';
 import { deleteOldImgsLogos } from '../middlewares/imageMiddleware.js';
+import { deleteFile } from '../utils/deleteFile.js';
 // import logger from '../utils/logger.js';
 
 const registerCharity = asyncHandler(async (req, res, next) => {
@@ -25,7 +26,16 @@ const registerCharity = asyncHandler(async (req, res, next) => {
     deleteOldImgsLogos(req,res,next)
     throw new BadRequestError('An Account with this Email already exists');
   }
-  charity = await Charity.create(req.body);
+  if(req.body.paymentMethods){
+    delete req.body.paymentMethods; //not a good style of coding I think , we can use obj destructuring instead, but I don't want to change the code mush.
+  }
+  try{
+    charity = await Charity.create(req.body);
+  }
+  catch(err){
+    deleteOldImgsLogos(req,res,next)
+    next(err);
+  }
   if (!charity) {
     deleteOldImgsLogos(req,res,next)
     throw new Error('Something went wrong');
@@ -33,7 +43,7 @@ const registerCharity = asyncHandler(async (req, res, next) => {
   }
   generateToken(res, charity._id, 'charity');
   await setupMailSender(
-    req,
+    charity.email,
     'welcome alert',
     'Hi ' +
       charity.name +
@@ -51,6 +61,7 @@ const authCharity = asyncHandler(async (req, res, next) => {
   //get email & password => checkthem
   //send activation token email if not activated
   //make a token ...
+  // if (req.cookies.jwt) throw new UnauthenticatedError('you are already logged in , logout first!');
   const { email, password } = req.body;
   const charity = await Charity.findOne({ email });
   if (!charity) throw new NotFoundError('No charity found with this email');
@@ -67,12 +78,20 @@ const authCharity = asyncHandler(async (req, res, next) => {
     charity.verificationCode = token;
     await charity.save();
     await setupMailSender(
-      req,
+      charity.email,
       'login alert',
       'it seems that your account still not verified or activated please go to that link to activate the account ' +
         `<h3>(www.activate.com)</h3>` +
         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
+    return res.status(200).json([
+      {
+        id: charity._id,
+        email: charity.email,
+        name: charity.name,
+      },
+      { message: 'Your Account is not Activated Yet,A Token Was Sent To Your Email.' },
+    ]);
   }
   //second stage
   //isPending = true and isConfirmed= false
@@ -139,7 +158,7 @@ const activateCharityAccount = asyncHandler(async (req, res, next) => {
   charity.emailVerification.verificationDate = Date.now();
   charity = await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'account has been activated ',
     `<h2>now you are ready to spread the goodness with us </h2>`
   );
@@ -155,7 +174,7 @@ const requestResetPassword = asyncHandler(async (req, res, next) => {
   if (!charity) throw new NotFoundError('No charity found with this email');
   const token = await generateResetTokenTemp();
   await setupMailSender(
-    req,
+    charity.email,
     'Password Reset Alert',
     'go to that link to reset the password (www.dummy.com) ' +
       `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
@@ -182,7 +201,7 @@ const confirmResetPasswordRequest = asyncHandler(async (req, res, next) => {
   charity.password = req.body.password;
   await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'password changed alert',
     '<h3>contact us if you did not changed the password</h3>' +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
@@ -198,7 +217,7 @@ const changePassword = asyncHandler(async (req, res, next) => {
   console.log(charity instanceof Charity);
   await charity.save();
   await setupMailSender(
-    req,
+    charity.email,
     'password changed alert',
     '<h3>contact us if you did not changed the password</h3>' +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
@@ -276,7 +295,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
       req.charity.verificationCode = token;
       await req.charity.save()
       await setupMailSender(
-        req,
+        email,
         'email changed alert',
         'email has been changed You must Re activate account ' +
           `<h3>(www.activate.com)</h3>` +
@@ -392,6 +411,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
       temp.number = number;
       temp.docsFawry = docsFawry;
     } else if (selector === 'vodafoneCash') {
+      
       const { number } = req.body.paymentMethods.vodafoneCash[0];
       const  docsVodafoneCash = req.body.paymentMethods.vodafoneCash.docsVodafoneCash[0];
       temp.number = number;
@@ -399,6 +419,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
     }
     if (indx !== -1) {//edit a payment account && enable attribute will be reset to false again
       if (selector === 'bankAccount') {
+      deleteFile('./uploads/docsCharities/' + req.charity.paymentMethods.bankAccount[indx].docsBank);
         req.charity.paymentMethods.bankAccount[indx].accNumber = temp.accNumber; //assign the object
         req.charity.paymentMethods.bankAccount[indx].iban = temp.iban; //assign the object
         req.charity.paymentMethods.bankAccount[indx].swiftCode = temp.swiftCode; //assign the object
@@ -409,6 +430,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         await req.charity.save();
         return res.json(req.charity.paymentMethods.bankAccount[indx]);
       } else if (selector === 'fawry') {
+      deleteFile('./uploads/docsCharities/' + req.charity.paymentMethods.fawry[indx].docsFawry);
         req.charity.paymentMethods.fawry[indx].number = temp.number; //assign the object
         req.charity.paymentMethods.fawry[indx].docsFawry = temp.docsFawry
         req.charity.paymentMethods.fawry[indx].enable=false//reset again to review it again
@@ -417,6 +439,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         await req.charity.save();
         return res.json(req.charity.paymentMethods.fawry[indx]);
       } else if (selector === 'vodafoneCash') {
+      deleteFile('./uploads/docsCharities/' + req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash);
         req.charity.paymentMethods.vodafoneCash[indx].number = temp.number; //assign the object
         req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash = temp.docsVodafoneCash
         req.charity.paymentMethods.vodafoneCash[indx].enable=false//reset again to review it again
@@ -535,17 +558,19 @@ const requestEditCharityProfilePayments = asyncHandler(
   }
 );
 const deleteOldImgs = (req, res, next) => {
-  req.temp.map(async (img) => {
-    const oldImagePath = path.join('./uploads/docsCharities', img);
-    if (fs.existsSync(oldImagePath)) {
-      // Delete the file
-      fs.unlinkSync(oldImagePath);
-      console.log('Old image deleted successfully.');
-    } else {
-      console.log('Old image does not exist.');
-    }
-  });
-  req.temp = [];
+  if (req.temp) {
+    req.temp.map(async (img) => {
+      const oldImagePath = path.join('./uploads/docsCharities', img);
+      if (fs.existsSync(oldImagePath)) {
+        // Delete the file
+        fs.unlinkSync(oldImagePath);
+        console.log('Old image deleted successfully.');
+      } else {
+        console.log('Old image does not exist.');
+      }
+    });
+    req.temp = [];
+  }
 };
 
 const addCharityPayments = asyncHandler(async (req, res, next) => {

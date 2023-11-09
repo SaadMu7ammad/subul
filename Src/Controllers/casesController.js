@@ -93,6 +93,7 @@ const deleteCase = asyncHandler(async (req, res, next) => {
     caseIdsArray.splice(caseIdIndex, 1);
     req.charity.cases = caseIdsArray;
     await req.charity.save();
+    deleteFile('./uploads/casesCoverImages/' + deletedCase.imageCover);
     res.json(deletedCase);
 });
 

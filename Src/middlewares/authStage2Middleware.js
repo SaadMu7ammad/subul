@@ -1,6 +1,11 @@
 import { UnauthenticatedError } from '../errors/unauthenticated.js';
 const isConfirmed = (req, res, next) => {
   //for the sending docs to the admin website for Chariy Only
+  if(req.user){
+    throw new UnauthenticatedError(
+      'Users Are Not Allowed To Do This Action!'
+    );
+  }
   if (req.charity && req.charity.isConfirmed && req.charity.isEnabled) {
     next();
   } else {

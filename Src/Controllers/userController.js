@@ -15,6 +15,7 @@ import dot  from 'dot-object';
 //@access public
 
 const authUser = asyncHandler(async (req, res, next) => {
+  // if (req.cookies.jwt) throw new UnauthenticatedError('you are already logged in , logout first!');
   const { email, password } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) throw new NotFoundError('email not found');
@@ -36,6 +37,12 @@ const authUser = asyncHandler(async (req, res, next) => {
         `<h3>(www.activate.com)</h3>` +
         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
+    return res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      msg:'Your Account is not Activated Yet,A Token Was Sent To Your Email.'
+    });
   }
   res.status(201).json({
     _id: user._id,
@@ -82,7 +89,7 @@ const resetUser = asyncHandler(async (req, res, next) => {
   let user = emailIsExist;
   const token = await generateResetTokenTemp();
   await setupMailSender(
-    req,
+    req.body.email,
     'reset alert',
     'go to that link to reset the password (www.dummy.com) ' +
       `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
@@ -114,7 +121,7 @@ const confrimReset = asyncHandler(async (req, res, next) => {
   updatedUser.verificationCode = null;
   updatedUser = await updatedUser.save();
   await setupMailSender(
-    req,
+    req.body.email,
     'password changed alert',
     '<h3>contact us if you did not changed the password</h3>' +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
