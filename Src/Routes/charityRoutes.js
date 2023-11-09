@@ -66,7 +66,6 @@ router.post(
   validate,
   auth,
   isActivated,
-  isConfirmed,
   changePassword
 );
 // const upload = multer({ dest: 'uploads/docsCharities/' });

@@ -15,6 +15,7 @@ import dot  from 'dot-object';
 //@access public
 
 const authUser = asyncHandler(async (req, res, next) => {
+  if (req.cookies.jwt) throw new UnauthenticatedError('you are already logged in , logout first!');
   const { email, password } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) throw new NotFoundError('email not found');

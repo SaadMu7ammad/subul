@@ -26,6 +26,9 @@ const registerCharity = asyncHandler(async (req, res, next) => {
     deleteOldImgsLogos(req,res,next)
     throw new BadRequestError('An Account with this Email already exists');
   }
+  if(req.body.paymentMethods){
+    delete req.body.paymentMethods; //not a good style of coding I think , we can use obj destructuring instead, but I don't want to change the code mush.
+  }
   try{
     charity = await Charity.create(req.body);
   }
@@ -58,6 +61,7 @@ const authCharity = asyncHandler(async (req, res, next) => {
   //get email & password => checkthem
   //send activation token email if not activated
   //make a token ...
+  if (req.cookies.jwt) throw new UnauthenticatedError('you are already logged in , logout first!');
   const { email, password } = req.body;
   const charity = await Charity.findOne({ email });
   if (!charity) throw new NotFoundError('No charity found with this email');
