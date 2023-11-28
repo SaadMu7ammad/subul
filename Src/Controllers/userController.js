@@ -61,7 +61,7 @@ const registerUser = asyncHandler(async (req, res, next) => {
   if (user) {
     generateToken(res, user._id, 'user');
     await setupMailSender(
-      req,
+      email,
       'welcome alert',
       'hi ' +
         user.name.firstName +
@@ -142,7 +142,7 @@ const changePassword = asyncHandler(async (req, res, next) => {
   updatedUser.password = req.body.password;
   updatedUser = await updatedUser.save();
   await setupMailSender(
-    req,
+    updatedUser.email,
     'password changed alert',
     '<h3>contact us if you did not changed the password</h3>' +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
@@ -183,7 +183,7 @@ const activateAccount = asyncHandler(async (req, res, next) => {
   updatedUser.emailVerification.verificationDate = Date.now();
   updatedUser = await updatedUser.save();
   await setupMailSender(
-    req,
+    updatedUser.email,
     'account has been activated ',
     `<h2>now you are ready to spread the goodness with us </h2>`
   );
@@ -220,7 +220,7 @@ const editUserProfile = asyncHandler(async (req, res, next) => {
       req.user.verificationCode = token;
       await req.user.save()
       await setupMailSender(
-        req,
+        req.user.email,
         'email changed alert',
         'email has been changed You must Re activate account ' +
           `<h3>(www.activate.com)</h3>` +
