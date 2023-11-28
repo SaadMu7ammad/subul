@@ -31,7 +31,7 @@ const authUser = asyncHandler(async (req, res, next) => {
     user.verificationCode = token;
     await user.save();
     await setupMailSender(
-      req,
+      email,
       'login alert',
       'it seems that your account still not verified or activated please go to that link to activate the account ' +
         `<h3>(www.activate.com)</h3>` +
