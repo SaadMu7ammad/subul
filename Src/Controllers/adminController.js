@@ -5,6 +5,7 @@ import Charity from '../models/charityModel.js';
 import { BadRequestError } from '../errors/bad-request.js';
 import { setupMailSender } from '../utils/mailer.js';
 import { deleteFile } from '../utils/deleteFile.js';
+import { confirmingCharity, getPendingCharity } from '../services/admin.service.js';
 const deleteOldImgs = (arr, selector) => {
   
  arr.map( (img) => {
@@ -165,37 +166,10 @@ const getAllRequestsPaymentMethods = asyncHandler(async (req, res, next) => {
 
   res.json({ bankAccountRequests, fawryRequests, vodafoneCashRequests });
 });
-const confirmcharity = asyncHandler(async (req, res, next) => {
-  const charity = await Charity.findOne({
-    _id: req.params.id,
-    $and: [
-      { isPending: true },
-      { isEnabled: true },
-      {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    ],
-  })
-    .select('name email charityDocs paymentMethods')
-    .exec();
+const confirmCharity = asyncHandler(async (req, res, next) => {
+  const charity = await getPendingCharity(req.params.id);
   if (!charity) throw new BadRequestError('charity not found');
-  charity.isPending = false;
-  charity.isConfirmed = true;
-  //enable all paymentMethods when first time the charity send the docs
-  charity.paymentMethods.bankAccount.map(item => {
-    item.enable = true;
-  })
-  charity.paymentMethods.fawry.map(item => {
-    item.enable = true;
-  })
-  charity.paymentMethods.vodafoneCash.map(item => {
-    item.enable = true;
-})
-  // deleteOldImgs(arr)
-  await charity.save();
+  await confirmingCharity(charity);
   await setupMailSender(
     charity.email,
     'Charity has been confirmed successfully',
@@ -205,8 +179,7 @@ const confirmcharity = asyncHandler(async (req, res, next) => {
     .status(200)
     .json({ message: 'Charity has been confirmed successfully', charity });
 });
-
-const rejectcharity = asyncHandler(async (req, res, next) => {
+const rejectCharity = asyncHandler(async (req, res, next) => {
   console.log('reh');
   const charity = await Charity.findOne({
     _id: req.params.id,
@@ -367,8 +340,8 @@ const rejectPaymentAccountRequest= asyncHandler(async (req, res, next) => {
 });
 export {
   getAllPendingRequestsCharities,
-  confirmcharity,
-  rejectcharity,
+  confirmCharity,
+  rejectCharity,
   getPendingRequestCharityById,
   getCharityPaymentsRequestsById,
   getAllRequestsPaymentMethods,
