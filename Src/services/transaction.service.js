@@ -1,14 +1,17 @@
 import asyncHandler from 'express-async-handler';
 import Case from '../models/caseModel.js';
 import Transactions from '../models/transactionModel.js';
-import { NotFoundError } from '../errors';
-const createTransaction = asyncHandler(async (data) => {
-  const { caseId, moneyPaid, paymentMethod } = data;
+import { BadRequestError, NotFoundError } from '../errors/index.js';
+const createTransaction = asyncHandler(async (data, user) => {
+  const { caseId, moneyPaid, paymentMethod, name } = data;
   //pre processing
   if (!caseId) {
     throw new NotFoundError('id is not found');
   }
-  if (moneyPaid === 0) {
+  if (!name) {
+    throw new NotFoundError('data is not completed');
+  }
+  if (+moneyPaid === 0) {
     throw new BadRequestError('Invalid amount of donation');
   }
   if (!paymentMethod) {
@@ -21,10 +24,10 @@ const createTransaction = asyncHandler(async (data) => {
   ) {
     throw new NotFoundError('no payment method has been chosen');
   }
-//   let paymentType;
-//   if (paymentMethod.bankAccount) paymentType = 'Bank';
-//   else if (paymentMethod.fawry) paymentType = 'fawry';
-//   else if (paymentMethod.vodafoneCash) paymentType = 'vodafoneCash';
+  //   let paymentType;
+  //   if (paymentMethod.bankAccount) paymentType = 'Bank';
+  //   else if (paymentMethod.fawry) paymentType = 'fawry';
+  //   else if (paymentMethod.vodafoneCash) paymentType = 'vodafoneCash';
 
   const caseIsExist = await Case.findById(caseId);
   if (!caseIsExist) {
@@ -39,33 +42,38 @@ const createTransaction = asyncHandler(async (data) => {
 
   const transaction = await Transactions.create({
     case: caseId,
-    user: req.user._id,
-    moneyPaid: moneyPaid,
-    paymentMethod: paymentMethod
+    user: user._id,
+    moneyPaid: +moneyPaid,
+    paymentMethod: {
+      name: name,
+      ...paymentMethod,
+    },
   });
   if (!transaction) throw new BadRequestError('no transaction found');
   //after transaction created we must update the case info
 
   //first..check that donor only donates with the remain part of money and not exceed the target amount
-  const currentAmount = caseIsExist.currentDonationAmount + moneyPaid;
-
-  if (caseIsExist.targetDonationAmount < currentAmount) {
+  const currentAmount = +caseIsExist.currentDonationAmount + +moneyPaid;
+  if (
+    +caseIsExist.targetDonationAmount < currentAmount &&
+    caseIsExist.targetDonationAmount !== currentAmount
+  ) {
     throw new BadRequestError(
       'please donate with the remained value which is ' +
-        (caseIsExist.targetDonationAmount - caseIsExist.currentDonationAmount)
+        (+caseIsExist.targetDonationAmount - +caseIsExist.currentDonationAmount)
     );
   }
   //second..check if that is the last donation to finish this case
-  if (caseIsExist.targetDonationAmount === currentAmount) {
+  if (+caseIsExist.targetDonationAmount === currentAmount) {
     caseIsExist.dateFinished = Date.now();
     caseIsExist.finished = true;
   }
   //update the case info
-  caseIsExist.dontationNumbers++;
-  caseIsExist.currentDonationAmount += moneyPaid;
+  +caseIsExist.dontationNumbers++;
+  caseIsExist.currentDonationAmount += +moneyPaid;
   await caseIsExist.save();
-
-  return data;
+  return { transaction };
 });
-
-export { createTransaction };
+export const transactionService = {
+  createTransaction,
+};
