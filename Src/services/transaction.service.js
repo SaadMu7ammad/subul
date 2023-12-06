@@ -28,7 +28,6 @@ const createTransaction = asyncHandler(async (data, user) => {
   //   if (paymentMethod.bankAccount) paymentType = 'Bank';
   //   else if (paymentMethod.fawry) paymentType = 'fawry';
   //   else if (paymentMethod.vodafoneCash) paymentType = 'vodafoneCash';
-
   const caseIsExist = await Case.findById(caseId);
   if (!caseIsExist) {
     throw new NotFoundError('case is not found');
@@ -39,19 +38,6 @@ const createTransaction = asyncHandler(async (data, user) => {
       'this case is finished...choose case not completed'
     );
   }
-
-  const transaction = await Transactions.create({
-    case: caseId,
-    user: user._id,
-    moneyPaid: +moneyPaid,
-    paymentMethod: {
-      name: name,
-      ...paymentMethod,
-    },
-  });
-  if (!transaction) throw new BadRequestError('no transaction found');
-  //after transaction created we must update the case info
-
   //first..check that donor only donates with the remain part of money and not exceed the target amount
   const currentAmount = +caseIsExist.currentDonationAmount + +moneyPaid;
   if (
@@ -71,8 +57,20 @@ const createTransaction = asyncHandler(async (data, user) => {
   //update the case info
   +caseIsExist.dontationNumbers++;
   caseIsExist.currentDonationAmount += +moneyPaid;
+  //now everything is ready for creating the transaction
+  const transaction = await Transactions.create({
+    case: caseId,
+    user: user._id,
+    moneyPaid: +moneyPaid,
+    paymentMethod: {
+      name: name,
+      ...paymentMethod,
+    },
+  });
+  if (!transaction) throw new BadRequestError('no transaction found');
+
   //add the transaction id to the user
-  user.transactions.push(transaction._id)
+  user.transactions.push(transaction._id);
   await caseIsExist.save();
   await user.save();
   return { transaction };
