@@ -77,13 +77,18 @@ const createTransaction = asyncHandler(async (data, user) => {
 });
 const getAllTransactions = asyncHandler(async (user) => {
   const transactionPromises = user.transactions.map(async (item, index) => {
-      const myTransaction = await Transactions.findById(item);
-      if (!myTransaction) {
-        user.transactions.splice(index, 1);
-        return null;
-      } else {
-        return myTransaction;
+    const myTransaction = await Transactions.findById(item);
+    if (!myTransaction) {
+      user.transactions.splice(index, 1);
+      return null;
+    } else {
+      console.log(myTransaction.user);
+      console.log(user._id);
+      if (myTransaction.user.toString() != user._id.toString()) {
+        throw new BadRequestError('you dont have access to this !');
       }
+      return myTransaction;
+    }
   });
   const allTransactions = await Promise.all(transactionPromises);
   await user.save();
