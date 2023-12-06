@@ -71,7 +71,10 @@ const createTransaction = asyncHandler(async (data, user) => {
   //update the case info
   +caseIsExist.dontationNumbers++;
   caseIsExist.currentDonationAmount += +moneyPaid;
+  //add the transaction id to the user
+  user.transactions.push(transaction._id)
   await caseIsExist.save();
+  await user.save();
   return { transaction };
 });
 export const transactionService = {
