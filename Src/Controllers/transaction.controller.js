@@ -16,5 +16,12 @@ const createTransaction = asyncHandler(async (req, res, next) => {
   }
   res.status(201).json({ status: 'success', data: transaction });
 });
+const getAllTransactions = asyncHandler(async (req, res, next) => {
+  const myTransactions = await transactionService.getAllTransactions(req.user);
+  if (!myTransactions) {
+    throw new BadRequestError('no transactions found');
+  }
+  res.status(201).json({ status: 'success', data: myTransactions });
+});
 
-export { createTransaction };
+export { createTransaction, getAllTransactions };

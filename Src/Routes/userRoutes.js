@@ -18,7 +18,7 @@ import {editUserProfileValidation} from '../utils/validatorComponents/user/editU
 import {registerUserValidation,loginUserValidation} from '../utils/validatorComponents/user/userAuthValidation.js'
 import {changePasswordUserValidation, confirmResetUserValidation, requestResetEmailUserValidation, tokenUserValidation} from '../utils/validatorComponents/user/allUserValidation.js'
 import { isActivated } from '../middlewares/authStage2Middleware.js';
-import { createTransaction } from '../Controllers/transaction.controller.js';
+import { createTransaction,getAllTransactions } from '../Controllers/transaction.controller.js';
 router.post('/', registerUserValidation, validate, registerUser);
 router.post('/auth', loginUserValidation, validate, authUser);
 router.post('/logout', logoutUser);
@@ -50,5 +50,6 @@ router.put(
 );
 //other route will be added after that must be isActivated checker first...
 router.post('/addTransaction',auth,isActivated, createTransaction);
+router.get('/myTransactions',auth,isActivated, getAllTransactions);
 
 export default router;

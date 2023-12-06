@@ -75,6 +75,21 @@ const createTransaction = asyncHandler(async (data, user) => {
   await user.save();
   return { transaction };
 });
+const getAllTransactions = asyncHandler(async (user) => {
+  const transactionPromises = user.transactions.map(async (item, index) => {
+      const myTransaction = await Transactions.findById(item);
+      if (!myTransaction) {
+        user.transactions.splice(index, 1);
+        return null;
+      } else {
+        return myTransaction;
+      }
+  });
+  const allTransactions = await Promise.all(transactionPromises);
+  await user.save();
+  return allTransactions;
+});
 export const transactionService = {
   createTransaction,
+  getAllTransactions,
 };
