@@ -4,22 +4,9 @@ import asyncHandler from 'express-async-handler';
 import Charity from '../models/charityModel.js';
 import { BadRequestError } from '../errors/bad-request.js';
 import { setupMailSender } from '../utils/mailer.js';
-import { deleteFile } from '../utils/deleteFile.js';
-import { confirmingCharity, getPendingCharity } from '../services/admin.service.js';
-const deleteOldImgs = (arr, selector) => {
-  
- arr.map( (img) => {
-    const oldImagePath = path.join('./uploads/docsCharities', img);
-    if (fs.existsSync(oldImagePath)) {
-      // Delete the file
-      fs.unlinkSync(oldImagePath);
-      console.log('Old image deleted successfully.');
-    } else {
-      console.log('Old image does not exist.');
-    }
-  });
- arr = [];
-};
+import { deleteFile ,deleteOldImgs} from '../utils/deleteFile.js';
+import { confirmingCharity, getPendingCharity, rejectingCharity } from '../services/admin.service.js';
+
 const getAllPendingRequestsCharities = asyncHandler(async (req, res, next) => {
   const charitiesPending = await Charity.find(
     {
@@ -180,50 +167,9 @@ const confirmCharity = asyncHandler(async (req, res, next) => {
     .json({ message: 'Charity has been confirmed successfully', charity });
 });
 const rejectCharity = asyncHandler(async (req, res, next) => {
-  console.log('reh');
-  const charity = await Charity.findOne({
-    _id: req.params.id,
-    $and: [
-      { isPending: true },
-      { isEnabled: true },
-      {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    ],
-  });
+  const charity = await getPendingCharity(req.params.id);
   if (!charity) throw new BadRequestError('charity not found');
-  charity.isPending = false;
-  charity.isConfirmed = false;
-      deleteOldImgs(charity.charityDocs.docs1)
-      deleteOldImgs(charity.charityDocs.docs2)
-      deleteOldImgs(charity.charityDocs.docs3)
-      deleteOldImgs(charity.charityDocs.docs4)
-  
-  charity.paymentMethods.bankAccount.map(acc => {
-    console.log('loop');
-    // acc.docsBank.map(img => {
-    //   console.log(img);
-      deleteOldImgs(acc.docsBank)
-     
-      // })
-  })
-  charity.paymentMethods.fawry.map(acc => {
-    console.log('loop');
-    // acc.docsBank.map(img => {
-    //   console.log(img);
-      deleteOldImgs(acc.docsFawry)
-      // })
-  })
-  charity.paymentMethods.vodafoneCash.map(acc => {
-    console.log('loop');
-  
-      deleteOldImgs(acc.docsVodafoneCash)
-      // })
-    })
-  await charity.save();
+  await rejectingCharity(charity);
   await setupMailSender(
     charity.email,
     'Charity has not been confirmed',

@@ -1,4 +1,5 @@
 import Charity from '../models/charityModel.js';
+import { deleteOldImgs } from '../utils/deleteFile.js';
 const getPendingCharity = async (id) => {
     const charity = await Charity.findOne({
         _id: id,
@@ -35,7 +36,35 @@ const confirmingCharity = async (charity) => {
     await charity.save();
 };
 
-export {
-    getPendingCharity,
-    confirmingCharity,
-}
+const rejectingCharity = async (charity) => {
+    charity.isPending = false;
+    charity.isConfirmed = false;
+    for(let i = 1 ; i<=4;++i){
+        deleteOldImgs(charity.charityDocs['docs'+i]);
+        charity.charityDocs['docs'+i]=[];
+    }
+
+    charity.paymentMethods.bankAccount.map((acc) => {
+        console.log('loop');
+        // acc.docsBank.map(img => {
+        //   console.log(img);
+        deleteOldImgs(acc.docsBank);
+
+        // })
+    });
+    charity.paymentMethods.fawry.map((acc) => {
+        console.log('loop');
+        // acc.docsBank.map(img => {
+        //   console.log(img);
+        deleteOldImgs(acc.docsFawry);
+        // })
+    });
+    charity.paymentMethods.vodafoneCash.map((acc) => {
+        console.log('loop');
+
+        deleteOldImgs(acc.docsVodafoneCash);
+        // })
+    });
+    await charity.save();
+};
+export { getPendingCharity, confirmingCharity,rejectingCharity };
