@@ -12,9 +12,11 @@ import userRoutes from './Routes/userRoutes.js';
 import charityRoutes from './Routes/charityRoutes.js';
 import casesRoutes from './Routes/casesRoutes.js';
 import adminRoutes from './Routes/adminRoutes.js';
+import transactionRoutes from './Routes/transaction.Routes.js';
 import logger from './utils/logger.js';
 // const imageUrl = req.file.path.replace("\\" ,"/");
 const __dirname = path.resolve();
+import { CreateAuthenticationRequest } from './paymob/paymob.service.js';
 
 const port = process.env.PORT;
 const host = process.env.HOST;
@@ -28,6 +30,7 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 // app.use('/uploads',express.static( `uploads`));
 
 app.use(cookieParser());
+app.use('/api/paymob',transactionRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/charities', charityRoutes);
 app.use('/api/charities', casesRoutes);

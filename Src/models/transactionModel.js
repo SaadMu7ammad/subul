@@ -33,6 +33,10 @@ const transactionSchema = new Schema(
             type: Number,
             required: true,
         },
+        paidAt: {
+            type: Date,
+            default: null,
+        },
         paymentMethod: paymentMethodSchema,
     },
     { timestamps: true }

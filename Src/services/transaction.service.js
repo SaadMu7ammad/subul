@@ -2,7 +2,7 @@ import asyncHandler from 'express-async-handler';
 import Case from '../models/caseModel.js';
 import Transactions from '../models/transactionModel.js';
 import { BadRequestError, NotFoundError } from '../errors/index.js';
-const createTransaction = asyncHandler(async (data, user) => {
+const createTransaction = (async (data, user) => {
   const { caseId, moneyPaid, paymentMethod, name } = data;
   //pre processing
   if (!caseId) {
@@ -75,7 +75,7 @@ const createTransaction = asyncHandler(async (data, user) => {
   await user.save();
   return { transaction };
 });
-const getAllTransactions = asyncHandler(async (user) => {
+const getAllTransactions = (async (user) => {
   const transactionPromises = user.transactions.map(async (item, index) => {
     const myTransaction = await Transactions.findById(item);
     if (!myTransaction) {
