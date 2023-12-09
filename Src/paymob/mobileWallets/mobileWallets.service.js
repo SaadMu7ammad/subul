@@ -23,7 +23,7 @@ const CreateAuthenticationRequestMobileWallet = async (req, res, next) => {
   console.log(orderId);
   console.log(amount);
 
-  res.status(201).json({ token });
+  return res.status(201).json({ data: response.data });
 };
 
 const OrderRegistrationAPIMobileWallet = async (req, res) => {
@@ -50,7 +50,7 @@ const OrderRegistrationAPIMobileWallet = async (req, res) => {
   console.log(orderId);
   console.log(amount);
   //   console.log(merchant_order_id);
-  res.status(201).json(response.data);
+  return res.status(201).json({ data: response.data });
 };
 const PaymentKeyRequestMobileWallet = async (req, res) => {
   try {
@@ -90,7 +90,7 @@ const PaymentKeyRequestMobileWallet = async (req, res) => {
     console.log(orderId);
     console.log(amount);
     tokenThirdStep = response.data.token;
-    res.status(201).json(response.data);
+    return res.status(201).json({ data: response.data });
     // return tokenThirdStep;
   } catch (error) {
     throw new Error(error);

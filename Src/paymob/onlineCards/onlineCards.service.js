@@ -1,12 +1,13 @@
 import axios from 'axios';
 import dotenv from 'dotenv/config';
+import asyncHandler from 'express-async-handler';
 
 let token;
 let orderId;
 let amount = 2000;
 let merch;
 let tokenThirdStep;
-const CreateAuthenticationRequest = async (req, res, next) => {
+const CreateAuthenticationRequestOnlineCard = async (req, res, next) => {
   const response = await axios.post(
     'https://accept.paymob.com/api/auth/tokens',
     {
@@ -21,19 +22,20 @@ const CreateAuthenticationRequest = async (req, res, next) => {
   console.log(token);
   console.log(orderId);
   console.log(amount);
+  console.log(tokenThirdStep);
 
-  res.status(201).json({ token });
+  return res.status(201).json({ data: response.data });
 };
 
-const OrderRegistrationAPI = async (req, res) => {
+const OrderRegistrationAPIOnlineCard = async (req, res) => {
   let response = await axios.post(
     `https://accept.paymobsolutions.com/api/ecommerce/orders`,
     {
       auth_token: token,
       delivery_needed: false,
-      amount_cents: '2000', //(amount * 100).toString(),
+      amount_cents: amount * 100, //.toString(),
       currency: 'EGP',
-      merchant_order_id: Math.floor(Math.random() * 10),
+      // merchant_order_id: Math.floor(Math.random() * 10),
       items: [
         {
           name: 'case',
@@ -48,10 +50,12 @@ const OrderRegistrationAPI = async (req, res) => {
   console.log(token);
   console.log(orderId);
   console.log(amount);
+  console.log(tokenThirdStep);
+
   //   console.log(merchant_order_id);
-  res.status(201).json(response.data);
+  return res.status(201).json({ data: response.data });
 };
-const PaymentKeyRequest = async (req, res) => {
+const PaymentKeyRequestOnlineCard = asyncHandler(async (req, res) => {
   try {
     const user = {
       firstName: 'Saul',
@@ -85,15 +89,31 @@ const PaymentKeyRequest = async (req, res) => {
       }
     );
     //   return response.data.token;
+    tokenThirdStep = response.data.token;
     console.log(token);
     console.log(orderId);
     console.log(amount);
-    tokenThirdStep = response.data.token;
-    const CardPayments = `https://accept.paymobsolutions.com/api/acceptance/iframes/${process.env.PAYMOB_FRAME_ID}?payment_token=${tokenThirdStep}`;
-    return res.status(201).json({ data: response.data, CardPayments });
+    // console.log(response);
+    console.log(tokenThirdStep);
+    console.log('-------------');
+    return res.status(201).json({ data: response.data });
+    // return tokenThirdStep;
   } catch (error) {
     throw new Error(error);
   }
+});
+
+//after three configuration stages done
+//we have 2 choices
+const payWithOnlineCard = async (req, res, next) =>{
+  console.log(tokenThirdStep);
+  const CardPayments = `https://accept.paymobsolutions.com/api/acceptance/iframes/${process.env.PAYMOB_FRAME_ID}?payment_token=${tokenThirdStep}`;
+  return res.status(201).json({ CardPayments });
 };
 
-export { CreateAuthenticationRequest, OrderRegistrationAPI, PaymentKeyRequest };
+export {
+  CreateAuthenticationRequestOnlineCard,
+  OrderRegistrationAPIOnlineCard,
+  PaymentKeyRequestOnlineCard,
+  payWithOnlineCard,
+};

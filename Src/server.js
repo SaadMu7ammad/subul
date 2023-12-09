@@ -16,7 +16,7 @@ import transactionRoutes from './Routes/transaction.Routes.js';
 import logger from './utils/logger.js';
 // const imageUrl = req.file.path.replace("\\" ,"/");
 const __dirname = path.resolve();
-import { CreateAuthenticationRequest } from './paymob/paymob.service.js';
+// import { CreateAuthenticationRequest } from './paymob/paymob.service.js';
 
 const port = process.env.PORT;
 const host = process.env.HOST;
