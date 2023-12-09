@@ -1,8 +1,7 @@
 import Charity from '../models/charityModel.js';
 import { deleteOldImgs } from '../utils/deleteFile.js';
-const getPendingCharity = async (id) => {
-    const charity = await Charity.findOne({
-        _id: id,
+const getPendingCharities = async (id) => {
+    const queryObject = {
         $and: [
             { isPending: true },
             { isEnabled: true },
@@ -13,10 +12,12 @@ const getPendingCharity = async (id) => {
                 ],
             },
         ],
-    })
+    };
+    if(id)queryObject._id=id;
+    const charities = await Charity.find(queryObject)
         .select('name email charityDocs paymentMethods')
         .exec();
-    return charity;
+    return id?charities[0]:charities;
 };
 
 const confirmingCharity = async (charity) => {
@@ -67,4 +68,4 @@ const rejectingCharity = async (charity) => {
     });
     await charity.save();
 };
-export { getPendingCharity, confirmingCharity,rejectingCharity };
+export { getPendingCharities, confirmingCharity,rejectingCharity };

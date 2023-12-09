@@ -5,48 +5,14 @@ import Charity from '../models/charityModel.js';
 import { BadRequestError } from '../errors/bad-request.js';
 import { setupMailSender } from '../utils/mailer.js';
 import { deleteFile ,deleteOldImgs} from '../utils/deleteFile.js';
-import { confirmingCharity, getPendingCharity, rejectingCharity } from '../services/admin.service.js';
+import { confirmingCharity, getPendingCharities, rejectingCharity } from '../services/admin.service.js';
 
 const getAllPendingRequestsCharities = asyncHandler(async (req, res, next) => {
-  const charitiesPending = await Charity.find(
-    {
-      $and: [
-        { isPending: true },
-        { isEnabled: true },
-        {
-          $or: [
-            { 'emailVerification.isVerified': true },
-            { 'phoneVerification.isVerified': true },
-          ],
-        },
-      ],
-    },
-    '-paymentMethods._id'
-  )
-    // .select('name')
-    .select(
-      '-contactInfo -contactInfo -isConfirmed -phoneVerification -rate -currency -location -donorRequests -createdAt -updatedAt -__v -emailVerification -charityInfo -charityDocs -charityReqDocs -cases -image -password -description -totalDonationsIncome -verificationCode -isEnabled -isEnabled -isPending '
-    );
-
-  // .exec();
-  res.status(200).json(charitiesPending);
+  const pendingCharities = await getPendingCharities();
+  res.status(200).json(pendingCharities);
 });
 const getPendingRequestCharityById = asyncHandler(async (req, res, next) => {
-  const charity = await Charity.findOne({
-    _id: req.params.id,
-    $and: [
-      { isPending: true },
-      { isEnabled: true },
-      {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    ],
-  })
-    .select('name email paymentMethods')
-    .exec();
+  const charity = await getPendingCharities(req.params.id);
   if (!charity) throw new BadRequestError('charity not found');
   res.status(200).json(charity);
 });
@@ -154,7 +120,7 @@ const getAllRequestsPaymentMethods = asyncHandler(async (req, res, next) => {
   res.json({ bankAccountRequests, fawryRequests, vodafoneCashRequests });
 });
 const confirmCharity = asyncHandler(async (req, res, next) => {
-  const charity = await getPendingCharity(req.params.id);
+  const charity = await getPendingCharities(req.params.id);
   if (!charity) throw new BadRequestError('charity not found');
   await confirmingCharity(charity);
   await setupMailSender(
@@ -167,7 +133,7 @@ const confirmCharity = asyncHandler(async (req, res, next) => {
     .json({ message: 'Charity has been confirmed successfully', charity });
 });
 const rejectCharity = asyncHandler(async (req, res, next) => {
-  const charity = await getPendingCharity(req.params.id);
+  const charity = await getPendingCharities(req.params.id);
   if (!charity) throw new BadRequestError('charity not found');
   await rejectingCharity(charity);
   await setupMailSender(
