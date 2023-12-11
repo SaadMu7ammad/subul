@@ -1,7 +1,8 @@
+import asyncHandler from 'express-async-handler';
 import PaymobStrategyMobileWallet from './mobileWallets.service.js';
 
 const paymobMobileWallet = new PaymobStrategyMobileWallet();
-const paywithMobileWallet = async (req, res, next) => {
+const paywithMobileWallet = asyncHandler(async (req, res, next) => {
   const { amount } = req.body;
   const { tokenThirdStep } = await paymobMobileWallet.createPayment(req.user,amount);
   const request = await fetch(
@@ -20,6 +21,6 @@ const paywithMobileWallet = async (req, res, next) => {
   );
   const response = await request.json();
   return res.status(201).json({ data: response });
-};
+});
 
 export { paywithMobileWallet };

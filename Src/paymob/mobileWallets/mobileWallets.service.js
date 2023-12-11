@@ -1,3 +1,5 @@
+import { NotFoundError } from '../../errors/index.js';
+
 class PaymobStrategyMobileWallet {
   constructor() {
     this.frameId = process.env.PAYMOB_FRAME_ID;
@@ -83,14 +85,14 @@ class PaymobStrategyMobileWallet {
   };
 
   createPayment = async (user, amount) => {
-    // const user = {
-    //   firstName: 'Saul',
-    //   lastName: 'Momo',
-    //   phone: '01021533501',
-    // };
-    // const amount = 300;
+    if (!user) throw new NotFoundError('user not found');
+    if (!amount || typeof amount !== 'number' || amount <= 0)
+      throw new NotFoundError('Invalid amount');
+
     const { token } = await this.CreateAuthenticationRequestMobileWallet();
+    if (!token) throw new NotFoundError('token not found');
     const { id } = await this.OrderRegistrationAPIMobileWallet(token, amount);
+    if (!id) throw new NotFoundError('order not found');
     const orderId = id;
     const response = await this.generatePaymentKeyMobileWallet(
       token,
