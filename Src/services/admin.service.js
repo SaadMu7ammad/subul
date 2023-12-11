@@ -18,6 +18,7 @@ const getPendingCharities = async (id) => {
     const charities = await Charity.find(queryObject)
         .select('name email charityDocs paymentMethods')
         .exec();
+    if (id && !charities[0]) throw new BadRequestError('charity not found');
     return id ? charities[0] : charities;
 };
 
@@ -39,6 +40,7 @@ const getConfirmedCharities = async (id) => {
     const charities = await Charity.find(queryObject)
         .select('name email paymentMethods')
         .exec();
+    if (id && !charities[0]) throw new BadRequestError('charity not found');
     return id ? charities[0] : charities;
 };
 
@@ -114,7 +116,10 @@ const checkPaymentMethodAvailability = (
     return idx;
 };
 
-const rejectingPaymentAccount = (charity, paymentMethod, idx) => {
+const rejectingPaymentAccount = async (charity, paymentMethod, idx) => {
+    if (charity.paymentMethods[paymentMethod][idx].enable === true)
+        throw new BadRequestError('Already this payment account is enabled');
+
     let urlOldImage;
 
     if (paymentMethod === 'bankAccount') {
@@ -136,6 +141,17 @@ const rejectingPaymentAccount = (charity, paymentMethod, idx) => {
     } else {
         throw new BadRequestError('No docs found for that account');
     }
+
+    await charity.save();
+};
+
+const confirmingPaymentAccount = async (charity, paymentMethod, idx) => {
+    if (charity.paymentMethods[paymentMethod][idx].enable === false) {
+        charity.paymentMethods[paymentMethod][idx].enable = true;
+    } else {
+        throw new BadRequestError('Already this payment account is enabled');
+    }
+    await charity.save();
 };
 
 const getAllPendingPaymentMethodsRequests = async (paymentMethod) => {
@@ -168,12 +184,38 @@ const getAllPendingPaymentMethodsRequests = async (paymentMethod) => {
     ]).exec();
     return paymentMethodRequests;
 };
+
+const getCharityPendingPaymentRequests = async (id) => {
+    const paymentRequests = await Charity.findOne(
+        { _id: id},
+        'paymentMethods _id'
+    ).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
+
+    if (!paymentRequests) throw new BadRequestError('charity not found');
+
+    let bankAccount = paymentRequests.paymentMethods.bankAccount.filter(
+        (acc) => acc.enable === false
+    );
+
+    let fawry = paymentRequests.paymentMethods.fawry.filter(
+        (acc) => acc.enable === false
+    );
+
+    let vodafoneCash = paymentRequests.paymentMethods.vodafoneCash.filter(
+        (acc) => acc.enable === false
+    );
+
+    return { bankAccount, fawry, vodafoneCash }
+};
+
 export {
     getPendingCharities,
     confirmingCharity,
     rejectingCharity,
     getConfirmedCharities,
     checkPaymentMethodAvailability,
+    confirmingPaymentAccount,
     rejectingPaymentAccount,
-    getAllPendingPaymentMethodsRequests
+    getAllPendingPaymentMethodsRequests,
+    getCharityPendingPaymentRequests,
 };
