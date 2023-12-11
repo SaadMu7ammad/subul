@@ -3,7 +3,8 @@ import PaymobStrategyMobileWallet from './mobileWallets.service.js';
 
 const paymobMobileWallet = new PaymobStrategyMobileWallet();
 const paywithMobileWallet = asyncHandler(async (req, res, next) => {
-  const { amount } = req.body;
+  let { amount } = req.body;
+  amount = +amount;
   const { tokenThirdStep } = await paymobMobileWallet.createPayment(req.user,amount);
   const request = await fetch(
     ` https://accept.paymob.com/api/acceptance/payments/pay`,

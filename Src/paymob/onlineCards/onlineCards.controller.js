@@ -3,7 +3,8 @@ import PaymobStrategyOnlineCard from './onlineCards.service.js';
 
 const paymobOnlineCard = new PaymobStrategyOnlineCard();
 const payWithOnlineCard = asyncHandler(async (req, res, next) => {
-  const { amount } = req.body;
+  let { amount } = req.body;
+  amount = +amount;
   const { orderId, tokenThirdStep } = await paymobOnlineCard.createPayment(req.user,amount);
   return res.status(201).json({
     paymentId: orderId,

@@ -3,7 +3,7 @@ import Case from '../models/caseModel.js';
 import Transactions from '../models/transactionModel.js';
 import { BadRequestError, NotFoundError } from '../errors/index.js';
 const createTransaction = (async (data, user) => {
-  const { caseId, moneyPaid, paymentMethod, name } = data;
+  const {caseId, amount, paymentMethod, name } = data;
   //pre processing
   if (!caseId) {
     throw new NotFoundError('id is not found');
@@ -11,7 +11,7 @@ const createTransaction = (async (data, user) => {
   if (!name) {
     throw new NotFoundError('data is not completed');
   }
-  if (+moneyPaid === 0) {
+  if (+amount === 0) {
     throw new BadRequestError('Invalid amount of donation');
   }
   if (!paymentMethod) {
@@ -39,7 +39,7 @@ const createTransaction = (async (data, user) => {
     );
   }
   //first..check that donor only donates with the remain part of money and not exceed the target amount
-  const currentAmount = +caseIsExist.currentDonationAmount + +moneyPaid;
+  const currentAmount = +caseIsExist.currentDonationAmount + +amount;
   if (
     +caseIsExist.targetDonationAmount < currentAmount &&
     caseIsExist.targetDonationAmount !== currentAmount
@@ -54,26 +54,29 @@ const createTransaction = (async (data, user) => {
     caseIsExist.dateFinished = Date.now();
     caseIsExist.finished = true;
   }
-  //update the case info
-  +caseIsExist.dontationNumbers++;
-  caseIsExist.currentDonationAmount += +moneyPaid;
-  //now everything is ready for creating the transaction
-  const transaction = await Transactions.create({
-    case: caseId,
-    user: user._id,
-    moneyPaid: +moneyPaid,
-    paymentMethod: {
-      name: name,
-      ...paymentMethod,
-    },
-  });
-  if (!transaction) throw new BadRequestError('no transaction found');
 
-  //add the transaction id to the user
-  user.transactions.push(transaction._id);
-  await caseIsExist.save();
-  await user.save();
-  return { transaction };
+  return true;
+  //start updating 
+  //update the case info
+  // +caseIsExist.dontationNumbers++;
+  // caseIsExist.currentDonationAmount += +amount;
+  // //now everything is ready for creating the transaction
+  // const transaction = await Transactions.create({
+  //   case: caseId,
+  //   user: user._id,
+  //   amount: +amount,
+  //   paymentMethod: {
+  //     name: name,
+  //     ...paymentMethod,
+  //   },
+  // });
+  // if (!transaction) throw new BadRequestError('no transaction found');
+
+  // //add the transaction id to the user
+  // user.transactions.push(transaction._id);
+  // await caseIsExist.save();
+  // await user.save();
+  // return { transaction };
 });
 const getAllTransactions = (async (user) => {
   const transactionPromises = user.transactions.map(async (item, index) => {
