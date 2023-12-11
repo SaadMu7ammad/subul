@@ -44,7 +44,7 @@ class PaymobStrategyOnlineCard {
     return response;
   };
 
-  generatePaymentKey = async (token, order_id, user, amount) => {
+  generatePaymentKeyOnlineCard = async (token, order_id, user, amount) => {
     try {
       const request = await fetch(
         `https://accept.paymob.com/api/acceptance/payment_keys`,
@@ -64,10 +64,10 @@ class PaymobStrategyOnlineCard {
               building: user.address ? user.address.building : 'NA',
               street: user.address ? user.address.street : 'NA',
               city: user.address ? user.address.city : 'NA',
-              country: user.address ? user.address.country : 'NA',
-              first_name: user.firstName,
-              last_name: user.lastName,
-              state: user.address ? user.address.state : 'NA',
+              country: 'Egypt', //"user.address ? user.address.country ": 'NA',
+              first_name: user.name.firstName,
+              last_name: user.name.lastName,
+              state: user.location ? user.location.governorate : 'NA',
               zip_code: user.address ? user.address.zip_code : 'NA',
             },
             currency: 'EGP',
@@ -83,17 +83,17 @@ class PaymobStrategyOnlineCard {
     }
   };
 
-  createPayment = async () => {
-    const user = {
-      firstName: 'Saul',
-      lastName: 'Momo',
-      phone: '01021533501',
-    };
-    const amount = 300;
+  createPayment = async (user, amount) => {
+    // const user = {
+    //   firstName: 'Saul',
+    //   lastName: 'Momo',
+    //   phone: '01021533501',
+    // };
+    // const amount = 300;
     const { token } = await this.CreateAuthenticationRequestOnlineCard();
     const { id } = await this.OrderRegistrationAPIOnlineCard(token, amount);
     const orderId = id;
-    const response = await this.generatePaymentKey(
+    const response = await this.generatePaymentKeyOnlineCard(
       token,
       orderId,
       user,

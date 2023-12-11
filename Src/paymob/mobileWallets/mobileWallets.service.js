@@ -2,7 +2,7 @@ class PaymobStrategyMobileWallet {
   constructor() {
     this.frameId = process.env.PAYMOB_FRAME_ID;
   }
-  CreateAuthenticationRequestOnlineCard = async () => {
+  CreateAuthenticationRequestMobileWallet = async () => {
     try {
       const request = await fetch('https://accept.paymob.com/api/auth/tokens', {
         method: 'post',
@@ -16,7 +16,7 @@ class PaymobStrategyMobileWallet {
     }
   };
 
-  OrderRegistrationAPIOnlineCard = async (token, amount) => {
+  OrderRegistrationAPIMobileWallet = async (token, amount) => {
     const request = await fetch(
       `https://accept.paymobsolutions.com/api/ecommerce/orders`,
       {
@@ -43,7 +43,7 @@ class PaymobStrategyMobileWallet {
     return response;
   };
 
-  generatePaymentKey = async (token, order_id, user, amount) => {
+  generatePaymentKeyMobileWallet = async (token, order_id, user, amount) => {
     try {
       let request = await fetch(
         `https://accept.paymob.com/api/acceptance/payment_keys`,
@@ -63,10 +63,10 @@ class PaymobStrategyMobileWallet {
               building: user.address ? user.address.building : 'NA',
               street: user.address ? user.address.street : 'NA',
               city: user.address ? user.address.city : 'NA',
-              country: user.address ? user.address.country : 'NA',
-              first_name: user.firstName,
-              last_name: user.lastName,
-              state: user.address ? user.address.state : 'NA',
+              country: 'Egypt', //"user.address ? user.address.country ": 'NA',
+              first_name: user.name.firstName,
+              last_name: user.name.lastName,
+              state: user.location ? user.location.governorate : 'NA',
               zip_code: user.address ? user.address.zip_code : 'NA',
             },
             currency: 'EGP',
@@ -82,17 +82,17 @@ class PaymobStrategyMobileWallet {
     }
   };
 
-  createPayment = async () => {
-    const user = {
-      firstName: 'Saul',
-      lastName: 'Momo',
-      phone: '01021533501',
-    };
-    const amount = 300;
-    const { token } = await this.CreateAuthenticationRequestOnlineCard();
-    const { id } = await this.OrderRegistrationAPIOnlineCard(token, amount);
+  createPayment = async (user, amount) => {
+    // const user = {
+    //   firstName: 'Saul',
+    //   lastName: 'Momo',
+    //   phone: '01021533501',
+    // };
+    // const amount = 300;
+    const { token } = await this.CreateAuthenticationRequestMobileWallet();
+    const { id } = await this.OrderRegistrationAPIMobileWallet(token, amount);
     const orderId = id;
-    const response = await this.generatePaymentKey(
+    const response = await this.generatePaymentKeyMobileWallet(
       token,
       orderId,
       user,
