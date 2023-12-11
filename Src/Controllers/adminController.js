@@ -4,253 +4,66 @@ import asyncHandler from 'express-async-handler';
 import Charity from '../models/charityModel.js';
 import { BadRequestError } from '../errors/bad-request.js';
 import { setupMailSender } from '../utils/mailer.js';
-import { deleteFile } from '../utils/deleteFile.js';
-const deleteOldImgs = (arr, selector) => {
-  
- arr.map( (img) => {
-    const oldImagePath = path.join('./uploads/docsCharities', img);
-    if (fs.existsSync(oldImagePath)) {
-      // Delete the file
-      fs.unlinkSync(oldImagePath);
-      console.log('Old image deleted successfully.');
-    } else {
-      console.log('Old image does not exist.');
-    }
-  });
- arr = [];
-};
-const getAllPendingRequestsCharities = asyncHandler(async (req, res, next) => {
-  const charitiesPending = await Charity.find(
-    {
-      $and: [
-        { isPending: true },
-        { isEnabled: true },
-        {
-          $or: [
-            { 'emailVerification.isVerified': true },
-            { 'phoneVerification.isVerified': true },
-          ],
-        },
-      ],
-    },
-    '-paymentMethods._id'
-  )
-    // .select('name')
-    .select(
-      '-contactInfo -contactInfo -isConfirmed -phoneVerification -rate -currency -location -donorRequests -createdAt -updatedAt -__v -emailVerification -charityInfo -charityDocs -charityReqDocs -cases -image -password -description -totalDonationsIncome -verificationCode -isEnabled -isEnabled -isPending '
-    );
+import { deleteFile ,deleteOldImgs} from '../utils/deleteFile.js';
+import {
+  getPendingCharities,
+  confirmingCharity,
+  rejectingCharity,
+  getConfirmedCharities,
+  checkPaymentMethodAvailability,
+  confirmingPaymentAccount,
+  rejectingPaymentAccount,
+  getAllPendingPaymentMethodsRequests,
+  getCharityPendingPaymentRequests,
+} from '../services/admin.service.js';
 
-  // .exec();
-  res.status(200).json(charitiesPending);
+const getAllPendingRequestsCharities = asyncHandler(async (req, res, next) => {
+  const pendingCharities = await getPendingCharities();
+  res.status(200).json(pendingCharities);
 });
 const getPendingRequestCharityById = asyncHandler(async (req, res, next) => {
-  const charity = await Charity.findOne({
-    _id: req.params.id,
-    $and: [
-      { isPending: true },
-      { isEnabled: true },
-      {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    ],
-  })
-    .select('name email paymentMethods')
-    .exec();
-  if (!charity) throw new BadRequestError('charity not found');
+  const charity = await getPendingCharities(req.params.id);
   res.status(200).json(charity);
 });
 const getCharityPaymentsRequestsById = asyncHandler(async (req, res, next) => {
-  const paymentRequests = await Charity.findOne(
-    { _id: req.params.id },
-    'paymentMethods _id'
-  ).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
-  if (!paymentRequests) throw new BadRequestError('charity not found');
-  let bankAccount = paymentRequests.paymentMethods.bankAccount.filter(acc => acc.enable === false);
-  let fawry = paymentRequests.paymentMethods.fawry.filter(acc => acc.enable === false);
-  let vodafoneCash = paymentRequests.paymentMethods.vodafoneCash.filter(acc =>acc.enable === false);
-  res.status(200).json({bankAccount,fawry,vodafoneCash});
+  const paymentRequests = await getCharityPendingPaymentRequests(req.params.id);
+  res.status(200).json({...paymentRequests});
 });
 const getAllRequestsPaymentMethods = asyncHandler(async (req, res, next) => {
   // const paymentRequests = await Charity.find({}, 'paymentMethods _id').select(
   //   '-_id'
   // ); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
 
-  const bankAccountRequests = await Charity.aggregate([
-    {
-      $match: {
-        isPending: false,
-        isEnabled: true,
-        isConfirmed: true,
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    },
-    {
-      $unwind: '$paymentMethods.bankAccount',
-    },
-    {
-      $match: {
-        'paymentMethods.bankAccount.enable': false,
-      },
-    },
-    {
-      $project: {
-        name: 1,
-        'paymentMethods.bankAccount': 1,
-      },
-    },
-  ]).exec();
+  const bankAccountRequests = await getAllPendingPaymentMethodsRequests('bankAccount');
 
-  const fawryRequests = await Charity.aggregate([
-    {
-      $match: {
-        isPending: false,
-        isEnabled: true,
-        isConfirmed: true,
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    },
-    {
-      $unwind: '$paymentMethods.fawry',
-    },
-    {
-      $match: {
-        'paymentMethods.fawry.enable': false,
-      },
-    },
-    {
-      $project: {
-        name: 1,
-        'paymentMethods.fawry': 1,
-      },
-    },
-  ]).exec();
+  const fawryRequests = await getAllPendingPaymentMethodsRequests('fawry');
 
-  const vodafoneCashRequests = await Charity.aggregate([
-    {
-      $match: {
-        isPending: false,
-        isEnabled: true,
-        isConfirmed: true,
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    },
-    {
-      $unwind: '$paymentMethods.vodafoneCash',
-    },
-    {
-      $match: {
-        'paymentMethods.vodafoneCash.enable': false,
-      },
-    },
-    {
-      $project: {
-        name: 1,
-        'paymentMethods.vodafoneCash': 1,
-      },
-    },
-  ]).exec();
+  const vodafoneCashRequests = await getAllPendingPaymentMethodsRequests('vodafoneCash');
+
   if (!bankAccountRequests&&!fawryRequests&&!vodafoneCashRequests) throw new BadRequestError('No paymentRequests found');
 
   res.json({ bankAccountRequests, fawryRequests, vodafoneCashRequests });
 });
-const confirmcharity = asyncHandler(async (req, res, next) => {
-  const charity = await Charity.findOne({
-    _id: req.params.id,
-    $and: [
-      { isPending: true },
-      { isEnabled: true },
-      {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    ],
-  })
-    .select('name email charityDocs paymentMethods')
-    .exec();
-  if (!charity) throw new BadRequestError('charity not found');
-  charity.isPending = false;
-  charity.isConfirmed = true;
-  //enable all paymentMethods when first time the charity send the docs
-  charity.paymentMethods.bankAccount.map(item => {
-    item.enable = true;
-  })
-  charity.paymentMethods.fawry.map(item => {
-    item.enable = true;
-  })
-  charity.paymentMethods.vodafoneCash.map(item => {
-    item.enable = true;
-})
-  // deleteOldImgs(arr)
-  await charity.save();
+const confirmCharity = asyncHandler(async (req, res, next) => {
+  const charity = await getPendingCharities(req.params.id);
+
+  await confirmingCharity(charity);
+
   await setupMailSender(
     charity.email,
     'Charity has been confirmed successfully',
     `<h2>after reviewing the charity docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
   );
+
   res
     .status(200)
     .json({ message: 'Charity has been confirmed successfully', charity });
 });
+const rejectCharity = asyncHandler(async (req, res, next) => {
+  const charity = await getPendingCharities(req.params.id);
 
-const rejectcharity = asyncHandler(async (req, res, next) => {
-  console.log('reh');
-  const charity = await Charity.findOne({
-    _id: req.params.id,
-    $and: [
-      { isPending: true },
-      { isEnabled: true },
-      {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    ],
-  });
-  if (!charity) throw new BadRequestError('charity not found');
-  charity.isPending = false;
-  charity.isConfirmed = false;
-      deleteOldImgs(charity.charityDocs.docs1)
-      deleteOldImgs(charity.charityDocs.docs2)
-      deleteOldImgs(charity.charityDocs.docs3)
-      deleteOldImgs(charity.charityDocs.docs4)
+  await rejectingCharity(charity);
   
-  charity.paymentMethods.bankAccount.map(acc => {
-    console.log('loop');
-    // acc.docsBank.map(img => {
-    //   console.log(img);
-      deleteOldImgs(acc.docsBank)
-     
-      // })
-  })
-  charity.paymentMethods.fawry.map(acc => {
-    console.log('loop');
-    // acc.docsBank.map(img => {
-    //   console.log(img);
-      deleteOldImgs(acc.docsFawry)
-      // })
-  })
-  charity.paymentMethods.vodafoneCash.map(acc => {
-    console.log('loop');
-  
-      deleteOldImgs(acc.docsVodafoneCash)
-      // })
-    })
-  await charity.save();
   await setupMailSender(
     charity.email,
     'Charity has not been confirmed',
@@ -260,115 +73,43 @@ const rejectcharity = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: 'Charity failed to be confirmed', charity });
 });
 const confirmPaymentAccountRequest= asyncHandler(async (req, res, next) => {
-  const charity = await Charity.findOne({
-    _id: req.params.id,
-    $and: [
-      { isPending: false },
-      { isEnabled: true },
-      { isConfirmed: true },
-      {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    ],
-  })
-    .select('name email paymentMethods')
-    .exec();
-    if (!charity) throw new BadRequestError('charity not found');
-  if (req.body.paymentMethod !== 'bankAccount' && req.body.paymentMethod !== 'vodafoneCash' && req.body.paymentMethod !== 'fawry') {
-    throw new BadRequestError('Invalid Payment Method type'); 
-  } 
-  const idx=charity.paymentMethods[req.body.paymentMethod].findIndex(item => item._id == req.body.paymentAccountID)
-  if(idx===-1)throw new BadRequestError('not found Payment Method account'); 
+  const charity = await getConfirmedCharities(req.params.id);
 
-  if (charity.paymentMethods[req.body.paymentMethod][idx].enable === false) {
-    
-    charity.paymentMethods[req.body.paymentMethod][idx].enable = true;
-  } else {
-    throw new BadRequestError('Already this payment account is enabled'); 
+  const idx = checkPaymentMethodAvailability(charity,req.body.paymentMethod,req.body.paymentAccountID);
+  
+  await confirmingPaymentAccount(charity,req.body.paymentMethod,idx)
 
-  }
- 
-  // console.log(charity.paymentMethods[req.body.paymentMethod][idx]);
-  await charity.save();
   await setupMailSender(
     charity.email,
     'Charity payment account has been confirmed successfully',
     `<h2>after reviewing the payment account docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
   );
+
   res
     .status(200)
     .json({ message: 'Charity payment account has been confirmed successfully', charity });
 });
 const rejectPaymentAccountRequest= asyncHandler(async (req, res, next) => {
-  const charity = await Charity.findOne({
-    _id: req.params.id,
-    $and: [
-      { isPending: false },
-      { isEnabled: true },
-      { isConfirmed: true },
-      {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
-      },
-    ],
-  })
-    .select('name email paymentMethods')
-    .exec();
-    if (!charity) throw new BadRequestError('charity not found');
-  if (req.body.paymentMethod !== 'bankAccount' && req.body.paymentMethod !== 'vodafoneCash' && req.body.paymentMethod !== 'fawry') {
-    throw new BadRequestError('Invalid Payment Method type'); 
-  } 
-  const idx=charity.paymentMethods[req.body.paymentMethod].findIndex(item => item._id == req.body.paymentAccountID)
-  if(idx===-1)throw new BadRequestError('not found Payment Method account'); 
+  const charity = await getConfirmedCharities(req.params.id);
 
-  if (charity.paymentMethods[req.body.paymentMethod][idx].enable === false) {
-    let urlOldImage;
-    if (req.body.paymentMethod === 'bankAccount') {
-      urlOldImage = charity.paymentMethods[req.body.paymentMethod][idx].docsBank;
-    }
-    else if (req.body.paymentMethod === 'vodafoneCash') {
-      urlOldImage = charity.paymentMethods[req.body.paymentMethod][idx].docsVodafoneCash;
-      }
-    else if (req.body.paymentMethod === 'fawry') {
-      urlOldImage = charity.paymentMethods[req.body.paymentMethod][idx].docsFawry;
-    }
+  const idx = checkPaymentMethodAvailability(charity,req.body.paymentMethod,req.body.paymentAccountID);
 
-    charity.paymentMethods[req.body.paymentMethod].splice(idx, 1); //delete the account
-    // url: 'http://localhost:5000/docsCharities/docsBank-name.jpeg';
-    if (urlOldImage) {
-        // const url = path.join('./uploads/docsCharities', charity.paymentMethods[req.body.paymentMethod][idx].docsFawry[0])
-        // console.log(url);
-        // deleteFile(url)
-        deleteOldImgs(urlOldImage);
-    } else {
-      throw new BadRequestError('No docs found for that account'); 
-
-    }
-  }  else {
-    throw new BadRequestError('Already this payment account is enabled'); 
-
-  }
- 
-  // console.log(charity.paymentMethods[req.body.paymentMethod][idx]);
-  await charity.save();
+  await rejectingPaymentAccount(charity,req.body.paymentMethod,idx);
+  
   await setupMailSender(
     charity.email,
     'Charity payment account has been rejected',
     `<h2>after reviewing the payment account docs we reject it </h2><h2>you can re upload the docs again, BeCareful to add correct info</h2>`
   );
+
   res
     .status(200)
     .json({ message: 'Charity payment account has been rejected successfully', charity });
 });
 export {
   getAllPendingRequestsCharities,
-  confirmcharity,
-  rejectcharity,
+  confirmCharity,
+  rejectCharity,
   getPendingRequestCharityById,
   getCharityPaymentsRequestsById,
   getAllRequestsPaymentMethods,
