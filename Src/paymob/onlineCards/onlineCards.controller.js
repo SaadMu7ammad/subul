@@ -7,7 +7,7 @@ const payWithOnlineCard = asyncHandler(async (req, res, next) => {
   amount = +amount;
   const { orderId, tokenThirdStep } = await paymobOnlineCard.createPayment(req.user,amount);
   return res.status(201).json({
-    paymentId: orderId,
+    orderId	: orderId,
     data: `https://accept.paymobsolutions.com/api/acceptance/iframes/${process.env.PAYMOB_FRAME_ID}?payment_token=${tokenThirdStep}`,
   });
 });
