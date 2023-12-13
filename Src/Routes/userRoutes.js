@@ -18,7 +18,7 @@ import {editUserProfileValidation} from '../utils/validatorComponents/user/editU
 import {registerUserValidation,loginUserValidation} from '../utils/validatorComponents/user/userAuthValidation.js'
 import {changePasswordUserValidation, confirmResetUserValidation, requestResetEmailUserValidation, tokenUserValidation} from '../utils/validatorComponents/user/allUserValidation.js'
 import { isActivated } from '../middlewares/authStage2Middleware.js';
-import { createTransaction,getAllTransactions } from '../Controllers/transaction.controller.js';
+import { createTransaction,getAllTransactions, updateCaseInfo } from '../Controllers/transaction.controller.js';
 import { payWithOnlineCard } from '../paymob/onlineCards/onlineCards.controller.js';
 import { paywithMobileWallet } from '../paymob/mobileWallets/mobileWallets.controller.js';
 router.post('/', registerUserValidation, validate, registerUser);
@@ -56,4 +56,12 @@ router.post('/addTransaction/paymob/mobilewallet',auth,isActivated, createTransa
 
 router.get('/myTransactions',auth,isActivated, getAllTransactions);
 
+//done first
+// //Transaction processed callback
+router.post('/callback', updateCaseInfo);
+//then
+//Transaction response callback
+router.get('/callback', async (req, res, next) => {
+  res.send(req.query);
+});
 export default router;
