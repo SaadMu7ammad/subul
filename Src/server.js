@@ -30,9 +30,9 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 // app.use('/uploads',express.static( `uploads`));
 
 app.use(cookieParser());
-app.get('/callback', async (req, res, next) => {
-  res.send({ query: req.query });
-});
+// app.get('/callback', async (req, res, next) => {
+//   res.send({ query: req.query });
+// });
 // app.post('/callback', async (req, res, next) => {
 //   res.send({ method: 'POST', body: req.body });
 // });
