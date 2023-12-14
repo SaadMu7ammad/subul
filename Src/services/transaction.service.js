@@ -2,35 +2,52 @@ import asyncHandler from 'express-async-handler';
 import Case from '../models/caseModel.js';
 import Transactions from '../models/transactionModel.js';
 import { BadRequestError, NotFoundError } from '../errors/index.js';
-const createTransaction = (async (data, user) => {
-  const {caseId, amount, paymentMethod, name } = data;
+import User from '../models/userModel.js';
+import Charity from '../models/charityModel.js';
+const preCreateTransaction = async (data, user) => {
+  //must check the account for the charity is valid or not
+  const { charityId, caseId, amount, mainTypePayment } = data;
   //pre processing
-  if (!caseId) {
+  if (!charityId) {
+    throw new NotFoundError('charity is not found');
+  } else if (!caseId) {
     throw new NotFoundError('id is not found');
   }
-  if (!name) {
-    throw new NotFoundError('data is not completed');
-  }
-  if (+amount === 0) {
+  else if (+amount === 0) {
     throw new BadRequestError('Invalid amount of donation');
-  }
-  if (!paymentMethod) {
-    throw new NotFoundError('no payment method has been chosen');
-  }
-  if (
-    !paymentMethod.bankAccount &&
-    !paymentMethod.fawry &&
-    !paymentMethod.vodafoneCash
+  } else if (
+    mainTypePayment !== 'mobileWallet' &&
+    mainTypePayment !== 'onlineCard'
   ) {
     throw new NotFoundError('no payment method has been chosen');
   }
-  //   let paymentType;
-  //   if (paymentMethod.bankAccount) paymentType = 'Bank';
-  //   else if (paymentMethod.fawry) paymentType = 'fawry';
-  //   else if (paymentMethod.vodafoneCash) paymentType = 'vodafoneCash';
   const caseIsExist = await Case.findById(caseId);
   if (!caseIsExist) {
     throw new NotFoundError('case is not found');
+  }
+  const chariyIsExist = await Charity.findById(caseIsExist.charity);
+  if (!chariyIsExist) {
+    throw new NotFoundError('charity is not found');
+  } 
+  //check that charity is not confirmed or pending or the account not freezed
+  if (
+    chariyIsExist.isConfirmed === false ||
+    chariyIsExist.isPending === true ||
+    chariyIsExist.isEnabled === false
+  ) {
+    throw new BadRequestError('charity is not completed its authentication stages');
+  }
+  if (
+    chariyIsExist.emailVerification.isVerified === false &&
+    chariyIsExist.phoneVerification.isVerified === false
+  ) {
+    throw new BadRequestError(
+      'charity is not verified..must verify the account by email or phone number'
+    );
+  }
+  if (caseIsExist.charity.toString() !== charityId.toString()) {
+    //to check that the case is related to the charity id in the database
+    throw new BadRequestError('mismatching while donating ...please try again');
   }
   //check the case is finished or being freezed by the website admin
   if (caseIsExist.finished === true || caseIsExist.freezed === true) {
@@ -38,7 +55,7 @@ const createTransaction = (async (data, user) => {
       'this case is finished...choose case not completed'
     );
   }
-  //first..check that donor only donates with the remain part of money and not exceed the target amount
+  //check that donor only donates with the remain part of money and not exceed the target amount
   const currentAmount = +caseIsExist.currentDonationAmount + +amount;
   if (
     +caseIsExist.targetDonationAmount < currentAmount &&
@@ -49,36 +66,85 @@ const createTransaction = (async (data, user) => {
         (+caseIsExist.targetDonationAmount - +caseIsExist.currentDonationAmount)
     );
   }
-  //second..check if that is the last donation to finish this case
+  return true;
+};
+const updateCaseInfo = asyncHandler(async (data) => {
+  //start updating
+  const {
+    user,
+    items,
+    externalTransactionId,
+    orderId,
+    amount,
+    date,
+    paymentMethodType,
+    status,
+    currency,
+    secretInfoPayment,
+  } = data;
+  const caseIsExist = await Case.findById(items[0].name); //the id of the case
+
+  if (!caseIsExist) {
+    throw new NotFoundError('case is not found');
+  }
+  //i think we must implement the refund here
+
+  //update the case info
+  //check if that is the last donation to finish this case
+  const currentAmount = +caseIsExist.currentDonationAmount + +amount;
+
   if (+caseIsExist.targetDonationAmount === currentAmount) {
     caseIsExist.dateFinished = Date.now();
     caseIsExist.finished = true;
   }
+  +caseIsExist.dontationNumbers++;
+  caseIsExist.currentDonationAmount += +amount;
+  const charityIsExist = await Charity.findById(caseIsExist.charity);
 
-  return true;
-  //start updating 
-  //update the case info
-  // +caseIsExist.dontationNumbers++;
-  // caseIsExist.currentDonationAmount += +amount;
-  // //now everything is ready for creating the transaction
-  // const transaction = await Transactions.create({
-  //   case: caseId,
-  //   user: user._id,
-  //   amount: +amount,
-  //   paymentMethod: {
-  //     name: name,
-  //     ...paymentMethod,
-  //   },
-  // });
-  // if (!transaction) throw new BadRequestError('no transaction found');
+  let userIsExist = await User.findOne({ email: user.email });
+  if (!userIsExist) throw new BadRequestError('no user found');
+  //now everything is ready for creating the transaction
 
-  // //add the transaction id to the user
-  // user.transactions.push(transaction._id);
-  // await caseIsExist.save();
-  // await user.save();
-  // return { transaction };
+  // according to it we know the type of the payment method the donor paid with
+  let paymentMethod;
+  if (paymentMethodType === 'card') {
+    paymentMethod = {
+      onlineCard: {
+        lastFourDigits: secretInfoPayment,
+      },
+    };
+  } else if (paymentMethodType === 'wallet') {
+    paymentMethod = {
+      mobileWallet: {
+        number: secretInfoPayment,
+      },
+    };
+  }
+  //what if the payment happened but the transaction not stored in the db
+  try {
+    const newTransaction = await Transactions.create({
+      case: caseIsExist._id,
+      user: userIsExist._id,
+      moneyPaid: +amount,
+      paidAt: date,
+      externalTransactionId: externalTransactionId,
+      orderId: orderId,
+      paymentInfo: paymentMethod,
+      status,
+      currency,
+    });
+    if (!newTransaction) throw new BadRequestError('no transaction found');
+    //add the transaction id to the user
+    userIsExist.transactions.push(newTransaction._id);
+    await caseIsExist.save();
+    await userIsExist.save();
+
+    return { newTransaction };
+  } catch (err) {
+    console.log(err);
+  }
 });
-const getAllTransactions = (async (user) => {
+const getAllTransactions = async (user) => {
   const transactionPromises = user.transactions.map(async (item, index) => {
     const myTransaction = await Transactions.findById(item);
     if (!myTransaction) {
@@ -87,7 +153,7 @@ const getAllTransactions = (async (user) => {
     } else {
       console.log(myTransaction.user);
       console.log(user._id);
-      if (myTransaction.user.toString() != user._id.toString()) {
+      if (myTransaction.user.toString() !== user._id.toString()) {
         throw new BadRequestError('you dont have access to this !');
       }
       return myTransaction;
@@ -96,8 +162,9 @@ const getAllTransactions = (async (user) => {
   const allTransactions = await Promise.all(transactionPromises);
   await user.save();
   return allTransactions;
-});
+};
 export const transactionService = {
-  createTransaction,
+  preCreateTransaction,
   getAllTransactions,
+  updateCaseInfo,
 };

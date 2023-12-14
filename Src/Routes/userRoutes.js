@@ -18,7 +18,7 @@ import {editUserProfileValidation} from '../utils/validatorComponents/user/editU
 import {registerUserValidation,loginUserValidation} from '../utils/validatorComponents/user/userAuthValidation.js'
 import {changePasswordUserValidation, confirmResetUserValidation, requestResetEmailUserValidation, tokenUserValidation} from '../utils/validatorComponents/user/allUserValidation.js'
 import { isActivated } from '../middlewares/authStage2Middleware.js';
-import { createTransaction,getAllTransactions, updateCaseInfo } from '../Controllers/transaction.controller.js';
+import { preCreateTransaction,getAllTransactions, updateCaseInfo } from '../Controllers/transaction.controller.js';
 import { payWithOnlineCard } from '../paymob/onlineCards/onlineCards.controller.js';
 import { paywithMobileWallet } from '../paymob/mobileWallets/mobileWallets.controller.js';
 router.post('/', registerUserValidation, validate, registerUser);
@@ -51,8 +51,8 @@ router.put(
     editUserProfile
 );
 //other route will be added after that must be isActivated checker first...
-router.post('/addTransaction/paymob/onlinecard',auth,isActivated, createTransaction,payWithOnlineCard);
-router.post('/addTransaction/paymob/mobilewallet',auth,isActivated, createTransaction,paywithMobileWallet);
+router.post('/addTransaction/paymob/onlinecard',auth,isActivated, preCreateTransaction,payWithOnlineCard);
+router.post('/addTransaction/paymob/mobilewallet',auth,isActivated, preCreateTransaction,paywithMobileWallet);
 
 router.get('/myTransactions',auth,isActivated, getAllTransactions);
 

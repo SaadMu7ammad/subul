@@ -18,7 +18,13 @@ class PaymobStrategyMobileWallet {
     }
   };
 
-  OrderRegistrationAPIMobileWallet = async (token, amount) => {
+  OrderRegistrationAPIMobileWallet = async (
+    token,
+    amount,
+    charityId,
+    caseId,
+    caseTitle
+  ) => {
     const request = await fetch(
       `https://accept.paymobsolutions.com/api/ecommerce/orders`,
       {
@@ -32,9 +38,9 @@ class PaymobStrategyMobileWallet {
           // merchant_order_id: Math.floor(Math.random() * 10),
           items: [
             {
-              name: 'case',
+              name: caseId.toString(),
               amount_cents: amount * 100,
-              description: 'poor man',
+              description: `${charityId}-${caseTitle}`,
               quantity: '1',
             },
           ],
@@ -55,7 +61,7 @@ class PaymobStrategyMobileWallet {
           body: JSON.stringify({
             auth_token: token,
             amount_cents: amount * 100,
-            expiration: 3600,
+            expiration: 1800, //30 min
             order_id,
             billing_data: {
               email: user.email || 'NA',
@@ -84,14 +90,23 @@ class PaymobStrategyMobileWallet {
     }
   };
 
-  createPayment = async (user, amount) => {
+  createPayment = async (user, amount, charityId, caseId, caseTitle) => {
     if (!user) throw new NotFoundError('user not found');
     if (!amount || typeof amount !== 'number' || amount <= 0)
       throw new NotFoundError('Invalid amount');
+    if (!charityId) throw new NotFoundError('charity not found');
+    if (!caseId) throw new NotFoundError('case not found');
+    if (!caseTitle) throw new NotFoundError('no complete data entered');
 
     const { token } = await this.CreateAuthenticationRequestMobileWallet();
     if (!token) throw new NotFoundError('token not found');
-    const { id } = await this.OrderRegistrationAPIMobileWallet(token, amount);
+    const { id } = await this.OrderRegistrationAPIMobileWallet(
+      token,
+      amount,
+      charityId,
+      caseId,
+      caseTitle
+    );
     if (!id) throw new NotFoundError('order not found');
     const orderId = id;
     const response = await this.generatePaymentKeyMobileWallet(
