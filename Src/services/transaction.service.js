@@ -12,8 +12,7 @@ const preCreateTransaction = async (data, user) => {
     throw new NotFoundError('charity is not found');
   } else if (!caseId) {
     throw new NotFoundError('id is not found');
-  }
-  else if (+amount === 0) {
+  } else if (+amount === 0) {
     throw new BadRequestError('Invalid amount of donation');
   } else if (
     mainTypePayment !== 'mobileWallet' &&
@@ -28,14 +27,16 @@ const preCreateTransaction = async (data, user) => {
   const chariyIsExist = await Charity.findById(caseIsExist.charity);
   if (!chariyIsExist) {
     throw new NotFoundError('charity is not found');
-  } 
+  }
   //check that charity is not confirmed or pending or the account not freezed
   if (
     chariyIsExist.isConfirmed === false ||
     chariyIsExist.isPending === true ||
     chariyIsExist.isEnabled === false
   ) {
-    throw new BadRequestError('charity is not completed its authentication stages');
+    throw new BadRequestError(
+      'charity is not completed its authentication stages'
+    );
   }
   if (
     chariyIsExist.emailVerification.isVerified === false &&
@@ -88,6 +89,7 @@ const updateCaseInfo = asyncHandler(async (data) => {
     throw new NotFoundError('case is not found');
   }
   //i think we must implement the refund here
+  //what if status = pending
 
   //update the case info
   //check if that is the last donation to finish this case
@@ -99,7 +101,7 @@ const updateCaseInfo = asyncHandler(async (data) => {
   }
   +caseIsExist.dontationNumbers++;
   caseIsExist.currentDonationAmount += +amount;
-  const charityIsExist = await Charity.findById(caseIsExist.charity);
+  // const charityIsExist = await Charity.findById(caseIsExist.charity);
 
   let userIsExist = await User.findOne({ email: user.email });
   if (!userIsExist) throw new BadRequestError('no user found');
@@ -136,10 +138,14 @@ const updateCaseInfo = asyncHandler(async (data) => {
     if (!newTransaction) throw new BadRequestError('no transaction found');
     //add the transaction id to the user
     userIsExist.transactions.push(newTransaction._id);
-    await caseIsExist.save();
     await userIsExist.save();
+    if (status == 'failed') {
+      return newTransaction;
+      // throw new BadRequestError('transaction failed please try again');
+    }
+    await caseIsExist.save();
 
-    return { newTransaction };
+    return newTransaction ;
   } catch (err) {
     console.log(err);
   }
