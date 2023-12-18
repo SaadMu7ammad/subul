@@ -4,7 +4,7 @@
 //     // cb(null, 'uploads/');
 //     cb(null, './uploads/LogoCharities');
 //   },
-//   filename: function (req, file, cb) {
+//   fileName: function (req, file, cb) {
 //     // const imageUrl = file.path.replace("\\", "/");
 //     const ex = file.mimetype.split('/')[1];
 //     const uniqueSuffix ="LogoCharity"+uuidv4()+"-"+ Date.now() ;
@@ -18,8 +18,26 @@ import asyncHandler from 'express-async-handler';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
-import logger from '../utils/logger.js';
 import { BadRequestError } from '../errors/bad-request.js';
+import {uploadImg} from '../middlewares/cloudinary.js';
+
+const saveImg = async(sharpPromise,destinationFolder,fileName)=>{
+
+    if(process.env.NODE_ENV === 'development'){
+        //saving locally
+        await sharpPromise.toFile(`./uploads/${destinationFolder}/` + fileName);
+
+    }else if(process.env.NODE_ENV === 'production'){
+
+        const resizedImgBuffer = await sharpPromise.toBuffer();
+
+        //saving to cloudniary
+        const uploadResult = await uploadImg(resizedImgBuffer);
+
+        console.log(uploadResult);
+    }
+}
+
 const multerFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image')) {
         //accepts imgs only
@@ -43,18 +61,19 @@ const resizeImg = asyncHandler(async (req, res, next) => {
     }
     if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
         uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
-    const filename = uniqueSuffix + '.jpeg';
-    req.temp.push(filename);
-    await sharp(req.file.buffer)
+    const fileName = uniqueSuffix + '.jpeg';
+    req.temp.push(fileName);
+
+    const sharpPromise = sharp(req.file.buffer)
         .resize(320, 240)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
-        .toFile(`./uploads/${destinationFolder}/` + filename); //, (err, info) => {
-    //   console.log('err');
-    //   console.log(err);
-    // });
-    //adding the filename in the req.body
-    req.body.image = filename;
+    
+    await saveImg(sharpPromise,destinationFolder,fileName)
+    
+    //adding the fileName in the req.body
+    req.body.image = fileName;
+
     next();
 });
 const resizeImgUpdated = asyncHandler(async (req, res, next) => {
@@ -79,18 +98,18 @@ const resizeImgUpdated = asyncHandler(async (req, res, next) => {
             uniqueSuffix =
                 suffix + req.charity.name + uuidv4() + '-' + Date.now();
         }
-        const filename = uniqueSuffix + '.jpeg';
-        req.temp.push(filename);
-        await sharp(req.file.buffer)
-            .resize(320, 240)
-            .toFormat('jpeg')
-            .jpeg({ quality: 90 })
-            .toFile(`./uploads/${destinationFolder}/` + filename); //, (err, info) => {
-        //   console.log('err');
-        //   console.log(err);
-        // });
-        //adding the filename in the req.body
-        req.body.image = filename;
+        const fileName = uniqueSuffix + '.jpeg';
+        req.temp.push(fileName);
+
+        const sharpPromise = sharp(req.file.buffer)
+        .resize(320, 240)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+    
+        await saveImg(sharpPromise,destinationFolder,fileName)
+
+        //adding the fileName in the req.body
+        req.body.image = fileName;
     }
     next();
 });
