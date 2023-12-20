@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import { isAdmin } from '../middlewares/isAdminMiddleware.js';
 import { confirmCharity,confirmPaymentAccountRequest, getAllRequestsPaymentMethods, getAllPendingRequestsCharities, getCharityPaymentsRequestsById, getPendingRequestCharityById, rejectCharity, rejectPaymentAccountRequest } from '../Controllers/adminController.js';
 import { auth } from '../middlewares/authMiddleware.js';
+import { getTransactionById } from '../paymob/admin/getTransactionById.controller.js';
 
 const router = express.Router();
 router.get('/AllRequestsCharities',auth,isAdmin,getAllPendingRequestsCharities)
@@ -13,4 +14,5 @@ router.put('/rejectrequestsCharities/:id',auth,isAdmin,rejectCharity)
 router.put('/confirmrequestPaymentMethod/:id',auth,isAdmin,confirmPaymentAccountRequest)
 router.put('/rejectrequestPaymentMethod/:id',auth,isAdmin,rejectPaymentAccountRequest)
 
+router.get('/paymob/getTransactionById/:id',auth,isAdmin,getTransactionById)
 export default router;
