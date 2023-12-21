@@ -69,7 +69,7 @@ const preCreateTransaction = async (data, user) => {
   }
   return true;
 };
-const updateCaseInfo = asyncHandler(async (data) => {
+const updateCaseInfoOrRefund = asyncHandler(async (data) => {
   //start updating
   const {
     user,
@@ -89,6 +89,18 @@ const updateCaseInfo = asyncHandler(async (data) => {
     throw new NotFoundError('case is not found');
   }
   //i think we must implement the refund here
+
+  const transactionIsExist = await Transactions.findOne({
+    externalTransactionId: externalTransactionId,
+    orderId: orderId,
+  });
+  if (transactionIsExist) {//transaction must updated not created again
+    //must decrement the case 
+    transactionIsExist.status = 'refunded'
+    await transactionIsExist.save()
+    return transactionIsExist;
+
+}
   //what if status = pending
 
   //update the case info
@@ -145,7 +157,7 @@ const updateCaseInfo = asyncHandler(async (data) => {
     }
     await caseIsExist.save();
 
-    return newTransaction ;
+    return newTransaction;
   } catch (err) {
     console.log(err);
   }
@@ -172,5 +184,5 @@ const getAllTransactions = async (user) => {
 export const transactionService = {
   preCreateTransaction,
   getAllTransactions,
-  updateCaseInfo,
+  updateCaseInfoOrRefund,
 };

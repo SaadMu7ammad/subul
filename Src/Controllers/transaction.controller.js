@@ -23,7 +23,7 @@ const getAllTransactions = asyncHandler(async (req, res, next) => {
   }
   res.status(201).json({ status: 'success', data: myTransactions });
 });
-const updateCaseInfo = asyncHandler(async (req, res, next) => {
+const updateCaseInfoOrRefund = asyncHandler(async (req, res, next) => {
   try {
     // console.log(req.body);
     // console.log(req.body.obj.id); //transaction id 150168430
@@ -62,7 +62,8 @@ const updateCaseInfo = asyncHandler(async (req, res, next) => {
       secretInfoPayment: req.body.obj.source_data.pan,
     };
     // create a new transaction here
-    const transaction = await transactionService.updateCaseInfo(data);
+    //before update the case info check if the transaction is a refund or payment donation
+    const transaction = await transactionService.updateCaseInfoOrRefund(data);
     if (!transaction) {
       throw new BadRequestError(
         'transaction not completed ... please try again!'
@@ -75,4 +76,4 @@ const updateCaseInfo = asyncHandler(async (req, res, next) => {
   }
 });
 
-export { preCreateTransaction, getAllTransactions, updateCaseInfo };
+export { preCreateTransaction, getAllTransactions, updateCaseInfoOrRefund };

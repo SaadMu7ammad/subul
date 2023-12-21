@@ -30,7 +30,7 @@ import { isActivated } from '../middlewares/authStage2Middleware.js';
 import {
   preCreateTransaction,
   getAllTransactions,
-  updateCaseInfo,
+  updateCaseInfoOrRefund,
 } from '../Controllers/transaction.controller.js';
 import { payWithOnlineCard } from '../paymob/onlineCards/onlineCards.controller.js';
 import { paywithMobileWallet } from '../paymob/mobileWallets/mobileWallets.controller.js';
@@ -84,7 +84,7 @@ router.get('/myTransactions', auth, isActivated, getAllTransactions);
 
 //done first
 // //Transaction processed callback
-router.post('/callback', hmacSetting, updateCaseInfo);
+router.post('/callback', hmacSetting, updateCaseInfoOrRefund);
 
 //then
 //Transaction response callback
