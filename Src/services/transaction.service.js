@@ -94,13 +94,24 @@ const updateCaseInfoOrRefund = asyncHandler(async (data) => {
     externalTransactionId: externalTransactionId,
     orderId: orderId,
   });
-  if (transactionIsExist) {//transaction must updated not created again
-    //must decrement the case 
-    transactionIsExist.status = 'refunded'
-    await transactionIsExist.save()
-    return transactionIsExist;
+  if (transactionIsExist) {
+    //transaction must updated not created again
+    transactionIsExist.status = 'refunded';
+    //update the case and decrement donation info
+    const caseId = transactionIsExist.case; //get the id of the case
+    if (!caseId) throw new NotFoundError('case id not found');
+    const caseIsExist = await Case.findById(caseId);
+    if (caseIsExist.finished) caseIsExist.finished = false; //re open the case again
+    if (caseIsExist.currentDonationAmount >= amount)
+      caseIsExist.currentDonationAmount -= amount;
+    if (caseIsExist.dontationNumbers >= 1) caseIsExist.dontationNumbers -= 1;
+    if (caseIsExist.dateFinished) caseIsExist.dateFinished = null;
 
-}
+    await transactionIsExist.save();
+    await caseIsExist.save();
+
+    return transactionIsExist;
+  }
   //what if status = pending
 
   //update the case info
