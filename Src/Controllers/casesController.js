@@ -7,6 +7,7 @@ import { UnauthenticatedError } from '../errors/unauthenticated.js';
 import { NotFoundError } from '../errors/not-found.js';
 import logger from '../utils/logger.js';
 import { deleteFile } from '../utils/deleteFile.js';
+import { deleteImg as deleteImgFromCloudinary } from '../middlewares/cloudinary.js';
 
 const addCase = asyncHandler(async (req, res, next) => {
     const newCase = Case(req.body);
@@ -93,7 +94,11 @@ const deleteCase = asyncHandler(async (req, res, next) => {
     caseIdsArray.splice(caseIdIndex, 1);
     req.charity.cases = caseIdsArray;
     await req.charity.save();
-    deleteFile('./uploads/casesCoverImages/' + deletedCase.imageCover);
+    if(process.env.NODE_ENV === 'development'){
+        deleteFile('./uploads/casesCoverImages/' + deletedCase.imageCover);
+    }else if(process.env.NODE_ENV === 'production'){
+        deleteImgFromCloudinary('casesCoverImages',deletedCase.imageCover.split('.jpeg')[0]);
+    }
     res.json(deletedCase);
 });
 

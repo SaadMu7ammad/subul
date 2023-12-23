@@ -6,17 +6,26 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
-
-const uploadImg = async (imgBuffer) => {
+//TODO : HANDLING IMG NAME AND FOLDER :Done
+//       HANLDING DELETING IMG
+const uploadImg = async (imgBuffer, folder, publicId) => {
     const uploadResult = await new Promise((resolve) => {
         cloudinary.uploader
-            .upload_stream((error, uploadResult) => {
-                return resolve(uploadResult);
-            })
+            .upload_stream(
+                { folder, public_id: publicId },
+                (error, uploadResult) => {
+                    return resolve(uploadResult);
+                }
+            )
             .end(imgBuffer);
     });
     return uploadResult;
 };
 
-export {uploadImg};
+const deleteImg = async (folder, publicId) => {
+    cloudinary.uploader
+        .destroy(`${folder}/${publicId}`)
+        .then((result) => console.log(result));
+};
+
+export { uploadImg,deleteImg };

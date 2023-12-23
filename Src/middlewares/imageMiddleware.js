@@ -32,7 +32,7 @@ const saveImg = async(sharpPromise,destinationFolder,fileName)=>{
         const resizedImgBuffer = await sharpPromise.toBuffer();
 
         //saving to cloudniary
-        const uploadResult = await uploadImg(resizedImgBuffer);
+        const uploadResult = await uploadImg(resizedImgBuffer,destinationFolder,fileName.split('.jpeg')[0]);
 
         console.log(uploadResult);
     }
