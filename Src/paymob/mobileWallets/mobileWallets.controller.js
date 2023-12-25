@@ -1,11 +1,16 @@
 import asyncHandler from 'express-async-handler';
-import PaymobStrategyMobileWallet from './mobileWallets.service.js';
-
-const paymobMobileWallet = new PaymobStrategyMobileWallet();
+import {createPayment} from '../payment/payment.service.js'
 const paywithMobileWallet = asyncHandler(async (req, res, next) => {
-  let { amount,charityId,caseId,caseTitle } = req.body;
+  let { amount, charityId, caseId, caseTitle } = req.body;
   amount = +amount;
-  const { tokenThirdStep } = await paymobMobileWallet.createPayment(req.user,amount,charityId,caseId,caseTitle);
+  const { tokenThirdStep } = await createPayment(
+    req.user,
+    amount,
+    charityId,
+    caseId,
+    caseTitle,
+    process.env.PAYMOB_MOBILE_WALLET_INTEGRATION_ID
+  );
   const request = await fetch(
     ` https://accept.paymob.com/api/acceptance/payments/pay`,
     {
@@ -14,7 +19,7 @@ const paywithMobileWallet = asyncHandler(async (req, res, next) => {
       body: JSON.stringify({
         payment_token: tokenThirdStep,
         source: {
-          identifier: process.env.PAYMOB_MOBILE_WALLET_NUMBER,//the wallet number of the user
+          identifier: process.env.PAYMOB_MOBILE_WALLET_NUMBER, //the wallet number of the user
           subtype: 'WALLET',
         },
       }),

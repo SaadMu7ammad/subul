@@ -1,13 +1,19 @@
 import asyncHandler from 'express-async-handler';
-import PaymobStrategyOnlineCard from './onlineCards.service.js';
+import { createPayment } from '../payment/payment.service.js';
 
-const paymobOnlineCard = new PaymobStrategyOnlineCard();
 const payWithOnlineCard = asyncHandler(async (req, res, next) => {
-  let { amount,charityId,caseId,caseTitle } = req.body;
+  let { amount, charityId, caseId, caseTitle } = req.body;
   amount = +amount;
-  const { orderId, tokenThirdStep } = await paymobOnlineCard.createPayment(req.user,amount,charityId,caseId,caseTitle);
+  const { orderId, tokenThirdStep } = await createPayment(
+    req.user,
+    amount,
+    charityId,
+    caseId,
+    caseTitle,
+    process.env.PAYMOB_CREDIT_CARD_INTEGRATION_ID
+  );
   return res.status(201).json({
-    orderId	: orderId,
+    orderId: orderId,
     data: `https://accept.paymobsolutions.com/api/acceptance/iframes/${process.env.PAYMOB_FRAME_ID}?payment_token=${tokenThirdStep}`,
   });
 });
