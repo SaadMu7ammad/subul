@@ -180,8 +180,7 @@ const getAllTransactions = async (user) => {
       user.transactions.splice(index, 1);
       return null;
     } else {
-      console.log(myTransaction.user);
-      console.log(user._id);
+      // console.log(myTransaction.user);
       if (myTransaction.user.toString() !== user._id.toString()) {
         throw new BadRequestError('you dont have access to this !');
       }

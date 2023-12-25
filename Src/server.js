@@ -12,7 +12,7 @@ import userRoutes from './Routes/userRoutes.js';
 import charityRoutes from './Routes/charityRoutes.js';
 import casesRoutes from './Routes/casesRoutes.js';
 import adminRoutes from './Routes/adminRoutes.js';
-// import transactionRoutes from './paymob/Routes/transaction.Routes.js';
+import transactionRoutes from './paymob/Routes/transaction.Routes.js';
 import logger from './utils/logger.js';
 // const imageUrl = req.file.path.replace("\\" ,"/");
 const __dirname = path.resolve();
@@ -36,7 +36,7 @@ app.use(cookieParser());
 // app.post('/callback', async (req, res, next) => {
 //   res.send({ method: 'POST', body: req.body });
 // });
-// app.use('/api/paymob', transactionRoutes);
+app.use('/api/payment', transactionRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/charities', charityRoutes);
 app.use('/api/charities', casesRoutes);

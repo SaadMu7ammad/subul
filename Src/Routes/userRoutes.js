@@ -28,13 +28,8 @@ import {
 } from '../utils/validatorComponents/user/allUserValidation.js';
 import { isActivated } from '../middlewares/authStage2Middleware.js';
 import {
-  preCreateTransaction,
   getAllTransactions,
-  updateCaseInfoOrRefund,
 } from '../Controllers/transaction.controller.js';
-import { payWithOnlineCard } from '../paymob/onlineCards/onlineCards.controller.js';
-import { paywithMobileWallet } from '../paymob/mobileWallets/mobileWallets.controller.js';
-import { hmacSetting } from '../paymob/hmac/hmac.controller.js';
 router.post('/', registerUserValidation, validate, registerUser);
 router.post('/auth', loginUserValidation, validate, authUser);
 router.post('/logout', logoutUser);
@@ -64,32 +59,32 @@ router.put(
   isActivated,
   editUserProfile
 );
-//other route will be added after that must be isActivated checker first...
-router.post(
-  '/addTransaction/paymob/onlinecard',
-  auth,
-  isActivated,
-  preCreateTransaction,
-  payWithOnlineCard
-);
-router.post(
-  '/addTransaction/paymob/mobilewallet',
-  auth,
-  isActivated,
-  preCreateTransaction,
-  paywithMobileWallet
-);
+// //other route will be added after that must be isActivated checker first...
+// router.post(
+//   '/addTransaction/paymob/onlinecard',
+//   auth,
+//   isActivated,
+//   preCreateTransaction,
+//   payWithOnlineCard
+// );
+// router.post(
+//   '/addTransaction/paymob/mobilewallet',
+//   auth,
+//   isActivated,
+//   preCreateTransaction,
+//   paywithMobileWallet
+// );
 
 router.get('/myTransactions', auth, isActivated, getAllTransactions);
 
-//done first
-// //Transaction processed callback
-router.post('/callback', hmacSetting, updateCaseInfoOrRefund);
+// //done first
+// // //Transaction processed callback
+// router.post('/callback', hmacSetting, updateCaseInfoOrRefund);
 
-//then
-//Transaction response callback
-router.get('/callback', (req, res, next) => {
-  res.send(req.query);
-  // res.send(req.query['data.message']);
-});
+// //then
+// //Transaction response callback
+// router.get('/callback', (req, res, next) => {
+//   res.send(req.query);
+//   // res.send(req.query['data.message']);
+// });
 export default router;
