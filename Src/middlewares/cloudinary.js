@@ -1,13 +1,12 @@
 import { v2 as cloudinary } from 'cloudinary';
-
+import logger from '../utils/logger.js';
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-//TODO : HANDLING IMG NAME AND FOLDER :Done
-//       HANLDING DELETING IMG
+
 const uploadImg = async (imgBuffer, folder, publicId) => {
     const uploadResult = await new Promise((resolve) => {
         cloudinary.uploader
@@ -25,7 +24,13 @@ const uploadImg = async (imgBuffer, folder, publicId) => {
 const deleteImg = async (folder, publicId) => {
     cloudinary.uploader
         .destroy(`${folder}/${publicId}`)
-        .then((result) => console.log(result));
+        .then((result) => {
+            if (result.result === 'not found') {
+                throw new Error('Image not found!');
+            }
+            console.log(result);
+        })
+        .catch(logger.error);
 };
 
-export { uploadImg,deleteImg };
+export { uploadImg, deleteImg };
