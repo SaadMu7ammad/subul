@@ -3,7 +3,6 @@ import { BadRequestError } from '../errors/index.js';
 
 import { transactionService } from '../services/transaction.service.js';
 const preCreateTransaction = asyncHandler(async (req, res, next) => {
-  console.log(req.body);
   const data = req.body;
   const transaction = await transactionService.preCreateTransaction(
     data,
@@ -23,7 +22,7 @@ const getAllTransactions = asyncHandler(async (req, res, next) => {
   }
   res.status(201).json({ status: 'success', data: myTransactions });
 });
-const updateCaseInfoOrRefund = asyncHandler(async (req, res, next) => {
+const updateCaseInfo = asyncHandler(async (req, res, next) => {
   try {
     // console.log(req.body);
     // console.log(req.body.obj.id); //transaction id 150168430
@@ -63,17 +62,16 @@ const updateCaseInfoOrRefund = asyncHandler(async (req, res, next) => {
     };
     // create a new transaction here
     //before update the case info check if the transaction is a refund or payment donation
-    const transaction = await transactionService.updateCaseInfoOrRefund(data);
+    const transaction = await transactionService.updateCaseInfo(data);
     if (!transaction) {
       throw new BadRequestError(
         'transaction not completed ... please try again!'
       );
     }
-    console.log({ status: transaction.status, data: transaction });
     res.status(201).json({ status: transaction.status, data: transaction });
   } catch (err) {
     console.log(err);
   }
 });
 
-export { preCreateTransaction, getAllTransactions, updateCaseInfoOrRefund };
+export { preCreateTransaction, getAllTransactions, updateCaseInfo };

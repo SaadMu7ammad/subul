@@ -69,7 +69,7 @@ const preCreateTransaction = async (data, user) => {
   }
   return true;
 };
-const updateCaseInfoOrRefund = asyncHandler(async (data) => {
+const updateCaseInfo = asyncHandler(async (data) => {
   //start updating
   const {
     user,
@@ -96,7 +96,10 @@ const updateCaseInfoOrRefund = asyncHandler(async (data) => {
   });
   if (transactionIsExist) {
     //transaction must updated not created again
+    console.log('transaction updated partially in db be refunded');
     transactionIsExist.status = 'refunded';
+    //in the next middleware will update the externalTransactionId with the new refund transaction
+
     //update the case and decrement donation info
     const caseId = transactionIsExist.case; //get the id of the case
     if (!caseId) throw new NotFoundError('case id not found');
@@ -111,6 +114,8 @@ const updateCaseInfoOrRefund = asyncHandler(async (data) => {
     await caseIsExist.save();
 
     return transactionIsExist;
+  } else {
+    // console.log('no transaction found for refund so will create new one');
   }
   //what if status = pending
 
@@ -167,6 +172,7 @@ const updateCaseInfoOrRefund = asyncHandler(async (data) => {
       // throw new BadRequestError('transaction failed please try again');
     }
     await caseIsExist.save();
+    console.log({ status: newTransaction.status, data: newTransaction });
 
     return newTransaction;
   } catch (err) {
@@ -194,5 +200,5 @@ const getAllTransactions = async (user) => {
 export const transactionService = {
   preCreateTransaction,
   getAllTransactions,
-  updateCaseInfoOrRefund,
+  updateCaseInfo,
 };
