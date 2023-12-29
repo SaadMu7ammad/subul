@@ -6,7 +6,7 @@ import {
 } from '../errors/index.js';
 import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken.js';
-import { User } from '../models/userModel.js';
+import  User from '../models/userModel.js';
 import { generateResetTokenTemp, setupMailSender } from '../utils/mailer.js';
 import logger from '../utils/logger.js';
 import dot  from 'dot-object';

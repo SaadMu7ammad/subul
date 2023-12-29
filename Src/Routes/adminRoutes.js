@@ -13,4 +13,6 @@ router.put('/rejectrequestsCharities/:id',auth,isAdmin,rejectCharity)
 router.put('/confirmrequestPaymentMethod/:id',auth,isAdmin,confirmPaymentAccountRequest)
 router.put('/rejectrequestPaymentMethod/:id',auth,isAdmin,rejectPaymentAccountRequest)
 
+// router.get('/paymob/getTransactionById/:id',auth,isAdmin,getTransactionById)
+// router.post('/paymob/refund/:id',auth,isAdmin,refund)
 export default router;
