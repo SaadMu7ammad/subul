@@ -48,13 +48,13 @@ const confirmingCharity = async (charity) => {
     charity.isPending = false;
     charity.isConfirmed = true;
     //enable all paymentMethods when first time the charity send the docs
-    charity.paymentMethods.bankAccount.map((item) => {
+    charity.paymentMethods.bankAccount.forEach((item) => {
         item.enable = true;
     });
-    charity.paymentMethods.fawry.map((item) => {
+    charity.paymentMethods.fawry.forEach((item) => {
         item.enable = true;
     });
-    charity.paymentMethods.vodafoneCash.map((item) => {
+    charity.paymentMethods.vodafoneCash.forEach((item) => {
         item.enable = true;
     });
     // deleteOldImgs(arr)
@@ -64,32 +64,25 @@ const confirmingCharity = async (charity) => {
 const rejectingCharity = async (charity) => {
     charity.isPending = false;
     charity.isConfirmed = false;
+
     for (let i = 1; i <= 4; ++i) {
-        deleteOldImgs(charity.charityDocs['docs' + i]);
-        charity.charityDocs['docs' + i] = [];
+        deleteOldImgs('docsCharities', charity.charityDocs['docs' + i]);
+    }
+    charity.charityDocs = {};
+
+    const paymentMethods = new Map([
+        [ 'bankAccount','docsBank' ],
+        [ 'fawry','docsFawry' ],
+        [ 'vodafoneCash','docsVodafoneCash' ],
+    ]);
+
+    for (let [method, docs] of paymentMethods) {
+        charity.paymentMethods[method]?.forEach((acc) => {
+            deleteOldImgs('docsCharities', acc[docs]);
+        });
+        charity.paymentMethods[method] = [];
     }
 
-    charity.paymentMethods.bankAccount.map((acc) => {
-        console.log('loop');
-        // acc.docsBank.map(img => {
-        //   console.log(img);
-        deleteOldImgs(acc.docsBank);
-
-        // })
-    });
-    charity.paymentMethods.fawry.map((acc) => {
-        console.log('loop');
-        // acc.docsBank.map(img => {
-        //   console.log(img);
-        deleteOldImgs(acc.docsFawry);
-        // })
-    });
-    charity.paymentMethods.vodafoneCash.map((acc) => {
-        console.log('loop');
-
-        deleteOldImgs(acc.docsVodafoneCash);
-        // })
-    });
     await charity.save();
 };
 
@@ -137,7 +130,7 @@ const rejectingPaymentAccount = async (charity, paymentMethod, idx) => {
         // const url = path.join('./uploads/docsCharities', charity.paymentMethods[paymentMethod][idx].docsFawry[0])
         // console.log(url);
         // deleteFile(url)
-        deleteOldImgs(urlOldImage);
+        deleteOldImgs('docsCharities', urlOldImage);
     } else {
         throw new BadRequestError('No docs found for that account');
     }
@@ -187,7 +180,7 @@ const getAllPendingPaymentMethodsRequests = async (paymentMethod) => {
 
 const getCharityPendingPaymentRequests = async (id) => {
     const paymentRequests = await Charity.findOne(
-        { _id: id},
+        { _id: id },
         'paymentMethods _id'
     ).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
 
@@ -205,7 +198,7 @@ const getCharityPendingPaymentRequests = async (id) => {
         (acc) => acc.enable === false
     );
 
-    return { bankAccount, fawry, vodafoneCash }
+    return { bankAccount, fawry, vodafoneCash };
 };
 
 export {
