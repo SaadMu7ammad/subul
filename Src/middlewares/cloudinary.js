@@ -27,8 +27,9 @@ const deleteImg = async (folder, publicId) => {
         .then((result) => {
             if (result.result === 'not found') {
                 throw new Error('Image not found!');
-            }
-            console.log(result);
+            }else if (result.result === 'ok')
+                logger.info('Img Deleted Successfully!');
+            else console.log(result);
         })
         .catch(logger.error);
 };

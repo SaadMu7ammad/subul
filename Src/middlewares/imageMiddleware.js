@@ -23,19 +23,17 @@ import {uploadImg} from '../middlewares/cloudinary.js';
 
 const saveImg = async(sharpPromise,destinationFolder,fileName)=>{
 
-    if(process.env.NODE_ENV === 'development'){
-        //saving locally
-        await sharpPromise.toFile(`./uploads/${destinationFolder}/` + fileName);
+    if(process.env.NODE_ENV === 'development'){//saving locally
 
-    }else if(process.env.NODE_ENV === 'production'){
+        await sharpPromise.toFile(`./uploads/${destinationFolder}/` + fileName); 
+
+    }else if(process.env.NODE_ENV === 'production'){ //saving to cloudniary
 
         const resizedImgBuffer = await sharpPromise.toBuffer();
-
-        //saving to cloudniary
         const uploadResult = await uploadImg(resizedImgBuffer,destinationFolder,fileName.split('.jpeg')[0]);
-
-        console.log(uploadResult);
+        console.log({imgUrl:uploadResult.secure_url});  
     }
+
 }
 
 const multerFilter = (req, file, cb) => {
@@ -88,7 +86,6 @@ const resizeImgUpdated = asyncHandler(async (req, res, next) => {
     // const ex = file.mimetype.split('/')[1];
     // if (!req.file) throw new BadRequestError('no cover/logo image uploaded')
     console.log('reeeessss');
-    console.log(req.body);
     console.log(req.file);
     if (req.file && req.file.buffer) {
         if (req.body && req.body.name) {
@@ -113,19 +110,7 @@ const resizeImgUpdated = asyncHandler(async (req, res, next) => {
     }
     next();
 });
-const deleteOldImgsLogos = (req, res, next) => {
-    req.temp.map(async (img) => {
-        const oldImagePath = path.join('./uploads/LogoCharities', img);
-        if (fs.existsSync(oldImagePath)) {
-            // Delete the file
-            fs.unlinkSync(oldImagePath);
-            console.log('Old image deleted successfully.');
-        } else {
-            console.log('Old image does not exist.');
-        }
-    });
-    req.temp = [];
-};
+
 //diskStorage
 // const upload = multer({ storage: multerStorage,fileFilter:multerFilter });
 // const uploadCoverImage = upload.single('image');
@@ -139,6 +124,6 @@ export {
     uploadCoverImage,
     resizeImg,
     resizeImgUpdated,
-    deleteOldImgsLogos,
     updateuploadCoverImage,
+    saveImg
 };
