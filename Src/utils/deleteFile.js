@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import logger from './logger.js';
-import 'dotenv/config.js'
+import 'dotenv/config.js';
+import { deleteImg } from '../middlewares/cloudinary.js';
 const deleteFile = (filePath) => {
     logger.warn(filePath);
     fs.unlink(filePath, (err) => {
@@ -16,9 +17,9 @@ const deleteFiles = (pathToFolder, folderName, ...filesNames) => {
         if (fs.existsSync(filePath)) {
             // Delete the file
             fs.unlinkSync(filePath);
-            console.log('File deleted successfully.');
+            logger.info('File deleted successfully.');
         } else {
-            console.log('File does not exist.');
+            logger.error('File does not exist.');
         }
     });
 };
@@ -30,14 +31,12 @@ const deleteOldImgs = (imgsFolder, imgsNames) => {
         deleteFiles('./uploads', imgsFolder, ...imgsNamesArray);
     } else if (process.env.NODE_ENV === 'production') {
         imgsNamesArray.forEach((imgName) => {
-            deleteImgFromCloudinary(imgsFolder, imgName.split('.jpeg')[0]);
+            deleteImg(imgsFolder, imgName.split('.jpeg')[0]);
         });
     }
 
     imgsNamesArray.length = 0;
 };
-
-deleteOldImgs('casesCoverImages', 'wallpaperflare.com_wallpaper.jpg');
 
 
 export { deleteFile , deleteFiles , deleteOldImgs };
