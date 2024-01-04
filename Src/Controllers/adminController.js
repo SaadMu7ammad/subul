@@ -4,7 +4,6 @@ import asyncHandler from 'express-async-handler';
 import Charity from '../models/charityModel.js';
 import { BadRequestError } from '../errors/bad-request.js';
 import { setupMailSender } from '../utils/mailer.js';
-import { deleteFile ,deleteOldImgs} from '../utils/deleteFile.js';
 import {
   getPendingCharities,
   confirmingCharity,
@@ -21,14 +20,17 @@ const getAllPendingRequestsCharities = asyncHandler(async (req, res, next) => {
   const pendingCharities = await getPendingCharities();
   res.status(200).json(pendingCharities);
 });
+
 const getPendingRequestCharityById = asyncHandler(async (req, res, next) => {
   const charity = await getPendingCharities(req.params.id);
   res.status(200).json(charity);
 });
+
 const getCharityPaymentsRequestsById = asyncHandler(async (req, res, next) => {
   const paymentRequests = await getCharityPendingPaymentRequests(req.params.id);
   res.status(200).json({...paymentRequests});
 });
+
 const getAllRequestsPaymentMethods = asyncHandler(async (req, res, next) => {
   // const paymentRequests = await Charity.find({}, 'paymentMethods _id').select(
   //   '-_id'
@@ -44,6 +46,7 @@ const getAllRequestsPaymentMethods = asyncHandler(async (req, res, next) => {
 
   res.json({ bankAccountRequests, fawryRequests, vodafoneCashRequests });
 });
+
 const confirmCharity = asyncHandler(async (req, res, next) => {
   const charity = await getPendingCharities(req.params.id);
 
@@ -59,6 +62,7 @@ const confirmCharity = asyncHandler(async (req, res, next) => {
     .status(200)
     .json({ message: 'Charity has been confirmed successfully', charity });
 });
+
 const rejectCharity = asyncHandler(async (req, res, next) => {
   const charity = await getPendingCharities(req.params.id);
 
@@ -72,6 +76,7 @@ const rejectCharity = asyncHandler(async (req, res, next) => {
   );
   res.status(200).json({ message: 'Charity failed to be confirmed', charity });
 });
+
 const confirmPaymentAccountRequest= asyncHandler(async (req, res, next) => {
   const charity = await getConfirmedCharities(req.params.id);
 
