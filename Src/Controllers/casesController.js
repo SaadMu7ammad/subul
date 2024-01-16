@@ -6,7 +6,7 @@ import { setupMailSender } from '../utils/mailer.js';
 import { UnauthenticatedError } from '../errors/unauthenticated.js';
 import { NotFoundError } from '../errors/not-found.js';
 import logger from '../utils/logger.js';
-import { deleteFile } from '../utils/deleteFile.js';
+import { deleteOldImgs } from '../utils/deleteFile.js';
 
 const addCase = asyncHandler(async (req, res, next) => {
     const newCase = Case(req.body);
@@ -19,7 +19,7 @@ const addCase = asyncHandler(async (req, res, next) => {
         res.json(newCase);
     } catch (err) {
         if (err) {
-            deleteFile('./uploads/casesCoverImages/' + req.body.image);
+            deleteOldImgs('casesCoverImages', req.body.image);
             next(err);
         }
     }
@@ -82,40 +82,53 @@ const getCaseById = asyncHandler(async (req, res, next) => {
 
 const deleteCase = asyncHandler(async (req, res, next) => {
     const caseIdsArray = req.charity.cases;
+
     const caseIdIndex = caseIdsArray.findIndex(function (id) {
         return id.toString() === req.params.caseId;
     });
+
     if (caseIdIndex === -1) {
         throw new NotFoundError('No Such Case With this Id!');
     }
+
     const caseId = req.charity.cases[caseIdIndex];
+
     const deletedCase = await Case.findByIdAndDelete(caseId);
+
     caseIdsArray.splice(caseIdIndex, 1);
+
     req.charity.cases = caseIdsArray;
+
     await req.charity.save();
-    deleteFile('./uploads/casesCoverImages/' + deletedCase.imageCover);
+
+    deleteOldImgs('casesCoverImages', deletedCase.imageCover);
+
     res.json(deletedCase);
 });
 
 const editCase = asyncHandler(async (req, res, next) => {
-    const caseIdsArray = req.charity.cases;
-    const caseIdIndex = caseIdsArray.findIndex(function (id) {
-        return id.toString() === req.params.caseId;
-    });
-    if (caseIdIndex === -1) {
-        throw new NotFoundError('No Such Case With this Id!');
-    }
-    const caseId = req.charity.cases[caseIdIndex];
-    let oldCoverImage;
-    if (req.file) {
-        req.body.imageCover = req.body.image;
-        const caseObject = await Case.findById(caseId);
-        if (caseObject.imageCover) {
-            oldCoverImage = caseObject.imageCover;
-        }
-    }
-    let updatedCase;
     try {
+        const caseIdsArray = req.charity.cases;
+
+        const caseIdIndex = caseIdsArray.findIndex(function (id) {
+            return id.toString() === req.params.caseId;
+        });
+        if (caseIdIndex === -1) {
+            throw new NotFoundError('No Such Case With this Id!');
+        }
+
+        const caseId = req.charity.cases[caseIdIndex];
+
+        let oldCoverImage;
+        if (req.file) {
+            req.body.imageCover = req.body.image;
+            const caseObject = await Case.findById(caseId);
+            if (caseObject.imageCover) {
+                oldCoverImage = caseObject.imageCover;
+            }
+        }
+
+        let updatedCase;
         updatedCase = await Case.findByIdAndUpdate(
             caseId,
             { $set: { ...req.body } },
@@ -124,17 +137,20 @@ const editCase = asyncHandler(async (req, res, next) => {
                 runValidators: true,
             }
         );
+
         if (oldCoverImage) {
-            deleteFile('./uploads/casesCoverImages/' + oldCoverImage);
+            deleteOldImgs('casesCoverImages', oldCoverImage);
         }
+
+        res.json(updatedCase);
+        
     } catch (err) {
         if (err) {
-            deleteFile('./uploads/casesCoverImages/' + req.body.imageCover);
+            const image = req.body.imageCover||req.body.image;
+            if(image)deleteOldImgs('casesCoverImages', image);
             next(err);
         }
     }
-
-    res.json(updatedCase);
 });
 
 export { addCase, getAllCases, getCaseById, deleteCase, editCase };

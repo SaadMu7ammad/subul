@@ -4,7 +4,7 @@
 //     // cb(null, 'uploads/');
 //     cb(null, './uploads/LogoCharities');
 //   },
-//   filename: function (req, file, cb) {
+//   fileName: function (req, file, cb) {
 //     // const imageUrl = file.path.replace("\\", "/");
 //     const ex = file.mimetype.split('/')[1];
 //     const uniqueSuffix ="LogoCharity"+uuidv4()+"-"+ Date.now() ;
@@ -18,6 +18,8 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import logger from '../utils/logger.js';
 import { BadRequestError } from '../errors/bad-request.js';
+import { saveImg } from './imageMiddleware.js';
+
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
     //accepts imgs only
@@ -31,37 +33,39 @@ async function processDocs(docsKey, ref, req) {
     ref.map(async (obj, indx) => {
       const ex = obj.mimetype.split('/')[1];
       const uniquePrefix = uuidv4();
-      const filename = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
-      req.temp.push(filename);
-      await sharp(obj.buffer)
+      const fileName = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
+      req.temp.push(fileName);
+
+      const sharpPromise = sharp(obj.buffer)
         .resize(320, 240)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
-        .toFile(`./uploads/docsCharities/` + filename);
+    
+      await saveImg(sharpPromise,'docsCharities',fileName);
 
       if (
         req.body.paymentMethods &&
         req.body.paymentMethods.bankAccount &&
         docsKey === 'docsBank'
       ) {
-        req.body.paymentMethods.bankAccount.docsBank.push(filename);
+        req.body.paymentMethods.bankAccount.docsBank.push(fileName);
       }
       if (
         req.body.paymentMethods &&
         req.body.paymentMethods.fawry &&
         docsKey === 'docsFawry'
       ) {
-        req.body.paymentMethods.fawry.docsFawry.push(filename);
+        req.body.paymentMethods.fawry.docsFawry.push(fileName);
       }
       if (
         req.body.paymentMethods &&
         req.body.paymentMethods.vodafoneCash &&
         docsKey === 'docsVodafoneCash'
       ) {
-        req.body.paymentMethods.vodafoneCash.docsVodafoneCash.push(filename);
+        req.body.paymentMethods.vodafoneCash.docsVodafoneCash.push(fileName);
       }
 
-      // body.charityDocs = { ...body.charityDocs, [docsKey]: filename };
+      // body.charityDocs = { ...body.charityDocs, [docsKey]: fileName };
     })
   ); //.then(() => next());
 }

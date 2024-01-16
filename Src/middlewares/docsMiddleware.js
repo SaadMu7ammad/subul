@@ -4,7 +4,7 @@
 //     // cb(null, 'uploads/');
 //     cb(null, './uploads/LogoCharities');
 //   },
-//   filename: function (req, file, cb) {
+//   fileName: function (req, file, cb) {
 //     // const imageUrl = file.path.replace("\\", "/");
 //     const ex = file.mimetype.split('/')[1];
 //     const uniqueSuffix ="LogoCharity"+uuidv4()+"-"+ Date.now() ;
@@ -18,6 +18,10 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import logger from '../utils/logger.js';
 import { BadRequestError } from '../errors/bad-request.js';
+import { saveImg } from './imageMiddleware.js';
+
+
+
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
     //accepts imgs only
@@ -31,40 +35,43 @@ async function processDocs(docsKey, ref, req) {
     ref.map(async (obj, indx) => {
       const ex = obj.mimetype.split('/')[1];
       const uniquePrefix = uuidv4();
-      const filename = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
-      req.temp.push(filename);
-      await sharp(obj.buffer)
+      const fileName = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
+      req.temp.push(fileName);
+
+      const sharpPromise = sharp(obj.buffer)
         .resize(320, 240)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
-        .toFile(`./uploads/docsCharities/` + filename);
-      if (docsKey === 'docs1') req.body.charityDocs.docs1.push(filename);
-      if (docsKey === 'docs2') req.body.charityDocs.docs2.push(filename);
-      if (docsKey === 'docs3') req.body.charityDocs.docs3.push(filename);
-      if (docsKey === 'docs4') req.body.charityDocs.docs4.push(filename);
+    
+      await saveImg(sharpPromise,'docsCharities',fileName);
+
+      if (docsKey === 'docs1') req.body.charityDocs.docs1.push(fileName);
+      if (docsKey === 'docs2') req.body.charityDocs.docs2.push(fileName);
+      if (docsKey === 'docs3') req.body.charityDocs.docs3.push(fileName);
+      if (docsKey === 'docs4') req.body.charityDocs.docs4.push(fileName);
       if (
         req.body.paymentMethods &&
         req.body.paymentMethods.bankAccount &&
         docsKey === 'docsBank'
       ) {
-        req.body.paymentMethods.bankAccount.docsBank.push(filename);
+        req.body.paymentMethods.bankAccount.docsBank.push(fileName);
       }
       if (
         req.body.paymentMethods &&
         req.body.paymentMethods.fawry &&
         docsKey === 'docsFawry'
       ) {
-        req.body.paymentMethods.fawry.docsFawry.push(filename);
+        req.body.paymentMethods.fawry.docsFawry.push(fileName);
       }
       if (
         req.body.paymentMethods &&
         req.body.paymentMethods.vodafoneCash &&
         docsKey === 'docsVodafoneCash'
       ) {
-        req.body.paymentMethods.vodafoneCash.docsVodafoneCash.push(filename);
+        req.body.paymentMethods.vodafoneCash.docsVodafoneCash.push(fileName);
       }
 
-      // body.charityDocs = { ...body.charityDocs, [docsKey]: filename };
+      // body.charityDocs = { ...body.charityDocs, [docsKey]: fileName };
     })
   ); //.then(() => next());
 }
@@ -77,7 +84,7 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
   //   req.files['charityDocs[docs1]'].map(async (obj, indx) => {
   //     const ex = obj.mimetype.split('/')[1];
   //     const uniquePrefix = uuidv4();
-  //     const filename =
+  //     const fileName =
   //       'docs-' +
   //       req.charity.name +
   //       '--' +
@@ -91,15 +98,15 @@ const resizeDoc = asyncHandler(async (req, res, next) => {
   //       .resize(320, 240)
   //       .toFormat('jpeg')
   //       .jpeg({ quality: 90 })
-  //       .toFile(`./uploads/docsCharities/` + filename); //, (err, info) => {
+  //       .toFile(`./uploads/docsCharities/` + fileName); //, (err, info) => {
   //     //   console.log('err');
   //     //   console.log(err);
   //     // });
-  //     //adding the filename in the req.body
-  //     // req.body.image = filename;
+  //     //adding the fileName in the req.body
+  //     // req.body.image = fileName;
   //     // console.log(req.files);
-  //     req.body.charityDocs = { docs1: filename };
-  //     console.log(filename);
+  //     req.body.charityDocs = { docs1: fileName };
+  //     console.log(fileName);
   //     console.log('body');
   //     console.log(req.body.charityDocs);
   //     // next();
