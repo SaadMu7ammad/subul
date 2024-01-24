@@ -8,11 +8,11 @@ import {
   NotFound,
   errorHandler,
 } from './middlewares/errorHandlerMiddleware.js';
-import userRoutes from './Routes/userRoutes.js';
-import charityRoutes from './Routes/charityRoutes.js';
-import casesRoutes from './Routes/casesRoutes.js';
-import adminRoutes from './Routes/adminRoutes.js';
-import transactionRoutes from './paymob/Routes/transaction.Routes.js';
+import userRoutes from './routes/userRoutes.js';
+import charityRoutes from './routes/charityRoutes.js';
+import casesRoutes from './routes/casesRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+import transactionRoutes from './paymob/routes/transaction.routes.js';
 import logger from './utils/logger.js';
 // const imageUrl = req.file.path.replace("\\" ,"/");
 const __dirname = path.resolve();
