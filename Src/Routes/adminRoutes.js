@@ -1,6 +1,6 @@
 import express, { Router } from 'express';
 import { isAdmin } from '../middlewares/isAdminMiddleware.js';
-import { confirmCharity,confirmPaymentAccountRequest, getAllRequestsPaymentMethods, getAllPendingRequestsCharities, getCharityPaymentsRequestsById, getPendingRequestCharityById, rejectCharity, rejectPaymentAccountRequest } from '../Controllers/adminController.js';
+import { confirmCharity,confirmPaymentAccountRequest, getAllRequestsPaymentMethods, getAllPendingRequestsCharities, getCharityPaymentsRequestsById, getPendingRequestCharityById, rejectCharity, rejectPaymentAccountRequest } from '../controllers/adminController.js';
 import { auth } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();

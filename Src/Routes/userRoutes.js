@@ -11,7 +11,7 @@ import {
   activateAccount,
   editUserProfile,
   getUserProfileData,
-} from '../Controllers/userController.js';
+} from '../controllers/userController.js';
 
 import { validate } from '../middlewares/validatorMiddleware.js';
 import { auth } from '../middlewares/authMiddleware.js';
@@ -29,7 +29,7 @@ import {
 import { isActivated } from '../middlewares/authStage2Middleware.js';
 import {
   getAllTransactions,
-} from '../Controllers/transaction.controller.js';
+} from '../controllers/transaction.controller.js';
 router.post('/', registerUserValidation, validate, registerUser);
 router.post('/auth', loginUserValidation, validate, authUser);
 router.post('/logout', logoutUser);

@@ -5,7 +5,7 @@ import {
     editCase,
     getAllCases,
     getCaseById,
-} from '../Controllers/casesController.js';
+} from '../controllers/casesController.js';
 import { auth } from '../middlewares/authMiddleware.js';
 import {
     uploadCoverImage,

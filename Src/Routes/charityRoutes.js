@@ -17,7 +17,7 @@ import {
   editCharityProfile,
   requestEditCharityProfilePayments,
   addCharityPayments,
-} from '../Controllers/charityController.js';
+} from '../controllers/charityController.js';
 
 import { resizeImg, resizeImgUpdated, updateuploadCoverImage, uploadCoverImage } from '../middlewares/imageMiddleware.js';
 import { registerCharityValidation, loginCharityValidation } from '../utils/validatorComponents/charity/charityAuthValidation.js'

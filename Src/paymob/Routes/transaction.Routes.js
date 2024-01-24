@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
 
 import { hmacSetting } from '../hmac/hmac.controller.js';
-import { preCreateTransaction, updateCaseInfo} from '../../Controllers/transaction.controller.js'
+import { preCreateTransaction, updateCaseInfo} from '../../controllers/transaction.controller.js'
 import { auth } from '../../middlewares/authMiddleware.js';
 import { isActivated } from '../../middlewares/authStage2Middleware.js';
 import { payWithOnlineCard } from '../onlineCards/onlineCards.controller.js';
