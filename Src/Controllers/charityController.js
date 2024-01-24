@@ -13,8 +13,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../errors/index.js';
-import { deleteOldImgsLogos } from '../middlewares/imageMiddleware.js';
-import { deleteFile } from '../utils/deleteFile.js';
+import {  deleteOldImgs } from '../utils/deleteFile.js';
 // import logger from '../utils/logger.js';
 
 const registerCharity = asyncHandler(async (req, res, next) => {
@@ -23,21 +22,21 @@ const registerCharity = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
   let charity = await Charity.findOne({ email });
   if (charity) {
-    deleteOldImgsLogos(req,res,next)
+    deleteOldImgs('LogoCharities',req.temp);
     throw new BadRequestError('An Account with this Email already exists');
   }
   if(req.body.paymentMethods){
-    delete req.body.paymentMethods; //not a good style of coding I think , we can use obj destructuring instead, but I don't want to change the code mush.
+    delete req.body.paymentMethods; //not a good style of coding I think , we can use obj destructuring instead, but I don't want to change the code much.
   }
   try{
     charity = await Charity.create(req.body);
   }
   catch(err){
-    deleteOldImgsLogos(req,res,next)
+    deleteOldImgs('LogoCharities',req.temp);
     next(err);
   }
   if (!charity) {
-    deleteOldImgsLogos(req,res,next)
+    deleteOldImgs('LogoCharities',req.temp);
     throw new Error('Something went wrong');
 
   }
@@ -349,20 +348,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
       throw new BadRequestError('Cant edit it,You must contact us');
   }
   if (image) {
-    console.log('old img');
-    //to delete the old image locally
-    console.log(req.charity.image); //old image profile
-    const oldImagePath = path.join('./uploads/LogoCharities', req.charity.image);
-    if (fs.existsSync(oldImagePath)) {
-      // Delete the file
-      fs.unlinkSync(oldImagePath);
-      console.log('Old image deleted successfully.');
-    } else {
-      console.log('Old image does not exist.');
-    }
-    console.log('new img');
-
-    console.log(image); //new img profile
+    deleteOldImgs('LogoCharities',req.charity.image);
   }
   const updateCharityArgs = dot.dot(req.body);
   // if (updateCharityArgs.image) {
@@ -419,7 +405,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
     }
     if (indx !== -1) {//edit a payment account && enable attribute will be reset to false again
       if (selector === 'bankAccount') {
-      deleteFile('./uploads/docsCharities/' + req.charity.paymentMethods.bankAccount[indx].docsBank);
+      deleteOldImgs('docsCharities' , req.charity.paymentMethods.bankAccount[indx].docsBank);
         req.charity.paymentMethods.bankAccount[indx].accNumber = temp.accNumber; //assign the object
         req.charity.paymentMethods.bankAccount[indx].iban = temp.iban; //assign the object
         req.charity.paymentMethods.bankAccount[indx].swiftCode = temp.swiftCode; //assign the object
@@ -430,7 +416,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         await req.charity.save();
         return res.json(req.charity.paymentMethods.bankAccount[indx]);
       } else if (selector === 'fawry') {
-      deleteFile('./uploads/docsCharities/' + req.charity.paymentMethods.fawry[indx].docsFawry);
+      deleteOldImgs('docsCharities' , req.charity.paymentMethods.fawry[indx].docsFawry);
         req.charity.paymentMethods.fawry[indx].number = temp.number; //assign the object
         req.charity.paymentMethods.fawry[indx].docsFawry = temp.docsFawry
         req.charity.paymentMethods.fawry[indx].enable=false//reset again to review it again
@@ -439,7 +425,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
         await req.charity.save();
         return res.json(req.charity.paymentMethods.fawry[indx]);
       } else if (selector === 'vodafoneCash') {
-      deleteFile('./uploads/docsCharities/' + req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash);
+      deleteOldImgs('docsCharities' , req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash);
         req.charity.paymentMethods.vodafoneCash[indx].number = temp.number; //assign the object
         req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash = temp.docsVodafoneCash
         req.charity.paymentMethods.vodafoneCash[indx].enable=false//reset again to review it again
@@ -480,7 +466,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
 const requestEditCharityProfilePayments = asyncHandler(
   async (req, res, next) => {
     if (!req.body.paymentMethods) {
-      deleteOldImgs(req, res, next);
+      deleteOldImgs('docsCharities',req.temp);
       throw new BadRequestError('you must upload complete data to be sent');
     }
     const { bankAccount, fawry, vodafoneCash } = req.body.paymentMethods;
@@ -557,25 +543,10 @@ const requestEditCharityProfilePayments = asyncHandler(
     res.json(req.body);
   }
 );
-const deleteOldImgs = (req, res, next) => {
-  if (req.temp) {
-    req.temp.map(async (img) => {
-      const oldImagePath = path.join('./uploads/docsCharities', img);
-      if (fs.existsSync(oldImagePath)) {
-        // Delete the file
-        fs.unlinkSync(oldImagePath);
-        console.log('Old image deleted successfully.');
-      } else {
-        console.log('Old image does not exist.');
-      }
-    });
-    req.temp = [];
-  }
-};
 
 const addCharityPayments = asyncHandler(async (req, res, next) => {
   if (!req.body.paymentMethods) {
-    deleteOldImgs(req, res, next);
+    deleteOldImgs('docsCharities',req.temp);
     throw new BadRequestError(
       'must send one of payment gateways inforamtions..'
     );
@@ -599,7 +570,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       req.charity.paymentMethods['bankAccount'].push(temp);
     } else {
       console.log(req.temp);
-      deleteOldImgs(req, res, next);
+      deleteOldImgs('docsCharities',req.temp);
       throw new BadRequestError('must provide complete information');
     }
     // console.log(req.charity.paymentMethods);
@@ -615,7 +586,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       };
       req.charity.paymentMethods['fawry'].push(temp);
     } else {
-      deleteOldImgs(req, res, next);
+      deleteOldImgs('docsCharities',req.temp);
 
       throw new BadRequestError('must provide complete information');
     }
@@ -632,7 +603,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
 
       req.charity.paymentMethods['vodafoneCash'].push(temp);
     } else {
-      deleteOldImgs(req, res, next);
+      deleteOldImgs('docsCharities',req.temp);
       throw new BadRequestError('must provide complete information');
     }
   }
@@ -663,7 +634,7 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   // const charity = await Charity.findById(req.charity._id);
   // console.log(charity);
   if (!req.charity) {
-    deleteOldImgs(req, res, next);
+    deleteOldImgs('docsCharities',req.temp);
     throw new NotFoundError('No charity found ');
   
   }
@@ -685,19 +656,19 @@ const sendDocs = asyncHandler(async (req, res, next) => {
     !req.charity.emailVerification.isVerified &&
     !req.charity.phoneVerification.isVerified
   ) {
-    deleteOldImgs(req, res, next);
+    deleteOldImgs('docsCharities',req.temp);
 
     throw new UnauthenticatedError('you must verify your account again');
   } else if (req.charity.isConfirmed) {
-    deleteOldImgs(req, res, next);
+    deleteOldImgs('docsCharities',req.temp);
 
-    throw new BadRequestError('you already has been confirmed');
+    throw new BadRequestError('Charity is confrimed already!');
   } else if (req.charity.isPending) {
-    deleteOldImgs(req, res, next);
+    deleteOldImgs('docsCharities',req.temp);
 
     throw new BadRequestError('soon response... still reviewing docs');
   } else {
-    deleteOldImgs(req, res, next);
+    deleteOldImgs('docsCharities',req.temp);
 
     throw new BadRequestError('error occured, try again later');
   }
