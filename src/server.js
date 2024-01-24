@@ -2,18 +2,18 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import express from 'express';
 import dotenv from 'dotenv/config';
-import connectDB from './Src/config/db.js';
+import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import {
   NotFound,
   errorHandler,
-} from './Src/middlewares/errorHandlerMiddleware.js';
-import userRoutes from './Src/Routes/userRoutes.js';
-import charityRoutes from './Src/Routes/charityRoutes.js';
-import casesRoutes from './Src/Routes/casesRoutes.js';
-import adminRoutes from './Src/Routes/adminRoutes.js';
-import transactionRoutes from './Src/paymob/Routes/transaction.Routes.js';
-import logger from './Src/utils/logger.js';
+} from './middlewares/errorHandlerMiddleware.js';
+import userRoutes from './Routes/userRoutes.js';
+import charityRoutes from './Routes/charityRoutes.js';
+import casesRoutes from './Routes/casesRoutes.js';
+import adminRoutes from './Routes/adminRoutes.js';
+import transactionRoutes from './paymob/Routes/transaction.Routes.js';
+import logger from './utils/logger.js';
 // const imageUrl = req.file.path.replace("\\" ,"/");
 const __dirname = path.resolve();
 // import { CreateAuthenticationRequest } from './paymob/paymob.service.js';
