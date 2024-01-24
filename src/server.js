@@ -8,7 +8,7 @@ import {
   NotFound,
   errorHandler,
 } from './middlewares/errorHandlerMiddleware.js';
-import transactionRoutes from './paymob/routes/transaction.routes.js';
+import transactionRoutes from './paymob/routes/transactionRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import charityRoutes from './routes/charityRoutes.js';
 import casesRoutes from './routes/casesRoutes.js';
