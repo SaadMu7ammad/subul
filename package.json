@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Subul - Charity Website",
   "type": "module",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "server": "nodemon server.js",
+    "start": "node src/server.js",
+    "server": "nodemon src/server.js",
     "client": "npm run dev --prefix Frontend",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
