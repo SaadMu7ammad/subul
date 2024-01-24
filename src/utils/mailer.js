@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
+import * as crypto from 'crypto'
 import nodemailer from 'nodemailer';
 import logger from './logger.js';
 const generateResetTokenTemp = async (userId) => {

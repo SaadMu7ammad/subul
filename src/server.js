@@ -1,4 +1,4 @@
-import path from 'path';
+import * as path from 'path'
 import { v4 as uuidv4 } from 'uuid';
 import express from 'express';
 import dotenv from 'dotenv/config';
