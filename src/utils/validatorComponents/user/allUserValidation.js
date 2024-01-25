@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 const tokenUserValidation = body('token')
   .trim()
   .notEmpty()
-  .isLength({ min: 64, max: 64 })
+  .isLength({ min: 60, max: 60 })
   .withMessage('Invalid Token!');
 const firstName=  body('name.firstName').trim().notEmpty().withMessage('firstName is required')
 const lastName=body('name.lastName').trim().notEmpty().withMessage('lastName is required')

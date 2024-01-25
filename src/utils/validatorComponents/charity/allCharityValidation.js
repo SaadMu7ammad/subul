@@ -318,7 +318,8 @@ const passwordValidation = body('password')
 const tokenCharityValidation = body('token')
   .trim()
   .notEmpty()
-  .isLength({ min: 64, max: 64 })
+  // .isLength({ min: 64, max: 64 })
+  .isLength({ min: 60, max: 60 })
   .withMessage('Invalid Token!');
 
 const phoneValidation = body('phone')

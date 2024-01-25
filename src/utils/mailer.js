@@ -15,7 +15,7 @@ const generateResetTokenTemp = async (userId) => {
   //     token:hashedToken,
   // });
   // await resetPassowrdToken.save();
-  return token;
+  return hashedToken;
 };
 const setupMailSender = async (emailReceiver, subject, html) => {
   logger.info(`sending mail to ${emailReceiver}`);
