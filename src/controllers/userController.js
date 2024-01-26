@@ -189,35 +189,49 @@ const changePassword = asyncHandler(async (req, res, next) => {
 //@route  POST /api/users/activate
 //@access private
 const activateAccount = asyncHandler(async (req, res, next) => {
-  const userIsExist = await User.findById(req.user._id);
-  if (!userIsExist) {
-    throw new Error('you are not authorized to activate the account');
-  }
-  if (userIsExist.emailVerification.isVerified) {
+  // const userIsExist = await User.findById(req.user._id);
+  // if (!userIsExist) {
+  //   throw new Error('you are not authorized to activate the account');
+  // }
+  let storedUser = req.user;
+
+  if (storedUser.emailVerification.isVerified) {
     return res.status(200).json({ message: 'account already is activated' });
   }
-  let updatedUser = userIsExist;
-  if (updatedUser.verificationCode !== req.body.token) {
-    updatedUser.verificationCode = null;
-    updatedUser = await updatedUser.save();
-    // logoutUser(req, res, next);
-    res.cookie('jwt', '', {
-      httpOnly: true,
-      expires: new Date(0),
-    });
-    // await setupMailSender(
-    //   req,
-    //   'account still not activated',
-    //   '<h3>contact us if there is another issue about </h3>' );
+  const isMatch = checkValueEquality(
+    storedUser.verificationCode,
+    req.body.token
+  );
+  if (!isMatch) {
+    // storedUser.verificationCode = null;
+    // storedUser = await storedUser.save();
+    await userService.resetSentToken();
+    userService.logout(res);
     throw new UnauthenticatedError('invalid token you have been logged out');
   }
+  // if (updatedUser.verificationCode !== req.body.token) {
+  // updatedUser.verificationCode = null;
+  // updatedUser = await updatedUser.save();
+  // logoutUser(req, res, next);
+  // res.cookie('jwt', '', {
+  //   httpOnly: true,
+  //   expires: new Date(0),
+  // });
+  // userService.logout(res)
+  // await setupMailSender(
+  //   req,
+  //   'account still not activated',
+  //   '<h3>contact us if there is another issue about </h3>' );
+  // throw new UnauthenticatedError('invalid token you have been logged out');
+  // }
 
-  updatedUser.verificationCode = null;
-  updatedUser.emailVerification.isVerified = true;
-  updatedUser.emailVerification.verificationDate = Date.now();
-  updatedUser = await updatedUser.save();
+  // storedUser.verificationCode = null;
+  // storedUser.emailVerification.isVerified = true;
+  // storedUser.emailVerification.verificationDate = Date.now();
+  // storedUser = await storedUser.save();
+  await userService.verifyUserAccount(storedUser);
   await setupMailSender(
-    updatedUser.email,
+    storedUser.email,
     'account has been activated ',
     `<h2>now you are ready to spread the goodness with us </h2>`
   );
@@ -250,25 +264,29 @@ const editUserProfile = asyncHandler(async (req, res, next) => {
     // if (alreadyRegisteredEmail) {
     //   throw new BadRequestError('Email is already taken!');
     // } else {
-    req.user.email = email;
-    req.user.emailVerification.isVerified = false;
-    req.user.emailVerification.verificationDate = null;
-    const token = await generateResetTokenTemp();
-    req.user.verificationCode = token;
-    await req.user.save();
-    await setupMailSender(
-      req.user.email,
-      'email changed alert',
-      `hi ${
-        req.user.name.firstName + ' ' + req.user.name.lastName
-      }email has been changed You must Re activate account ` +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
+    // req.user.email = email;
+    // req.user.emailVerification.isVerified = false;
+    // req.user.emailVerification.verificationDate = null;
+    // const token = await generateResetTokenTemp();
+    // req.user.verificationCode = token;
+    // await req.user.save();
+    // await setupMailSender(
+    //   req.user.email,
+    //   'email changed alert',
+    //   `hi ${
+    //     req.user.name.firstName + ' ' + req.user.name.lastName
+    //   }email has been changed You must Re activate account ` +
+    //     `<h3>(www.activate.com)</h3>` +
+    //     `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+    // );
+    const userWithEmailUpdated = await userService.changeUserEmailWithMailAlert(
+      req.user,
+      email
+    ); //email is the NewEmail
     const userObj = {
-      _id: req.user._id,
-      name: req.user.name,
-      email: req.user.email,
+      _id: userWithEmailUpdated.user._id,
+      name: userWithEmailUpdated.user.name,
+      email: userWithEmailUpdated.user.email,
     };
     return res.status(201).json({
       ...userObj,
@@ -277,9 +295,9 @@ const editUserProfile = asyncHandler(async (req, res, next) => {
     });
     // }
   }
-// console.log(updateUserArgs);
+  // console.log(updateUserArgs);
   // Object.assign(req.user, req.body);
-  updateNestedProperties(req.user,req.body)
+  updateNestedProperties(req.user, req.body);
   await req.user.save();
 
   // const user = await User.findByIdAndUpdate(
@@ -297,11 +315,13 @@ const editUserProfile = asyncHandler(async (req, res, next) => {
   //   user.emailVerification.verificationDate = null;
   //   await user.save();
   // }
-
-  res.status(201).json({
+  const userObj = {
     _id: req.user._id,
     name: req.user.name,
     email: req.user.email,
+  };
+  res.status(201).json({
+    ...userObj,
     message: 'User Data Changed Successfully',
   });
 });
