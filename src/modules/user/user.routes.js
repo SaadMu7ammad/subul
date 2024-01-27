@@ -11,25 +11,23 @@ import {
   activateAccount,
   editUserProfile,
   getUserProfileData,
-} from '../controllers/userController.js';
+} from './user.controller.js';
 
-import { validate } from '../middlewares/validatorMiddleware.js';
-import { auth } from '../middlewares/authMiddleware.js';
-import { editUserProfileValidation } from '../utils/validatorComponents/user/editUserProfileValidation.js';
+import { validate } from '../../middlewares/validatorMiddleware.js';
+import { auth } from '../../middlewares/authMiddleware.js';
+import { editUserProfileValidation } from '../../utils/validatorComponents/user/editUserProfileValidation.js';
 import {
   registerUserValidation,
   loginUserValidation,
-} from '../utils/validatorComponents/user/userAuthValidation.js';
+} from '../../utils/validatorComponents/user/userAuthValidation.js';
 import {
   changePasswordUserValidation,
   confirmResetUserValidation,
   requestResetEmailUserValidation,
   tokenUserValidation,
-} from '../utils/validatorComponents/user/allUserValidation.js';
-import { isActivated } from '../middlewares/authStage2Middleware.js';
-import {
-  getAllTransactions,
-} from '../controllers/transaction.controller.js';
+} from '../../utils/validatorComponents/user/allUserValidation.js';
+import { isActivated } from '../../middlewares/authStage2Middleware.js';
+import { getAllTransactions } from '../../controllers/transaction.controller.js';
 router.post('/', registerUserValidation, validate, registerUser);
 router.post('/auth', loginUserValidation, validate, authUser);
 router.post('/logout', logoutUser);
@@ -59,32 +57,5 @@ router.put(
   isActivated,
   editUserProfile
 );
-// //other route will be added after that must be isActivated checker first...
-// router.post(
-//   '/addTransaction/paymob/onlinecard',
-//   auth,
-//   isActivated,
-//   preCreateTransaction,
-//   payWithOnlineCard
-// );
-// router.post(
-//   '/addTransaction/paymob/mobilewallet',
-//   auth,
-//   isActivated,
-//   preCreateTransaction,
-//   paywithMobileWallet
-// );
-
 router.get('/myTransactions', auth, isActivated, getAllTransactions);
-
-// //done first
-// // //Transaction processed callback
-// router.post('/callback', hmacSetting, updateCaseInfoOrRefund);
-
-// //then
-// //Transaction response callback
-// router.get('/callback', (req, res, next) => {
-//   res.send(req.query);
-//   // res.send(req.query['data.message']);
-// });
 export default router;

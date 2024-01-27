@@ -19,17 +19,6 @@ const checkUserIsVerified = (user) => {
   if (user.emailVerification.isVerified) {
     return true; //user verified already
   }
-  // const token = await generateResetTokenTemp();
-  // user.verificationCode = token;
-  // await user.save();
-  // await setupMailSender(
-  //   user.email,
-  //   'login alert',
-  //   'it seems that your account still not verified or activated please go to that link to activate the account ' +
-  //     `<h3>(www.activate.com)</h3>` +
-  //     `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-  // );
-  //not verified(not activated)
   return false;
 };
 const createUser = async (dataInputs) => {
@@ -56,10 +45,6 @@ const logout = (res) => {
   });
 };
 const getUser = (req) => {
-  // const user = await User.findById(req.user._id).select(
-  //   '-password -verificationCode'
-  // );
-  // if (!user) throw new NotFoundError('User not found');
   return { user: req.user };
 };
 const checkIsEmailDuplicated = async (email) => {

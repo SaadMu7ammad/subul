@@ -1,4 +1,4 @@
-import * as path from 'path'
+import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import express from 'express';
 import dotenv from 'dotenv/config';
@@ -9,15 +9,12 @@ import {
   errorHandler,
 } from './middlewares/errorHandlerMiddleware.js';
 import transactionRoutes from './paymob/routes/transactionRoutes.js';
-import userRoutes from './routes/userRoutes.js';
+import userRoutes from './modules/user/user.routes.js';
 import charityRoutes from './routes/charityRoutes.js';
 import casesRoutes from './routes/casesRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import logger from './utils/logger.js';
-// const imageUrl = req.file.path.replace("\\" ,"/");
 const __dirname = path.resolve();
-// import { CreateAuthenticationRequest } from './paymob/paymob.service.js';
-
 const port = process.env.PORT;
 const host = process.env.HOST;
 const app = express();
@@ -30,12 +27,7 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 // app.use('/uploads',express.static( `uploads`));
 
 app.use(cookieParser());
-// app.get('/callback', async (req, res, next) => {
-//   res.send({ query: req.query });
-// });
-// app.post('/callback', async (req, res, next) => {
-//   res.send({ method: 'POST', body: req.body });
-// });
+
 app.use('/api/payment', transactionRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/charities', charityRoutes);
