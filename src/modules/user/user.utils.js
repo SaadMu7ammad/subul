@@ -3,7 +3,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../../errors/index.js';
-import User from '../../models/userModel.js';
+import User from './user.model.js';
 import { generateResetTokenTemp, setupMailSender } from '../../utils/mailer.js';
 
 const checkUserPassword = async (email, password) => {
