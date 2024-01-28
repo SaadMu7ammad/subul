@@ -3,11 +3,11 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../../errors/index.js';
-import User from './user.model.js';
+import { userDataAccess } from './user.data-access.js';
 import { generateResetTokenTemp, setupMailSender } from '../../utils/mailer.js';
 
 const checkUserPassword = async (email, password) => {
-  const user = await User.findOne({ email: email });
+  const user = await userDataAccess.findUser(email); //User.findOne({ email: email });
   if (!user) throw new NotFoundError('email not found');
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
@@ -22,15 +22,15 @@ const checkUserIsVerified = (user) => {
   return false;
 };
 const createUser = async (dataInputs) => {
-  const userExist = await User.findOne({ email: dataInputs.email });
+  const userExist = await userDataAccess.findUser(email); // User.findOne({ email: dataInputs.email });
   if (userExist) throw new BadRequestError('user is registered already');
-  const user = await User.create(dataInputs);
+  const user = await userDataAccess(dataInputs); // User.create(dataInputs);
   if (!user) throw new BadRequestError('Error created while creaing the user');
   return { user: user };
 };
 const checkUserIsExist = async (email) => {
   //return user if it exists
-  const userIsExist = await User.findOne({ email: email });
+  const userIsExist = await userDataAccess.findUser(email)
   if (!userIsExist) {
     throw new NotFoundError('email not found Please use another one');
   }
@@ -48,7 +48,7 @@ const getUser = (req) => {
   return { user: req.user };
 };
 const checkIsEmailDuplicated = async (email) => {
-  const isDuplicatedEmail = await User.findOne({ email });
+  const isDuplicatedEmail = await userDataAccess.findUser(email)
   if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
 const changeUserEmailWithMailAlert = async (UserBeforeUpdate, newEmail) => {
