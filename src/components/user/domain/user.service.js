@@ -86,7 +86,7 @@ const resetUser = async (reqBody) => {
         message: 'email sent successfully to reset the password',
     };
 };
-const confrimReset = async (reqBody) => {
+const confirmReset = async (reqBody) => {
     let updatedUser = await userUtils.checkUserIsExist(reqBody.email);
     const isEqual = checkValueEquality(
         updatedUser.user.verificationCode,
@@ -213,7 +213,7 @@ export const userService = {
     authUser,
     registerUser,
     resetUser,
-    confrimReset,
+    confirmReset,
     changePassword,
     activateAccount,
     logoutUser,

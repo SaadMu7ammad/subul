@@ -15,13 +15,13 @@ const preCreateTransaction = asyncHandler(async (req, res, next) => {
   }
   next();
 });
-const getAllTransactions = asyncHandler(async (req, res, next) => {
+const getAllTransactions = async (req, res, next) => {
   const myTransactions = await transactionService.getAllTransactions(req.user);
   if (!myTransactions) {
     throw new BadRequestError('no transactions found');
   }
-  res.status(201).json({ status: 'success', data: myTransactions });
-});
+  return { status: 'success', data: myTransactions };
+};
 const updateCaseInfo = asyncHandler(async (req, res, next) => {
   try {
     // console.log(req.body);
