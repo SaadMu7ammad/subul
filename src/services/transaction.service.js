@@ -2,7 +2,7 @@ import asyncHandler from 'express-async-handler';
 import Case from '../models/caseModel.js';
 import Transactions from '../models/transactionModel.js';
 import { BadRequestError, NotFoundError } from '../errors/index.js';
-import User from '../modules/user/user.model.js';
+import User from '../modules/user/data-access/models/user.model.js';
 import Charity from '../models/charityModel.js';
 const preCreateTransaction = async (data, user) => {
   //must check the account for the charity is valid or not

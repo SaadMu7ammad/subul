@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 
 import asyncHandler from 'express-async-handler';
 
-import User from '../modules/user/user.model.js';
+import User from '../modules/user/data-access/models/user.model.js';
 import Charity from '../models/charityModel.js';
 import { UnauthenticatedError } from '../errors/unauthenticated.js';
 import logger from '../utils/logger.js';

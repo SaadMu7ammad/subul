@@ -11,24 +11,26 @@ import {
   activateAccount,
   editUserProfile,
   getUserProfileData,
-} from './user.controller.js';
+} from '../domain/user.use-case.js';
 
-import { validate } from '../../middlewares/validatorMiddleware.js';
-import { auth } from '../../middlewares/authMiddleware.js';
-import { editUserProfileValidation } from '../../utils/validatorComponents/user/editUserProfileValidation.js';
+import { validate } from '../../../middlewares/validatorMiddleware.js';
+import { auth } from '../../../middlewares/authMiddleware.js';
+import { editUserProfileValidation } from '../../../utils/validatorComponents/user/editUserProfileValidation.js';
 import {
   registerUserValidation,
   loginUserValidation,
-} from '../../utils/validatorComponents/user/userAuthValidation.js';
+} from '../../../utils/validatorComponents/user/userAuthValidation.js';
 import {
   changePasswordUserValidation,
   confirmResetUserValidation,
   requestResetEmailUserValidation,
   tokenUserValidation,
-} from '../../utils/validatorComponents/user/allUserValidation.js';
-import { isActivated } from '../../middlewares/authStage2Middleware.js';
-import { getAllTransactions } from '../../controllers/transaction.controller.js';
+} from '../../../utils/validatorComponents/user/allUserValidation.js';
+import { isActivated } from '../../../middlewares/authStage2Middleware.js';
+import { getAllTransactions } from '../../../controllers/transaction.controller.js';
+
 router.post('/', registerUserValidation, validate, registerUser);
+
 router.post('/auth', loginUserValidation, validate, authUser);
 router.post('/logout', logoutUser);
 //notice reset and /reset/confirm without isActivated coz the if the user didnt activate his account and want to reset the pass

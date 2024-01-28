@@ -9,7 +9,7 @@ import {
   errorHandler,
 } from './middlewares/errorHandlerMiddleware.js';
 import transactionRoutes from './paymob/routes/transactionRoutes.js';
-import userRoutes from './modules/user/user.routes.js';
+import userRoutes from './modules/user/entry-points/user.routes.js';
 import charityRoutes from './routes/charityRoutes.js';
 import casesRoutes from './routes/casesRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
