@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import logger from './logger.js';
-import 'dotenv/config.js';
 import { deleteImg } from '../middlewares/cloudinary.js';
 const deleteFile = (filePath) => {
     logger.warn(filePath);
