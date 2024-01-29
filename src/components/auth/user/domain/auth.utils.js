@@ -1,3 +1,4 @@
+import bcryptjs from 'bcryptjs';
 import {
   BadRequestError,
   NotFoundError,
@@ -7,7 +8,7 @@ import { userRepository } from '../../../user/data-access/user.repository.js';
 const checkUserPassword = async (email, password) => {
   const user = await userRepository.findUser(email);
   if (!user) throw new NotFoundError('email not found');
-  const isMatch = await user.comparePassword(password);
+  const isMatch = await bcryptjs.compare(password, user.password);
   if (!isMatch) {
     throw new UnauthenticatedError('invalid password');
   }

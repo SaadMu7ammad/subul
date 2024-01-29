@@ -157,10 +157,6 @@ userSchema.pre('findOneAndUpdate', async function (next) {
     }
   
 });
-userSchema.methods.comparePassword = async function (enteredPassword) {
-    const isMatch = await bcrypt.compare(enteredPassword, this.password);
-    return isMatch;
-};
 
 const User = mongoose.model('Users', userSchema);
 export default User;
