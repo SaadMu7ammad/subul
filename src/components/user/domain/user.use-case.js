@@ -59,10 +59,10 @@ const confirmReset = async (req, res, next) => {
 //@access private
 const changePassword = async (req, res, next) => {
   const changePasswordInputsData = req.body;
-  const user = req.user;
+  const storedUser = req.user;
   const dataResponsed = await userService.changePassword(
     changePasswordInputsData,
-    user
+    storedUser
   );
   return {
     message: dataResponsed.message,
@@ -74,10 +74,10 @@ const changePassword = async (req, res, next) => {
 //@access private
 const activateAccount = async (req, res, next) => {
   const activateAccountInputsData = req.body;
-  const user = req.user;
+  const storedUser = req.user;
   const dataResponsed = await userService.activateAccount(
     activateAccountInputsData,
-    user,
+    storedUser,
     res
   );
   return {
@@ -109,10 +109,10 @@ const editUserProfile = async (req, res, next) => {
   // };
   // const editUserProfileInputsData = userObj;
   const editUserProfileInputsData = req.body;
-  const user = req.user;
+  const storedUser = req.user;
   const dataResponsed = await userService.editUserProfile(
     editUserProfileInputsData,
-    user
+    storedUser
   );
   if (dataResponsed.emailEdited) {
     return {
@@ -138,7 +138,7 @@ const getUserProfileData = (req, res, next) => {
   };
 };
 
-export {
+export const userUseCase={
   registerUser,
   authUser,
   logoutUser,

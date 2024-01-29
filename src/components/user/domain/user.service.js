@@ -129,14 +129,14 @@ const changePassword = async (reqBody, user) => {
     );
     return { message: 'user password changed successfully' };
 };
-const activateAccount = async (req, user, res) => {
+const activateAccount = async (reqBody, user, res) => {
     let storedUser = user;
     if (storedUser.emailVerification.isVerified) {
         return { message: 'account already is activated' };
     }
     const isMatch = checkValueEquality(
         storedUser.verificationCode,
-        req.body.token
+        reqBody.token
     );
     if (!isMatch) {
         await userUtils.resetSentToken();

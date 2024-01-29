@@ -1,17 +1,7 @@
 import express, { Router } from 'express';
 
 const router = express.Router();
-import {
-  authUser,
-  registerUser,
-  logoutUser,
-  resetUser,
-  confirmReset,
-  changePassword,
-  activateAccount,
-  editUserProfile,
-  getUserProfileData,
-} from '../domain/user.use-case.js';
+import { userUseCase } from '../domain/user.use-case.js';
 
 import { validate } from '../../../middlewares/validatorMiddleware.js';
 import { auth } from '../../../middlewares/authMiddleware.js';
@@ -33,7 +23,7 @@ import logger from '../../../utils/logger.js';
 router.post('/', registerUserValidation, validate, async (req, res, next) => {
   try {
     logger.info(`register User`);
-    const authResponse = await registerUser(req, res, next);
+    const authResponse = await userUseCase.registerUser(req, res, next);
     return res.json(authResponse);
   } catch (error) {
     next(error);
@@ -45,7 +35,7 @@ router.post('/', registerUserValidation, validate, async (req, res, next) => {
 router.post('/auth', loginUserValidation, validate, async (req, res, next) => {
   try {
     logger.info(`auth User`);
-    const authResponse = await authUser(req, res, next);
+    const authResponse = await userUseCase.authUser(req, res, next);
     return res.json(authResponse);
   } catch (error) {
     next(error);
@@ -55,7 +45,7 @@ router.post('/auth', loginUserValidation, validate, async (req, res, next) => {
 router.post('/logout', (req, res, next) => {
   try {
     logger.info(`logout User`);
-    const logOutResponse = logoutUser(req, res, next);
+    const logOutResponse = userUseCase.logoutUser(req, res, next);
     return res.json(logOutResponse);
   } catch (error) {
     next(error);
@@ -70,7 +60,7 @@ router.post(
   async (req, res, next) => {
     try {
       logger.info(`reset User`);
-      const resetResponse = await resetUser(req, res, next);
+      const resetResponse = await userUseCase.resetUser(req, res, next);
       return res.json(resetResponse);
     } catch (error) {
       next(error);
@@ -85,7 +75,7 @@ router.post(
   async (req, res, next) => {
     try {
       logger.info(`confirm Reset`);
-      const confirmResetResponse = await confirmReset(req, res, next);
+      const confirmResetResponse = await userUseCase.confirmReset(req, res, next);
       return res.json(confirmResetResponse);
     } catch (error) {
       next(error);
@@ -102,7 +92,7 @@ router.put(
   async (req, res, next) => {
     try {
       logger.info(`change Password`);
-      const changePasswordResponse = await changePassword(req, res, next);
+      const changePasswordResponse = await userUseCase.changePassword(req, res, next);
       return res.json(changePasswordResponse);
     } catch (error) {
       next(error);
@@ -118,7 +108,7 @@ router.post(
   async (req, res, next) => {
     try {
       logger.info(`activate Account`);
-      const activateAccountResponse = await activateAccount(req, res, next);
+      const activateAccountResponse = await userUseCase.activateAccount(req, res, next);
       return res.json(activateAccountResponse);
     } catch (error) {
       next(error);
@@ -129,7 +119,7 @@ router.post(
 router.get('/profile', auth, (req, res, next) => {
   try {
     logger.info(`user auth`);
-    const getUserProfileDataResponse = getUserProfileData(req, res, next);
+    const getUserProfileDataResponse = userUseCase.getUserProfileData(req, res, next);
     return res.json(getUserProfileDataResponse);
   } catch (error) {
     next(error);
@@ -145,7 +135,7 @@ router.put(
   async (req, res, next) => {
     try {
       logger.info(`activate Account`);
-      const editUserProfileResponse = await editUserProfile(req, res, next);
+      const editUserProfileResponse = await userUseCase.editUserProfile(req, res, next);
       return res.json(editUserProfileResponse);
     } catch (error) {
       next(error);
