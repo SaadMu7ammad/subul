@@ -1,18 +1,18 @@
 import express, { Router } from 'express';
 import {
-    addCase,
-    deleteCase,
-    editCase,
-    getAllCases,
-    getCaseById,
+  addCase,
+  deleteCase,
+  editCase,
+  getAllCases,
+  getCaseById,
 } from '../controllers/casesController.js';
-import { auth } from '../middlewares/authMiddleware.js';
+import { auth } from '../components/auth/authMiddleware.js';
 import {
-    uploadCoverImage,
-    resizeImg,
-    resizeImgUpdated,
+  uploadCoverImage,
+  resizeImg,
+  resizeImgUpdated,
 } from '../middlewares/imageMiddleware.js';
-import { isConfirmed } from '../middlewares/authStage2Middleware.js';
+import { isConfirmed } from '../components/auth/authStage2Middleware.js';
 import { validate } from '../libraries/validation/index.js';
 import { postCaseValidation } from '../libraries/validation/components/case/postCaseValidation.js';
 import { getAllCasesValidation } from '../libraries/validation/components/case/getAllCasesValidation.js';
@@ -20,34 +20,34 @@ import { editCaseValidation } from '../libraries/validation/components/case/edit
 const router = express.Router();
 
 router.get(
-    '/allCases',
-    auth,
-    isConfirmed,
-    getAllCasesValidation,
-    validate,
-    getAllCases
+  '/allCases',
+  auth,
+  isConfirmed,
+  getAllCasesValidation,
+  validate,
+  getAllCases
 );
 router
-    .route('/cases/:caseId')
-    .get(auth, isConfirmed, getCaseById)
-    .delete(auth, isConfirmed, deleteCase)
-    .put(
-        auth,
-        isConfirmed,
-        uploadCoverImage,
-        editCaseValidation,
-        validate,
-        resizeImgUpdated,
-        editCase
-    );
-router.post(
-    '/addCase',
+  .route('/cases/:caseId')
+  .get(auth, isConfirmed, getCaseById)
+  .delete(auth, isConfirmed, deleteCase)
+  .put(
     auth,
     isConfirmed,
     uploadCoverImage,
-    postCaseValidation,
+    editCaseValidation,
     validate,
-    resizeImg,
-    addCase
+    resizeImgUpdated,
+    editCase
+  );
+router.post(
+  '/addCase',
+  auth,
+  isConfirmed,
+  uploadCoverImage,
+  postCaseValidation,
+  validate,
+  resizeImg,
+  addCase
 );
 export default router;

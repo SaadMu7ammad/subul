@@ -143,20 +143,21 @@ userSchema.pre('save', async function (next) {
     }
     const salt = await bcrypt.genSalt(+process.env.SALT);
     this.password = await bcrypt.hash(this.password, salt);
+    console.log('password has been changed');
 });
-userSchema.pre('findOneAndUpdate', async function (next) {
-    // the update operation object is stored within this.getUpdate()
-    console.log('userSchemaMiddleWare')
-    console.log(this.getUpdate())
-    // console.log( this.getUpdate().$set.password);
-    const passwordToUpdate = this.getUpdate().$set.password;
+// userSchema.pre('findOneAndUpdate', async function (next) {
+//     // the update operation object is stored within this.getUpdate()
+//     console.log('userSchemaMiddleWare')
+//     console.log(this.getUpdate())
+//     // console.log( this.getUpdate().$set.password);
+//     const passwordToUpdate = this.getUpdate().$set.password;
   
-    if (passwordToUpdate) {
-      const salt = await bcrypt.genSalt(+process.env.SALT);
-      this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
-    }
+//     if (passwordToUpdate) {
+//       const salt = await bcrypt.genSalt(+process.env.SALT);
+//       this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
+//     }
   
-});
+// });
 
 const User = mongoose.model('Users', userSchema);
 export default User;

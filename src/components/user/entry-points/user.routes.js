@@ -4,7 +4,7 @@ const router = express.Router();
 import { userUseCase } from '../domain/user.use-case.js';
 
 import { validate } from '../../../libraries/validation/index.js';
-import { auth } from '../../../middlewares/authMiddleware.js';
+import { auth } from '../../auth/authMiddleware.js';
 import { editUserProfileValidation } from '../../../libraries/validation/components/user/editUserProfileValidation.js';
 import {
   changePasswordUserValidation,
@@ -12,7 +12,7 @@ import {
   requestResetEmailUserValidation,
   tokenUserValidation,
 } from '../../../libraries/validation/components/user/allUserValidation.js';
-import { isActivated } from '../../../middlewares/authStage2Middleware.js';
+import { isActivated } from '../../auth/authStage2Middleware.js';
 import { getAllTransactions } from '../../../controllers/transaction.controller.js';
 import logger from '../../../utils/logger.js';
 router.post('/logout', (req, res, next) => {
