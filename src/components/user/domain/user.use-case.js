@@ -100,7 +100,7 @@ const getUserProfileData = (req, res, next) => {
   const storedUser = req.user;
   const dataResponsed = userService.getUserProfileData(storedUser);
   return {
-    message: dataResponsed.user,
+    user: dataResponsed.user,
   };
 };
 
