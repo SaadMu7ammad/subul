@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { NotFound, errorHandler } from './libraries/errors/index.js';
 import transactionRoutes from './paymob/routes/transactionRoutes.js';
 import userRoutes from './components/user/entry-points/user.routes.js';
+import authUserRoutes from './components/auth/user/entry-points/auth.routes.js';
 import charityRoutes from './routes/charityRoutes.js';
 import casesRoutes from './routes/casesRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 app.use(cookieParser());
 
 app.use('/api/payment', transactionRoutes);
+app.use('/api/users', authUserRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/charities', charityRoutes);
 app.use('/api/charities', casesRoutes);
