@@ -76,4 +76,4 @@ const getAllCasesValidation = [
     query('page').optional().isNumeric().withMessage('Invalid page!'),
     query('limit').optional().isNumeric().withMessage('Invalid limit!'),
 ];
-export default getAllCasesValidation;
+export {getAllCasesValidation};

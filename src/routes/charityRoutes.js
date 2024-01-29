@@ -2,7 +2,7 @@ import express, { Router } from 'express';
 
 import { auth } from '../middlewares/authMiddleware.js';
 import logger from '../utils/logger.js';
-import { validate } from '../middlewares/validatorMiddleware.js';
+import { validate } from '../validation/index.js';
 
 import {
   registerCharity,
@@ -19,20 +19,36 @@ import {
   addCharityPayments,
 } from '../controllers/charityController.js';
 
-import { resizeImg, resizeImgUpdated, updateuploadCoverImage, uploadCoverImage } from '../middlewares/imageMiddleware.js';
-import { registerCharityValidation, loginCharityValidation } from '../utils/validatorComponents/charity/charityAuthValidation.js'
+import {
+  resizeImg,
+  resizeImgUpdated,
+  updateuploadCoverImage,
+  uploadCoverImage,
+} from '../middlewares/imageMiddleware.js';
+import {
+  registerCharityValidation,
+  loginCharityValidation,
+} from '../validation/components/charity/charityAuthValidation.js';
 import {
   isConfirmed,
   isActivated,
 } from '../middlewares/authStage2Middleware.js';
 
-import {editCharityProfileValidation,reqEditPaymentMethodsValidation} from '../utils/validatorComponents/charity/editCharityProfileValidation.js';
+import {
+  editCharityProfileValidation,
+  reqEditPaymentMethodsValidation,
+} from '../validation/components/charity/editCharityProfileValidation.js';
 import { resizeDoc, uploadDocs } from '../middlewares/docsMiddleware.js';
 import {
   resizeDocReq,
   uploadDocsReq,
 } from '../middlewares/reqDocPaymentMiddleware.js';
-import { changePasswordCharityValidation, confirmResetCharityValidation, requestResetEmailCharityValidation, tokenCharityValidation } from '../utils/validatorComponents/charity/allCharityValidation.js';
+import {
+  changePasswordCharityValidation,
+  confirmResetCharityValidation,
+  requestResetEmailCharityValidation,
+  tokenCharityValidation,
+} from '../validation/components/charity/allCharityValidation.js';
 const router = express.Router();
 
 router.post(
@@ -52,7 +68,12 @@ router.post(
   auth,
   activateCharityAccount
 );
-router.post('/reset', requestResetEmailCharityValidation, validate, requestResetPassword);
+router.post(
+  '/reset',
+  requestResetEmailCharityValidation,
+  validate,
+  requestResetPassword
+);
 
 router.post(
   '/reset/confirm',

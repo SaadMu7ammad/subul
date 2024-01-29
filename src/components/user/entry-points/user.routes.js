@@ -3,19 +3,19 @@ import express, { Router } from 'express';
 const router = express.Router();
 import { userUseCase } from '../domain/user.use-case.js';
 
-import { validate } from '../../../middlewares/validatorMiddleware.js';
+import { validate } from '../../../validation/index.js';
 import { auth } from '../../../middlewares/authMiddleware.js';
-import { editUserProfileValidation } from '../../../utils/validatorComponents/user/editUserProfileValidation.js';
+import { editUserProfileValidation } from '../../../validation/components/user/editUserProfileValidation.js';
 import {
   registerUserValidation,
   loginUserValidation,
-} from '../../../utils/validatorComponents/user/userAuthValidation.js';
+} from '../../../validation/components/user/userAuthValidation.js';
 import {
   changePasswordUserValidation,
   confirmResetUserValidation,
   requestResetEmailUserValidation,
   tokenUserValidation,
-} from '../../../utils/validatorComponents/user/allUserValidation.js';
+} from '../../../validation/components/user/allUserValidation.js';
 import { isActivated } from '../../../middlewares/authStage2Middleware.js';
 import { getAllTransactions } from '../../../controllers/transaction.controller.js';
 import logger from '../../../utils/logger.js';
@@ -75,7 +75,11 @@ router.post(
   async (req, res, next) => {
     try {
       logger.info(`confirm Reset`);
-      const confirmResetResponse = await userUseCase.confirmReset(req, res, next);
+      const confirmResetResponse = await userUseCase.confirmReset(
+        req,
+        res,
+        next
+      );
       return res.json(confirmResetResponse);
     } catch (error) {
       next(error);
@@ -92,7 +96,11 @@ router.put(
   async (req, res, next) => {
     try {
       logger.info(`change Password`);
-      const changePasswordResponse = await userUseCase.changePassword(req, res, next);
+      const changePasswordResponse = await userUseCase.changePassword(
+        req,
+        res,
+        next
+      );
       return res.json(changePasswordResponse);
     } catch (error) {
       next(error);
@@ -108,7 +116,11 @@ router.post(
   async (req, res, next) => {
     try {
       logger.info(`activate Account`);
-      const activateAccountResponse = await userUseCase.activateAccount(req, res, next);
+      const activateAccountResponse = await userUseCase.activateAccount(
+        req,
+        res,
+        next
+      );
       return res.json(activateAccountResponse);
     } catch (error) {
       next(error);
@@ -119,7 +131,11 @@ router.post(
 router.get('/profile', auth, (req, res, next) => {
   try {
     logger.info(`user auth`);
-    const getUserProfileDataResponse = userUseCase.getUserProfileData(req, res, next);
+    const getUserProfileDataResponse = userUseCase.getUserProfileData(
+      req,
+      res,
+      next
+    );
     return res.json(getUserProfileDataResponse);
   } catch (error) {
     next(error);
@@ -135,7 +151,11 @@ router.put(
   async (req, res, next) => {
     try {
       logger.info(`activate Account`);
-      const editUserProfileResponse = await userUseCase.editUserProfile(req, res, next);
+      const editUserProfileResponse = await userUseCase.editUserProfile(
+        req,
+        res,
+        next
+      );
       return res.json(editUserProfileResponse);
     } catch (error) {
       next(error);
