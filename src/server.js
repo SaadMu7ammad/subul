@@ -2,6 +2,7 @@ import * as path from 'path'
 import { v4 as uuidv4 } from 'uuid';
 import express from 'express';
 import dotenv from 'dotenv/config';
+import cors from 'cors';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import {
@@ -21,6 +22,7 @@ const __dirname = path.resolve();
 const port = process.env.PORT;
 const host = process.env.HOST;
 const app = express();
+app.use(cors());
 app.use(express.urlencoded({ extended: true })); //form data
 app.use(express.json());
 
