@@ -3,10 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import express from 'express';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
-import {
-  NotFound,
-  errorHandler,
-} from './errors/index.js';
+import { NotFound, errorHandler } from './libraries/errors/index.js';
 import transactionRoutes from './paymob/routes/transactionRoutes.js';
 import userRoutes from './components/user/entry-points/user.routes.js';
 import charityRoutes from './routes/charityRoutes.js';
@@ -33,13 +30,13 @@ app.use('/api/charities', charityRoutes);
 app.use('/api/charities', casesRoutes);
 app.use('/api/admin', adminRoutes);
 app.get('/', (req, res) => {
-  res.send('subul charity');
+    res.send('subul charity');
 });
 app.use(NotFound);
 app.use(errorHandler);
 await connectDB();
 const server = app.listen(port, () => {
-  logger.info(`server is listenting http://${host}:${port}`);
+    logger.info(`server is listenting http://${host}:${port}`);
 });
 //handling errors outside express
 // process.on('unhandledRejection', (err) => {

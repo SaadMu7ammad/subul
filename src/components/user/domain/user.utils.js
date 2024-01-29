@@ -2,7 +2,7 @@ import {
     BadRequestError,
     NotFoundError,
     UnauthenticatedError,
-} from '../../../errors/components/index.js';
+} from '../../../libraries/errors/components/index.js';
 import { userRepository } from '../data-access/user.repository.js';
 import {
     generateResetTokenTemp,

@@ -1,7 +1,10 @@
 import asyncHandler from 'express-async-handler';
 import Case from '../models/caseModel.js';
 import Transactions from '../models/transactionModel.js';
-import { BadRequestError, NotFoundError } from '../errors/components/index.js';
+import {
+    BadRequestError,
+    NotFoundError,
+} from '../libraries/errors/components/index.js';
 import User from '../components/user/data-access/models/user.model.js';
 import Charity from '../models/charityModel.js';
 const preCreateTransaction = async (data, user) => {
