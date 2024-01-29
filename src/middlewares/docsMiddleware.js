@@ -17,10 +17,8 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import logger from '../utils/logger.js';
-import { BadRequestError } from '../errors/bad-request.js';
+import { BadRequestError } from '../errors/components/bad-request.js';
 import { saveImg } from './imageMiddleware.js';
-
-
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -41,9 +39,9 @@ async function processDocs(docsKey, ref, req) {
       const sharpPromise = sharp(obj.buffer)
         .resize(320, 240)
         .toFormat('jpeg')
-        .jpeg({ quality: 90 })
-    
-      await saveImg(sharpPromise,'docsCharities',fileName);
+        .jpeg({ quality: 90 });
+
+      await saveImg(sharpPromise, 'docsCharities', fileName);
 
       if (docsKey === 'docs1') req.body.charityDocs.docs1.push(fileName);
       if (docsKey === 'docs2') req.body.charityDocs.docs2.push(fileName);

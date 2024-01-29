@@ -1,7 +1,7 @@
-import { UnauthenticatedError } from '../errors/unauthenticated.js';
+import { UnauthenticatedError } from '../errors/components/unauthenticated.js';
 
 const isAdmin = (req, res, next) => {
-//   console.log(req.user);
+  //   console.log(req.user);
   if (!req.charity) {
     //no isAdmin attribure in req.charity to prevent error of undefined isAdmin
     if (req.user.isAdmin && req.user) {
@@ -9,7 +9,8 @@ const isAdmin = (req, res, next) => {
     } else {
       throw new UnauthenticatedError('you are not an admin');
     }
-  } else {//if a charity user want to access that route
+  } else {
+    //if a charity user want to access that route
     throw new UnauthenticatedError('you are not an admin');
   }
 };

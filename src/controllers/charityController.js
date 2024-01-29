@@ -12,7 +12,7 @@ import {
   CustomAPIError,
   NotFoundError,
   UnauthenticatedError,
-} from '../errors/index.js';
+} from '../errors/components/index.js';
 import {  deleteOldImgs } from '../utils/deleteFile.js';
 // import logger from '../utils/logger.js';
 

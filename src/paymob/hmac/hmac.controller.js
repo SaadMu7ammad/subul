@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler';
-import { BadRequestError } from '../../errors/index.js';
+import { BadRequestError } from '../../errors/components/bad-request.js';
 import { hmacService } from './hmac.service.js';
 
 const hmacSetting = (req, res, next) => {

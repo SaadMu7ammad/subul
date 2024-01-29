@@ -1,4 +1,4 @@
-import { NotFoundError } from '../../errors/index.js';
+import { NotFoundError } from '../../errors/components/index.js';
 
 const getTokenStepOne = async () => {
   const request = await fetch('https://accept.paymob.com/api/auth/tokens', {

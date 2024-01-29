@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser';
 import {
   NotFound,
   errorHandler,
-} from './middlewares/errorHandlerMiddleware.js';
+} from './errors/index.js';
 import transactionRoutes from './paymob/routes/transactionRoutes.js';
 import userRoutes from './components/user/entry-points/user.routes.js';
 import charityRoutes from './routes/charityRoutes.js';

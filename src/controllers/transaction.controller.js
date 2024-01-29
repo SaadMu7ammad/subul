@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler';
-import { BadRequestError } from '../errors/index.js';
+import { BadRequestError } from '../errors/components/index.js';
 
 import { transactionService } from '../services/transaction.service.js';
 const preCreateTransaction = asyncHandler(async (req, res, next) => {

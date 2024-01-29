@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import { getTransactionByIdService } from '../admin/getTransactionById.service.js';
-import { BadRequestError } from '../../errors/index.js';
+import { BadRequestError } from '../../errors/components/index.js';
 import { refundService } from './refund.service.js';
 
 const refund = asyncHandler(async (req, res, next) => {

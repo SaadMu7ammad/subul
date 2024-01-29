@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import { getTransactionByIdService } from '../admin/getTransactionById.service.js';
-import { BadRequestError, NotFoundError } from '../../errors/index.js';
+import { BadRequestError, NotFoundError } from '../../errors/components/index.js';
 import Transaction from '../../models/transactionModel.js';
 const refund = async (transaction_id) => {
   const stepOneToken = await getTransactionByIdService.getTokenStepOne();

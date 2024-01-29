@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import asyncHandler from 'express-async-handler';
 import Charity from '../models/charityModel.js';
-import { BadRequestError } from '../errors/bad-request.js';
+import { BadRequestError } from '../errors/components/index.js';
 import { setupMailSender } from '../utils/mailer.js';
 import {
   getPendingCharities,
@@ -28,7 +28,7 @@ const getPendingRequestCharityById = asyncHandler(async (req, res, next) => {
 
 const getCharityPaymentsRequestsById = asyncHandler(async (req, res, next) => {
   const paymentRequests = await getCharityPendingPaymentRequests(req.params.id);
-  res.status(200).json({...paymentRequests});
+  res.status(200).json({ ...paymentRequests });
 });
 
 const getAllRequestsPaymentMethods = asyncHandler(async (req, res, next) => {
@@ -36,13 +36,18 @@ const getAllRequestsPaymentMethods = asyncHandler(async (req, res, next) => {
   //   '-_id'
   // ); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
 
-  const bankAccountRequests = await getAllPendingPaymentMethodsRequests('bankAccount');
+  const bankAccountRequests = await getAllPendingPaymentMethodsRequests(
+    'bankAccount'
+  );
 
   const fawryRequests = await getAllPendingPaymentMethodsRequests('fawry');
 
-  const vodafoneCashRequests = await getAllPendingPaymentMethodsRequests('vodafoneCash');
+  const vodafoneCashRequests = await getAllPendingPaymentMethodsRequests(
+    'vodafoneCash'
+  );
 
-  if (!bankAccountRequests&&!fawryRequests&&!vodafoneCashRequests) throw new BadRequestError('No paymentRequests found');
+  if (!bankAccountRequests && !fawryRequests && !vodafoneCashRequests)
+    throw new BadRequestError('No paymentRequests found');
 
   res.json({ bankAccountRequests, fawryRequests, vodafoneCashRequests });
 });
@@ -67,7 +72,7 @@ const rejectCharity = asyncHandler(async (req, res, next) => {
   const charity = await getPendingCharities(req.params.id);
 
   await rejectingCharity(charity);
-  
+
   await setupMailSender(
     charity.email,
     'Charity has not been confirmed',
@@ -77,12 +82,16 @@ const rejectCharity = asyncHandler(async (req, res, next) => {
   res.status(200).json({ message: 'Charity failed to be confirmed', charity });
 });
 
-const confirmPaymentAccountRequest= asyncHandler(async (req, res, next) => {
+const confirmPaymentAccountRequest = asyncHandler(async (req, res, next) => {
   const charity = await getConfirmedCharities(req.params.id);
 
-  const idx = checkPaymentMethodAvailability(charity,req.body.paymentMethod,req.body.paymentAccountID);
-  
-  await confirmingPaymentAccount(charity,req.body.paymentMethod,idx)
+  const idx = checkPaymentMethodAvailability(
+    charity,
+    req.body.paymentMethod,
+    req.body.paymentAccountID
+  );
+
+  await confirmingPaymentAccount(charity, req.body.paymentMethod, idx);
 
   await setupMailSender(
     charity.email,
@@ -92,15 +101,22 @@ const confirmPaymentAccountRequest= asyncHandler(async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: 'Charity payment account has been confirmed successfully', charity });
+    .json({
+      message: 'Charity payment account has been confirmed successfully',
+      charity,
+    });
 });
-const rejectPaymentAccountRequest= asyncHandler(async (req, res, next) => {
+const rejectPaymentAccountRequest = asyncHandler(async (req, res, next) => {
   const charity = await getConfirmedCharities(req.params.id);
 
-  const idx = checkPaymentMethodAvailability(charity,req.body.paymentMethod,req.body.paymentAccountID);
+  const idx = checkPaymentMethodAvailability(
+    charity,
+    req.body.paymentMethod,
+    req.body.paymentAccountID
+  );
 
-  await rejectingPaymentAccount(charity,req.body.paymentMethod,idx);
-  
+  await rejectingPaymentAccount(charity, req.body.paymentMethod, idx);
+
   await setupMailSender(
     charity.email,
     'Charity payment account has been rejected',
@@ -109,7 +125,10 @@ const rejectPaymentAccountRequest= asyncHandler(async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: 'Charity payment account has been rejected successfully', charity });
+    .json({
+      message: 'Charity payment account has been rejected successfully',
+      charity,
+    });
 });
 export {
   getAllPendingRequestsCharities,
@@ -119,5 +138,5 @@ export {
   getCharityPaymentsRequestsById,
   getAllRequestsPaymentMethods,
   confirmPaymentAccountRequest,
-  rejectPaymentAccountRequest
+  rejectPaymentAccountRequest,
 };
