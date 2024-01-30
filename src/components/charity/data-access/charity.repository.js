@@ -5,7 +5,7 @@ const findCharity = async (email) => {
   return charity;
 };
 
-const findCharityById = async (Id) => {
+const findCharityById = async (id) => {
     const charity = await Charity.findOne({ id: id });
     return charity;
   };
