@@ -1,4 +1,4 @@
-import Charity from '../models/charityModel.js';
+import Charity from '../components/charity/data-access/models/charity.model.js';
 import { deleteOldImgs } from '../utils/deleteFile.js';
 import { BadRequestError } from '../libraries/errors/components/bad-request.js';
 const getPendingCharities = async (id) => {

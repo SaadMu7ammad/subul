@@ -7,15 +7,15 @@ import {
 
 const authUser = async (reqBody, res) => {
   const { email, password } = reqBody;
-  const userResponse = await authUserUtils.checkUserPassword(email, password);
+  const userResponse = await authChari.checkUserPassword(email, password);
   generateToken(res, userResponse.user._id, 'user');
   const userObj = {
     _id: userResponse.user._id,
     name: userResponse.user.name,
     email: userResponse.user.email,
   };
-  const IsUserVerified = authUserUtils.checkUserIsVerified(userResponse.user);
-  if (IsUserVerified) {
+  const IsCharityVerified = authUserUtils.checkUserIsVerified(userResponse.user);
+  if (IsCharityVerified) {
     return {
       user: userObj,
       emailAlert: false,

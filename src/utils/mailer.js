@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 import * as crypto from 'crypto'
 import nodemailer from 'nodemailer';
 import logger from './logger.js';
@@ -9,7 +9,7 @@ const generateResetTokenTemp = async (userId) => {
   //     await token.remove();
   // }
   token = crypto.randomBytes(32).toString('hex');
-  const hashedToken = await bcrypt.hash(token, 10);
+  const hashedToken = await bcryptjs.hash(token, 10);
   // const resetPassowrdToken = new Token({
   //     userId,
   //     token:hashedToken,

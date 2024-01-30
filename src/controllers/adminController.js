@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import asyncHandler from 'express-async-handler';
-import Charity from '../models/charityModel.js';
+import Charity from '../components/charity/data-access/models/charity.model.js';
 import { BadRequestError } from '../libraries/errors/components/index.js';
 import { setupMailSender } from '../utils/mailer.js';
 import {

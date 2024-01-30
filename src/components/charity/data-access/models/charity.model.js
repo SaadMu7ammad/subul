@@ -453,11 +453,6 @@ charitySchema.pre('findOneAndUpdate', async function (next) {
   }
 
 });
-charitySchema.methods.comparePassword = async function (enteredPassword) {
-  const isMatch = await bcrypt.compare(enteredPassword, this.password);
-  return isMatch;
-};
-
 const Charity = mongoose.model('Charity', charitySchema);
 
 export default Charity;

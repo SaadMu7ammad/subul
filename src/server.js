@@ -7,7 +7,7 @@ import { NotFound, errorHandler } from './libraries/errors/index.js';
 import transactionRoutes from './paymob/routes/transactionRoutes.js';
 import userRoutes from './components/user/entry-points/api/user.routes.js';
 import authUserRoutes from './components/auth/user/entry-points/api/auth.routes.js';
-import charityRoutes from './routes/charityRoutes.js';
+import charityRoutes from './components/charity/entry-points/api/charity.routes.js';
 import casesRoutes from './routes/casesRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import logger from './utils/logger.js';
