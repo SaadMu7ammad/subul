@@ -5,8 +5,7 @@ import {
   preCreateTransaction,
   updateCaseInfo,
 } from '../../controllers/transaction.controller.js';
-import { auth } from '../../components/auth/authMiddleware.js';
-import { isActivated } from '../../components/auth/authStage2Middleware.js';
+import { auth, isActivated } from '../../components/auth/shared/index.js';
 import { payWithOnlineCard } from '../onlineCards/onlineCards.controller.js';
 import { paywithMobileWallet } from '../mobileWallets/mobileWallets.controller.js';
 import { isAdmin } from '../../middlewares/isAdminMiddleware.js';

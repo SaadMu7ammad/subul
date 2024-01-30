@@ -6,13 +6,12 @@ import {
   getAllCases,
   getCaseById,
 } from '../controllers/casesController.js';
-import { auth } from '../components/auth/authMiddleware.js';
+import { auth, isConfirmed } from '../components/auth/shared/index.js';
 import {
   uploadCoverImage,
   resizeImg,
   resizeImgUpdated,
 } from '../middlewares/imageMiddleware.js';
-import { isConfirmed } from '../components/auth/authStage2Middleware.js';
 import { validate } from '../libraries/validation/index.js';
 import { postCaseValidation } from '../libraries/validation/components/case/postCaseValidation.js';
 import { getAllCasesValidation } from '../libraries/validation/components/case/getAllCasesValidation.js';

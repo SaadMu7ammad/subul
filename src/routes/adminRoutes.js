@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import { isAdmin } from '../middlewares/isAdminMiddleware.js';
+import { auth } from '../components/auth/shared/index.js';
 import {
   confirmCharity,
   confirmPaymentAccountRequest,
@@ -10,7 +11,6 @@ import {
   rejectCharity,
   rejectPaymentAccountRequest,
 } from '../controllers/adminController.js';
-import { auth } from '../components/auth/authMiddleware.js';
 
 const router = express.Router();
 router.get(

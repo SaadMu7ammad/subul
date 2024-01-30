@@ -1,6 +1,10 @@
 import express, { Router } from 'express';
 
-import { auth } from '../components/auth/authMiddleware.js';
+import {
+  auth,
+  isConfirmed,
+  isActivated,
+} from '../components/auth/shared/index.js';
 import logger from '../utils/logger.js';
 import { validate } from '../libraries/validation/index.js';
 
@@ -29,10 +33,6 @@ import {
   registerCharityValidation,
   loginCharityValidation,
 } from '../libraries/validation/components/charity/charityAuthValidation.js';
-import {
-  isConfirmed,
-  isActivated,
-} from '../components/auth/authStage2Middleware.js';
 
 import {
   editCharityProfileValidation,
