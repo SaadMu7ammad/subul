@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import { BadRequestError } from '../../libraries/errors/components/bad-request.js';
 import { hmacService } from './hmac.service.js';
-
+import * as configurationProvider from '../../libraries/configuration-provider/index.js'
 const hmacSetting = (req, res, next) => {
     // Extract HMAC from query parameter
     const receivedHMAC = req.query.hmac;
@@ -31,7 +31,7 @@ const hmacSetting = (req, res, next) => {
     // Calculate HMAC based on your secret key and data
     const calculatedHMAC = hmacService.calculateHMAC(
         data,
-        process.env.HMAC_Secret
+        configurationProvider.getValue('paymob.hmacSecret')
     );
     // Compare HMACs and proceed accordingly
     if (calculatedHMAC === receivedHMAC) {

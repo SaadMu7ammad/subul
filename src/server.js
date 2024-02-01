@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import express from 'express';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
@@ -11,9 +10,14 @@ import charityRoutes from './components/charity/entry-points/api/charity.routes.
 import casesRoutes from './routes/casesRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import logger from './utils/logger.js';
+import * as configurationProvider from './libraries/configuration-provider/index.js';
+import configurationSchema from './config/config.js';
+//this bad boy will do all the .env work :D
+configurationProvider.initializeAndValidate(configurationSchema);
+
 const __dirname = path.resolve();
-const port = process.env.PORT;
-const host = process.env.HOST;
+const port = configurationProvider.getValue('environment.port');
+const host = configurationProvider.getValue('environment.host');
 const app = express();
 app.use(express.urlencoded({ extended: true })); //form data
 app.use(express.json());

@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import { createPayment } from '../payment/payment.service.js';
-
+import * as configurationProvider from '../../libraries/configuration-provider/index.js';
 const payWithOnlineCard = asyncHandler(async (req, res, next) => {
   let { amount, charityId, caseId, caseTitle } = req.body;
   amount = +amount;
@@ -10,11 +10,11 @@ const payWithOnlineCard = asyncHandler(async (req, res, next) => {
     charityId,
     caseId,
     caseTitle,
-    process.env.PAYMOB_CREDIT_CARD_INTEGRATION_ID
+    configurationProvider.getValue('paymob.creditCardIntegrationId')
   );
   return res.status(201).json({
     orderId: orderId,
-    data: `https://accept.paymobsolutions.com/api/acceptance/iframes/${process.env.PAYMOB_FRAME_ID}?payment_token=${tokenThirdStep}`,
+    data: `https://accept.paymobsolutions.com/api/acceptance/iframes/${configurationProvider.getValue('paymob.frameId')}?payment_token=${tokenThirdStep}`,
   });
 });
 

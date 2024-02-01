@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-
+import * as configurationProvider from '../../../../libraries/configuration-provider/index.js'
 const locationSchema = new mongoose.Schema({
     governorate: {
         type: String,
@@ -141,7 +141,7 @@ userSchema.pre('save', async function (next) {
         //to not change password every time we edit the user data
         next();
     }
-    const salt = await bcrypt.genSalt(+process.env.SALT);
+    const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
     this.password = await bcrypt.hash(this.password, salt);
     console.log('password has been changed');
 });
@@ -153,7 +153,7 @@ userSchema.pre('save', async function (next) {
 //     const passwordToUpdate = this.getUpdate().$set.password;
   
 //     if (passwordToUpdate) {
-//       const salt = await bcrypt.genSalt(+process.env.SALT);
+//       const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
 //       this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
 //     }
   

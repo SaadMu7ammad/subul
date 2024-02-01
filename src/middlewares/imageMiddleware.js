@@ -11,25 +11,26 @@
 //     cb(null, uniqueSuffix + '.' + ex);
 //   },
 // });
-import path from 'path';
-import fs from 'fs';
-
 import asyncHandler from 'express-async-handler';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { BadRequestError } from '../libraries/errors/components/bad-request.js';
-import { uploadImg } from '../middlewares/cloudinary.js';
+import  Cloudinary from './cloudinary.js';
+import * as configurationProvider from '../libraries/configuration-provider/index.js';
 
 const saveImg = async (sharpPromise, destinationFolder, fileName) => {
-    if (process.env.NODE_ENV === 'development') {
+    const cloudinaryObj = new Cloudinary();
+
+    const environment = configurationProvider.getValue('environment.nodeEnv');
+
+    if (environment === 'development') {
         //saving locally
         await sharpPromise.toFile(`./uploads/${destinationFolder}/` + fileName);
-    } else if (process.env.NODE_ENV === 'production') {
+    } else if (environment === 'production') {
         //saving to cloudniary
-
         const resizedImgBuffer = await sharpPromise.toBuffer();
-        const uploadResult = await uploadImg(
+        const uploadResult = await cloudinaryObj.uploadImg(
             resizedImgBuffer,
             destinationFolder,
             fileName.split('.jpeg')[0]

@@ -2,36 +2,35 @@ import bcryptjs from 'bcryptjs';
 import * as crypto from 'crypto'
 import nodemailer from 'nodemailer';
 import logger from './logger.js';
+import * as configurationProvider from '../libraries/configuration-provider/index.js';
+
 const generateResetTokenTemp = async (userId) => {
-  // console.log('ahpe');
-  let token; //= await Token.findOne({ userId});
-  // if (token) {
-  //     await token.remove();
-  // }
+  let token;
+
   token = crypto.randomBytes(32).toString('hex');
+
   const hashedToken = await bcryptjs.hash(token, 10);
-  // const resetPassowrdToken = new Token({
-  //     userId,
-  //     token:hashedToken,
-  // });
-  // await resetPassowrdToken.save();
+
   return hashedToken;
 };
 const setupMailSender = async (emailReceiver, subject, html) => {
   logger.info(`sending mail to ${emailReceiver}`);
+
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_KEY,
+      user: configurationProvider.getValue('mailer.user'),
+      pass: configurationProvider.getValue('mailer.key'),
     },
   });
+
   const mailOptions = {
-    from: process.env.EMAIL_FROM,
+    from: configurationProvider.getValue('mailer.user'),
     to:emailReceiver,
     subject: subject,
     html: html,
   };
+  
   await transporter.sendMail(mailOptions);
 };
 
