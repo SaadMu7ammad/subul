@@ -4,9 +4,9 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '../../../../libraries/errors/components/index.js';
-import { userRepository } from '../../../user/data-access/user.repository.js';
+import { authUserRepository } from '../data-access/user.repository.js';
 const checkUserPassword = async (email, password) => {
-  const user = await userRepository.findUser(email);
+  const user = await authUserRepository.findUser(email);
   if (!user) throw new NotFoundError('email not found');
   const isMatch = await bcryptjs.compare(password, user.password);
   if (!isMatch) {
@@ -21,9 +21,9 @@ const checkUserIsVerified = (user) => {
   return false;
 };
 const createUser = async (dataInputs) => {
-  const userExist = await userRepository.findUser(dataInputs.email);
+  const userExist = await authUserRepository.findUser(dataInputs.email);
   if (userExist) throw new BadRequestError('user is registered already');
-  const user = await userRepository.createUser(dataInputs);
+  const user = await authUserRepository.createUser(dataInputs);
   if (!user) throw new BadRequestError('Error created while creaing the user');
   return { user: user };
 };

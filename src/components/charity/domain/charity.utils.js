@@ -7,29 +7,7 @@ import {
   generateResetTokenTemp,
   setupMailSender,
 } from '../../../utils/mailer.js';
-const checkCharityPassword = async (email, password) => {
-  const charity = await charityRepository.findCharity(email);
-  if (!charity) throw new NotFoundError('email not found');
-  const isMatch = await bcryptjs.compare(password, charity.password);
-  if (!isMatch) {
-    throw new UnauthenticatedError('invalid password');
-  }
-  return { isMatch: true, charity: charity };
-};
-const checkCharityIsVerified = (charity) => {
-  if (charity.emailVerification.isVerified) {
-    return true; //charity verified already
-  }
-  return false;
-};
-const createCharity = async (dataInputs) => {
-  const charityExist = await charityRepository.findCharity(dataInputs.email);
-  if (charityExist) throw new BadRequestError('charity is registered already');
-  const charity = await charityRepository.createCharity(dataInputs);
-  if (!charity)
-    throw new BadRequestError('Error created while creaing the charity');
-  return { charity: charity };
-};
+
 const checkCharityIsExist = async (email) => {
   //return charity if it exists
   const charityIsExist = await charityRepository.findCharity(email);
@@ -84,9 +62,6 @@ const resetSentToken = async (charity) => {
   charity = await charity.save();
 };
 export const charityUtils = {
-  checkCharityPassword,
-  checkCharityIsVerified,
-  createCharity,
   checkCharityIsExist,
   logout,
   getCharity,

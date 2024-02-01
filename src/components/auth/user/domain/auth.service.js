@@ -7,7 +7,7 @@ import {
 
 const authUser = async (reqBody, res) => {
   const { email, password } = reqBody;
-  const userResponse = await authChari.checkUserPassword(email, password);
+  const userResponse = await authUserUtils.checkUserPassword(email, password);
   generateToken(res, userResponse.user._id, 'user');
   const userObj = {
     _id: userResponse.user._id,

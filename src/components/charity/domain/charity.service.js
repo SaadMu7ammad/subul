@@ -13,62 +13,6 @@ import {
   setupMailSender,
 } from '../../../utils/mailer.js';
 
-const authCharity = async (reqBody, res) => {
-  const { email, password } = reqBody;
-  const charityResponse = await charityUtils.checkCharityPassword(
-    email,
-    password
-  );
-  generateToken(res, charityResponse.charity._id, 'charity');
-  const charityObj = {
-    _id: charityResponse.charity._id,
-    name: charityResponse.charity.name,
-    email: charityResponse.charity.email,
-  };
-  const isCharityVerified = charityUtils.checkCharityIsVerified(
-    charityResponse.charity
-  );
-  if (isCharityVerified) {
-    return {
-      charity: charityObj,
-      emailAlert: false,
-    };
-  } else {
-    //not verified(not activated)
-    const token = await generateResetTokenTemp();
-    charityResponse.charity.verificationCode = token;
-    await charityResponse.charity.save();
-    await setupMailSender(
-      charityResponse.charity.email,
-      'login alert',
-      `hi ${charityResponse.charity.name} it seems that your account still not verified or activated please go to that link to activate the account ` +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
-    return {
-      charity: charityObj,
-      emailAlert: true,
-    };
-  }
-};
-const registerCharity = async (reqBody, res) => {
-  const newCreatedCharity = await charityUtils.createCharity(reqBody);
-  generateToken(res, newCreatedCharity.charity._id, 'charity');
-  await setupMailSender(
-    newCreatedCharity.charity.email,
-    'welcome alert',
-    `hi ${newCreatedCharity.charity.name} ` +
-      ' we are happy that you joined our community ... keep spreading goodness with us'
-  );
-  const charityObj = {
-    _id: newCreatedCharity.charity._id,
-    name: newCreatedCharity.charity.name,
-    email: newCreatedCharity.charity.email,
-  };
-  return {
-    charity: charityObj,
-  };
-};
 
 // const resetUser = async (reqBody) => {
 //     const userResponse = await userUtils.checkUserIsExist(reqBody.email);
@@ -209,8 +153,7 @@ const getCharityProfileData = (charity) => {
 //     };
 // };
 export const charityService = {
-  authCharity,
-  registerCharity,
+ 
   // resetUser,
   // confirmReset,
   // changePassword,

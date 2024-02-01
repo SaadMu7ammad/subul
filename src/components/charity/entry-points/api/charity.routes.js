@@ -1,62 +1,10 @@
 import express, { Router } from 'express';
 
-import { validate } from '../../../../libraries/validation/index.js';
-
-import {
-  resizeImg,
-  imageAssertion,
-} from '../../../../libraries/uploads/components/images/handlers.js';
-import {
-  registerCharityValidation,
-  loginCharityValidation,
-} from '../../../../libraries/validation/components/charity/charityAuthValidation.js';
 import { auth, isConfirmed, isActivated } from '../../../auth/shared/index.js';
 import { charityUseCase } from '../../domain/charity.use-case.js';
 import logger from '../../../../utils/logger.js';
 
 const router = express.Router();
-
-router.post(
-  '/register',
-  imageAssertion,
-  registerCharityValidation,
-  validate,
-  resizeImg,
-  async (req, res, next) => {
-    try {
-      logger.info(`Register API was called to charity`);
-      const registerCharityResponse = await charityUseCase.registerCharity(
-        req,
-        res,
-        next
-      );
-      return res.json(registerCharityResponse);
-    } catch (error) {
-      next(error);
-      return undefined;
-    }
-  }
-);
-router.post(
-  '/auth',
-  loginCharityValidation,
-  validate,
-  async (req, res, next) => {
-    try {
-      logger.info(`auth API was called to charity`);
-      const authCharityResponse = await charityUseCase.authCharity(
-        req,
-        res,
-        next
-      );
-      return res.json(authCharityResponse);
-    } catch (error) {
-      next(error);
-      return undefined;
-    }
-  }
-);
-
 // router.post(
 //   '/activate',
 //   tokenCharityValidation,

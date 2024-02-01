@@ -18,109 +18,7 @@ import {
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
 // import logger from '../utils/logger.js';
 
-const registerCharity = async (req, res, next) => {
-  // logger.info(req.file.path);
-  // req.file.path=req.file.path.replace("\\","/")
-  const { email } = req.body;
-  let charity = await charityRepository.findCharity(email);
-  if (charity) {
-    deleteOldImgs('LogoCharities', req.body.image);
-    throw new BadRequestError('An Account with this Email already exists');
-  }
-  if (req.body.paymentMethods) {
-    delete req.body.paymentMethods; //not a good style of coding I think , we can use obj destructuring instead, but I don't want to change the code much.
-  }
-  try {
-    charity = await charityRepository.createCharity(req.body);
-    if (!charity) {
-      deleteOldImgs('LogoCharities', req.body.image);
-      throw new BadRequestError('Something went wrong');
-    }
-  } catch (err) {
-    deleteOldImgs('LogoCharities', req.body.image);
-    next(err);
-  }
-  generateToken(res, charity._id, 'charity');
-  await setupMailSender(
-    charity.email,
-    'welcome alert',
-    'Hi ' +
-      charity.name +
-      ' We are happy that you joined our community💚 ... keep spreading goodness with us'
-  );
-  const charityObj = {
-    id: charity._id,
-    email: charity.email,
-    name: charity.name,
-  };
-  return {
-    charity: {
-      ...charityObj,
-      image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
-    },
-  };
-};
 
-const authCharity = async (req, res, next) => {
-  //get email & password => checkthem
-  //send activation token email if not activated
-  //make a token ...
-  // if (req.cookies.jwt) throw new UnauthenticatedError('you are already logged in , logout first!');
-  const { email, password } = req.body;
-  const charity = await charityRepository.findCharity(email);
-  if (!charity) throw new NotFoundError('No charity found with this email');
-  const isMatch = await bcryptjs.compare(password, charity.password);
-  if (!isMatch) throw new UnauthenticatedError('Invalid password!');
-  generateToken(res, charity._id, 'charity');
-  const charityObj = {
-    id: charity._id,
-    email: charity.email,
-    name: charity.name,
-  };
-  //first stage
-  if (
-    !charity.emailVerification.isVerified &&
-    !charity.phoneVerification.isVerified
-  ) {
-    //not verified(activated)
-    const token = await generateResetTokenTemp();
-    charity.verificationCode = token;
-    await charity.save();
-    await setupMailSender(
-      charity.email,
-      'login alert',
-      'it seems that your account still not verified or activated please go to that link to activate the account ' +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
-    return {
-      charity: charityObj,
-      message:
-        'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
-    };
-  }
-  //second stage
-  //isPending = true and isConfirmed= false
-  if (!charity.isConfirmed && charity.isPending) {
-    return {
-      charity: charityObj,
-      message: 'charity docs will be reviewed',
-    };
-  } //isPending = false and isConfirmed= false
-  else if (!charity.isConfirmed && !charity.isPending) {
-    return {
-      charity: charityObj,
-      message: 'you must upload docs to auth the charity',
-    };
-    //isPending = false and isConfirmed= true
-    //done
-  } else if (charity.isConfirmed && !charity.isPending) {
-    return {
-      charity: charityObj,
-      message: 'you are ready',
-    };
-  }
-};
 
 const activateCharityAccount = async (req, res, next) => {
   // let charity = await charityRepository.findCharityById(req.charity._id);
@@ -696,8 +594,7 @@ const logout = (req, res, next) => {
 //     }
 // });
 export const charityUseCase = {
-  registerCharity,
-  authCharity,
+ 
   activateCharityAccount,
   // requestResetPassword,
   // confirmResetPasswordRequest,
