@@ -2,6 +2,7 @@ import * as path from 'path'
 import { v4 as uuidv4 } from 'uuid';
 import express from 'express';
 import dotenv from 'dotenv/config';
+import https from 'https'
 import cors from 'cors';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
@@ -49,7 +50,9 @@ app.get('/', (req, res) => {
 app.use(NotFound);
 app.use(errorHandler);
 await connectDB();
-const server = app.listen(port, () => {
+const server = https.createServer(app);
+
+server.listen(port, () => {
   logger.info(`server is listenting http://${host}:${port}`);
 });
 //handling errors outside express
