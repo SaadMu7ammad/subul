@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import * as configurationProvider from '../libraries/configuration-provider/index.js'
 const Schema = mongoose.Schema;
 
 const locationSchema = new mongoose.Schema({
@@ -286,19 +287,19 @@ charitySchema.pre('save', async function (next) {
     //to not change password every time we edit the user data
     next();
   }
-  const salt = await bcrypt.genSalt(+process.env.SALT);
+  const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
   this.password = await bcrypt.hash(this.password, salt);
 });
 const editImgUrl = (doc) => {
   if (doc.image) {
-    const urlImg = `http://${process.env.HOST}:${process.env.PORT}/LogoCharities/${doc.image}`;
+    const urlImg = `http://${configurationProvider.getValue('environment.port')}:${configurationProvider.getValue('environment.host')}/LogoCharities/${doc.image}`;
     doc.image = urlImg;
   }
 };
 const editDocUrl = function (ref, field) {
   ref[field].map((img, indx) => {
     // console.log(img);//before adding localhost
-    const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${img}`;
+    const url = `http://${configurationProvider.getValue('environment.port')}:${configurationProvider.getValue('environment.host')}/docsCharities/${img}`;
     img = url;
     // console.log(img);//after adding localhost
     ref[field][indx] = img;
@@ -316,7 +317,7 @@ const editDocUrlPayment = function (ref, field) {
       console.log('editDocUrlPayment');
       account.docsBank.forEach((sub, indx) => {
         console.log('before '+sub);
-        const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${sub}`;
+        const url = `http://${configurationProvider.getValue('environment.port')}:${configurationProvider.getValue('environment.host')}/docsCharities/${sub}`;
         sub = url;
         account.docsBank[indx] = sub;
         console.log('after '+sub);
@@ -328,7 +329,7 @@ const editDocUrlPayment = function (ref, field) {
     else if (field === 'docsFawry') {
       account.docsFawry.forEach((sub, indx) => {
         // console.log(sub);
-        const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${sub}`;
+        const url = `http://${configurationProvider.getValue('environment.port')}:${configurationProvider.getValue('environment.host')}/docsCharities/${sub}`;
         sub = url;
         account.docsFawry[indx] = sub;
       })
@@ -337,7 +338,7 @@ const editDocUrlPayment = function (ref, field) {
    else if (field === 'docsVodafoneCash') {
       account.docsVodafoneCash.forEach((sub, indx) => {
         // console.log(sub);
-        const url = `http://${process.env.HOST}:${process.env.PORT}/docsCharities/${sub}`;
+        const url = `http://${configurationProvider.getValue('environment.port')}:${configurationProvider.getValue('environment.host')}/docsCharities/${sub}`;
         sub = url;
         account.docsVodafoneCash[indx] = sub;
       })
@@ -448,7 +449,7 @@ charitySchema.pre('findOneAndUpdate', async function (next) {
   const passwordToUpdate = this.getUpdate().$set.password;
 
   if (passwordToUpdate) {
-    const salt = await bcrypt.genSalt(+process.env.SALT);
+    const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
     this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
   }
 

@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import logger from './logger.js';
-import { deleteImg } from '../middlewares/cloudinary.js';
+import Cloudinary from '../middlewares/cloudinary.js';
+import * as configurationProvider from '../libraries/configuration-provider/index.js'
 const deleteFile = (filePath) => {
     logger.warn(filePath);
     fs.unlink(filePath, (err) => {
@@ -26,11 +27,11 @@ const deleteFiles = (pathToFolder, folderName, ...filesNames) => {
 const deleteOldImgs = (imgsFolder, imgsNames) => {
     const imgsNamesArray = Array.isArray(imgsNames) ? imgsNames : [imgsNames];
 
-    if (process.env.NODE_ENV === 'development') {
+    if (configurationProvider.getValue('environment.nodeEnv') === 'development') {
         deleteFiles('./uploads', imgsFolder, ...imgsNamesArray);
-    } else if (process.env.NODE_ENV === 'production') {
+    } else if (configurationProvider.getValue('environment.nodeEnv') === 'production') {
         imgsNamesArray.forEach((imgName) => {
-            deleteImg(imgsFolder, imgName.split('.jpeg')[0]);
+            Cloudinary.deleteImg(imgsFolder, imgName.split('.jpeg')[0]);
         });
     }
 

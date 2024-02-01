@@ -1,9 +1,11 @@
+import * as configurationProvider from '../../libraries/configuration-provider/index.js';
+import { NotFoundError } from '../../libraries/errors/components/not-found.js';
 const CreateAuthenticationRequest = async () => {
   try {
     const request = await fetch('https://accept.paymob.com/api/auth/tokens', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ api_key: process.env.PAYMOB_API_KEY }),
+      body: JSON.stringify({ api_key: configurationProvider.getValue('paymob.apiKey') }),
     });
     const response = await request.json();
     return response;

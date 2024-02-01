@@ -4,13 +4,13 @@ import User from '../../user/data-access/models/user.model.js';
 import Charity from '../../../models/charityModel.js';
 import { UnauthenticatedError } from '../../../libraries/errors/components/index.js';
 import logger from '../../../utils/logger.js';
-
+import * as configurationProvider from '../../../libraries/configuration-provider/index.js'
 const auth = async (req, res, next) => {
   const authCookie = req.cookies.jwt; //according to cookie parser
   if (!authCookie) {
     throw new UnauthenticatedError('Authentication invalid');
   }
-  const decoded = jwt.verify(authCookie, process.env.JWT_SECRET);
+  const decoded = jwt.verify(authCookie, configurationProvider.getValue('hashing.jwtSecret'));
   // attach the user to the job routes
   if (decoded.userId) {
     // check first the user or chariy exists in the db
