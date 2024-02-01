@@ -24,7 +24,7 @@ const registerCharity = async (req, res, next) => {
   const { email } = req.body;
   let charity = await charityRepository.findCharity(email);
   if (charity) {
-    deleteOldImgs('LogoCharities', req.temp);
+    deleteOldImgs('LogoCharities', req.body.image);
     throw new BadRequestError('An Account with this Email already exists');
   }
   if (req.body.paymentMethods) {
@@ -32,13 +32,13 @@ const registerCharity = async (req, res, next) => {
   }
   try {
     charity = await charityRepository.createCharity(req.body);
+    if (!charity) {
+      deleteOldImgs('LogoCharities', req.body.image);
+      throw new BadRequestError('Something went wrong');
+    }
   } catch (err) {
-    deleteOldImgs('LogoCharities', req.temp);
+    deleteOldImgs('LogoCharities', req.body.image);
     next(err);
-  }
-  if (!charity) {
-    deleteOldImgs('LogoCharities', req.temp);
-    throw new BadRequestError('Something went wrong');
   }
   generateToken(res, charity._id, 'charity');
   await setupMailSender(
@@ -48,12 +48,17 @@ const registerCharity = async (req, res, next) => {
       charity.name +
       ' We are happy that you joined our community💚 ... keep spreading goodness with us'
   );
-  res.status(201).json({
-    _id: charity._id,
+  const charityObj = {
+    id: charity._id,
+    email: charity.email,
     name: charity.name,
-    email,
-    image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
-  });
+  };
+  return {
+    charity: {
+      ...charityObj,
+      image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
+    },
+  };
 };
 
 const authCharity = async (req, res, next) => {

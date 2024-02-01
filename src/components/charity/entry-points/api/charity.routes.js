@@ -4,10 +4,8 @@ import { validate } from '../../../../libraries/validation/index.js';
 
 import {
   resizeImg,
-  resizeImgUpdated,
-  updateuploadCoverImage,
-  uploadCoverImage,
-} from '../../../../middlewares/imageMiddleware.js';
+  imageAssertion,
+} from '../../../../libraries/uploads/components/images/handlers.js';
 import {
   registerCharityValidation,
   loginCharityValidation,
@@ -19,8 +17,8 @@ import logger from '../../../../utils/logger.js';
 const router = express.Router();
 
 router.post(
-  '/',
-  uploadCoverImage,
+  '/register',
+  imageAssertion,
   registerCharityValidation,
   validate,
   resizeImg,
