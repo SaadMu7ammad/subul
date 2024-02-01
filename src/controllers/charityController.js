@@ -48,11 +48,21 @@ const registerCharity = asyncHandler(async (req, res, next) => {
       charity.name +
       ' We are happy that you joined our community💚 ... keep spreading goodness with us'
   );
-  res.status(201).json({
-    _id: charity._id,
-    name: charity.name,
-    email,
-    image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
+  // res.status(201).json({
+  //   _id: charity._id,
+  //   name: charity.name,
+  //   email,
+  //   image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
+  // });
+
+  return res.status(200).json({
+    charity: {
+      _id: charity._id,
+      name: charity.name,
+      email: charity.email,
+      image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
+    },
+    token: req.cookies.jwt,
   });
 });
 
@@ -83,47 +93,91 @@ const authCharity = asyncHandler(async (req, res, next) => {
         `<h3>(www.activate.com)</h3>` +
         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
-    return res.status(200).json([
-      {
-        id: charity._id,
-        email: charity.email,
+    // return res.status(200).json([
+    //   {
+    //     id: charity._id,
+    //     email: charity.email,
+    //     name: charity.name,
+    //   },
+    //   {
+    //     message:
+    //       'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
+    //   },
+    // ]);
+    return res.status(200).json({
+      charity: {
+        _id: charity._id,
         name: charity.name,
+        email: charity.email,
+        image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
       },
-      { message: 'Your Account is not Activated Yet,A Token Was Sent To Your Email.' },
-    ]);
+      token: req.cookies.jwt,
+      message:
+        'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
+    });
   }
   //second stage
   //isPending = true and isConfirmed= false
   if (!charity.isConfirmed && charity.isPending) {
-    res.status(200).json([
-      {
-        id: charity._id,
-        email: charity.email,
+    // res.status(200).json([
+    //   {
+    //     id: charity._id,
+    //     email: charity.email,
+    //     name: charity.name,
+    //   },
+    //   { message: 'charity docs will be reviewed' },
+    // ]);
+
+    return res.status(200).json({
+      charity: {
+        _id: charity._id,
         name: charity.name,
+        email: charity.email,
+        image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
       },
-      { message: 'charity docs will be reviewed' },
-    ]);
+      token: req.cookies.jwt,
+      message: 'charity docs will be reviewed',
+    });
   } //isPending = false and isConfirmed= false
   else if (!charity.isConfirmed && !charity.isPending) {
-    res.status(200).json([
-      {
-        id: charity._id,
-        email: charity.email,
+    // res.status(200).json([
+    //   {
+    //     id: charity._id,
+    //     email: charity.email,
+    //     name: charity.name,
+    //   },
+    //   { message: 'you must upload docs to auth the charity' },
+    // ]);
+    return res.status(200).json({
+      charity: {
+        _id: charity._id,
         name: charity.name,
+        email: charity.email,
       },
-      { message: 'you must upload docs to auth the charity' },
-    ]);
+      token: req.cookies.jwt,
+      message: 'you must upload docs to auth the charity',
+    });
     //isPending = false and isConfirmed= true
     //done
   } else if (charity.isConfirmed && !charity.isPending) {
-    res.status(200).json([
-      {
-        id: charity._id,
-        email: charity.email,
+    // res.status(200).json([
+    //   {
+    //     id: charity._id,
+    //     email: charity.email,
+    //     name: charity.name,
+    //   },
+    //   { message: 'you are ready' },
+    // ]);
+    return res.status(200).json({
+      charity: {
+        _id: charity._id,
         name: charity.name,
+        email: charity.email,
+        image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
       },
-      { message: 'you are ready' },
-    ]);
+      token: req.cookies.jwt,
+      message: 'you are ready',
+    });
   }
 });
 
@@ -280,7 +334,7 @@ const editCharityProfileAdresses = asyncHandler(
 const editCharityProfile = asyncHandler(async (req, res, next) => {
   console.log('editCharityProfile');
   // console.log(req.body);
-  
+
   const { location, currency, image, email } = req.body;
   if (email) {
     const alreadyRegisteredEmail = await Charity.findOne({ email });
@@ -292,7 +346,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
       req.charity.emailVerification.verificationDate = null;
       const token = await generateResetTokenTemp();
       req.charity.verificationCode = token;
-      await req.charity.save()
+      await req.charity.save();
       await setupMailSender(
         email,
         'email changed alert',
@@ -305,7 +359,8 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
         name: req.charity.name,
         email: req.charity.email,
         image: req.charity.image,
-        message: 'Email Changed Successfully,But you must Re Activate the account with the token sent to your email'// to access editing your other information again',
+        message:
+          'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
       });
     }
   }
@@ -348,7 +403,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
       throw new BadRequestError('Cant edit it,You must contact us');
   }
   if (image) {
-    deleteOldImgs('LogoCharities',req.charity.image);
+    deleteOldImgs('LogoCharities', req.charity.image);
   }
   const updateCharityArgs = dot.dot(req.body);
   // if (updateCharityArgs.image) {
@@ -362,7 +417,7 @@ const editCharityProfile = asyncHandler(async (req, res, next) => {
       },
     },
     { new: true } // return the updated document after the changes have been applied.
-    );
+  );
   await charity.save();
   res.status(201).json({
     _id: charity._id,
@@ -380,7 +435,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
     if (selector === 'bankAccount') {
       const { accNumber, iban, swiftCode } =
         req.body.paymentMethods.bankAccount[0];
-        const  docsBank  = req.body.paymentMethods.bankAccount.docsBank[0];
+      const docsBank = req.body.paymentMethods.bankAccount.docsBank[0];
 
       console.log(accNumber);
       console.log(iban);
@@ -388,53 +443,65 @@ const editCharityProfilePaymentMethods = asyncHandler(
       temp.accNumber = accNumber;
       temp.iban = iban;
       temp.swiftCode = swiftCode;
-      temp.docsBank=docsBank
+      temp.docsBank = docsBank;
     } else if (selector === 'fawry') {
       const { number } = req.body.paymentMethods.fawry[0];
-      const docsFawry= req.body.paymentMethods.fawry.docsFawry[0];
+      const docsFawry = req.body.paymentMethods.fawry.docsFawry[0];
 
       console.log(number);
       temp.number = number;
       temp.docsFawry = docsFawry;
     } else if (selector === 'vodafoneCash') {
-      
       const { number } = req.body.paymentMethods.vodafoneCash[0];
-      const  docsVodafoneCash = req.body.paymentMethods.vodafoneCash.docsVodafoneCash[0];
+      const docsVodafoneCash =
+        req.body.paymentMethods.vodafoneCash.docsVodafoneCash[0];
       temp.number = number;
       temp.docsVodafoneCash = docsVodafoneCash;
     }
-    if (indx !== -1) {//edit a payment account && enable attribute will be reset to false again
+    if (indx !== -1) {
+      //edit a payment account && enable attribute will be reset to false again
       if (selector === 'bankAccount') {
-      deleteOldImgs('docsCharities' , req.charity.paymentMethods.bankAccount[indx].docsBank);
+        deleteOldImgs(
+          'docsCharities',
+          req.charity.paymentMethods.bankAccount[indx].docsBank
+        );
         req.charity.paymentMethods.bankAccount[indx].accNumber = temp.accNumber; //assign the object
         req.charity.paymentMethods.bankAccount[indx].iban = temp.iban; //assign the object
         req.charity.paymentMethods.bankAccount[indx].swiftCode = temp.swiftCode; //assign the object
-        req.charity.paymentMethods.bankAccount[indx].docsBank = [temp.docsBank]
-        req.charity.paymentMethods.bankAccount[indx].enable=false//reset again to review it again
+        req.charity.paymentMethods.bankAccount[indx].docsBank = [temp.docsBank];
+        req.charity.paymentMethods.bankAccount[indx].enable = false; //reset again to review it again
         // req.charity.modifyPaymentMethodsRequest = true;
 
         await req.charity.save();
         return res.json(req.charity.paymentMethods.bankAccount[indx]);
       } else if (selector === 'fawry') {
-      deleteOldImgs('docsCharities' , req.charity.paymentMethods.fawry[indx].docsFawry);
+        deleteOldImgs(
+          'docsCharities',
+          req.charity.paymentMethods.fawry[indx].docsFawry
+        );
         req.charity.paymentMethods.fawry[indx].number = temp.number; //assign the object
-        req.charity.paymentMethods.fawry[indx].docsFawry = temp.docsFawry
-        req.charity.paymentMethods.fawry[indx].enable=false//reset again to review it again
+        req.charity.paymentMethods.fawry[indx].docsFawry = temp.docsFawry;
+        req.charity.paymentMethods.fawry[indx].enable = false; //reset again to review it again
         // req.charity.modifyPaymentMethodsRequest = true;
 
         await req.charity.save();
         return res.json(req.charity.paymentMethods.fawry[indx]);
       } else if (selector === 'vodafoneCash') {
-      deleteOldImgs('docsCharities' , req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash);
+        deleteOldImgs(
+          'docsCharities',
+          req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash
+        );
         req.charity.paymentMethods.vodafoneCash[indx].number = temp.number; //assign the object
-        req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash = temp.docsVodafoneCash
-        req.charity.paymentMethods.vodafoneCash[indx].enable=false//reset again to review it again
+        req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash =
+          temp.docsVodafoneCash;
+        req.charity.paymentMethods.vodafoneCash[indx].enable = false; //reset again to review it again
         // req.charity.modifyPaymentMethodsRequest = true;
 
         await req.charity.save();
         return res.json(req.charity.paymentMethods.vodafoneCash[indx]);
       }
-    } else if (indx === -1) {//add a new payment account
+    } else if (indx === -1) {
+      //add a new payment account
       //add a new address
       if (selector === 'bankAccount') {
         // const { docsVodafoneCash} = req.body.paymentMethods.docsVodafoneCash[0];
@@ -466,7 +533,7 @@ const editCharityProfilePaymentMethods = asyncHandler(
 const requestEditCharityProfilePayments = asyncHandler(
   async (req, res, next) => {
     if (!req.body.paymentMethods) {
-      deleteOldImgs('docsCharities',req.temp);
+      deleteOldImgs('docsCharities', req.temp);
       throw new BadRequestError('you must upload complete data to be sent');
     }
     const { bankAccount, fawry, vodafoneCash } = req.body.paymentMethods;
@@ -546,7 +613,7 @@ const requestEditCharityProfilePayments = asyncHandler(
 
 const addCharityPayments = asyncHandler(async (req, res, next) => {
   if (!req.body.paymentMethods) {
-    deleteOldImgs('docsCharities',req.temp);
+    deleteOldImgs('docsCharities', req.temp);
     throw new BadRequestError(
       'must send one of payment gateways inforamtions..'
     );
@@ -570,7 +637,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       req.charity.paymentMethods['bankAccount'].push(temp);
     } else {
       console.log(req.temp);
-      deleteOldImgs('docsCharities',req.temp);
+      deleteOldImgs('docsCharities', req.temp);
       throw new BadRequestError('must provide complete information');
     }
     // console.log(req.charity.paymentMethods);
@@ -586,7 +653,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
       };
       req.charity.paymentMethods['fawry'].push(temp);
     } else {
-      deleteOldImgs('docsCharities',req.temp);
+      deleteOldImgs('docsCharities', req.temp);
 
       throw new BadRequestError('must provide complete information');
     }
@@ -603,7 +670,7 @@ const addCharityPayments = asyncHandler(async (req, res, next) => {
 
       req.charity.paymentMethods['vodafoneCash'].push(temp);
     } else {
-      deleteOldImgs('docsCharities',req.temp);
+      deleteOldImgs('docsCharities', req.temp);
       throw new BadRequestError('must provide complete information');
     }
   }
@@ -634,9 +701,8 @@ const sendDocs = asyncHandler(async (req, res, next) => {
   // const charity = await Charity.findById(req.charity._id);
   // console.log(charity);
   if (!req.charity) {
-    deleteOldImgs('docsCharities',req.temp);
+    deleteOldImgs('docsCharities', req.temp);
     throw new NotFoundError('No charity found ');
-  
   }
   if (
     (req.charity.emailVerification.isVerified ||
@@ -656,19 +722,19 @@ const sendDocs = asyncHandler(async (req, res, next) => {
     !req.charity.emailVerification.isVerified &&
     !req.charity.phoneVerification.isVerified
   ) {
-    deleteOldImgs('docsCharities',req.temp);
+    deleteOldImgs('docsCharities', req.temp);
 
     throw new UnauthenticatedError('you must verify your account again');
   } else if (req.charity.isConfirmed) {
-    deleteOldImgs('docsCharities',req.temp);
+    deleteOldImgs('docsCharities', req.temp);
 
     throw new BadRequestError('Charity is confrimed already!');
   } else if (req.charity.isPending) {
-    deleteOldImgs('docsCharities',req.temp);
+    deleteOldImgs('docsCharities', req.temp);
 
     throw new BadRequestError('soon response... still reviewing docs');
   } else {
-    deleteOldImgs('docsCharities',req.temp);
+    deleteOldImgs('docsCharities', req.temp);
 
     throw new BadRequestError('error occured, try again later');
   }
