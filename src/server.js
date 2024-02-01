@@ -50,9 +50,7 @@ app.get('/', (req, res) => {
 app.use(NotFound);
 app.use(errorHandler);
 await connectDB();
-const server = https.createServer(app);
-
-server.listen(port, () => {
+const server = app.listen(port, () => {
   logger.info(`server is listenting http://${host}:${port}`);
 });
 //handling errors outside express
