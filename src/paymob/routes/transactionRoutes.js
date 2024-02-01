@@ -8,7 +8,7 @@ import {
 import { auth, isActivated } from '../../components/auth/shared/index.js';
 import { payWithOnlineCard } from '../onlineCards/onlineCards.controller.js';
 import { paywithMobileWallet } from '../mobileWallets/mobileWallets.controller.js';
-import { isAdmin } from '../../middlewares/isAdminMiddleware.js';
+import { isAdmin } from '../../components/auth/admin/index.js';
 import { getTransactionById } from '../admin/getTransactionById.controller.js';
 import { refund } from '../refund/refund.controller.js';
 

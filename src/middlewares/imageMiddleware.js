@@ -88,7 +88,7 @@ const resizeImgUpdated = asyncHandler(async (req, res, next) => {
     req.temp = []; //container for deleting imgs
     // const ex = file.mimetype.split('/')[1];
     // if (!req.file) throw new BadRequestError('no cover/logo image uploaded')
-    console.log('reeeessss');
+    console.log('resizeImgUpdated');
     console.log(req.file);
     if (req.file && req.file.buffer) {
         if (req.body && req.body.name) {

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
-import * as configurationProvider from '../libraries/configuration-provider/index.js'
+import * as configurationProvider from '../../../../libraries/configuration-provider/index.js'
 const Schema = mongoose.Schema;
 
 const locationSchema = new mongoose.Schema({
@@ -454,11 +454,6 @@ charitySchema.pre('findOneAndUpdate', async function (next) {
   }
 
 });
-charitySchema.methods.comparePassword = async function (enteredPassword) {
-  const isMatch = await bcrypt.compare(enteredPassword, this.password);
-  return isMatch;
-};
-
 const Charity = mongoose.model('Charity', charitySchema);
 
 export default Charity;

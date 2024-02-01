@@ -6,7 +6,7 @@ import {
     NotFoundError,
 } from '../libraries/errors/components/index.js';
 import User from '../components/user/data-access/models/user.model.js';
-import Charity from '../models/charityModel.js';
+import Charity from '../components/charity/data-access/models/charity.model.js';
 const preCreateTransaction = async (data, user) => {
     //must check the account for the charity is valid or not
     const { charityId, caseId, amount, mainTypePayment } = data;

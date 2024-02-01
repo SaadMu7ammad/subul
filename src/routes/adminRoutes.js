@@ -1,5 +1,5 @@
 import express, { Router } from 'express';
-import { isAdmin } from '../middlewares/isAdminMiddleware.js';
+import { isAdmin } from '../components/auth/admin/index.js';
 import { auth } from '../components/auth/shared/index.js';
 import {
   confirmCharity,
