@@ -45,7 +45,7 @@ app.use('/api/charities', charityRoutes);
 app.use('/api/charities', casesRoutes);
 app.use('/api/admin', adminRoutes);
 app.get('/', (req, res) => {
-  res.send('subul charity');
+  res.send('Welcome to Subul 👋👋');
 });
 app.use(NotFound);
 app.use(errorHandler);
