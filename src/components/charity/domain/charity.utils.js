@@ -7,6 +7,7 @@ import {
   generateResetTokenTemp,
   setupMailSender,
 } from '../../../utils/mailer.js';
+import { checkValueEquality } from '../../../utils/shared.js';
 
 const checkCharityIsExist = async (email) => {
   //return charity if it exists
@@ -75,6 +76,100 @@ const changeCharityPasswordWithMailAlert = async (charity, newPassword) => {
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
   );
 };
+const editCharityProfileAddress = async (charity, id, updatedLocation) => {
+  // const tempLocation = {}; // Create a tempLocation object
+  // const { governorate, city, street } = { ...req.body.location[0] };
+  // if (indx !== -1) {
+  //   console.log(req.body.location[0]);
+  //   if (governorate) {
+  //     // req.charity.location[indx].governorate = governorate;
+  //     tempLocation.governorate = governorate;
+  //   }
+  //   console.log(city === ''); //true
+  //   console.log(city === true); //false
+  //   if (city) {
+  //     // req.charity.location[indx].city = city;
+  //     tempLocation.city = city;
+  //   }
+  //   if (street) {
+  //     // req.charity.location[indx].street = street;
+  //     tempLocation.street = street;
+  //   }
+  //   req.charity.location[indx] = tempLocation; //assign the object
+  // for (let locationObj of charity.location) {
+  for (let i = 0; i < charity.location.length; i++) {
+    const isMatch = checkValueEquality(charity.location[i]._id, id);
+    if (isMatch) {
+      console.log(charity.location[i]._id);
+      // charity.location[i] = updatedLocation;//make a new id
+      const { governorate, city, street } = updatedLocation;
+      governorate ? (charity.location[i].governorate = governorate) : null;
+      city ? (charity.location[i].city = city) : null;
+      street ? (charity.location[i].street = street) : null;
+      await charity.save();
+      return { charity: charity };
+    }
+  } //not match any location id
+  throw new BadRequestError('no id found');
+  // } else if (indx === -1 && (governorate || city || street)) {
+  //   //add a new address
+
+  //   if (governorate) {
+  //     tempLocation.governorate = governorate;
+  //   }
+  //   if (city) {
+  //     tempLocation.city = city;
+  //   }
+  //   if (street) {
+  //     tempLocation.street = street;
+  //   }
+  //   req.charity.location.push(tempLocation); // Push the tempLocation object into the array
+  //   await req.charity.save(); // Save the charity document
+  //   const len = req.charity.location.length - 1;
+  //   return res.json(req.charity.location[len]);
+  // }
+};
+// };
+const addCharityProfileAddress = async (indx) => {
+  const tempLocation = {}; // Create a tempLocation object
+  const { governorate, city, street } = { ...req.body.location[0] };
+  if (indx !== -1) {
+    console.log(req.body.location[0]);
+    if (governorate) {
+      // req.charity.location[indx].governorate = governorate;
+      tempLocation.governorate = governorate;
+    }
+    console.log(city === ''); //true
+    console.log(city === true); //false
+    if (city) {
+      // req.charity.location[indx].city = city;
+      tempLocation.city = city;
+    }
+    if (street) {
+      // req.charity.location[indx].street = street;
+      tempLocation.street = street;
+    }
+    req.charity.location[indx] = tempLocation; //assign the object
+    await req.charity.save();
+    return res.json(req.charity.location[indx]);
+  } else if (indx === -1 && (governorate || city || street)) {
+    //add a new address
+
+    if (governorate) {
+      tempLocation.governorate = governorate;
+    }
+    if (city) {
+      tempLocation.city = city;
+    }
+    if (street) {
+      tempLocation.street = street;
+    }
+    req.charity.location.push(tempLocation); // Push the tempLocation object into the array
+    await req.charity.save(); // Save the charity document
+    const len = req.charity.location.length - 1;
+    return res.json(req.charity.location[len]);
+  }
+};
 export const charityUtils = {
   checkCharityIsExist,
   logout,
@@ -85,4 +180,6 @@ export const charityUtils = {
   resetSentToken,
   setTokenToCharity,
   changeCharityEmailWithMailAlert,
+  editCharityProfileAddress,
+  addCharityProfileAddress,
 };

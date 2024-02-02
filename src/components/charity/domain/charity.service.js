@@ -5,6 +5,7 @@ import {
 import {
   checkValueEquality,
   updateNestedProperties,
+  updateNestedPropertiesCharity,
 } from '../../../utils/shared.js';
 import { charityUtils } from './charity.utils.js';
 import {
@@ -82,52 +83,55 @@ const logoutCharity = (res) => {
 const getCharityProfileData = (charity) => {
   return { charity: charity };
 };
-// const editUserProfile = async (reqBody, user) => {
-//     // const updateUserArgs = dot.dot(req.body);
-//     if (!reqBody) throw new BadRequestError('no data sent');
-//     if (
-//         //put restrection on the edit elements
-//         !reqBody.name &&
-//         !reqBody.email &&
-//         !reqBody.location &&
-//         !reqBody.gender &&
-//         !reqBody.phone
-//     )
-//         throw new BadRequestError('cant edit that');
-
-//     const { email } = { ...reqBody };
-//     if (email) {
-//         //if the edit for email
-//         // const alreadyRegisteredEmail = await User.findOne({ email });
-//         await userUtils.checkIsEmailDuplicated(email);
-//         const userWithEmailUpdated =
-//             await userUtils.changeUserEmailWithMailAlert(user, email); //email is the NewEmail
-//         const userObj = {
-//             name: userWithEmailUpdated.user.name,
-//             email: userWithEmailUpdated.user.email,
-//             location: userWithEmailUpdated.user.location.governorate,
-//             gender: userWithEmailUpdated.user.gender,
-//             phone: userWithEmailUpdated.user.phone,
-//         };
-//         return {
-//             emailEdited: true,
-//             user: userObj,
-//         };
-//     }
-//     updateNestedProperties(user, reqBody);
-//     await user.save();
-//     const userObj = {
-//         name: user.name,
-//         email: user.email,
-//         location: user.location.governorate,
-//         gender: user.gender,
-//         phone: user.phone,
-//     };
-//     return {
-//         emailEdited: false,
-//         user: userObj,
-//     };
-// };
+const editCharityProfile = async (reqBody, charity) => {
+  if (!reqBody) throw new BadRequestError('no data sent');
+  const { email, location, locationId } = reqBody;
+  let storedCharity = charity;
+  if (
+    //put restriction on the edit elements
+    !reqBody.name &&
+    !reqBody.email &&
+    !reqBody.location &&
+    !reqBody.description &&
+    !reqBody.contactInfo
+  )
+    throw new BadRequestError('cant edit that');
+  const charityObj = {
+    name: reqBody.name,
+    // email: reqBody.email,
+    // location: reqBody.location,
+    contactInfo: reqBody.contactInfo,
+    description: reqBody.description,
+  };
+  if (email) {
+    const charityUpdated = await charityUtils.changeCharityEmailWithMailAlert(
+      storedCharity,
+      email
+    );
+    return {
+      emailEdited: true,
+      charity: charityUpdated.charity,
+    };
+  }
+  if (location) {
+    //edit
+    if (locationId) {
+      const charityUpdated = await charityUtils.editCharityProfileAddress(
+        storedCharity,
+        locationId,
+        location
+      );
+      storedCharity = charityUpdated.charity;
+    } else {
+    }
+  }
+  updateNestedPropertiesCharity(storedCharity, charityObj);
+  await storedCharity.save();
+  return {
+    emailEdited: false,
+    charity: storedCharity,
+  };
+};
 export const charityService = {
   requestResetPassword,
   confirmResetPassword,
@@ -135,5 +139,5 @@ export const charityService = {
   activateAccount,
   logoutCharity,
   getCharityProfileData,
-  // editUserProfile,
+  editCharityProfile,
 };

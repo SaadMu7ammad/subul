@@ -81,7 +81,24 @@ const showCharityProfile = (req, res, next) => {
     charity: dataResponsed.charity,
   };
 };
-
+const editCharityProfile = async (req, res, next) => {
+  const dataInput = {
+    name: req.body.name,
+    email: req.body.email,
+    location: req.body.location,
+    locationId: req.body.locationId,
+    contactInfo: req.body.contactInfo,
+    description: req.body.description,
+  };
+  const storedCharity = req.charity;
+  const dataResponsed = await charityService.editCharityProfile(
+    dataInput,
+    storedCharity
+  );
+  return {
+    charity: dataResponsed.charity,
+  };
+};
 // const editCharityProfileAdresses = asyncHandler(
 //     async (req, res, next, indx) => {
 //         const tempLocation = {}; // Create a tempLocation object
@@ -547,7 +564,7 @@ export const charityUseCase = {
   logout,
   changePassword,
   // sendDocs,
-  // editCharityProfile,
+  editCharityProfile,
   showCharityProfile,
   // requestEditCharityProfilePayments,
   // addCharityPayments,
