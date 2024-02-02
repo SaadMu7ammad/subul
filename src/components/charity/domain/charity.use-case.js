@@ -19,44 +19,19 @@ import { deleteOldImgs } from '../../../utils/deleteFile.js';
 // import logger from '../utils/logger.js';
 
 const activateCharityAccount = async (req, res, next) => {
-  // let charity = await charityRepository.findCharityById(req.charity._id);
-  // if (!charity) {
-  //     throw new UnauthenticatedError(
-  //         'you are not authorized to activate the account'
-  //     );
-  // }
   let storedCharity = req.charity;
-  if (storedCharity.emailVerification.isVerified) {
-    return { message: 'account already is activated' };
-  }
-  if (storedCharity.verificationCode !== req.body.token) {
-    storedCharity.verificationCode = null;
-    storedCharity = await storedCharity.save();
-    // logoutUser(req, res, next);
-    // res.cookie('jwt', '', {
-    //   httpOnly: true,
-    //   expires: new Date(0),
-    // });
-    logout(req, res, next);
-    // await setupMailSender(
-    //   req,
-    //   'account still not activated',
-    //   '<h3>contact us if there is another issue about </h3>' );
-    throw new UnauthenticatedError('invalid token you have been logged out');
-  }
-
-  storedCharity.verificationCode = null;
-  storedCharity.emailVerification.isVerified = true;
-  storedCharity.emailVerification.verificationDate = Date.now();
-  storedCharity = await storedCharity.save();
-  await setupMailSender(
-    storedCharity.email,
-    'account has been activated ',
-    `<h2>now you are ready to spread the goodness with us </h2>`
+  const { token } = req.body;
+  const data = {
+    token,
+  };
+  const activateCharityAccountResponse = await charityService.activateAccount(
+    data,
+    storedCharity,
+    res
   );
 
   return {
-    message: 'account has been activated successfully',
+    message: activateCharityAccountResponse.message,
   };
 };
 
@@ -87,30 +62,19 @@ const confirmResetPassword = async (req, res, next) => {
   return { message: confirmResetPasswordResponse.message };
 };
 
-// const changePassword = asyncHandler(async (req, res, next) => {
-//     const { password } = req.body;
-//     const charity = await Charity.findById(req.charity._id);
-//     charity.password = password;
-//     console.log(charity instanceof Charity);
-//     await charity.save();
-//     await setupMailSender(
-//         charity.email,
-//         'password changed alert',
-//         '<h3>contact us if you did not changed the password</h3>' +
-//             `<h3>go to link(www.dummy.com) to freeze your account</h3>`
-//     );
-
-//     res.status(201).json({ message: 'Charity password changed successfully' });
-// });
+const changePassword = async (req, res, next) => {
+  const { password } = req.body;
+  const storedCharity = req.charity;
+  const changePasswordResponse = await charityService.changePassword(
+    password,
+    storedCharity
+  );
+  return { message: changePasswordResponse.message };
+};
 const showCharityProfile = (req, res, next) => {
   // const charity = await charityRepository.findCharityById(req.charity._id).select(
   //   '-_id -password -verificationCode -emailVerification -phoneVerification -isEnabled -isConfirmed -isPending'
   // );
-  // if (!charity) throw new NotFoundError('charity not found');
-  // res.status(201).json({
-  //   charity,
-  //   message: 'charity Data retrieved Successfully',
-  // });
   const storedCharity = req.charity;
   const dataResponsed = charityService.getCharityProfileData(storedCharity);
   return {
@@ -579,8 +543,9 @@ const logout = (req, res, next) => {
 export const charityUseCase = {
   activateCharityAccount,
   requestResetPassword,
-  confirmResetPassword, // changePassword,
+  confirmResetPassword,
   logout,
+  changePassword,
   // sendDocs,
   // editCharityProfile,
   showCharityProfile,

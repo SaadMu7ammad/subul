@@ -3,17 +3,32 @@ import express, { Router } from 'express';
 import { auth, isConfirmed, isActivated } from '../../../auth/shared/index.js';
 import { charityUseCase } from '../../domain/charity.use-case.js';
 import logger from '../../../../utils/logger.js';
-import { confirmResetCharityValidation, requestResetEmailCharityValidation } from '../../../../libraries/validation/components/charity/allCharityValidation.js';
+import {
+  changePasswordCharityValidation,
+  confirmResetCharityValidation,
+  requestResetEmailCharityValidation,
+  tokenCharityValidation,
+} from '../../../../libraries/validation/components/charity/allCharityValidation.js';
 import { validate } from '../../../../libraries/validation/index.js';
 export default function defineRoutes(expressApp) {
   const router = express.Router();
-  // router.post(
-  //   '/activate',
-  //   tokenCharityValidation,
-  //   validate,
-  //   auth,
-  //   activateCharityAccount
-  // );
+  router.post(
+    '/activate',
+    tokenCharityValidation,
+    validate,
+    auth,
+    async (req, res, next) => {
+      try {
+        logger.info(`activate API was called to charity`);
+        const activateCharityAccountResponse =
+          await charityUseCase.activateCharityAccount(req, res, next);
+        return res.json(activateCharityAccountResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
   // router.post(
   //   '/reset',
   //   requestResetEmailCharityValidation,
@@ -52,20 +67,27 @@ export default function defineRoutes(expressApp) {
       }
     }
   );
-  // router.post(
-  //   '/reset/confirm',
-  //   confirmResetCharityValidation,
-  //   validate,
-  //   confirmResetPasswordRequest
-  // );
-  // router.post(
-  //   '/change-password',
-  //   changePasswordCharityValidation,
-  //   validate,
-  //   auth,
-  //   isActivated,
-  //   changePassword
-  // );
+  router.post(
+    '/change-password',
+    changePasswordCharityValidation,
+    validate,
+    auth,
+    isActivated,
+    async (req, res, next) => {
+      try {
+        logger.info(`change password API was called to charity`);
+        const changePasswordResponse = await charityUseCase.changePassword(
+          req,
+          res,
+          next
+        );
+        return res.json(changePasswordResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
   // // const upload = multer({ dest: 'uploads/docsCharities/' });
   router.post('/logout', (req, res, next) => {
     try {

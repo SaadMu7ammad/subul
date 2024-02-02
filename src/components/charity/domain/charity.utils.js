@@ -55,7 +55,7 @@ const verifyCharityAccount = async (charity) => {
   charity.verificationCode = null;
   charity.emailVerification.isVerified = true;
   charity.emailVerification.verificationDate = Date.now();
-  charity = await charity.save();
+  await charity.save();
 };
 const resetSentToken = async (charity) => {
   charity.verificationCode = null;
