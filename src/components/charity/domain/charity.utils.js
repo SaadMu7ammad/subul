@@ -61,12 +61,28 @@ const resetSentToken = async (charity) => {
   charity.verificationCode = null;
   charity = await charity.save();
 };
+const setTokenToCharity = async (charity, token) => {
+  charity.verificationCode = token;
+  charity = await charity.save();
+};
+const changeCharityPasswordWithMailAlert = async (charity, newPassword) => {
+  charity.password = newPassword;
+  await resetSentToken(charity); //after saving and changing the password
+  await setupMailSender(
+    charity.email,
+    'password changed alert',
+    `hi ${charity.name} <h3>contact us if you did not changed the password</h3>` +
+      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+  );
+};
 export const charityUtils = {
   checkCharityIsExist,
   logout,
+  changeCharityPasswordWithMailAlert,
   getCharity,
   checkIsEmailDuplicated,
   verifyCharityAccount,
   resetSentToken,
+  setTokenToCharity,
   changeCharityEmailWithMailAlert,
 };

@@ -33,8 +33,10 @@ app.use(cookieParser());
 app.use('/api/payment', transactionRoutes);
 authUserRoutes(app);
 authCharityRoutes(app);
+charityRoutes(app);
+
 userRoutes(app);
-app.use('/api/charities', charityRoutes);
+// app.use('/api/charities', charityRoutes);
 app.use('/api/charities', casesRoutes);
 app.use('/api/admin', adminRoutes);
 app.get('/', (req, res) => {

@@ -7,57 +7,45 @@ import {
   updateNestedProperties,
 } from '../../../utils/shared.js';
 import { charityUtils } from './charity.utils.js';
-import generateToken from '../../../utils/generateToken.js';
 import {
   generateResetTokenTemp,
   setupMailSender,
 } from '../../../utils/mailer.js';
 
+const requestResetPassword = async (reqBody) => {
+  const charityResponse = await charityUtils.checkCharityIsExist(reqBody.email);
+  const token = await generateResetTokenTemp();
+  await charityUtils.setTokenToCharity(charityResponse.charity, token);
+  await setupMailSender(
+    charityResponse.charity.email,
+    'reset alert',
+    'go to that link to reset the password (www.dummy.com) ' +
+      `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+  );
+  return {
+    charity: charityResponse.charity,
+    message: 'email sent successfully to reset the password',
+  };
+};
 
-// const resetUser = async (reqBody) => {
-//     const userResponse = await userUtils.checkUserIsExist(reqBody.email);
-//     const token = await generateResetTokenTemp();
-//     userResponse.user.verificationCode = token;
-//     await userResponse.user.save();
-//     await setupMailSender(
-//         userResponse.user.email,
-//         'reset alert',
-//         'go to that link to reset the password (www.dummy.com) ' +
-//             `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-//     );
-//     return {
-//         message: 'email sent successfully to reset the password',
-//     };
-// };
-// const confirmReset = async (reqBody) => {
-//     let updatedUser = await userUtils.checkUserIsExist(reqBody.email);
-//     const isEqual = checkValueEquality(
-//         updatedUser.user.verificationCode,
-//         reqBody.token
-//     );
-//     if (!isEqual) {
-//         updatedUser.user.verificationCode = null;
-//         updatedUser.user = await updatedUser.user.save();
-//         throw new UnauthenticatedError(
-//             'invalid token send request again to reset a password'
-//         );
-//     }
-//     updatedUser.user.password = reqBody.password;
-//     updatedUser.user.verificationCode = null;
-//     updatedUser.user = await updatedUser.user.save();
-//     await setupMailSender(
-//         updatedUser.user.email,
-//         'password changed alert',
-//         `hi ${
-//             updatedUser.user.name.firstName +
-//             ' ' +
-//             updatedUser.user.name.lastName
-//         } <h3>contact us if you did not changed the password</h3>` +
-//             `<h3>go to link(www.dummy.com) to freeze your account</h3>`
-//     );
-
-//     return { message: 'user password changed successfully' };
-// };
+const confirmResetPassword = async (reqBody) => {
+  let updatedCharity = await charityUtils.checkCharityIsExist(reqBody.email);
+  const isEqual = checkValueEquality(
+    updatedCharity.charity.verificationCode,
+    reqBody.token
+  );
+  if (!isEqual) {
+    await charityUtils.resetSentToken(updatedCharity.charity);
+    throw new UnauthenticatedError(
+      'invalid token send request again to reset a password'
+    );
+  }
+  await charityUtils.changeCharityPasswordWithMailAlert(
+    updatedCharity.charity,
+    reqBody.password
+  );
+  return { message: 'charity password changed successfully' };
+};
 // const changePassword = async (reqBody, user) => {
 //     let updatedUser = user;
 //     updatedUser.password = reqBody.password;
@@ -153,9 +141,8 @@ const getCharityProfileData = (charity) => {
 //     };
 // };
 export const charityService = {
- 
-  // resetUser,
-  // confirmReset,
+  requestResetPassword,
+  confirmResetPassword,
   // changePassword,
   // activateAccount,
   logoutCharity,

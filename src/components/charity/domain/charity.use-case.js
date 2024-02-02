@@ -18,8 +18,6 @@ import {
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
 // import logger from '../utils/logger.js';
 
-
-
 const activateCharityAccount = async (req, res, next) => {
   // let charity = await charityRepository.findCharityById(req.charity._id);
   // if (!charity) {
@@ -62,47 +60,32 @@ const activateCharityAccount = async (req, res, next) => {
   };
 };
 
-// const requestResetPassword = asyncHandler(async (req, res, next) => {
-//     const { email } = req.body;
-//     const charity = await Charity.findOne({ email });
-//     if (!charity) throw new NotFoundError('No charity found with this email');
-//     const token = await generateResetTokenTemp();
-//     await setupMailSender(
-//         charity.email,
-//         'Password Reset Alert',
-//         'go to that link to reset the password (www.dummy.com) ' +
-//             `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-//     );
-//     charity.verificationCode = token;
-//     await charity.save();
-//     res.status(200).json({
-//         message: 'email sent successfully to reset the password',
-//     });
-// });
+const requestResetPassword = async (req, res, next) => {
+  const { email } = req.body;
+  const data = {
+    email,
+  };
+  const requestResetPasswordResponse =
+    await charityService.requestResetPassword(data);
+  return {
+    message: requestResetPasswordResponse.message,
+  };
+};
 
-// const confirmResetPasswordRequest = asyncHandler(async (req, res, next) => {
-//     const { token, email } = req.body;
-//     let charity = await Charity.findOne({ email });
-//     if (!charity) throw new NotFoundError('No charity found with this email');
-//     if (charity.verificationCode !== token) {
-//         charity.verificationCode = null;
-//         charity = await charity.save();
-//         throw new UnauthenticatedError(
-//             'invalid token send request again to reset a password'
-//         );
-//     }
-//     charity.verificationCode = null;
-//     charity.password = req.body.password;
-//     await charity.save();
-//     await setupMailSender(
-//         charity.email,
-//         'password changed alert',
-//         '<h3>contact us if you did not changed the password</h3>' +
-//             `<h3>go to link(www.dummy.com) to freeze your account</h3>`
-//     );
+const confirmResetPassword = async (req, res, next) => {
+  const { token, email, password } = req.body;
+  const data = {
+    token,
+    email,
+    password,
+  };
+  // let charity = await Charity.findOne({ email });
+  // if (!charity) throw new NotFoundError('No charity found with this email');
+  const confirmResetPasswordResponse =
+    await charityService.confirmResetPassword(data);
 
-//     res.status(201).json({ message: 'charity password changed successfully' });
-// });
+  return { message: confirmResetPasswordResponse.message };
+};
 
 // const changePassword = asyncHandler(async (req, res, next) => {
 //     const { password } = req.body;
@@ -594,11 +577,9 @@ const logout = (req, res, next) => {
 //     }
 // });
 export const charityUseCase = {
- 
   activateCharityAccount,
-  // requestResetPassword,
-  // confirmResetPasswordRequest,
-  // changePassword,
+  requestResetPassword,
+  confirmResetPassword, // changePassword,
   logout,
   // sendDocs,
   // editCharityProfile,
