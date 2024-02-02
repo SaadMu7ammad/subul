@@ -17,6 +17,9 @@ const authCharity = async (reqBody, res) => {
     _id: charityResponse.charity._id,
     name: charityResponse.charity.name,
     email: charityResponse.charity.email,
+    isEnabled: charityResponse.charity.email,
+    isConfirmed: charityResponse.charity.isConfirmed,
+    isPending: charityResponse.charity.isPending,
   };
   const isCharityVerified = authCharityUtils.checkCharityIsVerified(
     charityResponse.charity
@@ -30,8 +33,7 @@ const authCharity = async (reqBody, res) => {
   } else {
     //not verified(not activated)
     const token = await generateResetTokenTemp();
-    charityResponse.charity.verificationCode = token;
-    await charityResponse.charity.save();
+    await authCharityUtils.setTokenToCharity(charityResponse.charity,token)
     await setupMailSender(
       charityResponse.charity.email,
       'login alert',

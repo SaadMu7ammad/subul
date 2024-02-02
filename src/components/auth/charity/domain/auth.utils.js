@@ -28,6 +28,14 @@ const checkIsEmailDuplicated = async (email) => {
   const isDuplicatedEmail = await authCharityRepository.findCharity(email);
   if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
+const resetSentToken = async (charity) => {
+  charity.verificationCode = null;
+  await charity.save();
+};
+const setTokenToCharity = async (charity, token) => {
+  charity.verificationCode = token;
+  await charity.save();
+};
 const createCharity = async (dataInputs) => {
   const charityExist = await authCharityRepository.findCharity(
     dataInputs.email
@@ -48,4 +56,5 @@ export const authCharityUtils = {
   checkCharityPassword,
   checkCharityIsVerified,
   createCharity,
+  setTokenToCharity,
 };
