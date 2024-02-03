@@ -12,6 +12,7 @@ import {
   generateResetTokenTemp,
   setupMailSender,
 } from '../../../utils/mailer.js';
+import { deleteOldImgs } from '../../../utils/deleteFile.js';
 
 const requestResetPassword = async (reqBody) => {
   const charityResponse = await charityUtils.checkCharityIsExist(reqBody.email);
@@ -140,8 +141,43 @@ const editCharityProfile = async (reqBody, charity) => {
 const changeProfileImage = async (reqBody, charity) => {
   const oldImg = charity.image;
   const newImg = reqBody.image;
-  const updatedImg = await charityUtils.replaceProfileImage(charity,oldImg, newImg);
+  const updatedImg = await charityUtils.replaceProfileImage(
+    charity,
+    oldImg,
+    newImg
+  );
   return { image: updatedImg.image };
+};
+const sendDocs = async (reqBody, charity) => {
+  if (
+    (charity.emailVerification.isVerified ||
+      charity.phoneVerification.isVerified) &&
+    !charity.isConfirmed &&
+    !charity.isPending
+  ) {
+    // charity.charityDocs = { ...reqBody.charityDocs };//assign the docs 
+    // console.log('---');
+    // charity.isPending = true;//////////////////must uncommented
+    // await charity.save();
+    // next();
+    const addCharityPaymentsResponse = await charityUtils.addDocs(
+      reqBody,
+      charity
+    );
+    return { paymentMethods: addCharityPaymentsResponse.paymentMethods };
+    // res.json([charity.charityDocs, { message: 'sent successfully' }]);
+  } else if (
+    !charity.emailVerification.isVerified &&
+    !charity.phoneVerification.isVerified
+  ) {
+    throw new UnauthenticatedError('you must verify your account again');
+  } else if (charity.isConfirmed) {
+    throw new BadRequestError('Charity is confrimed already!');
+  } else if (charity.isPending) {
+    throw new BadRequestError('soon response... still reviewing docs');
+  } else {
+    throw new BadRequestError('error occured, try again later');
+  }
 };
 export const charityService = {
   requestResetPassword,
@@ -152,4 +188,5 @@ export const charityService = {
   getCharityProfileData,
   editCharityProfile,
   changeProfileImage,
+  sendDocs,
 };

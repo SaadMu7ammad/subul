@@ -99,12 +99,85 @@ const addCharityProfileAddress = async (charity, updatedLocation) => {
   return { charity: charity };
 };
 
-const replaceProfileImage = async (charity,oldImg,newImg) => {
-  charity.image = newImg
+const replaceProfileImage = async (charity, oldImg, newImg) => {
+  charity.image = newImg;
   console.log(oldImg);
   await charity.save();
-  deleteOldImgs('LogoCharities', oldImg)
-  return{image:charity.image}
+  deleteOldImgs('LogoCharities', oldImg);
+  return { image: charity.image };
+};
+const addDocs = async (reqBody, charity) => {
+  // charity.isPending = true;
+  charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
+  console.log(reqBody);
+  if (!reqBody.paymentMethods) {
+    // deleteOldImgs('docsCharities', req.temp);
+    throw new BadRequestError(
+      'must send one of payment gateways inforamtions..'
+    );
+  }
+  const { bankAccount, fawry, vodafoneCash } = reqBody.paymentMethods;
+
+  if (charity.paymentMethods === undefined) charity.paymentMethods = {};
+
+  console.log('-------------------');
+  if (bankAccount) {
+    const { accNumber, iban, swiftCode } = bankAccount[0];
+    let docsBank = bankAccount.docsBank[0];
+    let temp = {
+      accNumber,
+      iban,
+      swiftCode,
+      docsBank,
+    };
+    // console.log(temp);
+    if (accNumber && iban && swiftCode && docsBank) {
+      charity.paymentMethods['bankAccount'].push(temp);
+    } else {
+      console.log(req.temp);
+      // deleteOldImgs('docsCharities', req.temp);
+      throw new BadRequestError('must provide complete information');
+    }
+    // console.log(charity.paymentMethods);
+  }
+  if (fawry) {
+    const { number } = fawry[0];
+    let docsFawry = fawry.docsFawry[0];
+
+    if (number && docsFawry) {
+      const temp = {
+        number,
+        docsFawry,
+      };
+      charity.paymentMethods['fawry'].push(temp);
+    } else {
+      // deleteOldImgs('docsCharities', req.temp);
+
+      throw new BadRequestError('must provide complete information');
+    }
+  }
+  if (vodafoneCash) {
+    const { number } = vodafoneCash[0];
+    let docsVodafoneCash = vodafoneCash.docsVodafoneCash[0];
+
+    if (number && docsVodafoneCash) {
+      const temp = {
+        number,
+        docsVodafoneCash,
+      };
+
+      charity.paymentMethods['vodafoneCash'].push(temp);
+    } else {
+      // deleteOldImgs('docsCharities', req.temp);
+      throw new BadRequestError('must provide complete information');
+    }
+  }
+  // await charity.save()
+  await charity.save();
+
+  // res.json(req.body);
+
+  return { paymentMethods: charity.paymentMethods };
 };
 export const charityUtils = {
   checkCharityIsExist,
@@ -118,5 +191,6 @@ export const charityUtils = {
   changeCharityEmailWithMailAlert,
   editCharityProfileAddress,
   addCharityProfileAddress,
-  replaceProfileImage
+  replaceProfileImage,
+  addDocs,
 };

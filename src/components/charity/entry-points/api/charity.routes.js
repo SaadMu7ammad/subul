@@ -9,12 +9,20 @@ import {
   requestResetEmailCharityValidation,
   tokenCharityValidation,
 } from '../../../../libraries/validation/components/charity/allCharityValidation.js';
-import { editCharityProfileValidation } from '../../../../libraries/validation/components/charity/editCharityProfileValidation.js';
+import {
+  editCharityProfileValidation,
+  reqEditPaymentMethodsValidation,
+} from '../../../../libraries/validation/components/charity/editCharityProfileValidation.js';
 import { validate } from '../../../../libraries/validation/index.js';
 import {
   imageAssertion,
   resizeImg,
 } from '../../../../libraries/uploads/components/images/handlers.js';
+import {
+  resizeDoc,
+  uploadDocs,
+} from '../../../../libraries/uploads/components/docs/images/handler.js';
+import { deleteOldImgs } from '../../../../utils/deleteFile.js';
 export default function defineRoutes(expressApp) {
   const router = express.Router();
   router.post(
@@ -118,8 +126,6 @@ export default function defineRoutes(expressApp) {
     auth,
     isActivated,
     isConfirmed,
-    // updateuploadCoverImage,
-    // resizeImgUpdated,
     editCharityProfileValidation,
     validate,
     async (req, res, next) => {
@@ -147,7 +153,7 @@ export default function defineRoutes(expressApp) {
       resizeImg,
       async (req, res, next) => {
         try {
-          logger.info(`change password API was called to charity`);
+          logger.info(`edit profileImg API was called to charity`);
           const changeProfileImageResponse =
             await charityUseCase.changeProfileImage(req, res, next);
           return res.json(changeProfileImageResponse);
@@ -168,22 +174,38 @@ export default function defineRoutes(expressApp) {
   //   resizeDocReq,
   //   requestEditCharityProfilePayments
   // );
-  // router.post(
-  //   '/send-docs',
-  //   auth,
-  //   uploadDocs,
-  //   reqEditPaymentMethodsValidation,
-  //   validate,
-  //   resizeDoc,
-  //   sendDocs,
-  //   // , upload.single('charityDocs[docs1]'),
-  //   // (req, res, next) => {
-  //   //   console.log('req.file=');
-  //   //   console.log(req.files);
-  //   //   next();
-  //   // },
-  //   addCharityPayments
-  // );
+  router.post(
+    '/send-docs',
+    auth,
+    uploadDocs,
+    reqEditPaymentMethodsValidation,
+    validate,
+    resizeDoc,
+    async (req, res, next) => {
+      try {
+        logger.info(`sendDocs API was called to charity`);
+        const sendDocsResponse = await charityUseCase.sendDocs(req, res, next);
+        return res.json(sendDocsResponse);
+      } catch (error) {
+        deleteOldImgs('docsCharities',  req?.body?.charityDocs?.docs2);
+        deleteOldImgs('docsCharities',  req?.body?.charityDocs?.docs1);
+        deleteOldImgs('docsCharities',  req?.body?.charityDocs?.docs3);
+        deleteOldImgs('docsCharities',  req?.body?.charityDocs?.docs4);
+        deleteOldImgs('docsCharities', req?.body?.paymentMethods?.bankAccount?.docsBank);
+        deleteOldImgs('docsCharities', req?.body?.paymentMethods?.fawry?.docsFawry);
+        deleteOldImgs('docsCharities', req?.body?.paymentMethods?.vodafoneCash?.docsVodafoneCash);
+        next(error);
+        return undefined;
+      }
+    }
+    // , upload.single('charityDocs[docs1]'),
+    // (req, res, next) => {
+    //   console.log('req.file=');
+    //   console.log(req.files);
+    //   next();
+    // },
+    // addCharityPayments
+  );
 
   expressApp.use('/api/charities', router);
 }
