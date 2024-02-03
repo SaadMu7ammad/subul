@@ -48,35 +48,6 @@ const multerFilter = (req, file, cb) => {
     }
 };
 
-// const resizeImg = asyncHandler(async (req, res, next) => {
-//     let uniqueSuffix;
-//     req.temp = []; //container for deleting imgs
-//     // const ex = file.mimetype.split('/')[1];
-//     let destinationFolder, suffix;
-//     //Saif:This Should Be Handled Better Than that , but we will go with it for now
-//     //waiting to see :what other routes will upload images ?
-//     if (req.path === '/') {
-//         (destinationFolder = 'LogoCharities'), (suffix = 'LogoCharity');
-//     } else {
-//         (destinationFolder = 'casesCoverImages'), (suffix = 'caseCoveImage');
-//     }
-//     if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
-//     uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
-//     const fileName = uniqueSuffix + '.jpeg';
-//     req.temp.push(fileName);
-
-//     const sharpPromise = sharp(req.file.buffer)
-//         .resize(320, 240)
-//         .toFormat('jpeg')
-//         .jpeg({ quality: 90 });
-
-//     await saveImg(sharpPromise, destinationFolder, fileName);
-
-//     //adding the fileName in the req.body
-//     req.body.image = fileName;
-
-//     next();
-// });
 const resizeImgUpdated = asyncHandler(async (req, res, next) => {
     let uniqueSuffix;
     let destinationFolder, suffix;
@@ -125,7 +96,7 @@ const updateuploadCoverImage = upload.single('image');
 export {
     // uploadCoverImage,
     // resizeImg,
-    resizeImgUpdated,
-    updateuploadCoverImage,
+    // resizeImgUpdated,
+    // updateuploadCoverImage,
     // saveImg,
 };

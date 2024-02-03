@@ -25,7 +25,7 @@ const resizeImg = async (req, res, next) => {
     // req.temp = []; //container for deleting imgs
     //Saif:This Should Be Handled Better Than that , but we will go with it for now
     //waiting to see :what other routes will upload images ?
-    if (req.path === '/register') {
+    if (req.path === '/register'||req.path === '/edit-profileImg') {
       (destinationFolder = 'LogoCharities'), (suffix = 'LogoCharity');
     } else {
       (destinationFolder = 'casesCoverImages'), (suffix = 'caseCoveImage');

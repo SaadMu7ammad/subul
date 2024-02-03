@@ -8,6 +8,7 @@ import {
   setupMailSender,
 } from '../../../utils/mailer.js';
 import { checkValueEquality } from '../../../utils/shared.js';
+import { deleteOldImgs } from '../../../utils/deleteFile.js';
 
 const checkCharityIsExist = async (email) => {
   //return charity if it exists
@@ -97,6 +98,14 @@ const addCharityProfileAddress = async (charity, updatedLocation) => {
   await charity.save();
   return { charity: charity };
 };
+
+const replaceProfileImage = async (charity,oldImg,newImg) => {
+  charity.image = newImg
+  console.log(oldImg);
+  await charity.save();
+  deleteOldImgs('LogoCharities', oldImg)
+  return{image:charity.image}
+};
 export const charityUtils = {
   checkCharityIsExist,
   logout,
@@ -109,4 +118,5 @@ export const charityUtils = {
   changeCharityEmailWithMailAlert,
   editCharityProfileAddress,
   addCharityProfileAddress,
+  replaceProfileImage
 };

@@ -99,144 +99,17 @@ const editCharityProfile = async (req, res, next) => {
     charity: dataResponsed.charity,
   };
 };
-// const editCharityProfileAdresses = asyncHandler(
-//     async (req, res, next, indx) => {
-//         const tempLocation = {}; // Create a tempLocation object
-//         const { governorate, city, street } = { ...req.body.location[0] };
-//         if (indx !== -1) {
-//             console.log(req.body.location[0]);
-//             if (governorate) {
-//                 // req.charity.location[indx].governorate = governorate;
-//                 tempLocation.governorate = governorate;
-//             }
-//             console.log(city === ''); //true
-//             console.log(city === true); //false
-//             if (city) {
-//                 // req.charity.location[indx].city = city;
-//                 tempLocation.city = city;
-//             }
-//             if (street) {
-//                 // req.charity.location[indx].street = street;
-//                 tempLocation.street = street;
-//             }
-//             req.charity.location[indx] = tempLocation; //assign the object
-//             await req.charity.save();
-//             return res.json(req.charity.location[indx]);
-//         } else if (indx === -1 && (governorate || city || street)) {
-//             //add a new address
-
-//             if (governorate) {
-//                 tempLocation.governorate = governorate;
-//             }
-//             if (city) {
-//                 tempLocation.city = city;
-//             }
-//             if (street) {
-//                 tempLocation.street = street;
-//             }
-//             req.charity.location.push(tempLocation); // Push the tempLocation object into the array
-//             await req.charity.save(); // Save the charity document
-//             const len = req.charity.location.length - 1;
-//             return res.json(req.charity.location[len]);
-//         }
-//     }
-// );
-// const editCharityProfile = asyncHandler(async (req, res, next) => {
-//     console.log('editCharityProfile');
-//     // console.log(req.body);
-
-//     const { location, currency, image, email } = req.body;
-//     if (email) {
-//         const alreadyRegisteredEmail = await Charity.findOne({ email });
-//         if (alreadyRegisteredEmail) {
-//             throw new BadRequestError('Email is already taken!');
-//         } else {
-//             req.charity.email = email;
-//             req.charity.emailVerification.isVerified = false;
-//             req.charity.emailVerification.verificationDate = null;
-//             const token = await generateResetTokenTemp();
-//             req.charity.verificationCode = token;
-//             await req.charity.save();
-//             await setupMailSender(
-//                 email,
-//                 'email changed alert',
-//                 'email has been changed You must Re activate account ' +
-//                     `<h3>(www.activate.com)</h3>` +
-//                     `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-//             );
-//             return res.status(201).json({
-//                 _id: req.charity._id,
-//                 name: req.charity.name,
-//                 email: req.charity.email,
-//                 image: req.charity.image,
-//                 message:
-//                     'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
-//             });
-//         }
-//     }
-//     let charity = await Charity.findById(req.charity._id);
-//     // if (image) {
-//     //   console.log('img');
-//     //   uploadCoverImage(req, res, next);
-//     //   await resizeImg(req, res, next);
-//     // }
-//     // if (currency) throw new BadRequestError('cant change currency at this time');
-//     if (location) {
-//         //for editing location
-//         let indx = req.charity.location.findIndex(
-//             (location) => location._id.toString() === req.body.location_id
-//         );
-//         return await editCharityProfileAdresses(req, res, next, indx);
-//     }
-//     if (currency) {
-//         //editing currency
-//         console.log(currency[0]);
-//         let indx = req.charity.currency.find((it) => {
-//             console.log(it);
-//             if (it === currency[0]) {
-//                 return res.json({ message: 'currency is exist' });
-//             }
-//         });
-//         req.charity.currency.push(currency[0]);
-//         await req.charity.save();
-//         const len = req.charity.currency.length - 1;
-//         return res.json(req.charity.currency[len]);
-//     }
-
-//     if (!charity) throw new NotFoundError('charity not found');
-//     for (const [key, valueObj] of Object.entries(req.body)) {
-//         if (key === 'paymentMethods' || key.split('.')[0] === 'paymentMethods')
-//             throw new BadRequestError(
-//                 'Cant edit it,You must request to Change payment account or Add a new one'
-//             );
-//         if (key === 'charityDocs' || key.split('.')[0] === 'charityDocs')
-//             throw new BadRequestError('Cant edit it,You must contact us');
-//     }
-//     if (image) {
-//         deleteOldImgs('LogoCharities', req.charity.image);
-//     }
-//     const updateCharityArgs = dot.dot(req.body);
-//     // if (updateCharityArgs.image) {
-//     //   delete updateCharityArgs.image
-//     // }
-//     charity = await Charity.findByIdAndUpdate(
-//         req.charity._id,
-//         {
-//             $set: {
-//                 ...updateCharityArgs,
-//             },
-//         },
-//         { new: true } // return the updated document after the changes have been applied.
-//     );
-//     await charity.save();
-//     res.status(201).json({
-//         _id: charity._id,
-//         name: charity.name,
-//         email: charity.email,
-//         image: charity.image,
-//         message: 'charity Data Changed Successfully',
-//     });
-// });
+const changeProfileImage = async (req, res, next) => {
+  const data = {
+    image: req.body.image[0],
+  };
+  const storedCharity = req.charity;
+  const dataResponsed = await charityService.changeProfileImage(
+    data,
+    storedCharity
+  );
+  return { image: dataResponsed.image };
+};
 
 // const editCharityProfilePaymentMethods = asyncHandler(
 //     async (req, res, next, indx, selector) => {
@@ -563,6 +436,7 @@ export const charityUseCase = {
   confirmResetPassword,
   logout,
   changePassword,
+  changeProfileImage,
   // sendDocs,
   editCharityProfile,
   showCharityProfile,

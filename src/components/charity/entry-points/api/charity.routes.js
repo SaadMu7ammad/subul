@@ -11,6 +11,10 @@ import {
 } from '../../../../libraries/validation/components/charity/allCharityValidation.js';
 import { editCharityProfileValidation } from '../../../../libraries/validation/components/charity/editCharityProfileValidation.js';
 import { validate } from '../../../../libraries/validation/index.js';
+import {
+  imageAssertion,
+  resizeImg,
+} from '../../../../libraries/uploads/components/images/handlers.js';
 export default function defineRoutes(expressApp) {
   const router = express.Router();
   router.post(
@@ -108,7 +112,7 @@ export default function defineRoutes(expressApp) {
       return undefined;
     }
   });
-//should add edit image in a seperate api
+  //should add edit image in a seperate api
   router.put(
     '/edit-profile',
     auth,
@@ -120,7 +124,7 @@ export default function defineRoutes(expressApp) {
     validate,
     async (req, res, next) => {
       try {
-        logger.info(`change password API was called to charity`);
+        logger.info(`edit-profile API was called to charity`);
         const changePasswordResponse = await charityUseCase.editCharityProfile(
           req,
           res,
@@ -133,6 +137,26 @@ export default function defineRoutes(expressApp) {
       }
     }
   );
+  '/register',
+    router.put(
+      '/edit-profileImg',
+      auth,
+      isActivated,
+      isConfirmed,
+      imageAssertion,
+      resizeImg,
+      async (req, res, next) => {
+        try {
+          logger.info(`change password API was called to charity`);
+          const changeProfileImageResponse =
+            await charityUseCase.changeProfileImage(req, res, next);
+          return res.json(changeProfileImageResponse);
+        } catch (error) {
+          next(error);
+          return undefined;
+        }
+      }
+    );
   // router.post(
   //   '/request-edit-payment',
   //   auth,

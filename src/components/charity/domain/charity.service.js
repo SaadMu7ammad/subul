@@ -137,6 +137,12 @@ const editCharityProfile = async (reqBody, charity) => {
     charity: storedCharity,
   };
 };
+const changeProfileImage = async (reqBody, charity) => {
+  const oldImg = charity.image;
+  const newImg = reqBody.image;
+  const updatedImg = await charityUtils.replaceProfileImage(charity,oldImg, newImg);
+  return { image: updatedImg.image };
+};
 export const charityService = {
   requestResetPassword,
   confirmResetPassword,
@@ -145,4 +151,5 @@ export const charityService = {
   logoutCharity,
   getCharityProfileData,
   editCharityProfile,
+  changeProfileImage,
 };
