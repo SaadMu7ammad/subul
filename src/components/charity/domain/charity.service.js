@@ -123,6 +123,11 @@ const editCharityProfile = async (reqBody, charity) => {
       );
       storedCharity = charityUpdated.charity;
     } else {
+      const charityUpdated = await charityUtils.addCharityProfileAddress(
+        storedCharity,
+        location
+      );
+      storedCharity = charityUpdated.charity;
     }
   }
   updateNestedPropertiesCharity(storedCharity, charityObj);
