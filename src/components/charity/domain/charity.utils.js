@@ -107,43 +107,48 @@ const replaceProfileImage = async (charity, oldImg, newImg) => {
   return { image: charity.image };
 };
 const addDocs = async (reqBody, charity) => {
-  // charity.isPending = true;
   charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
-  console.log(reqBody);
   if (!reqBody.paymentMethods) {
-    // deleteOldImgs('docsCharities', req.temp);
     throw new BadRequestError(
       'must send one of payment gateways inforamtions..'
     );
   }
-  const { bankAccount, fawry, vodafoneCash } = reqBody.paymentMethods;
-
+  if (reqBody.paymentMethods.bankAccount)
+  await addPaymentAccounts(reqBody, charity, 'bankAccount');
+  if (reqBody.paymentMethods.fawry)
+  await addPaymentAccounts(reqBody, charity, 'fawry');
+  if (reqBody.paymentMethods.vodafoneCash)
+  await addPaymentAccounts(reqBody, charity, 'vodafoneCash');
+  await makeCharityIsPending(charity); // update and save changes
+  console.log(charity.paymentMethods);
+  return { paymentMethods: charity.paymentMethods };
+};
+const makeCharityIsPending = async (charity) => {
+  charity.isPending = true;
+  await charity.save();
+};
+const addPaymentAccounts = async(accountObj, charity, type) => {
   if (charity.paymentMethods === undefined) charity.paymentMethods = {};
-
-  console.log('-------------------');
-  if (bankAccount) {
+  if (type === 'bankAccount') {
+    const { bankAccount } = accountObj.paymentMethods;
     const { accNumber, iban, swiftCode } = bankAccount[0];
-    let docsBank = bankAccount.docsBank[0];
-    let temp = {
+    const docsBank = bankAccount.docsBank[0];
+    const temp = {
       accNumber,
       iban,
       swiftCode,
       docsBank,
     };
-    // console.log(temp);
     if (accNumber && iban && swiftCode && docsBank) {
       charity.paymentMethods['bankAccount'].push(temp);
     } else {
-      console.log(req.temp);
-      // deleteOldImgs('docsCharities', req.temp);
       throw new BadRequestError('must provide complete information');
     }
-    // console.log(charity.paymentMethods);
   }
-  if (fawry) {
+  if (type === 'fawry') {
+    const { fawry } = accountObj.paymentMethods;
     const { number } = fawry[0];
-    let docsFawry = fawry.docsFawry[0];
-
+    const docsFawry = fawry.docsFawry[0];
     if (number && docsFawry) {
       const temp = {
         number,
@@ -151,33 +156,24 @@ const addDocs = async (reqBody, charity) => {
       };
       charity.paymentMethods['fawry'].push(temp);
     } else {
-      // deleteOldImgs('docsCharities', req.temp);
-
       throw new BadRequestError('must provide complete information');
     }
   }
-  if (vodafoneCash) {
+  if (type === 'vodafoneCash') {
+    const { vodafoneCash } = accountObj.paymentMethods;
     const { number } = vodafoneCash[0];
-    let docsVodafoneCash = vodafoneCash.docsVodafoneCash[0];
-
+    const docsVodafoneCash = vodafoneCash.docsVodafoneCash[0];
     if (number && docsVodafoneCash) {
       const temp = {
         number,
         docsVodafoneCash,
       };
-
       charity.paymentMethods['vodafoneCash'].push(temp);
     } else {
-      // deleteOldImgs('docsCharities', req.temp);
       throw new BadRequestError('must provide complete information');
     }
   }
-  // await charity.save()
-  await charity.save();
-
-  // res.json(req.body);
-
-  return { paymentMethods: charity.paymentMethods };
+  await charity.save()
 };
 export const charityUtils = {
   checkCharityIsExist,

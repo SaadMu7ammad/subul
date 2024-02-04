@@ -155,17 +155,14 @@ const sendDocs = async (reqBody, charity) => {
     !charity.isConfirmed &&
     !charity.isPending
   ) {
-    // charity.charityDocs = { ...reqBody.charityDocs };//assign the docs 
-    // console.log('---');
-    // charity.isPending = true;//////////////////must uncommented
-    // await charity.save();
-    // next();
     const addCharityPaymentsResponse = await charityUtils.addDocs(
       reqBody,
       charity
     );
-    return { paymentMethods: addCharityPaymentsResponse.paymentMethods };
-    // res.json([charity.charityDocs, { message: 'sent successfully' }]);
+    return {
+      paymentMethods: addCharityPaymentsResponse.paymentMethods,
+      message: 'sent successfully',
+    };
   } else if (
     !charity.emailVerification.isVerified &&
     !charity.phoneVerification.isVerified

@@ -187,13 +187,22 @@ export default function defineRoutes(expressApp) {
         const sendDocsResponse = await charityUseCase.sendDocs(req, res, next);
         return res.json(sendDocsResponse);
       } catch (error) {
-        deleteOldImgs('docsCharities',  req?.body?.charityDocs?.docs2);
-        deleteOldImgs('docsCharities',  req?.body?.charityDocs?.docs1);
-        deleteOldImgs('docsCharities',  req?.body?.charityDocs?.docs3);
-        deleteOldImgs('docsCharities',  req?.body?.charityDocs?.docs4);
-        deleteOldImgs('docsCharities', req?.body?.paymentMethods?.bankAccount?.docsBank);
-        deleteOldImgs('docsCharities', req?.body?.paymentMethods?.fawry?.docsFawry);
-        deleteOldImgs('docsCharities', req?.body?.paymentMethods?.vodafoneCash?.docsVodafoneCash);
+        deleteOldImgs('docsCharities', req?.body?.charityDocs?.docs2);
+        deleteOldImgs('docsCharities', req?.body?.charityDocs?.docs1);
+        deleteOldImgs('docsCharities', req?.body?.charityDocs?.docs3);
+        deleteOldImgs('docsCharities', req?.body?.charityDocs?.docs4);
+        deleteOldImgs(
+          'docsCharities',
+          req?.body?.paymentMethods?.bankAccount?.docsBank
+        );
+        deleteOldImgs(
+          'docsCharities',
+          req?.body?.paymentMethods?.fawry?.docsFawry
+        );
+        deleteOldImgs(
+          'docsCharities',
+          req?.body?.paymentMethods?.vodafoneCash?.docsVodafoneCash
+        );
         next(error);
         return undefined;
       }

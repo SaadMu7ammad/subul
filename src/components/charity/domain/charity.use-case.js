@@ -312,13 +312,6 @@ const logout = (req, res, next) => {
 };
 
 const sendDocs = async (req, res, next) => {
-  // console.log(req.body);
-  // console.log('fsdfsadf');
-  // Charity.schema.path('charityDocs').required(true)
-  // await Charity.schema.save()
-
-  // const charity = await Charity.findById(req.charity._id);
-  // console.log(charity);
   const data = {
     charityDocs: {
       docs1: req.body.charityDocs.docs1,
@@ -334,7 +327,10 @@ const sendDocs = async (req, res, next) => {
   };
   const storedCharity = req.charity;
   const dataResponsed = await charityService.sendDocs(data, storedCharity);
-  return { image: dataResponsed.image };
+  return {
+    paymentMethods: dataResponsed.paymentMethods,
+    message: dataResponsed.message,
+  };
 };
 export const charityUseCase = {
   activateCharityAccount,
