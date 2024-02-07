@@ -61,14 +61,18 @@ const verifyCharityAccount = async (charity) => {
 };
 const resetSentToken = async (charity) => {
   charity.verificationCode = null;
-  charity = await charity.save();
+  await charity.save();
 };
 const setTokenToCharity = async (charity, token) => {
   charity.verificationCode = token;
-  charity = await charity.save();
+  await charity.save();
+};
+const changePassword = async (charity, newPassword) => {
+  charity.password = newPassword;
+  await charity.save();
 };
 const changeCharityPasswordWithMailAlert = async (charity, newPassword) => {
-  charity.password = newPassword;
+  await changePassword(charity, newPassword);
   await resetSentToken(charity); //after saving and changing the password
   await setupMailSender(
     charity.email,
@@ -114,11 +118,11 @@ const addDocs = async (reqBody, charity) => {
     );
   }
   if (reqBody.paymentMethods.bankAccount)
-  await addPaymentAccounts(reqBody, charity, 'bankAccount');
+    await addPaymentAccounts(reqBody, charity, 'bankAccount');
   if (reqBody.paymentMethods.fawry)
-  await addPaymentAccounts(reqBody, charity, 'fawry');
+    await addPaymentAccounts(reqBody, charity, 'fawry');
   if (reqBody.paymentMethods.vodafoneCash)
-  await addPaymentAccounts(reqBody, charity, 'vodafoneCash');
+    await addPaymentAccounts(reqBody, charity, 'vodafoneCash');
   await makeCharityIsPending(charity); // update and save changes
   console.log(charity.paymentMethods);
   return { paymentMethods: charity.paymentMethods };
@@ -127,7 +131,7 @@ const makeCharityIsPending = async (charity) => {
   charity.isPending = true;
   await charity.save();
 };
-const addPaymentAccounts = async(accountObj, charity, type) => {
+const addPaymentAccounts = async (accountObj, charity, type) => {
   if (charity.paymentMethods === undefined) charity.paymentMethods = {};
   if (type === 'bankAccount') {
     const { bankAccount } = accountObj.paymentMethods;
@@ -173,79 +177,81 @@ const addPaymentAccounts = async(accountObj, charity, type) => {
       throw new BadRequestError('must provide complete information');
     }
   }
-  await charity.save()
+  await charity.save();
 };
 
 const getChangedPaymentMethod = (reqPaymentMethodsObj) => {
-    let changedPaymentMethod;
+  let changedPaymentMethod;
 
-    ['bankAccount', 'fawry', 'vodafoneCash'].forEach((pm) => {
-        if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
+  ['bankAccount', 'fawry', 'vodafoneCash'].forEach((pm) => {
+    if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
+  });
+
+  return changedPaymentMethod;
+};
+
+const getPaymentMethodIdx = (
+  charityPaymentMethodsObj,
+  changedPaymentMethod,
+  paymentId
+) => {
+  const idx = charityPaymentMethodsObj[changedPaymentMethod].findIndex(
+    (paymentMethods) => paymentMethods._id.toString() === paymentId
+  );
+
+  return idx;
+};
+
+const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
+  const temp = {};
+
+  const methodMap = {
+    bankAccount: {
+      fields: ['accNumber', 'iban', 'swiftCode'], // ??
+      docsField: 'docsBank',
+    },
+    fawry: {
+      fields: ['number'],
+      docsField: 'docsFawry',
+    },
+    vodafoneCash: {
+      fields: ['number'],
+      docsField: 'docsVodafoneCash',
+    },
+  };
+
+  if (methodMap.hasOwnProperty(selector)) {
+    const { fields, docsField } = methodMap[selector];
+    const methodData = reqPaymentMethodsObj[selector][0];
+
+    fields.forEach((field) => {
+      temp[field] = methodData[field];
     });
-    
-    return changedPaymentMethod;
+
+    temp[docsField] = reqPaymentMethodsObj[selector][docsField][0];
+  }
+
+  return temp;
 };
 
-const getPaymentMethodIdx = (charityPaymentMethodsObj,changedPaymentMethod,paymentId) => {
-    const idx = charityPaymentMethodsObj[changedPaymentMethod].findIndex(
-        (paymentMethods) => paymentMethods._id.toString() === paymentId
-    );
-    
-    return idx;
+const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector, idx) => {
+  for (let key in temp) {
+    if (key.startsWith('docs')) {
+      deleteOldImgs(
+        'docsCharities',
+        charityPaymentMethodsObj[selector][idx][key]
+      );
+
+      charityPaymentMethodsObj[selector][idx][key] = [temp[key]];
+    } else charityPaymentMethodsObj[selector][idx][key] = temp[key];
+  }
+
+  charityPaymentMethodsObj[selector][idx].enable = false;
 };
 
-const makeTempPaymentObj = (selector,reqPaymentMethodsObj)=>{
-    const temp = {};
-
-    const methodMap = {
-        bankAccount: {
-            fields: ['accNumber', 'iban', 'swiftCode'], // ??
-            docsField: 'docsBank',
-        },
-        fawry: {
-            fields: ['number'],
-            docsField: 'docsFawry',
-        },
-        vodafoneCash: {
-            fields: ['number'],
-            docsField: 'docsVodafoneCash',
-        },
-    };
-
-    if (methodMap.hasOwnProperty(selector)) {
-        const { fields, docsField } = methodMap[selector];
-        const methodData = reqPaymentMethodsObj[selector][0];
-
-        fields.forEach((field) => {
-            temp[field] = methodData[field];
-        });
-
-        temp[docsField] = reqPaymentMethodsObj[selector][docsField][0];
-    }
-
-    return temp;
-}
-
-const swapPaymentInfo = (charityPaymentMethodsObj, temp,selector, idx) => {
-    for (let key in temp) {
-        if (key.startsWith('docs')){
-            deleteOldImgs(
-              'docsCharities',
-              charityPaymentMethodsObj[selector][idx][key]
-            );
-
-            charityPaymentMethodsObj[selector][idx][key] = [temp[key]];
-        }
-
-        else charityPaymentMethodsObj[selector][idx][key] = temp[key];
-    }
-
-    charityPaymentMethodsObj[selector][idx].enable = false;
+const addNewPayment = (charityPaymentMethodsObj, temp, selector) => {
+  charityPaymentMethodsObj[selector].push(temp);
 };
-
-const addNewPayment = (charityPaymentMethodsObj,temp,selector)=>{
-    charityPaymentMethodsObj[selector].push(temp);
-}
 
 export const charityUtils = {
   checkCharityIsExist,
@@ -265,5 +271,5 @@ export const charityUtils = {
   getPaymentMethodIdx,
   makeTempPaymentObj,
   swapPaymentInfo,
-  addNewPayment
+  addNewPayment,
 };
