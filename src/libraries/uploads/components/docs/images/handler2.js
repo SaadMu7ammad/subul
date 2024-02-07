@@ -12,7 +12,6 @@
 //   },
 // });
 
-import asyncHandler from 'express-async-handler';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
@@ -71,7 +70,7 @@ async function processDocs(docsKey, ref, req) {
     ); //.then(() => next());
 }
 // req.files['charityDocs[docs1]'].map((obj, indx)
-const resizeDocReq = asyncHandler(async (req, res, next) => {
+const resizeDocReq = (async (req, res, next) => {
     req.temp = []; //container for deleting imgs
 
     // req.body.paymentMethods.bankAccount={}
