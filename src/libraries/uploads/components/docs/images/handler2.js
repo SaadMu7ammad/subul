@@ -1,17 +1,3 @@
-//disk Storage solution
-// const multerStorage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     // cb(null, 'uploads/');
-//     cb(null, './uploads/LogoCharities');
-//   },
-//   fileName: function (req, file, cb) {
-//     // const imageUrl = file.path.replace("\\", "/");
-//     const ex = file.mimetype.split('/')[1];
-//     const uniqueSuffix ="LogoCharity"+uuidv4()+"-"+ Date.now() ;
-//     cb(null, uniqueSuffix + '.' + ex);
-//   },
-// });
-
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
@@ -64,18 +50,11 @@ async function processDocs(docsKey, ref, req) {
                     fileName
                 );
             }
-
-            // body.charityDocs = { ...body.charityDocs, [docsKey]: fileName };
         })
-    ); //.then(() => next());
+    ); 
 }
-// req.files['charityDocs[docs1]'].map((obj, indx)
 const resizeDocReq = (async (req, res, next) => {
     req.temp = []; //container for deleting imgs
-
-    // req.body.paymentMethods.bankAccount={}
-
-    // req.body.paymentMethods.bankAccount ?  : null
     if (req.body.paymentMethods && req.body.paymentMethods.bankAccount) {
         req.body.paymentMethods.bankAccount.docsBank = [];
     }

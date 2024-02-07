@@ -126,11 +126,10 @@ const requestEditCharityPayments = async (req, res, next) => {
 
 
 const logout = (req, res, next) => {
-  res.cookie('jwt', '', {
-    expires: new Date(0),
-    httpOnly: true,
-  });
-  return { message: 'logout' };
+  const dataResponsed = charityService.logoutCharity(res);
+  return {
+    message: dataResponsed.message,
+  };
 };
 
 const sendDocs = async (req, res, next) => {

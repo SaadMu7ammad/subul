@@ -3,12 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { saveImg } from '../../index.js';
 import { BadRequestError } from '../../../../errors/components/index.js';
-import Cloudinary from '../../../../../utils/cloudinary.js';
-import * as configurationProvider from '../../../../configuration-provider/index.js';
-
-//diskStorage
-// const upload = multer({ storage: multerStorage,fileFilter:multerFilterOnlyImgs });
-// const uploadCoverImage = upload.single('image');
 //memoryStorage
 const multerFilterOnlyImgs = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -78,7 +72,6 @@ async function processDocs(docsKey, ref, req) {
 }
 const resizeDoc = async (req, res, next) => {
   req.body.charityDocs = {};
-  //   req.body.docsSent = []; //container for deleting imgs
   req.body.charityDocs.docs1 = [];
   req.body.charityDocs.docs2 = [];
   req.body.charityDocs.docs3 = [];

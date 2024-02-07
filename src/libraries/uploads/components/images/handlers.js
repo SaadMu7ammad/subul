@@ -2,7 +2,6 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { BadRequestError } from '../../../errors/components/index.js';
-import Cloudinary from '../../../../utils/cloudinary.js';
 import { saveImg } from '../index.js';
 const multerStorage = multer.memoryStorage();
 
@@ -24,7 +23,6 @@ const resizeImg = async (req, res, next) => {
   let destinationFolder, suffix;
   try {
     if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
-    // req.temp = []; //container for deleting imgs
     //Saif:This Should Be Handled Better Than that , but we will go with it for now
     //waiting to see :what other routes will upload images ?
     if (req.path === '/register' || req.path === '/edit-profileImg') {
