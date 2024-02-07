@@ -97,6 +97,7 @@ const editCharityProfile = async (req, res, next) => {
   );
   return {
     charity: responseData.charity,
+    message: responseData.message,
   };
 };
 const changeProfileImage = async (req, res, next) => {
@@ -108,7 +109,7 @@ const changeProfileImage = async (req, res, next) => {
     data,
     storedCharity
   );
-  return { image: responseData.image };
+  return { image: responseData.image,message:responseData.message };
 };
 
 const requestEditCharityPayments = async (req, res, next) => {

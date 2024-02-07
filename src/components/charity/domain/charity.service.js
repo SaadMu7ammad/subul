@@ -116,6 +116,7 @@ const editCharityProfile = async (reqBody, charity) => {
         return {
             emailEdited: true,
             charity: charityUpdated.charity,
+            message:'email has been sent to your gmail'
         };
     }
     if (location) {
@@ -140,6 +141,7 @@ const editCharityProfile = async (reqBody, charity) => {
     return {
         emailEdited: false,
         charity: storedCharity,
+        message:'data changed successfully'
     };
 };
 const changeProfileImage = async (reqBody, charity) => {
@@ -150,7 +152,7 @@ const changeProfileImage = async (reqBody, charity) => {
         oldImg,
         newImg
     );
-    return { image: updatedImg.image };
+    return { image: updatedImg.image,message:'image changed successfully' };
 };
 const sendDocs = async (reqBody, charity) => {
     if (
