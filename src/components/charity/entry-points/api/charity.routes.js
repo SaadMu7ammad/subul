@@ -66,7 +66,7 @@ export default function defineRoutes(expressApp) {
     validate,
     async (req, res, next) => {
       try {
-        logger.info(`Charity API was called to charity`);
+        logger.info(`Charity API was called to Confirm Reset Password`);
         const confirmResetPasswordResponse =
           await charityUseCase.confirmResetPassword(req, res, next);
         return res.json(confirmResetPasswordResponse);
@@ -219,13 +219,6 @@ export default function defineRoutes(expressApp) {
         return undefined;
       }
     }
-    // , upload.single('charityDocs[docs1]'),
-    // (req, res, next) => {
-    //   console.log('req.file=');
-    //   console.log(req.files);
-    //   next();
-    // },
-    // addCharityPayments
   );
 
   expressApp.use('/api/charities', router);
