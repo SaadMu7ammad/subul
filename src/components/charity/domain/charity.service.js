@@ -5,7 +5,6 @@ import {
 import {
     checkValueEquality,
     updateNestedProperties,
-    updateNestedPropertiesCharity,
 } from '../../../utils/shared.js';
 import { charityUtils } from './charity.utils.js';
 import {
@@ -136,7 +135,7 @@ const editCharityProfile = async (reqBody, charity) => {
             storedCharity = charityUpdated.charity;
         }
     }
-    updateNestedPropertiesCharity(storedCharity, charityObj);
+    updateNestedProperties(storedCharity, charityObj);
     await storedCharity.save();
     return {
         emailEdited: false,
