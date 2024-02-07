@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
 import logger from './logger.js';
-import asyncHandler from 'express-async-handler';
 
 import * as configurationProvider from '../libraries/configuration-provider/index.js';
 
@@ -12,7 +11,7 @@ class Cloudinary {
       api_secret: configurationProvider.getValue('cloudinary.apiSecret'),
     });
   }
-  uploadImg = asyncHandler(async (imgBuffer, folder, publicId) => {
+  uploadImg = (async (imgBuffer, folder, publicId) => {
     const uploadResult = await new Promise((resolve) => {
       cloudinary.uploader
         .upload_stream(
@@ -26,7 +25,7 @@ class Cloudinary {
     return uploadResult;
   });
 
-  deleteImg = asyncHandler(async (folder, publicId) => {
+  deleteImg = (async (folder, publicId) => {
     try {
       const result = await cloudinary.uploader.destroy(`${folder}/${publicId}`);
 
