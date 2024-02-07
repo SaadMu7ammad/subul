@@ -164,8 +164,8 @@ export default function defineRoutes(expressApp) {
         }
       }
     );
-    ///////////👇️
-  router.post( //😫 Error : If the payemntId is not valid -> no error.
+
+  router.post( 
     '/request-edit-payment',
     auth,
     isActivated,
@@ -185,7 +185,7 @@ export default function defineRoutes(expressApp) {
       }
     }
   );
-  //////👆️
+  
   router.post(
     '/send-docs',
     auth,
