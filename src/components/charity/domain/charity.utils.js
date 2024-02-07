@@ -175,6 +175,78 @@ const addPaymentAccounts = async(accountObj, charity, type) => {
   }
   await charity.save()
 };
+
+const getChangedPaymentMethod = (reqPaymentMethodsObj) => {
+    let changedPaymentMethod;
+
+    ['bankAccount', 'fawry', 'vodafoneCash'].forEach((pm) => {
+        if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
+    });
+    
+    return changedPaymentMethod;
+};
+
+const getPaymentMethodIdx = (charityPaymentMethodsObj,changedPaymentMethod,paymentId) => {
+    const idx = charityPaymentMethodsObj[changedPaymentMethod].findIndex(
+        (paymentMethods) => paymentMethods._id.toString() === paymentId
+    );
+    
+    return idx;
+};
+
+const makeTempPaymentObj = (selector,reqPaymentMethodsObj)=>{
+    const temp = {};
+
+    const methodMap = {
+        bankAccount: {
+            fields: ['accNumber', 'iban', 'swiftCode'], // ??
+            docsField: 'docsBank',
+        },
+        fawry: {
+            fields: ['number'],
+            docsField: 'docsFawry',
+        },
+        vodafoneCash: {
+            fields: ['number'],
+            docsField: 'docsVodafoneCash',
+        },
+    };
+
+    if (methodMap.hasOwnProperty(selector)) {
+        const { fields, docsField } = methodMap[selector];
+        const methodData = reqPaymentMethodsObj[selector][0];
+
+        fields.forEach((field) => {
+            temp[field] = methodData[field];
+        });
+
+        temp[docsField] = reqPaymentMethodsObj[selector][docsField][0];
+    }
+
+    return temp;
+}
+
+const swapPaymentInfo = (charityPaymentMethodsObj, temp,selector, idx) => {
+    for (let key in temp) {
+        if (key.startsWith('docs')){
+            deleteOldImgs(
+              'docsCharities',
+              charityPaymentMethodsObj[selector][idx][key]
+            );
+
+            charityPaymentMethodsObj[selector][idx][key] = [temp[key]];
+        }
+
+        else charityPaymentMethodsObj[selector][idx][key] = temp[key];
+    }
+
+    charityPaymentMethodsObj[selector][idx].enable = false;
+};
+
+const addNewPayment = (charityPaymentMethodsObj,temp,selector)=>{
+    charityPaymentMethodsObj[selector].push(temp);
+}
+
 export const charityUtils = {
   checkCharityIsExist,
   logout,
@@ -189,4 +261,9 @@ export const charityUtils = {
   addCharityProfileAddress,
   replaceProfileImage,
   addDocs,
+  getChangedPaymentMethod,
+  getPaymentMethodIdx,
+  makeTempPaymentObj,
+  swapPaymentInfo,
+  addNewPayment
 };

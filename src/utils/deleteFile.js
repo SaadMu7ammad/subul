@@ -29,6 +29,8 @@ const deleteFiles = (pathToFolder, folderName, ...filesNames) => {
 };
 
 const deleteOldImgs = (imgsFolder, imgsNames) => {
+  const cloudinaryObj = new Cloudinary();
+  
   const imgsNamesArray = Array.isArray(imgsNames) ? imgsNames : [imgsNames];
 
   if (configurationProvider.getValue('environment.nodeEnv') === 'development') {
@@ -37,7 +39,7 @@ const deleteOldImgs = (imgsFolder, imgsNames) => {
     configurationProvider.getValue('environment.nodeEnv') === 'production'
   ) {
     imgsNamesArray.forEach((imgName) => {
-      Cloudinary.deleteImg(imgsFolder, imgName.split('.jpeg')[0]);
+      cloudinaryObj.deleteImg(imgsFolder, imgName.split('.jpeg')[0]);
     });
   }
 

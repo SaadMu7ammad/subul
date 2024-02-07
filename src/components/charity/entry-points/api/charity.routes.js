@@ -23,6 +23,8 @@ import {
   uploadDocs,
 } from '../../../../libraries/uploads/components/docs/images/handler.js';
 import { deleteOldImgs } from '../../../../utils/deleteFile.js';
+import { uploadDocsReq,resizeDocReq } from '../../../../middlewares/reqDocPaymentMiddleware.js';
+
 export default function defineRoutes(expressApp) {
   const router = express.Router();
   router.post(
@@ -32,7 +34,7 @@ export default function defineRoutes(expressApp) {
     auth,
     async (req, res, next) => {
       try {
-        logger.info(`activate API was called to charity`);
+        logger.info(`Charity API was called to Activate Account`);
         const activateCharityAccountResponse =
           await charityUseCase.activateCharityAccount(req, res, next);
         return res.json(activateCharityAccountResponse);
@@ -48,7 +50,7 @@ export default function defineRoutes(expressApp) {
     validate,
     async (req, res, next) => {
       try {
-        logger.info(`reset API was called to charity`);
+        logger.info(`Charity API was called to Reset Password`);
         const requestResetPasswordResponse =
           await charityUseCase.requestResetPassword(req, res, next);
         return res.json(requestResetPasswordResponse);
@@ -64,7 +66,7 @@ export default function defineRoutes(expressApp) {
     validate,
     async (req, res, next) => {
       try {
-        logger.info(`reset API was called to charity`);
+        logger.info(`Charity API was called to charity`);
         const confirmResetPasswordResponse =
           await charityUseCase.confirmResetPassword(req, res, next);
         return res.json(confirmResetPasswordResponse);
@@ -82,7 +84,7 @@ export default function defineRoutes(expressApp) {
     isActivated,
     async (req, res, next) => {
       try {
-        logger.info(`change password API was called to charity`);
+        logger.info(`Charity API was called to Change Password`);
         const changePasswordResponse = await charityUseCase.changePassword(
           req,
           res,
@@ -98,7 +100,7 @@ export default function defineRoutes(expressApp) {
   // // const upload = multer({ dest: 'uploads/docsCharities/' });
   router.post('/logout', (req, res, next) => {
     try {
-      logger.info(`logout API was called to charity`);
+      logger.info(`Charity API was called to logout`);
       const logoutResponse = charityUseCase.logout(req, res, next);
       return res.json(logoutResponse);
     } catch (error) {
@@ -108,7 +110,7 @@ export default function defineRoutes(expressApp) {
   });
   router.get('/profile', auth, (req, res, next) => {
     try {
-      logger.info(`showProfie API was called to charity`);
+      logger.info(`Charity API was called to Show Profile`);
       const showCharityProfileResponse = charityUseCase.showCharityProfile(
         req,
         res,
@@ -130,7 +132,7 @@ export default function defineRoutes(expressApp) {
     validate,
     async (req, res, next) => {
       try {
-        logger.info(`edit-profile API was called to charity`);
+        logger.info(`Charity API was called to Edit Profile`);
         const changePasswordResponse = await charityUseCase.editCharityProfile(
           req,
           res,
@@ -143,7 +145,6 @@ export default function defineRoutes(expressApp) {
       }
     }
   );
-  '/register',
     router.put(
       '/edit-profileImg',
       auth,
@@ -153,7 +154,7 @@ export default function defineRoutes(expressApp) {
       resizeImg,
       async (req, res, next) => {
         try {
-          logger.info(`edit profileImg API was called to charity`);
+          logger.info(`Charity API was called to Edit Profile Img`);
           const changeProfileImageResponse =
             await charityUseCase.changeProfileImage(req, res, next);
           return res.json(changeProfileImageResponse);
@@ -163,17 +164,28 @@ export default function defineRoutes(expressApp) {
         }
       }
     );
-  // router.post(
-  //   '/request-edit-payment',
-  //   auth,
-  //   isActivated,
-  //   isConfirmed,
-  //   uploadDocsReq,
-  //   reqEditPaymentMethodsValidation,
-  //   validate,
-  //   resizeDocReq,
-  //   requestEditCharityProfilePayments
-  // );
+    ///////////👇️
+  router.post( //😫 Error : If the payemntId is not valid -> no error.
+    '/request-edit-payment',
+    auth,
+    isActivated,
+    isConfirmed,
+    uploadDocsReq,
+    reqEditPaymentMethodsValidation,
+    validate,
+    resizeDocReq,
+    async(req,res,next)=>{
+      try{
+        logger.info(`Charity API was called to Request Edit Payments`);
+        const editCharityPaymentResponse = await charityUseCase.requestEditCharityPayments(req,res,next);
+        return res.json(editCharityPaymentResponse);
+      }catch(error){
+        next(error);
+        return undefined;
+      }
+    }
+  );
+  //////👆️
   router.post(
     '/send-docs',
     auth,
@@ -183,7 +195,7 @@ export default function defineRoutes(expressApp) {
     resizeDoc,
     async (req, res, next) => {
       try {
-        logger.info(`sendDocs API was called to charity`);
+        logger.info(`Charity API was called to Send Docs`);
         const sendDocsResponse = await charityUseCase.sendDocs(req, res, next);
         return res.json(sendDocsResponse);
       } catch (error) {

@@ -76,9 +76,9 @@ const showCharityProfile = (req, res, next) => {
   //   '-_id -password -verificationCode -emailVerification -phoneVerification -isEnabled -isConfirmed -isPending'
   // );
   const storedCharity = req.charity;
-  const dataResponsed = charityService.getCharityProfileData(storedCharity);
+  const responseData = charityService.getCharityProfileData(storedCharity);
   return {
-    charity: dataResponsed.charity,
+    charity: responseData.charity,
   };
 };
 const editCharityProfile = async (req, res, next) => {
@@ -91,12 +91,12 @@ const editCharityProfile = async (req, res, next) => {
     description: req.body.description,
   };
   const storedCharity = req.charity;
-  const dataResponsed = await charityService.editCharityProfile(
+  const responseData = await charityService.editCharityProfile(
     dataInput,
     storedCharity
   );
   return {
-    charity: dataResponsed.charity,
+    charity: responseData.charity,
   };
 };
 const changeProfileImage = async (req, res, next) => {
@@ -104,204 +104,26 @@ const changeProfileImage = async (req, res, next) => {
     image: req.body.image[0],
   };
   const storedCharity = req.charity;
-  const dataResponsed = await charityService.changeProfileImage(
+  const responseData = await charityService.changeProfileImage(
     data,
     storedCharity
   );
-  return { image: dataResponsed.image };
+  return { image: responseData.image };
 };
 
-// const editCharityProfilePaymentMethods = asyncHandler(
-//     async (req, res, next, indx, selector) => {
-//         const temp = {}; // Create a tempLocation object
-//         // temp.docsBank=[]
-//         if (selector === 'bankAccount') {
-//             const { accNumber, iban, swiftCode } =
-//                 req.body.paymentMethods.bankAccount[0];
-//             const docsBank = req.body.paymentMethods.bankAccount.docsBank[0];
+const requestEditCharityPayments = async (req, res, next) => {
+    const reqPaymentMethodsObj = req.body.paymentMethods;
+    const docs = req.temp;
+    const responseData = await charityService.requestEditCharityPayments(
+        req.charity,
+        req.body.payment_id,
+        reqPaymentMethodsObj,
+        docs
+    );
 
-//             console.log(accNumber);
-//             console.log(iban);
-//             console.log(swiftCode);
-//             temp.accNumber = accNumber;
-//             temp.iban = iban;
-//             temp.swiftCode = swiftCode;
-//             temp.docsBank = docsBank;
-//         } else if (selector === 'fawry') {
-//             const { number } = req.body.paymentMethods.fawry[0];
-//             const docsFawry = req.body.paymentMethods.fawry.docsFawry[0];
+    return { paymentMethod: responseData };
+};
 
-//             console.log(number);
-//             temp.number = number;
-//             temp.docsFawry = docsFawry;
-//         } else if (selector === 'vodafoneCash') {
-//             const { number } = req.body.paymentMethods.vodafoneCash[0];
-//             const docsVodafoneCash =
-//                 req.body.paymentMethods.vodafoneCash.docsVodafoneCash[0];
-//             temp.number = number;
-//             temp.docsVodafoneCash = docsVodafoneCash;
-//         }
-//         if (indx !== -1) {
-//             //edit a payment account && enable attribute will be reset to false again
-//             if (selector === 'bankAccount') {
-//                 deleteOldImgs(
-//                     'docsCharities',
-//                     req.charity.paymentMethods.bankAccount[indx].docsBank
-//                 );
-//                 req.charity.paymentMethods.bankAccount[indx].accNumber =
-//                     temp.accNumber; //assign the object
-//                 req.charity.paymentMethods.bankAccount[indx].iban = temp.iban; //assign the object
-//                 req.charity.paymentMethods.bankAccount[indx].swiftCode =
-//                     temp.swiftCode; //assign the object
-//                 req.charity.paymentMethods.bankAccount[indx].docsBank = [
-//                     temp.docsBank,
-//                 ];
-//                 req.charity.paymentMethods.bankAccount[indx].enable = false; //reset again to review it again
-//                 // req.charity.modifyPaymentMethodsRequest = true;
-
-//                 await req.charity.save();
-//                 return res.json(req.charity.paymentMethods.bankAccount[indx]);
-//             } else if (selector === 'fawry') {
-//                 deleteOldImgs(
-//                     'docsCharities',
-//                     req.charity.paymentMethods.fawry[indx].docsFawry
-//                 );
-//                 req.charity.paymentMethods.fawry[indx].number = temp.number; //assign the object
-//                 req.charity.paymentMethods.fawry[indx].docsFawry =
-//                     temp.docsFawry;
-//                 req.charity.paymentMethods.fawry[indx].enable = false; //reset again to review it again
-//                 // req.charity.modifyPaymentMethodsRequest = true;
-
-//                 await req.charity.save();
-//                 return res.json(req.charity.paymentMethods.fawry[indx]);
-//             } else if (selector === 'vodafoneCash') {
-//                 deleteOldImgs(
-//                     'docsCharities',
-//                     req.charity.paymentMethods.vodafoneCash[indx]
-//                         .docsVodafoneCash
-//                 );
-//                 req.charity.paymentMethods.vodafoneCash[indx].number =
-//                     temp.number; //assign the object
-//                 req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash =
-//                     temp.docsVodafoneCash;
-//                 req.charity.paymentMethods.vodafoneCash[indx].enable = false; //reset again to review it again
-//                 // req.charity.modifyPaymentMethodsRequest = true;
-
-//                 await req.charity.save();
-//                 return res.json(req.charity.paymentMethods.vodafoneCash[indx]);
-//             }
-//         } else if (indx === -1) {
-//             //add a new payment account
-//             //add a new address
-//             if (selector === 'bankAccount') {
-//                 // const { docsVodafoneCash} = req.body.paymentMethods.docsVodafoneCash[0];
-//                 // req.charity.paymentMethods.vodafoneCash[indx].docsVodafoneCash=docsVodafoneCash
-//                 req.charity.paymentMethods.bankAccount.push(temp); //assign the object
-//                 // req.charity.modifyPaymentMethodsRequest = true;
-
-//                 await req.charity.save();
-//                 const len = req.charity.paymentMethods.bankAccount.length - 1;
-//                 return res.json(req.charity.paymentMethods.bankAccount[len]);
-//             } else if (selector === 'fawry') {
-//                 req.charity.paymentMethods.fawry.push(temp); //assign the object
-//                 // req.charity.modifyPaymentMethodsRequest = true;
-
-//                 await req.charity.save();
-//                 const len = req.charity.paymentMethods.fawry.length - 1;
-//                 return res.json(req.charity.paymentMethods.fawry[len]);
-//             } else if (selector === 'vodafoneCash') {
-//                 req.charity.paymentMethods.vodafoneCash.push(temp); //assign the object
-//                 // req.charity.modifyPaymentMethodsRequest = true;
-
-//                 await req.charity.save();
-//                 const len = req.charity.paymentMethods.vodafoneCash.length - 1;
-//                 return res.json(req.charity.paymentMethods.vodafoneCash[len]);
-//             }
-//         }
-//     }
-// );
-// const requestEditCharityProfilePayments = asyncHandler(
-//     async (req, res, next) => {
-//         if (!req.body.paymentMethods) {
-//             deleteOldImgs('docsCharities', req.temp);
-//             throw new BadRequestError(
-//                 'you must upload complete data to be sent'
-//             );
-//         }
-//         const { bankAccount, fawry, vodafoneCash } = req.body.paymentMethods;
-//         // 1-> bankAccount
-//         // console.log(bankAccount[0]);
-//         // console.log(req.body.paymentMethods);
-//         if (bankAccount) {
-//             let indx = req.charity.paymentMethods.bankAccount.findIndex(
-//                 (paymentMethods) =>
-//                     paymentMethods._id.toString() === req.body.payment_id
-//             );
-//             console.log('indx=' + indx);
-
-//             return await editCharityProfilePaymentMethods(
-//                 req,
-//                 res,
-//                 next,
-//                 indx,
-//                 'bankAccount'
-//             );
-//         } else if (fawry) {
-//             console.log('ff');
-//             let indx = req.charity.paymentMethods.fawry.findIndex(
-//                 (paymentMethods) =>
-//                     paymentMethods._id.toString() === req.body.payment_id
-//             );
-//             console.log('indx=' + indx);
-//             return await editCharityProfilePaymentMethods(
-//                 req,
-//                 res,
-//                 next,
-//                 indx,
-//                 'fawry'
-//             );
-//         } else if (vodafoneCash) {
-//             let indx = req.charity.paymentMethods.vodafoneCash.findIndex(
-//                 (paymentMethods) =>
-//                     paymentMethods._id.toString() === req.body.payment_id
-//             );
-//             console.log('indx=' + indx);
-//             return await editCharityProfilePaymentMethods(
-//                 req,
-//                 res,
-//                 next,
-//                 indx,
-//                 'vodafoneCash'
-//             );
-//         }
-//         // console.log(req);
-//         // console.log(req.body);
-//         // for (const [key, valueObj] of Object.entries(req.body)) {
-
-//         //   console.log('--');
-//         //   console.log(key);
-//         //   console.log(valueObj);
-//         //   if (typeof valueObj === 'object') {
-//         //     for (const [subKey, val] of Object.entries(valueObj)) {
-//         //       if (!isNaN(subKey)) {
-//         //         console.log('arr of objects'); //for location
-//         //         charity[key][subKey] = { val };
-//         //       } else {
-//         //         console.log('an obj');
-//         //       }
-
-//         //       // console.log(typeof subKey);
-//         //       console.log(val);
-//         //       charity[key][subKey] = val;
-//         //     }
-//         //   } else {
-//         //     // If the value is not an object, assign it directly
-//         //     charity[key] = valueObj;
-//         //   }
-//         // }
-//         res.json(req.body);
-//     }
-// );
 
 const logout = (req, res, next) => {
   res.cookie('jwt', '', {
@@ -326,10 +148,10 @@ const sendDocs = async (req, res, next) => {
     },
   };
   const storedCharity = req.charity;
-  const dataResponsed = await charityService.sendDocs(data, storedCharity);
+  const responseData = await charityService.sendDocs(data, storedCharity);
   return {
-    paymentMethods: dataResponsed.paymentMethods,
-    message: dataResponsed.message,
+    paymentMethods: responseData.paymentMethods,
+    message: responseData.message,
   };
 };
 export const charityUseCase = {
@@ -342,6 +164,6 @@ export const charityUseCase = {
   sendDocs,
   editCharityProfile,
   showCharityProfile,
-  // requestEditCharityProfilePayments,
+  requestEditCharityPayments,
   // addCharityPayments,
 };

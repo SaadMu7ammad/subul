@@ -98,5 +98,5 @@ export {
     // resizeImg,
     // resizeImgUpdated,
     // updateuploadCoverImage,
-    // saveImg,
+    saveImg,
 };

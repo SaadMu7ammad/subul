@@ -353,6 +353,13 @@ const confirmResetCharityValidation = [
 ];
 //for requesting reset email for charity
 const requestResetEmailCharityValidation = [emailValidation];
+
+const paymentIdValidation = body('payment_id')
+.trim()
+.notEmpty()
+.isMongoId()
+.withMessage('Invalid Id!')
+
 export {
   tokenCharityValidation,
   emailValidation,
@@ -374,4 +381,5 @@ export {
   changePasswordCharityValidation,
   confirmResetCharityValidation,
   requestResetEmailCharityValidation,
+  paymentIdValidation
 };

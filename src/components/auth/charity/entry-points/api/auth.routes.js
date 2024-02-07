@@ -24,7 +24,7 @@ export default function defineRoutes(expressApp) {
     resizeImg,
     async (req, res, next) => {
       try {
-        logger.info(`Register API was called to charity`);
+        logger.info(`Auth API was called to Register charity`);
         const registerCharityResponse = await authUseCase.registerCharity(
           req,
           res,
@@ -44,7 +44,7 @@ export default function defineRoutes(expressApp) {
     validate,
     async (req, res, next) => {
       try {
-        logger.info(`auth API was called to charity`);
+        logger.info(`Auth API was called to Auth charity`);
         const authCharityResponse = await authUseCase.authCharity(
           req,
           res,
