@@ -16,9 +16,8 @@ import asyncHandler from 'express-async-handler';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
-import logger from '../utils/logger.js';
-import { BadRequestError } from '../libraries/errors/components/bad-request.js';
-import { saveImg } from './imageMiddleware.js';
+import { BadRequestError } from '../../../../errors/components/bad-request.js';
+import { saveImg } from '../../index.js';
 
 const multerFilter = (req, file, cb) => {
     if (file.mimetype.startsWith('image')) {

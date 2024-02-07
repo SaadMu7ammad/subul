@@ -23,7 +23,7 @@ import {
   uploadDocs,
 } from '../../../../libraries/uploads/components/docs/images/handler.js';
 import { deleteOldImgs } from '../../../../utils/deleteFile.js';
-import { uploadDocsReq,resizeDocReq } from '../../../../middlewares/reqDocPaymentMiddleware.js';
+import { uploadDocsReq,resizeDocReq } from '../../../../libraries/uploads/components/docs/images/handler2.js';
 
 export default function defineRoutes(expressApp) {
   const router = express.Router();

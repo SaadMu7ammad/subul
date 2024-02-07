@@ -2,8 +2,9 @@ import asyncHandler from 'express-async-handler';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
+import { saveImg } from '../../index.js';
 import { BadRequestError } from '../../../../errors/components/index.js';
-import Cloudinary from '../../../../../middlewares/cloudinary.js';
+import Cloudinary from '../../../../../utils/cloudinary.js';
 import * as configurationProvider from '../../../../configuration-provider/index.js';
 
 //diskStorage
@@ -32,26 +33,6 @@ const uploadDocs = upload.fields([
   { name: 'paymentMethods.fawry[0][docsFawry]', maxCount: 2 },
   { name: 'paymentMethods.vodafoneCash[0][docsVodafoneCash]', maxCount: 2 },
 ]);
-
-const saveImg = async (sharpPromise, destinationFolder, fileName) => {
-  const cloudinaryObj = new Cloudinary();
-
-  const environment = configurationProvider.getValue('environment.nodeEnv');
-
-  if (environment === 'development') {
-    //saving locally
-    await sharpPromise.toFile(`./uploads/${destinationFolder}/` + fileName);
-  } else if (environment === 'production') {
-    //saving to cloudniary
-    const resizedImgBuffer = await sharpPromise.toBuffer();
-    const uploadResult = await cloudinaryObj.uploadImg(
-      resizedImgBuffer,
-      destinationFolder,
-      fileName.split('.jpeg')[0]
-    );
-    console.log({ imgUrl: uploadResult.secure_url });
-  }
-};
 
 async function processDocs(docsKey, ref, req) {
   return Promise.all(
@@ -96,7 +77,7 @@ async function processDocs(docsKey, ref, req) {
     })
   );
 }
-const resizeDoc = (async (req, res, next) => {
+const resizeDoc = async (req, res, next) => {
   req.body.charityDocs = {};
   //   req.body.docsSent = []; //container for deleting imgs
   req.body.charityDocs.docs1 = [];
@@ -153,6 +134,6 @@ const resizeDoc = (async (req, res, next) => {
     );
 
   next();
-});
+};
 
 export { uploadDocs, resizeDoc };

@@ -2,8 +2,8 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { BadRequestError } from '../../../errors/components/index.js';
-import Cloudinary from '../../../../middlewares/cloudinary.js';
-import * as configurationProvider from '../../../configuration-provider/index.js';
+import Cloudinary from '../../../../utils/cloudinary.js';
+import { saveImg } from '../index.js';
 const multerStorage = multer.memoryStorage();
 
 const multerFilterOnlyImgs = (req, file, cb) => {
@@ -27,7 +27,7 @@ const resizeImg = async (req, res, next) => {
     // req.temp = []; //container for deleting imgs
     //Saif:This Should Be Handled Better Than that , but we will go with it for now
     //waiting to see :what other routes will upload images ?
-    if (req.path === '/register'||req.path === '/edit-profileImg') {
+    if (req.path === '/register' || req.path === '/edit-profileImg') {
       (destinationFolder = 'LogoCharities'), (suffix = 'LogoCharity');
     } else {
       (destinationFolder = 'casesCoverImages'), (suffix = 'caseCoveImage');
@@ -43,38 +43,16 @@ const resizeImg = async (req, res, next) => {
     await saveImg(sharpPromise, destinationFolder, fileName);
 
     //adding the fileName in the req.body
-    addImgsToReqBody(req,fileName)
+    addImgsToReqBody(req, fileName);
 
     next();
   } catch (err) {
     next(err);
   }
 };
-const storeImgsTempOnReq = (req, fileName) => {
-  req.temp = []; //container for deleting imgs
-  req.temp.push(fileName);
-};
 const addImgsToReqBody = (req, fileName) => {
   req.body.image = []; //container for deleting imgs
   req.body.image.push(fileName);
 };
-const saveImg = async (sharpPromise, destinationFolder, fileName) => {
-  const cloudinaryObj = new Cloudinary();
 
-  const environment = configurationProvider.getValue('environment.nodeEnv');
-
-  if (environment === 'development') {
-      //saving locally
-      await sharpPromise.toFile(`./uploads/${destinationFolder}/` + fileName);
-  } else if (environment === 'production') {
-      //saving to cloudniary
-      const resizedImgBuffer = await sharpPromise.toBuffer();
-      const uploadResult = await cloudinaryObj.uploadImg(
-          resizedImgBuffer,
-          destinationFolder,
-          fileName.split('.jpeg')[0]
-      );
-      console.log({ imgUrl: uploadResult.secure_url });
-  }
-};
 export { imageAssertion, resizeImg };
