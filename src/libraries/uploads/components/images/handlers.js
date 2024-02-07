@@ -2,6 +2,8 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { BadRequestError } from '../../../errors/components/index.js';
+import Cloudinary from '../../../../middlewares/cloudinary.js';
+import * as configurationProvider from '../../../configuration-provider/index.js';
 const multerStorage = multer.memoryStorage();
 
 const multerFilterOnlyImgs = (req, file, cb) => {
@@ -57,19 +59,22 @@ const addImgsToReqBody = (req, fileName) => {
   req.body.image.push(fileName);
 };
 const saveImg = async (sharpPromise, destinationFolder, fileName) => {
-  if (process.env.NODE_ENV === 'development') {
-    //saving locally
-    await sharpPromise.toFile(`./uploads/${destinationFolder}/` + fileName);
-  } else if (process.env.NODE_ENV === 'production') {
-    //saving to cloudniary
+  const cloudinaryObj = new Cloudinary();
 
-    const resizedImgBuffer = await sharpPromise.toBuffer();
-    const uploadResult = await uploadImg(
-      resizedImgBuffer,
-      destinationFolder,
-      fileName.split('.jpeg')[0]
-    );
-    console.log({ imgUrl: uploadResult.secure_url });
+  const environment = configurationProvider.getValue('environment.nodeEnv');
+
+  if (environment === 'development') {
+      //saving locally
+      await sharpPromise.toFile(`./uploads/${destinationFolder}/` + fileName);
+  } else if (environment === 'production') {
+      //saving to cloudniary
+      const resizedImgBuffer = await sharpPromise.toBuffer();
+      const uploadResult = await cloudinaryObj.uploadImg(
+          resizedImgBuffer,
+          destinationFolder,
+          fileName.split('.jpeg')[0]
+      );
+      console.log({ imgUrl: uploadResult.secure_url });
   }
 };
 export { imageAssertion, resizeImg };
