@@ -114,12 +114,10 @@ const changeProfileImage = async (req, res, next) => {
 
 const requestEditCharityPayments = async (req, res, next) => {
     const reqPaymentMethodsObj = req.body.paymentMethods;
-    const docs = req.temp;
     const responseData = await charityService.requestEditCharityPayments(
         req.charity,
         req.body.payment_id,
         reqPaymentMethodsObj,
-        docs
     );
 
     return {

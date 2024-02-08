@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { saveImg } from '../../index.js';
 import { BadRequestError } from '../../../../errors/components/index.js';
+import 'express-async-errors';
 //memoryStorage
 const multerFilterOnlyImgs = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -70,6 +71,7 @@ async function processDocs(docsKey, ref, req) {
     })
   );
 }
+
 const resizeDoc = async (req, res, next) => {
   req.body.charityDocs = {};
   req.body.charityDocs.docs1 = [];
@@ -89,7 +91,7 @@ const resizeDoc = async (req, res, next) => {
     throw new BadRequestError('docs are required');
   }
   if (
-    //if not upload docs
+    //if not upload docs 👇️ Needs some work. This means that you must upload the 4th doc if you wanna add any payment @saad please 😿😿😿
     !req.files['charityDocs[docs1]'] ||
     !req.files['charityDocs[docs2]'] ||
     !req.files['charityDocs[docs3]'] ||
