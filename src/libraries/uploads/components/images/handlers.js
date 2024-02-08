@@ -2,7 +2,7 @@ import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { BadRequestError } from '../../../errors/components/index.js';
-import { saveImg } from '../index.js';
+import { getImageConfiguration, saveImg } from '../index.js';
 
 const multerStorage = multer.memoryStorage();
 
@@ -14,23 +14,20 @@ const multerFilterOnlyImgs = (req, file, cb) => {
     cb(new BadRequestError('invalid type,Only images allowed'));
   }
 };
+
 const upload = multer({
   storage: multerStorage,
   fileFilter: multerFilterOnlyImgs,
 });
+
 const imageAssertion = upload.single('image');
 
 const resizeImg = async (req, res, next) => {
-  let destinationFolder, suffix;
   try {
     if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
-    //Saif:This Should Be Handled Better Than that , but we will go with it for now
-    //waiting to see :what other routes will upload images ?
-    if (req.path === '/register' || req.path === '/edit-profileImg') {
-      (destinationFolder = 'LogoCharities'), (suffix = 'LogoCharity');
-    } else {
-      (destinationFolder = 'casesCoverImages'), (suffix = 'caseCoveImage');
-    }
+    
+    let {destinationFolder, suffix} = getImageConfiguration(req.path);
+    
     const uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
     const fileName = uniqueSuffix + '.jpeg';
     // storeImgsTempOnReq(req, fileName);
@@ -49,6 +46,7 @@ const resizeImg = async (req, res, next) => {
     next(err);
   }
 };
+
 const addImgsToReqBody = (req, fileName) => {
   req.body.image = []; //container for deleting imgs
   req.body.image.push(fileName);
