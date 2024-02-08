@@ -1,5 +1,6 @@
 import * as configurationProvider from '../../configuration-provider/index.js';
 import Cloudinary from'../../../utils/cloudinary.js'
+
 const saveImg = async (sharpPromise, destinationFolder, fileName) => {
   const cloudinaryObj = new Cloudinary();
 
@@ -19,4 +20,5 @@ const saveImg = async (sharpPromise, destinationFolder, fileName) => {
     console.log({ imgUrl: uploadResult.secure_url });
   }
 };
+
 export { saveImg };

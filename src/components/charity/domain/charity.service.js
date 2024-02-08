@@ -229,7 +229,11 @@ const requestEditCharityPayments = async (
 
     const len = charityObj.paymentMethods[changedPaymentMethod].length - 1;
 
-    return charityObj.paymentMethods[changedPaymentMethod][len];
+    return {
+        paymentMethod:
+            charityObj.paymentMethods[changedPaymentMethod][len],
+        message: 'Payment Method Has been Added Successfully!',
+    };
 };
 
 export const charityService = {

@@ -122,7 +122,10 @@ const requestEditCharityPayments = async (req, res, next) => {
         docs
     );
 
-    return { paymentMethod: responseData };
+    return {
+        paymentMethod: responseData.paymentMethod,
+        message: responseData.message,
+    };
 };
 
 
