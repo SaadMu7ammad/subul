@@ -9,7 +9,6 @@ import {
   setupMailSender,
   generateResetTokenTemp,
 } from '../../../utils/mailer.js';
-import dot from 'dot-object';
 import {
   BadRequestError,
   NotFoundError,
