@@ -1,10 +1,9 @@
 import asyncHandler from 'express-async-handler';
-import Charity from '../models/charityModel.js';
+import Charity from '../components/charity/data-access/models/charity.model.js';
 import Case from '../models/caseModel.js';
-import { BadRequestError } from '../errors/bad-request.js';
+import { BadRequestError } from '../libraries/errors/components/bad-request.js';
 import { setupMailSender } from '../utils/mailer.js';
-import { UnauthenticatedError } from '../errors/unauthenticated.js';
-import { NotFoundError } from '../errors/not-found.js';
+import { NotFoundError } from '../libraries/errors/components/index.js';
 import logger from '../utils/logger.js';
 import { deleteOldImgs } from '../utils/deleteFile.js';
 
@@ -143,11 +142,10 @@ const editCase = asyncHandler(async (req, res, next) => {
         }
 
         res.json(updatedCase);
-        
     } catch (err) {
         if (err) {
-            const image = req.body.imageCover||req.body.image;
-            if(image)deleteOldImgs('casesCoverImages', image);
+            const image = req.body.imageCover || req.body.image;
+            if (image) deleteOldImgs('casesCoverImages', image);
             next(err);
         }
     }

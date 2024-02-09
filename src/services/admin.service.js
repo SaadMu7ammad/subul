@@ -1,6 +1,6 @@
-import Charity from '../models/charityModel.js';
+import Charity from '../components/charity/data-access/models/charity.model.js';
 import { deleteOldImgs } from '../utils/deleteFile.js';
-import { BadRequestError } from '../errors/bad-request.js';
+import { BadRequestError } from '../libraries/errors/components/bad-request.js';
 const getPendingCharities = async (id) => {
     const queryObject = {
         $and: [
@@ -71,9 +71,9 @@ const rejectingCharity = async (charity) => {
     charity.charityDocs = {};
 
     const paymentMethods = new Map([
-        [ 'bankAccount','docsBank' ],
-        [ 'fawry','docsFawry' ],
-        [ 'vodafoneCash','docsVodafoneCash' ],
+        ['bankAccount', 'docsBank'],
+        ['fawry', 'docsFawry'],
+        ['vodafoneCash', 'docsVodafoneCash'],
     ]);
 
     for (let [method, docs] of paymentMethods) {

@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
 import logger from '../utils/logger.js';
-
+import * as configurationProvider from '../libraries/configuration-provider/index.js'
 const connectDB = async () => {
   try {
-    const dbConnect = await mongoose.connect(process.env.MONGO_URL);
+    const dbConnect = await mongoose.connect(configurationProvider.getValue('DB.url'));
     logger.info('mongoDB connected successfully');
   } catch (err) {
     // throw new BadRequestError(err.message);
