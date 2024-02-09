@@ -187,10 +187,8 @@ const requestEditCharityPayments = async (
     charityObj,
     paymentId,
     reqPaymentMethodsObj,
-    docs
 ) => {
     if (!reqPaymentMethodsObj) {
-        deleteOldImgs('docsCharities', docs);
         throw new BadRequestError('Incomplete Data!');
     }
 

@@ -22,7 +22,7 @@ import {
   resizeDoc,
   uploadDocs,
 } from '../../../../libraries/uploads/components/docs/images/handler.js';
-import { deleteOldImgs } from '../../../../utils/deleteFile.js';
+import { deleteCharityDocs,deleteOldImgs} from '../../../../utils/deleteFile.js';
 import { uploadDocsReq,resizeDocReq } from '../../../../libraries/uploads/components/docs/images/handler2.js';
 
 export default function defineRoutes(expressApp) {
@@ -122,7 +122,7 @@ export default function defineRoutes(expressApp) {
       return undefined;
     }
   });
-  //should add edit image in a seperate api
+  //should add edit image in a separate api
   router.put(
     '/edit-profile',
     auth,
@@ -180,6 +180,7 @@ export default function defineRoutes(expressApp) {
         const editCharityPaymentResponse = await charityUseCase.requestEditCharityPayments(req,res,next);
         return res.json(editCharityPaymentResponse);
       }catch(error){
+        deleteCharityDocs(req,'payment');
         next(error);
         return undefined;
       }
