@@ -1,6 +1,7 @@
 import * as path from 'path';
 import express from 'express';
 import cors from 'cors';
+import dotenv from 'dotenv/config';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import { NotFound, errorHandler } from './libraries/errors/index.js';
@@ -42,13 +43,13 @@ userRoutes(app);
 app.use('/api/charities', casesRoutes);
 app.use('/api/admin', adminRoutes);
 app.get('/', (req, res) => {
-    res.send('subul charity');
+  res.send('subul charity');
 });
 app.use(NotFound);
 app.use(errorHandler);
 await connectDB();
 const server = app.listen(port, () => {
-    logger.info(`server is listenting http://${host}:${port}`);
+  logger.info(`server is listenting http://${host}:${port}`);
 });
 //handling errors outside express
 // process.on('unhandledRejection', (err) => {
