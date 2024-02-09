@@ -1,5 +1,6 @@
 import * as path from 'path';
 import express from 'express';
+import cors from 'cors';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import { NotFound, errorHandler } from './libraries/errors/index.js';
@@ -20,6 +21,7 @@ const __dirname = path.resolve();
 const port = configurationProvider.getValue('environment.port');
 const host = configurationProvider.getValue('environment.host');
 const app = express();
+app.use(cors());
 app.use(express.urlencoded({ extended: true })); //form data
 app.use(express.json());
 
