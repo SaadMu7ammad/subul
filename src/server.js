@@ -11,16 +11,17 @@ import authUserRoutes from './components/auth/user/entry-points/api/auth.routes.
 import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes.js';
 import charityRoutes from './components/charity/entry-points/api/charity.routes.js';
 import casesRoutes from './routes/casesRoutes.js';
-import adminRoutes from './routes/adminRoutes.js';
+import adminRoutes from './components/admin/entry-points/api/admin.routes.js';
 import logger from './utils/logger.js';
 import * as configurationProvider from './libraries/configuration-provider/index.js';
 import configurationSchema from './config/config.js';
-//this bad boy will do all the .env work :D
+
 configurationProvider.initializeAndValidate(configurationSchema);
 
 const __dirname = path.resolve();
 const port = configurationProvider.getValue('environment.port');
 const host = configurationProvider.getValue('environment.host');
+
 const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true })); //form data
@@ -37,11 +38,9 @@ app.use('/api/payment', transactionRoutes);
 authUserRoutes(app);
 authCharityRoutes(app);
 charityRoutes(app);
-
+adminRoutes(app);
 userRoutes(app);
-// app.use('/api/charities', charityRoutes);
 app.use('/api/charities', casesRoutes);
-app.use('/api/admin', adminRoutes);
 app.get('/', (req, res) => {
   res.send('subul charity');
 });
