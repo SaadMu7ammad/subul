@@ -1,4 +1,4 @@
-import Case from "./models/case.model.js";
+import Case from './models/case.model.js';
 
 const createCase = async(caseData)=>{
     const newCase = new Case(caseData);

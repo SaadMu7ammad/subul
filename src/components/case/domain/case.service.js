@@ -1,7 +1,7 @@
-import caseRepository from '../data-access/case.repository.js';
+import { caseUtils } from './case.utils.js';
 
 const addCase = async (caseData, image, charity) => {
-    const newCase = caseRepository.createCase(caseData);
+    const newCase = await caseUtils.createCase({...caseData,imageCover:image});
     charity.cases.push(newCase._id);
     await charity.save();
     return { case: newCase };

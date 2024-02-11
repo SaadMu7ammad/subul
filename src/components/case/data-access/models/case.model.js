@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import locationSchema  from './location.model.js';
+
 const caseSchema = new mongoose.Schema(
     {
         charity: {

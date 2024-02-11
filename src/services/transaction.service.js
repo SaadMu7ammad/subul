@@ -1,5 +1,5 @@
 import asyncHandler from 'express-async-handler';
-import Case from '../models/caseModel.js';
+import Case from '../components/case/data-access/models/case.model.js';
 import Transactions from '../models/transactionModel.js';
 import {
     BadRequestError,
