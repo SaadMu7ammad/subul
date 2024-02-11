@@ -31,8 +31,14 @@ const getCaseById = async(id)=>{
     return _case;
 }
 
+const deleteCaseById = async(id)=>{
+    const _case = await Case.findByIdAndDelete(id);
+    return _case;
+}
+
 export const caseRepository = {
     createCase,
     getAllCases,
-    getCaseById
+    getCaseById,
+    deleteCaseById
 };

@@ -29,20 +29,33 @@ const getAllCases = async (charityId, queryParams) => {
 };
 
 const getCaseById = async (charityCases, caseId) => {
-    const _caseId = caseUtils.getCaseByIdFromCharityCasesArray(
+    caseUtils.checkIfCaseBelongsToCharity(
         charityCases,
         caseId
     );
 
-    const _case = await caseUtils.getCaseByIdFromDB(_caseId);
+    const _case = await caseUtils.getCaseByIdFromDB(caseId);
 
     return {
         case: _case,
     };
 };
 
+const deleteCase = async (charity,caseId)=>{
+    const idx = caseUtils.checkIfCaseBelongsToCharity(charity.cases,caseId);
+
+    const deletedCase = await caseUtils.deleteCaseFromDB(caseId);
+
+    await caseUtils.deleteCaseFromCharityCasesArray(charity,idx);
+
+    return {
+        deletedCase
+    }
+}
+
 export const caseService = {
     addCase,
     getAllCases,
     getCaseById,
+    deleteCase
 };

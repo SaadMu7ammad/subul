@@ -8,18 +8,6 @@ import logger from '../utils/logger.js';
 import { deleteOldImgs } from '../utils/deleteFile.js';
 
 
-const getCaseById = asyncHandler(async (req, res, next) => {
-    const caseIdsArray = req.charity.cases;
-    const caseId = caseIdsArray.find(function (id) {
-        return id.toString() === req.params.caseId;
-    });
-    if (!caseId) {
-        throw new NotFoundError('No Such Case With this Id!');
-    }
-    const _case = await Case.findById(caseId);
-    res.json(_case);
-});
-
 const deleteCase = asyncHandler(async (req, res, next) => {
     const caseIdsArray = req.charity.cases;
 

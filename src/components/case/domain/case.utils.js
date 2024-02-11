@@ -1,4 +1,5 @@
 import { NotFoundError } from '../../../libraries/errors/components/not-found.js';
+import { deleteOldImgs } from '../../../utils/deleteFile.js';
 import { caseRepository } from '../data-access/case.repository.js';
 
 const createCase = async (caseData) => {
@@ -58,18 +59,44 @@ const getAllCases = async (sortObj, filterObj, page, pageLimit) => {
 
 const getCaseByIdFromDB = async(caseId)=>{
     const _case = await caseRepository.getCaseById(caseId);
+
     if(!_case)throw new NotFoundError('No Such Case With this Id!');
+
     return _case;
 }
 
-const getCaseByIdFromCharityCasesArray = (charityCasesArray,caseId)=>{
-    const _caseId = charityCasesArray.find(function (id) {
+const checkIfCaseBelongsToCharity = (charityCasesArray,caseId)=>{
+    const idx = charityCasesArray.findIndex(function (id) {
         return id.toString() === caseId;
     });
-    if (!_caseId) {
+
+    if (idx===-1) {
         throw new NotFoundError('No Such Case With this Id!');
     }
-    return _caseId;
+
+    return idx;
+}
+
+const deleteCaseFromDB = async(id)=>{
+    const deletedCase = await caseRepository.deleteCaseById(id);
+
+    if (!deletedCase) {
+        throw new NotFoundError('No Such Case With this Id!');
+    }
+
+    deleteOldImgs('casesCoverImages', deletedCase.imageCover);
+
+    return deletedCase;
+}
+
+const deleteCaseFromCharityCasesArray = async (charity,idx)=>{
+    const caseIdsArray = charity.cases;
+
+    caseIdsArray.splice(idx, 1);
+
+    charity.cases = caseIdsArray;
+
+    await charity.save();
 }
 
 export const caseUtils = {
@@ -79,5 +106,7 @@ export const caseUtils = {
     getCasesPagination,
     getAllCases,
     getCaseByIdFromDB,
-    getCaseByIdFromCharityCasesArray
+    checkIfCaseBelongsToCharity,
+    deleteCaseFromCharityCasesArray,
+    deleteCaseFromDB
 };

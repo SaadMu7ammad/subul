@@ -61,11 +61,9 @@ export default function defineRoutes(expressApp) {
         }
     );
 
-    router.get(
-        '/cases/:caseId',
-        auth,
-        isConfirmed,
-        async (req, res, next) => {
+    router
+        .route('/cases/:caseId')
+        .get(auth, isConfirmed, async (req, res, next) => {
             try {
                 logger.info(`Case API was called to Get Case By Id`);
                 const getCaseByIdResponse = await caseUseCase.getCaseById(
@@ -78,8 +76,21 @@ export default function defineRoutes(expressApp) {
                 next(error);
                 return undefined;
             }
-        }
-    );
+        })
+        .delete(auth, isConfirmed, async (req, res, next) => {
+            try {
+                logger.info(`Case API was called to Delete Case By Id`);
+                const deleteCaseResponse = await caseUseCase.deleteCase(
+                    req,
+                    res,
+                    next
+                );
+                return res.json(deleteCaseResponse);
+            } catch (error) {
+                next(error);
+                return undefined;
+            }
+        });
 
     expressApp.use('/api/charities', router);
 }
