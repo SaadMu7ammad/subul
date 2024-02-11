@@ -27,4 +27,13 @@ const getAllCases = async (req, res, next) => {
     });
 };
 
-export const caseUseCase = { addCase, getAllCases };
+const getCaseById = async (req, res, next) => {
+    const charityCases = req.charity.cases;
+    const responseData = await caseService.getCaseById(charityCases,req.params.caseId);
+    res.json({
+        case:responseData.case,
+        message:'Case Fetched Successfully'
+    });
+};
+
+export const caseUseCase = { addCase, getAllCases, getCaseById };

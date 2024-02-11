@@ -18,14 +18,7 @@ import { getAllCasesValidation } from '../libraries/validation/components/case/g
 import { editCaseValidation } from '../libraries/validation/components/case/editCaseValidation.js';
 const router = express.Router();
 
-router.get(
-  '/allCases',
-  auth,
-  isConfirmed,
-  getAllCasesValidation,
-  validate,
-  getAllCases
-);
+
 // router
 //   .route('/cases/:caseId')
 //   .get(auth, isConfirmed, getCaseById)
@@ -39,14 +32,5 @@ router.get(
 //     resizeImgUpdated,
 //     editCase
 //   );
-// router.post(
-//   '/addCase',
-//   auth,
-//   isConfirmed,
-//   uploadCoverImage,
-//   postCaseValidation,
-//   validate,
-//   resizeImg,
-//   addCase
-// );
+
 export default router;

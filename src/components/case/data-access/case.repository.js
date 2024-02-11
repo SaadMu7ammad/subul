@@ -26,7 +26,13 @@ const getAllCases = async (sortObj,filterObj,page,pageLimit) => {
     return charityCases;
 };
 
+const getCaseById = async(id)=>{
+    const _case = await Case.findById(id);
+    return _case;
+}
+
 export const caseRepository = {
     createCase,
-    getAllCases
+    getAllCases,
+    getCaseById
 };

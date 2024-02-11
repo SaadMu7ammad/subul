@@ -61,5 +61,25 @@ export default function defineRoutes(expressApp) {
         }
     );
 
+    router.get(
+        '/cases/:caseId',
+        auth,
+        isConfirmed,
+        async (req, res, next) => {
+            try {
+                logger.info(`Case API was called to Get Case By Id`);
+                const getCaseByIdResponse = await caseUseCase.getCaseById(
+                    req,
+                    res,
+                    next
+                );
+                return res.json(getCaseByIdResponse);
+            } catch (error) {
+                next(error);
+                return undefined;
+            }
+        }
+    );
+
     expressApp.use('/api/charities', router);
 }

@@ -1,3 +1,4 @@
+import { NotFoundError } from '../../../libraries/errors/components/not-found.js';
 import { caseRepository } from '../data-access/case.repository.js';
 
 const createCase = async (caseData) => {
@@ -55,10 +56,28 @@ const getAllCases = async (sortObj, filterObj, page, pageLimit) => {
     return cases;
 };
 
+const getCaseByIdFromDB = async(caseId)=>{
+    const _case = await caseRepository.getCaseById(caseId);
+    if(!_case)throw new NotFoundError('No Such Case With this Id!');
+    return _case;
+}
+
+const getCaseByIdFromCharityCasesArray = (charityCasesArray,caseId)=>{
+    const _caseId = charityCasesArray.find(function (id) {
+        return id.toString() === caseId;
+    });
+    if (!_caseId) {
+        throw new NotFoundError('No Such Case With this Id!');
+    }
+    return _caseId;
+}
+
 export const caseUtils = {
     createCase,
     getSortObj,
     getFilterObj,
     getCasesPagination,
     getAllCases,
+    getCaseByIdFromDB,
+    getCaseByIdFromCharityCasesArray
 };
