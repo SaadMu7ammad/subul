@@ -7,65 +7,6 @@ import { NotFoundError } from '../libraries/errors/components/index.js';
 import logger from '../utils/logger.js';
 import { deleteOldImgs } from '../utils/deleteFile.js';
 
-const addCase = asyncHandler(async (req, res, next) => {
-    const newCase = Case(req.body);
-    newCase.charity = req.charity._id;
-    newCase.imageCover = req.body.image;
-    try {
-        await newCase.save();
-        req.charity.cases.push(newCase._id);
-        await req.charity.save();
-        res.json(newCase);
-    } catch (err) {
-        if (err) {
-            deleteOldImgs('casesCoverImages', req.body.image);
-            next(err);
-        }
-    }
-});
-
-const getAllCases = asyncHandler(async (req, res, next) => {
-    //ToDo : Sanitizing Req Query Params
-    ///////Sorting//////
-    const sortBy = req.query.sort || 'upVotes';
-    const sortArray = sortBy.split(',');
-    const sortObject = {};
-    sortArray.forEach(function (sort) {
-        if (sort[0] === '-') {
-            sortObject[sort.substring(1)] = -1;
-        } else {
-            sortObject[sort] = 1;
-        }
-    });
-    ///////Filtering///////
-    const filterObject = { charity: req.charity._id };
-    const queryParameters = ['mainType', 'subType', 'nestedSubType'];
-
-    for (const param of queryParameters) {
-        if (req.query[param]) {
-            filterObject[param] = req.query[param];
-        }
-    }
-    //////Paginating/////
-    const pageLimit = +req.query.limit || 10;
-    const page = +req.query.page || 1;
-    ///////////////////////
-    const charityCases = await Case.aggregate([
-        {
-            $match: filterObject,
-        },
-        {
-            $sort: sortObject,
-        },
-    ])
-        .skip((page - 1) * pageLimit)
-        .limit(pageLimit)
-        .project(
-            '-gender -upVotes -views -dateFinished -donationNumbers -helpedNumbers -freezed -createdAt -updatedAt -__v'
-        );
-
-    res.json(charityCases);
-});
 
 const getCaseById = asyncHandler(async (req, res, next) => {
     const caseIdsArray = req.charity.cases;

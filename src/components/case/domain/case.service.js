@@ -7,6 +7,19 @@ const addCase = async (caseData, image, charity) => {
     return { case: newCase };
 };
 
+const getAllCases = async()=>{
+    const sortObj = caseUtils.getSortObj();
+    
+    const filteringObj = caseUtils.getFilterObj();
+
+    const {page,pageLimit} = caseUtils.getCasesPagination();
+
+    const charityCases = caseUtils.getAllCases();
+
+    return {charityCases}
+}
+
 export const caseService = {
     addCase,
+    getAllCases
 };
