@@ -2,17 +2,19 @@ import Case from './models/case.model.js';
 
 const createCase = async (caseData) => {
     const newCase = new Case(caseData);
+
     await newCase.save();
+    
     return newCase;
 };
 
-const getAllCases = async () => {
+const getAllCases = async (sortObj,filterObj,page,pageLimit) => {
     const charityCases = await Case.aggregate([
         {
-            $match: filterObject,
+            $match: filterObj,
         },
         {
-            $sort: sortObject,
+            $sort: sortObj,
         },
     ])
         .skip((page - 1) * pageLimit)
@@ -26,4 +28,5 @@ const getAllCases = async () => {
 
 export const caseRepository = {
     createCase,
+    getAllCases
 };

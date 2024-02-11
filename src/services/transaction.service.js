@@ -113,8 +113,8 @@ const updateCaseInfo = asyncHandler(async (data) => {
         if (caseIsExist.finished) caseIsExist.finished = false; //re open the case again
         if (caseIsExist.currentDonationAmount >= amount)
             caseIsExist.currentDonationAmount -= amount;
-        if (caseIsExist.dontationNumbers >= 1)
-            caseIsExist.dontationNumbers -= 1;
+        if (caseIsExist.donationNumbers >= 1)
+            caseIsExist.donationNumbers -= 1;
         if (caseIsExist.dateFinished) caseIsExist.dateFinished = null;
 
         await transactionIsExist.save();
@@ -134,7 +134,7 @@ const updateCaseInfo = asyncHandler(async (data) => {
         caseIsExist.dateFinished = Date.now();
         caseIsExist.finished = true;
     }
-    +caseIsExist.dontationNumbers++;
+    +caseIsExist.donationNumbers++;
     caseIsExist.currentDonationAmount += +amount;
     // const charityIsExist = await Charity.findById(caseIsExist.charity);
 

@@ -95,7 +95,7 @@ const caseSchema = new mongoose.Schema(
             type: Date,
             required: false,
         },
-        dontationNumbers: {
+        donationNumbers: {
             type: Number,
             required: false,
             default: 0,

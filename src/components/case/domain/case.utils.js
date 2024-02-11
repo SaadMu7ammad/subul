@@ -4,8 +4,8 @@ const createCase = async (caseData) => {
     return await caseRepository.createCase(caseData);
 };
 
-const getSortObj = () => {
-    const sortBy = req.query.sort || 'upVotes';
+const getSortObj = (sortQueryParams) => {
+    const sortBy = sortQueryParams || 'upVotes';
 
     const sortArray = sortBy.split(',');
 
@@ -22,36 +22,43 @@ const getSortObj = () => {
     return sortObj;
 };
 
-const getFilterObj = () => {
-    const filterObject = { charity: req.charity._id };
+const getFilterObj = (charityId, queryParams) => {
+    const filterObject = { charity: charityId };
 
-    const queryParameters = ['mainType', 'subType', 'nestedSubType'];
+    const filterQueryParameters = ['mainType', 'subType', 'nestedSubType'];
 
-    for (const param of queryParameters) {
-        if (req.query[param]) {
-            filterObject[param] = req.query[param];
+    for (const param of filterQueryParameters) {
+        if (queryParams[param]) {
+            filterObject[param] = queryParams[param];
         }
     }
 
     return filterObject;
 };
 
-const getCasesPagination = () => {
-    const pageLimit = +req.query.limit || 10;
+const getCasesPagination = (queryParams) => {
+    const pageLimit = +queryParams.limit || 10;
 
-    const page = +req.query.page || 1;
+    const page = +queryParams.page || 1;
 
     return { pageLimit, page };
 };
 
-const getAllCases = async()=>{
-    
-}
+const getAllCases = async (sortObj, filterObj, page, pageLimit) => {
+    const cases = await caseRepository.getAllCases(
+        sortObj,
+        filterObj,
+        page,
+        pageLimit
+    );
+
+    return cases;
+};
 
 export const caseUtils = {
     createCase,
     getSortObj,
     getFilterObj,
     getCasesPagination,
-    getAllCases
+    getAllCases,
 };

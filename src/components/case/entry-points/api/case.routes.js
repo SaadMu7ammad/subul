@@ -7,8 +7,9 @@ import { editCaseValidation } from '../../../../libraries/validation/components/
 import { validate } from '../../../../libraries/validation/index.js';
 import { deleteOldImgs } from '../../../../utils/deleteFile.js';
 import { auth, isConfirmed } from '../../../auth/shared/index.js';
-import {caseUseCase} from '../../domain/case.use-case.js';
+import { caseUseCase } from '../../domain/case.use-case.js';
 import logger from '../../../../utils/logger.js';
+import { getAllCasesValidation } from '../../../../libraries/validation/components/case/getAllCasesValidation.js';
 
 export default function defineRoutes(expressApp) {
     const router = express.Router();
@@ -23,7 +24,7 @@ export default function defineRoutes(expressApp) {
         resizeImg,
         async (req, res, next) => {
             try {
-                logger.info(`Case API was called to get Add Case`);
+                logger.info(`Case API was called to Add Case`);
                 const addCaseResponse = await caseUseCase.addCase(
                     req,
                     res,
@@ -31,7 +32,29 @@ export default function defineRoutes(expressApp) {
                 );
                 return res.json(addCaseResponse);
             } catch (error) {
-                deleteOldImgs('casesCoverImages',req.body.image);
+                deleteOldImgs('casesCoverImages', req.body.image);
+                next(error);
+                return undefined;
+            }
+        }
+    );
+
+    router.get(
+        '/allCases',
+        auth,
+        isConfirmed,
+        getAllCasesValidation,
+        validate,
+        async (req, res, next) => {
+            try {
+                logger.info(`Case API was called to Get All Cases`);
+                const getAllCasesResponse = await caseUseCase.getAllCases(
+                    req,
+                    res,
+                    next
+                );
+                return res.json(getAllCasesResponse);
+            } catch (error) {
                 next(error);
                 return undefined;
             }
@@ -40,4 +63,3 @@ export default function defineRoutes(expressApp) {
 
     expressApp.use('/api/charities', router);
 }
-
