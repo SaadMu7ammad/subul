@@ -90,7 +90,31 @@ export default function defineRoutes(expressApp) {
                 next(error);
                 return undefined;
             }
-        });
+        })
+        .put(
+            auth,
+            isConfirmed,
+            imageAssertion,
+            editCaseValidation,
+            validate,
+            resizeImg,
+            async (req, res, next) => {
+                try {
+                    logger.info(`Case API was called to Edit Case`);
+                    const editCaseResponse = await caseUseCase.editCase(
+                        req,
+                        res,
+                        next
+                    );
+                    return res.json(editCaseResponse);
+                } catch (error) {
+                    const image = req.body.imageCover || req.body.image;
+                    if (image) deleteOldImgs('casesCoverImages', image);
+                    next(error);
+                    return undefined;
+                }
+            }
+        );
 
     expressApp.use('/api/charities', router);
 }

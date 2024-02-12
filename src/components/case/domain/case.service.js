@@ -29,10 +29,7 @@ const getAllCases = async (charityId, queryParams) => {
 };
 
 const getCaseById = async (charityCases, caseId) => {
-    caseUtils.checkIfCaseBelongsToCharity(
-        charityCases,
-        caseId
-    );
+    caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
 
     const _case = await caseUtils.getCaseByIdFromDB(caseId);
 
@@ -41,21 +38,39 @@ const getCaseById = async (charityCases, caseId) => {
     };
 };
 
-const deleteCase = async (charity,caseId)=>{
-    const idx = caseUtils.checkIfCaseBelongsToCharity(charity.cases,caseId);
+const deleteCase = async (charity, caseId) => {
+    const idx = caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
     const deletedCase = await caseUtils.deleteCaseFromDB(caseId);
 
-    await caseUtils.deleteCaseFromCharityCasesArray(charity,idx);
+    await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
 
     return {
-        deletedCase
+        deletedCase,
+    };
+};
+
+const editCase = async (charity, caseData, caseId) => {
+    caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
+
+    let deleteOldImg;
+    if (caseData.image) {
+        deleteOldImg = await caseUtils.replaceCaseImg(caseData, caseId);
     }
-}
+
+    let updatedCase = await caseUtils.editCase(caseData, caseId);
+
+    if(deleteOldImg)deleteOldImg();
+
+    return {
+        case: updatedCase,
+    };
+};
 
 export const caseService = {
     addCase,
     getAllCases,
     getCaseById,
-    deleteCase
+    deleteCase,
+    editCase,
 };

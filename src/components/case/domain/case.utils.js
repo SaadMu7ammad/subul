@@ -57,27 +57,27 @@ const getAllCases = async (sortObj, filterObj, page, pageLimit) => {
     return cases;
 };
 
-const getCaseByIdFromDB = async(caseId)=>{
+const getCaseByIdFromDB = async (caseId) => {
     const _case = await caseRepository.getCaseById(caseId);
 
-    if(!_case)throw new NotFoundError('No Such Case With this Id!');
+    if (!_case) throw new NotFoundError('No Such Case With this Id!');
 
     return _case;
-}
+};
 
-const checkIfCaseBelongsToCharity = (charityCasesArray,caseId)=>{
+const checkIfCaseBelongsToCharity = (charityCasesArray, caseId) => {
     const idx = charityCasesArray.findIndex(function (id) {
         return id.toString() === caseId;
     });
 
-    if (idx===-1) {
+    if (idx === -1) {
         throw new NotFoundError('No Such Case With this Id!');
     }
 
     return idx;
-}
+};
 
-const deleteCaseFromDB = async(id)=>{
+const deleteCaseFromDB = async (id) => {
     const deletedCase = await caseRepository.deleteCaseById(id);
 
     if (!deletedCase) {
@@ -87,9 +87,9 @@ const deleteCaseFromDB = async(id)=>{
     deleteOldImgs('casesCoverImages', deletedCase.imageCover);
 
     return deletedCase;
-}
+};
 
-const deleteCaseFromCharityCasesArray = async (charity,idx)=>{
+const deleteCaseFromCharityCasesArray = async (charity, idx) => {
     const caseIdsArray = charity.cases;
 
     caseIdsArray.splice(idx, 1);
@@ -97,7 +97,23 @@ const deleteCaseFromCharityCasesArray = async (charity,idx)=>{
     charity.cases = caseIdsArray;
 
     await charity.save();
-}
+};
+
+const editCase = async (caseData, caseId) => {
+    const updatedCase = await caseRepository.editCase(caseData, caseId);
+
+    return updatedCase;
+};
+
+const replaceCaseImg = async (caseData, caseId) => {
+    caseData.imageCover = caseData.image[0];
+
+    const caseObject = await caseRepository.getCaseById(caseId);
+
+    let oldCoverImage = caseObject.imageCover;
+
+    return deleteOldImgs.bind(this,'casesCoverImages', oldCoverImage);
+};
 
 export const caseUtils = {
     createCase,
@@ -108,5 +124,7 @@ export const caseUtils = {
     getCaseByIdFromDB,
     checkIfCaseBelongsToCharity,
     deleteCaseFromCharityCasesArray,
-    deleteCaseFromDB
+    deleteCaseFromDB,
+    editCase,
+    replaceCaseImg,
 };

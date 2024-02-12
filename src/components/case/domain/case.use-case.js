@@ -54,4 +54,25 @@ const deleteCase = async (req, res, next) => {
     };
 };
 
-export const caseUseCase = { addCase, getAllCases, getCaseById, deleteCase };
+const editCase = async (req, res, next) => {
+    const charity = req.charity;
+
+    const caseId = req.params.caseId;
+
+    const caseData = req.body;
+
+    const responseData = await caseService.editCase(charity,caseData, caseId);
+
+    return {
+        case: responseData.case,
+        message: 'Case Edited Successfully',
+    };
+};
+
+export const caseUseCase = {
+    addCase,
+    getAllCases,
+    getCaseById,
+    deleteCase,
+    editCase,
+};

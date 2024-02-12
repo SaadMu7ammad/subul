@@ -4,11 +4,11 @@ const createCase = async (caseData) => {
     const newCase = new Case(caseData);
 
     await newCase.save();
-    
+
     return newCase;
 };
 
-const getAllCases = async (sortObj,filterObj,page,pageLimit) => {
+const getAllCases = async (sortObj, filterObj, page, pageLimit) => {
     const charityCases = await Case.aggregate([
         {
             $match: filterObj,
@@ -22,23 +22,39 @@ const getAllCases = async (sortObj,filterObj,page,pageLimit) => {
         .project(
             '-gender -upVotes -views -dateFinished -donationNumbers -helpedNumbers -freezed -createdAt -updatedAt -__v'
         );
-        
+
     return charityCases;
 };
 
-const getCaseById = async(id)=>{
+const getCaseById = async (id) => {
     const _case = await Case.findById(id);
     return _case;
-}
+};
 
-const deleteCaseById = async(id)=>{
+const deleteCaseById = async (id) => {
     const _case = await Case.findByIdAndDelete(id);
     return _case;
-}
+};
+
+const editCase = async (caseData,id) => {
+    const updatedCase = await Case.findByIdAndUpdate(
+        id,
+        {
+            $set: { ...caseData },
+        },
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
+
+    return updatedCase;
+};
 
 export const caseRepository = {
     createCase,
     getAllCases,
     getCaseById,
-    deleteCaseById
+    deleteCaseById,
+    editCase
 };
