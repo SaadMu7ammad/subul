@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express from 'express';
 
 import { auth, isConfirmed, isActivated } from '../../../auth/shared/index.js';
 import { charityUseCase } from '../../domain/charity.use-case.js';

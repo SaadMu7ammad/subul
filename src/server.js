@@ -1,20 +1,26 @@
+//Packages 📦️
 import * as path from 'path';
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv/config';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
+import logger from './utils/logger.js';
+//Configuration ⚙️
+import * as configurationProvider from './libraries/configuration-provider/index.js';
+import configurationSchema from './config/config.js';
+//Errors ⛔️
 import { NotFound, errorHandler } from './libraries/errors/index.js';
+//Routes 🛤️
 import transactionRoutes from './paymob/routes/transactionRoutes.js';
 import userRoutes from './components/user/entry-points/api/user.routes.js';
 import authUserRoutes from './components/auth/user/entry-points/api/auth.routes.js';
 import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes.js';
 import charityRoutes from './components/charity/entry-points/api/charity.routes.js';
-import casesRoutes from './routes/casesRoutes.js';
+import casesRoutes from './components/case/entry-points/api/case.routes.js';
 import adminRoutes from './routes/adminRoutes.js';
-import logger from './utils/logger.js';
-import * as configurationProvider from './libraries/configuration-provider/index.js';
-import configurationSchema from './config/config.js';
+
+
 //this bad boy will do all the .env work :D
 configurationProvider.initializeAndValidate(configurationSchema);
 
@@ -40,7 +46,7 @@ charityRoutes(app);
 
 userRoutes(app);
 // app.use('/api/charities', charityRoutes);
-app.use('/api/charities', casesRoutes);
+casesRoutes(app);
 app.use('/api/admin', adminRoutes);
 app.get('/', (req, res) => {
   res.send('subul charity');

@@ -4,9 +4,9 @@ import { userService } from './user.service.js';
 //@access public
 const resetUser = async (req, res, next) => {
   const resetInputsData = req.body;
-  const dataResponsed = await userService.resetUser(resetInputsData);
+  const responseData = await userService.resetUser(resetInputsData);
   return {
-    message: dataResponsed.message,
+    message: responseData.message,
   };
 };
 //@desc   reset password
@@ -14,9 +14,9 @@ const resetUser = async (req, res, next) => {
 //@access public
 const confirmReset = async (req, res, next) => {
   const resetInputsData = req.body;
-  const dataResponsed = await userService.confirmReset(resetInputsData);
+  const responseData = await userService.confirmReset(resetInputsData);
   return {
-    message: dataResponsed.message,
+    message: responseData.message,
   };
 };
 
@@ -26,12 +26,12 @@ const confirmReset = async (req, res, next) => {
 const changePassword = async (req, res, next) => {
   const changePasswordInputsData = req.body;
   const storedUser = req.user;
-  const dataResponsed = await userService.changePassword(
+  const responseData = await userService.changePassword(
     changePasswordInputsData,
     storedUser
   );
   return {
-    message: dataResponsed.message,
+    message: responseData.message,
   };
 };
 
@@ -41,22 +41,22 @@ const changePassword = async (req, res, next) => {
 const activateAccount = async (req, res, next) => {
   const activateAccountInputsData = req.body;
   const storedUser = req.user;
-  const dataResponsed = await userService.activateAccount(
+  const responseData = await userService.activateAccount(
     activateAccountInputsData,
     storedUser,
     res
   );
   return {
-    message: dataResponsed.message,
+    message: responseData.message,
   };
 };
 //@desc   logout user
 //@route  POST /api/users/logout
 //@access private
 const logoutUser = (req, res, next) => {
-  const dataResponsed = userService.logoutUser(res);
+  const responseData = userService.logoutUser(res);
   return {
-    message: dataResponsed.message,
+    message: responseData.message,
   };
 };
 //@desc   edit user profile
@@ -76,19 +76,19 @@ const editUserProfile = async (req, res, next) => {
   // const editUserProfileInputsData = userObj;
   const editUserProfileInputsData = req.body;
   const storedUser = req.user;
-  const dataResponsed = await userService.editUserProfile(
+  const responseData = await userService.editUserProfile(
     editUserProfileInputsData,
     storedUser
   );
-  if (dataResponsed.emailEdited) {
+  if (responseData.emailEdited) {
     return {
-      user: dataResponsed.user,
+      user: responseData.user,
       message:
         'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
     };
   } else {
     return {
-      user: dataResponsed.user,
+      user: responseData.user,
       message: 'User Data Changed Successfully',
     };
   }
@@ -98,9 +98,10 @@ const editUserProfile = async (req, res, next) => {
 //@access private
 const getUserProfileData = (req, res, next) => {
   const storedUser = req.user;
-  const dataResponsed = userService.getUserProfileData(storedUser);
+  const responseData = userService.getUserProfileData(storedUser);
   return {
-    user: dataResponsed.user,
+    user: responseData.user,
+    message:'User Profile Fetched Successfully'
   };
 };
 
