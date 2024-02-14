@@ -12,7 +12,7 @@ import configurationSchema from './config/config.js';
 //Errors ⛔️
 import { NotFound, errorHandler } from './libraries/errors/index.js';
 //Routes 🛤️
-import transactionRoutes from './paymob/routes/transactionRoutes.js';
+import transactionRoutes from './libraries/paymob/routes/transactionRoutes.js';
 import userRoutes from './components/user/entry-points/api/user.routes.js';
 import authUserRoutes from './components/auth/user/entry-points/api/auth.routes.js';
 import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes.js';

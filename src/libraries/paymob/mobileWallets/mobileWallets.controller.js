@@ -1,6 +1,6 @@
 import asyncHandler from 'express-async-handler';
-import {createPayment} from '../payment/payment.service.js';
-import * as configurationProvider from '../../libraries/configuration-provider/index.js';
+import { createPayment } from '../payment/payment.service.js';
+import * as configurationProvider from '../../configuration-provider/index.js';
 const paywithMobileWallet = asyncHandler(async (req, res, next) => {
   let { amount, charityId, caseId, caseTitle } = req.body;
   amount = +amount;
@@ -20,7 +20,9 @@ const paywithMobileWallet = asyncHandler(async (req, res, next) => {
       body: JSON.stringify({
         payment_token: tokenThirdStep,
         source: {
-          identifier: configurationProvider.getValue('paymob.mobileWalletNumber'), //the wallet number of the user
+          identifier: configurationProvider.getValue(
+            'paymob.mobileWalletNumber'
+          ), //the wallet number of the user
           subtype: 'WALLET',
         },
       }),
