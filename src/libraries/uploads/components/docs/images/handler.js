@@ -41,7 +41,7 @@ async function processDocs(docsKey, ref, req) {
         .toFormat('jpeg')
         .jpeg({ quality: 90 });
 
-      await saveImg(sharpPromise, 'docsCharities', fileName);
+      await saveImg(sharpPromise, 'charityDocs', fileName);
 
       if (docsKey === 'docs1') req.body.charityDocs.docs1.push(fileName);
       if (docsKey === 'docs2') req.body.charityDocs.docs2.push(fileName);

@@ -9,10 +9,10 @@ const multerFilter = (req, file, cb) => {
   };
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-       cb(null, 'uploads/docsCharities');
+       cb(null, 'uploads/charityDocs');
     },
     filename: (req, file, cb) => {
-       const uniqueSuffix = 'docCharity' + uuidv4() + '-' + Date.now();
+       const uniqueSuffix = 'charityDoc' + uuidv4() + '-' + Date.now();
        const filename = uniqueSuffix + '.pdf';
        cb(null, filename);
     }

@@ -127,9 +127,9 @@ const requestEditCharityPayments = async (req, res, next) => {
 
 
 const logout = (req, res, next) => {
-  const dataResponsed = charityService.logoutCharity(res);
+  const responseData = charityService.logoutCharity(res);
   return {
-    message: dataResponsed.message,
+    message: responseData.message,
   };
 };
 

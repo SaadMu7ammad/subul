@@ -109,7 +109,7 @@ const replaceProfileImage = async (charity, oldImg, newImg) => {
     charity.image = newImg;
     console.log(oldImg);
     await charity.save();
-    deleteOldImgs('LogoCharities', oldImg);
+    deleteOldImgs('charityLogos', oldImg);
     return { image: charity.image };
 };
 const addDocs = async (reqBody, charity) => {
@@ -230,7 +230,7 @@ const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
             temp[field] = methodData[field];
         });
 
-        temp[docsField] = reqPaymentMethodsObj[selector][docsField][0];
+        temp[docsField] = methodData[docsField][0];
     }
 
     return temp;
@@ -240,7 +240,7 @@ const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector, idx) => {
     for (let key in temp) {
         if (key.startsWith('docs')) {
             deleteOldImgs(
-                'docsCharities',
+                'charityDocs',
                 charityPaymentMethodsObj[selector][idx][key]
             );
 

@@ -26,7 +26,7 @@ const getImageConfiguration = (path) => {
     let destinationFolder;
 
     if (path === '/register' || path === '/edit-profileImg') {
-        (destinationFolder = 'LogoCharities'), (suffix = 'LogoCharity');
+        (destinationFolder = 'charityLogos'), (suffix = 'charityLogo');
     } else {
         (destinationFolder = 'casesCoverImages'), (suffix = 'caseCoveImage');
     }

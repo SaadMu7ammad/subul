@@ -31,8 +31,8 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true })); //form data
 app.use(express.json());
 
-//to access the img as path http://localhost:5000/LogoCharities/imgName_In_DB.jpeg
-//http://localhost:5000/docsCharities/docs1-sss--.jpeg
+//to access the img as path http://localhost:5000/charityLogos/imgName_In_DB.jpeg
+//http://localhost:5000/charityDocs/docs1-sss--.jpeg
 app.use(express.static(path.join(__dirname, `uploads`)));
 // app.use('/uploads',express.static( `uploads`));
 

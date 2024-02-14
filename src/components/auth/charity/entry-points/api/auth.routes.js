@@ -32,7 +32,7 @@ export default function defineRoutes(expressApp) {
         );
         return res.json(registerCharityResponse);
       } catch (error) {
-        deleteOldImgs('LogoCharities', req.body.image);
+        deleteOldImgs('charityLogos', req.body.image);
         next(error);
         return undefined;
       }

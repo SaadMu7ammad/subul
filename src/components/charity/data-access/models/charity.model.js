@@ -297,7 +297,7 @@ charitySchema.pre('save', async function (next) {
 //   if (doc.image) {
 //     const urlImg = `http://${configurationProvider.getValue(
 //       'environment.host'
-//     )}:${configurationProvider.getValue('environment.port')}/LogoCharities/${
+//     )}:${configurationProvider.getValue('environment.port')}/charityLogos/${
 //       doc.image
 //     }`;
 //     doc.image = urlImg;
@@ -310,7 +310,7 @@ charitySchema.pre('save', async function (next) {
 //       'environment.host'
 //     )}:${configurationProvider.getValue(
 //       'environment.port'
-//     )}/docsCharities/${img}`;
+//     )}/charityDocs/${img}`;
 //     img = url;
 //     // console.log(img);//after adding localhost
 //     ref[field][indx] = img;
@@ -332,7 +332,7 @@ charitySchema.pre('save', async function (next) {
 //           'environment.host'
 //         )}:${configurationProvider.getValue(
 //           'environment.port'
-//         )}/docsCharities/${sub}`;
+//         )}/charityDocs/${sub}`;
 //         sub = url;
 //         account.docsBank[indx] = sub;
 //         console.log('after ' + sub);
@@ -345,7 +345,7 @@ charitySchema.pre('save', async function (next) {
 //           'environment.host'
 //         )}:${configurationProvider.getValue(
 //           'environment.port'
-//         )}/docsCharities/${sub}`;
+//         )}/charityDocs/${sub}`;
 //         sub = url;
 //         account.docsFawry[indx] = sub;
 //       });
@@ -356,7 +356,7 @@ charitySchema.pre('save', async function (next) {
 //           'environment.host'
 //         )}:${configurationProvider.getValue(
 //           'environment.port'
-//         )}/docsCharities/${sub}`;
+//         )}/charityDocs/${sub}`;
 //         sub = url;
 //         account.docsVodafoneCash[indx] = sub;
 //       });
