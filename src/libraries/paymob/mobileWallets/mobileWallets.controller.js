@@ -1,7 +1,6 @@
-import asyncHandler from 'express-async-handler';
 import { createPayment } from '../payment/payment.service.js';
 import * as configurationProvider from '../../configuration-provider/index.js';
-const paywithMobileWallet = asyncHandler(async (req, res, next) => {
+const paywithMobileWallet = (async (req, res, next) => {
   let { amount, charityId, caseId, caseTitle } = req.body;
   amount = +amount;
   const { tokenThirdStep } = await createPayment(
@@ -29,7 +28,7 @@ const paywithMobileWallet = asyncHandler(async (req, res, next) => {
     }
   );
   const response = await request.json();
-  return res.status(201).json({ data: response });
+  return { data: response };
 });
 
 export { paywithMobileWallet };

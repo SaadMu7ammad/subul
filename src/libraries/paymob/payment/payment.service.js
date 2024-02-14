@@ -1,5 +1,5 @@
 import * as configurationProvider from '../../configuration-provider/index.js';
-import { NotFoundError } from '../../errors/components/not-found.js';
+import { NotFoundError } from '../../errors/components/index.js';
 const CreateAuthenticationRequest = async () => {
   try {
     const request = await fetch('https://accept.paymob.com/api/auth/tokens', {

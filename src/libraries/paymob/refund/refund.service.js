@@ -1,4 +1,3 @@
-import asyncHandler from 'express-async-handler';
 import { getTransactionByIdService } from '../admin/getTransactionById.service.js';
 import {
   BadRequestError,
