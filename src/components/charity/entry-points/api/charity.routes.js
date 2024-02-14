@@ -210,7 +210,7 @@ export default function defineRoutes(expressApp) {
         );
         deleteOldImgs(
           'charityDocs',
-          req?.body?.paymentMethods?.fawry?.docsFawry
+          req?.body?.paymentMethods?.fawry?.fawryDocs
         );
         deleteOldImgs(
           'charityDocs',

@@ -36,7 +36,7 @@ const rejectingCharity = async (charity) => {
 
   const paymentMethods = new Map([
     ['bankAccount', 'docsBank'],
-    ['fawry', 'docsFawry'],
+    ['fawry', 'fawryDocs'],
     ['vodafoneCash', 'docsVodafoneCash'],
   ]);
 
@@ -99,12 +99,12 @@ const rejectingPaymentAccount = async (charity, paymentMethod, idx) => {
   } else if (paymentMethod === 'vodafoneCash') {
     urlOldImage = charity.paymentMethods[paymentMethod][idx].docsVodafoneCash;
   } else if (paymentMethod === 'fawry') {
-    urlOldImage = charity.paymentMethods[paymentMethod][idx].docsFawry;
+    urlOldImage = charity.paymentMethods[paymentMethod][idx].fawryDocs;
   }
 
   charity.paymentMethods[paymentMethod].splice(idx, 1); //delete the account
   // url: 'http://localhost:5000/charityDocs/docsBank-name.jpeg';
-  // const url = path.join('./uploads/charityDocs', charity.paymentMethods[paymentMethod][idx].docsFawry[0])
+  // const url = path.join('./uploads/charityDocs', charity.paymentMethods[paymentMethod][idx].fawryDocs[0])
   if (urlOldImage) {
     deleteOldImgs('charityDocs', urlOldImage);
   } else {

@@ -54,7 +54,7 @@ const deleteCharityDocs = (req, type) => {
     } if (type === 'payment' || type === 'all') {
         [
             ['bankAccount', 'docsBank'],
-            ['fawry', 'docsFawry'],
+            ['fawry', 'fawryDocs'],
             ['vodafoneCash', 'docsVodafoneCash'],
         ].forEach((pm) => {
             let paymentMethod = pm[0];

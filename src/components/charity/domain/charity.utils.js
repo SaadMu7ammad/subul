@@ -154,11 +154,11 @@ const addPaymentAccounts = async (accountObj, charity, type) => {
     if (type === 'fawry') {
         const { fawry } = accountObj.paymentMethods;
         const { number } = fawry[0];
-        const docsFawry = fawry.docsFawry[0];
-        if (number && docsFawry) {
+        const fawryDocs = fawry.fawryDocs[0];
+        if (number && fawryDocs) {
             const temp = {
                 number,
-                docsFawry,
+                fawryDocs,
             };
             charity.paymentMethods['fawry'].push(temp);
         } else {
@@ -214,7 +214,7 @@ const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
         },
         fawry: {
             fields: ['number'],
-            docsField: 'docsFawry',
+            docsField: 'fawryDocs',
         },
         vodafoneCash: {
             fields: ['number'],

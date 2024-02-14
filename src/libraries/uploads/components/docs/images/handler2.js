@@ -36,9 +36,9 @@ async function processDocs(docsKey, ref, req) {
             if (
                 req.body.paymentMethods &&
                 req.body.paymentMethods.fawry &&
-                docsKey === 'docsFawry'
+                docsKey === 'fawryDocs'
             ) {
-                req.body.paymentMethods.fawry[indx].docsFawry.push(fileName);
+                req.body.paymentMethods.fawry[indx].fawryDocs.push(fileName);
             }
             if (
                 req.body.paymentMethods &&
@@ -57,7 +57,7 @@ const resizeDocReq = async (req, res, next) => {
         req.body.paymentMethods.bankAccount[0].docsBank = [];
     }
     if (req.body.paymentMethods && req.body.paymentMethods.fawry) {
-        req.body.paymentMethods.fawry[0].docsFawry = [];
+        req.body.paymentMethods.fawry[0].fawryDocs = [];
     }
     if (req.body.paymentMethods && req.body.paymentMethods.vodafoneCash) {
         req.body.paymentMethods.vodafoneCash[0].docsVodafoneCash = [];
@@ -69,7 +69,7 @@ const resizeDocReq = async (req, res, next) => {
     if (
         //if not upload docs
         !req.files['paymentMethods.bankAccount[0][docsBank]'] &&
-        !req.files['paymentMethods.fawry[0][docsFawry]'] &&
+        !req.files['paymentMethods.fawry[0][fawryDocs]'] &&
         !req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]']
     ) {
         throw new BadRequestError('docs are required');
@@ -82,10 +82,10 @@ const resizeDocReq = async (req, res, next) => {
             req
         );
 
-    if (req.files['paymentMethods.fawry[0][docsFawry]'])
+    if (req.files['paymentMethods.fawry[0][fawryDocs]'])
         await processDocs(
-            'docsFawry',
-            req.files['paymentMethods.fawry[0][docsFawry]'],
+            'fawryDocs',
+            req.files['paymentMethods.fawry[0][fawryDocs]'],
             req
         );
 
@@ -107,7 +107,7 @@ const multerStorage = multer.memoryStorage();
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 const uploadDocsReq = upload.fields([
     { name: 'paymentMethods.bankAccount[0][docsBank]', maxCount: 2 },
-    { name: 'paymentMethods.fawry[0][docsFawry]', maxCount: 2 },
+    { name: 'paymentMethods.fawry[0][fawryDocs]', maxCount: 2 },
     { name: 'paymentMethods.vodafoneCash[0][docsVodafoneCash]', maxCount: 2 },
 
     

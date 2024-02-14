@@ -86,7 +86,7 @@ const paymentMethodSchema = new Schema({
         // required: true,
       },
 
-      docsFawry: {
+      fawryDocs: {
         type: [String],
         // required: true,
       },
@@ -338,8 +338,8 @@ charitySchema.pre('save', async function (next) {
 //         console.log('after ' + sub);
 //       });
 //       // account.docsBank[0] = url;
-//     } else if (field === 'docsFawry') {
-//       account.docsFawry.forEach((sub, indx) => {
+//     } else if (field === 'fawryDocs') {
+//       account.fawryDocs.forEach((sub, indx) => {
 //         // console.log(sub);
 //         const url = `http://${configurationProvider.getValue(
 //           'environment.host'
@@ -347,7 +347,7 @@ charitySchema.pre('save', async function (next) {
 //           'environment.port'
 //         )}/charityDocs/${sub}`;
 //         sub = url;
-//         account.docsFawry[indx] = sub;
+//         account.fawryDocs[indx] = sub;
 //       });
 //     } else if (field === 'docsVodafoneCash') {
 //       account.docsVodafoneCash.forEach((sub, indx) => {
@@ -382,8 +382,8 @@ charitySchema.pre('save', async function (next) {
 //   //   console.log('xcxcxc');
 //   //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
 //   // }
-//   // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
-//   //   editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+//   // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
+//   //   editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
 //   // }
 //   // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
 //   //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
@@ -425,8 +425,8 @@ charitySchema.pre('save', async function (next) {
 //     // if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
 //     //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
 //     // }
-//     // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
-//     //   editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+//     // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
+//     //   editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
 //     // }
 //     // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
 //     //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
@@ -452,8 +452,8 @@ charitySchema.pre('save', async function (next) {
 //   if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
 //     editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
 //   }
-//   if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'docsFawry')) {
-//     editDocUrlPayment(doc.paymentMethods.fawry, 'docsFawry');
+//   if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
+//     editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
 //   }
 //   if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
 //     editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');

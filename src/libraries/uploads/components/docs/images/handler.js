@@ -24,7 +24,7 @@ const uploadDocs = upload.fields([
   { name: 'charityDocs[docs3]', maxCount: 2 },
   { name: 'charityDocs[docs4]', maxCount: 10 },
   { name: 'paymentMethods.bankAccount[0][docsBank]', maxCount: 2 },
-  { name: 'paymentMethods.fawry[0][docsFawry]', maxCount: 2 },
+  { name: 'paymentMethods.fawry[0][fawryDocs]', maxCount: 2 },
   { name: 'paymentMethods.vodafoneCash[0][docsVodafoneCash]', maxCount: 2 },
 ]);
 
@@ -57,9 +57,9 @@ async function processDocs(docsKey, ref, req) {
       if (
         req.body.paymentMethods &&
         req.body.paymentMethods.fawry &&
-        docsKey === 'docsFawry'
+        docsKey === 'fawryDocs'
       ) {
-        req.body.paymentMethods.fawry.docsFawry.push(fileName);
+        req.body.paymentMethods.fawry.fawryDocs.push(fileName);
       }
       if (
         req.body.paymentMethods &&
@@ -82,7 +82,7 @@ const resizeDoc = async (req, res, next) => {
     req.body.paymentMethods.bankAccount.docsBank = [];
   }
   if (req.body.paymentMethods && req.body.paymentMethods.fawry) {
-    req.body.paymentMethods.fawry.docsFawry = [];
+    req.body.paymentMethods.fawry.fawryDocs = [];
   }
   if (req.body.paymentMethods && req.body.paymentMethods.vodafoneCash) {
     req.body.paymentMethods.vodafoneCash.docsVodafoneCash = [];
@@ -97,7 +97,7 @@ const resizeDoc = async (req, res, next) => {
     !req.files['charityDocs[docs3]'] ||
     (!req.files['charityDocs[docs4]'] &&
       (!req.files['paymentMethods.bankAccount[0][docsBank]'] ||
-        !req.files['paymentMethods.fawry[0][docsFawry]'] ||
+        !req.files['paymentMethods.fawry[0][fawryDocs]'] ||
         !req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]']))
   ) {
     throw new BadRequestError('docs are required');
@@ -113,10 +113,10 @@ const resizeDoc = async (req, res, next) => {
       req
     );
 
-  if (req.files['paymentMethods.fawry[0][docsFawry]'])
+  if (req.files['paymentMethods.fawry[0][fawryDocs]'])
     await processDocs(
-      'docsFawry',
-      req.files['paymentMethods.fawry[0][docsFawry]'],
+      'fawryDocs',
+      req.files['paymentMethods.fawry[0][fawryDocs]'],
       req
     );
 
