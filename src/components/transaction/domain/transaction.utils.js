@@ -1,3 +1,5 @@
+import { transactionRepository } from '../data-access/transaction.repository.js';
+
 const donationAmountAssertion = (cause, amount) => {
   const currentAmount = +cause.currentDonationAmount + +amount;
   if (
@@ -42,13 +44,38 @@ const addTransactionIdToUserTransactionIds = async (user, id) => {
   await user.save();
 };
 const confirmSavingCase = async (cause) => {
-    await cause.save()
-}
+  await cause.save();
+};
+const confirmSavingUser = async (user) => {
+  await user.save();
+};
+const getAllTransactionsPromised = async (user) => {
+  const transactionPromises = user.transactions.map(async (itemId, index) => {
+    const myTransaction = await transactionRepository.findTransactionById(
+      itemId
+    );
+    if (!myTransaction) {
+      user.transactions.splice(index, 1);
+      return null;
+    } else {
+      // console.log(myTransaction.user);
+      if (myTransaction.user.toString() !== user._id.toString()) {
+        throw new BadRequestError('you dont have access to this !');
+      }
+      return myTransaction;
+    }
+  });
+  const allTransactionsPromised = await Promise.all(transactionPromises);
+  await confirmSavingUser(user);
+  return allTransactionsPromised;
+};
 export const transactionUtils = {
   donationAmountAssertion,
   updateTransactionAfterRefund,
   updateCaseAfterRefund,
   checkIsLastDonation,
   updateCaseAfterDonation,
-  addTransactionIdToUserTransactionIds,confirmSavingCase
+  addTransactionIdToUserTransactionIds,
+  confirmSavingCase,
+  getAllTransactionsPromised,
 };

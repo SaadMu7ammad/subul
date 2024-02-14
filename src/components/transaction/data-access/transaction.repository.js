@@ -16,6 +16,10 @@ const findTransactionByQuery = async (queryObj) => {
   const transaction = await Transaction.findOne(queryObj);
   return transaction;
 };
+const findTransactionById = async (id) => {
+  const transaction = await Transaction.findOne(id);
+  return transaction;
+};
 const findUserByEmail = async (email) => {
   const user = await User.findOne(email);
   return user;
@@ -28,5 +32,5 @@ export const transactionRepository = {
   findCharityById,
   findCaseById,
   findTransactionByQuery,
-  findUserByEmail,createTransaction
+  findUserByEmail,createTransaction,findTransactionById
 };

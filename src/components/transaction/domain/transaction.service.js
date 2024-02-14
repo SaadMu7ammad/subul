@@ -1,78 +1,77 @@
 import {
   BadRequestError,
   NotFoundError,
-} from '../libraries/errors/components/index.js';
+} from '../../../libraries/errors/components/index.js';
 import { transactionRepository } from '../data-access/transaction.repository.js';
 import { transactionUtils } from './transaction.utils.js';
 const preCreateTransaction = async (data, user) => {
-  //must check the account for the charity is valid or not
-  const { charityId, caseId, amount, mainTypePayment } = data;
-  //pre processing
-  if (!charityId) {
-    throw new NotFoundError('charity is not found');
-  } else if (!caseId) {
-    throw new NotFoundError('id is not found');
-  } else if (+amount === 0) {
-    throw new BadRequestError('Invalid amount of donation');
-  } else if (
-    mainTypePayment !== 'mobileWallet' &&
-    mainTypePayment !== 'onlineCard'
-  ) {
-    throw new NotFoundError('no payment method has been chosen');
-  }
-  const caseIsExist = await transactionRepository.findCaseById(caseId);
-  if (!caseIsExist) {
-    throw new NotFoundError('case is not found');
-  }
-  const chariyIsExist = await transactionRepository.findCharityById(
-    caseIsExist.charity
-  );
-  if (!chariyIsExist) {
-    throw new NotFoundError('charity is not found');
-  }
-  //check that charity is not confirmed or pending or the account not freezed
-  if (
-    chariyIsExist.isConfirmed === false ||
-    chariyIsExist.isPending === true ||
-    chariyIsExist.isEnabled === false
-  ) {
-    throw new BadRequestError(
-      'charity is not completed its authentication stages'
+  try {
+    //must check the account for the charity is valid or not
+    const { charityId, caseId, amount, mainTypePayment } = data;
+    //pre processing
+    if (!charityId) {
+      throw new NotFoundError('charity is not found');
+    } else if (!caseId) {
+      throw new NotFoundError('id is not found');
+    } else if (+amount === 0) {
+      throw new BadRequestError('Invalid amount of donation');
+    } else if (
+      mainTypePayment !== 'mobileWallet' &&
+      mainTypePayment !== 'onlineCard'
+    ) {
+      throw new NotFoundError('no payment method has been chosen');
+    }
+    const caseIsExist = await transactionRepository.findCaseById(caseId);
+    if (!caseIsExist) {
+      throw new NotFoundError('case is not found');
+    }
+    const chariyIsExist = await transactionRepository.findCharityById(
+      caseIsExist.charity
     );
-  }
-  if (
-    chariyIsExist.emailVerification.isVerified === false &&
-    chariyIsExist.phoneVerification.isVerified === false
-  ) {
-    throw new BadRequestError(
-      'charity is not verified..must verify the account by email or phone number'
+    if (!chariyIsExist) {
+      throw new NotFoundError('charity is not found');
+    }
+    //check that charity is not confirmed or pending or the account not freezed
+    if (
+      chariyIsExist.isConfirmed === false ||
+      chariyIsExist.isPending === true ||
+      chariyIsExist.isEnabled === false
+    ) {
+      throw new BadRequestError(
+        'charity is not completed its authentication stages'
+      );
+    }
+    if (
+      chariyIsExist.emailVerification.isVerified === false &&
+      chariyIsExist.phoneVerification.isVerified === false
+    ) {
+      throw new BadRequestError(
+        'charity is not verified..must verify the account by email or phone number'
+      );
+    }
+    if (caseIsExist.charity.toString() !== charityId.toString()) {
+      //to check that the case is related to the charity id in the database
+      throw new BadRequestError(
+        'mismatching while donating ...please try again'
+      );
+    }
+    //check the case is finished or being freezed by the website admin
+    if (caseIsExist.finished === true || caseIsExist.freezed === true) {
+      throw new BadRequestError(
+        'this case is finished...choose case not completed'
+      );
+    }
+    //check that donor only donates with the remain part of money and not exceed the target amount
+    const checker = transactionUtils.donationAmountAssertion(
+      caseIsExist,
+      amount
     );
+    return checker;
+  } catch (err) {
+    next(err);
   }
-  if (caseIsExist.charity.toString() !== charityId.toString()) {
-    //to check that the case is related to the charity id in the database
-    throw new BadRequestError('mismatching while donating ...please try again');
-  }
-  //check the case is finished or being freezed by the website admin
-  if (caseIsExist.finished === true || caseIsExist.freezed === true) {
-    throw new BadRequestError(
-      'this case is finished...choose case not completed'
-    );
-  }
-  //check that donor only donates with the remain part of money and not exceed the target amount
-  const checker = transactionUtils.donationAmountAssertion(caseIsExist, amount);
-  return checker;
-  // const currentAmount = +caseIsExist.currentDonationAmount + +amount;
-  // if (
-  //   +caseIsExist.targetDonationAmount < currentAmount &&
-  //   caseIsExist.targetDonationAmount !== currentAmount
-  // ) {
-  //   throw new BadRequestError(
-  //     'please donate with the remained value which is ' +
-  //       (+caseIsExist.targetDonationAmount - +caseIsExist.currentDonationAmount)
-  //   );
-  // }
 };
-const updateCaseInfo = asyncHandler(async (data) => {
+const updateCaseInfo = async (data) => {
   //start updating
   const {
     user,
@@ -119,7 +118,7 @@ const updateCaseInfo = asyncHandler(async (data) => {
   }
   //what if status = pending?
 
-  //update the case info
+  //start updating the case info
   //check if that is the last donation to finish this case
   caseIsExist = transactionUtils.checkIsLastDonation(caseIsExist, amount);
   caseIsExist = transactionUtils.updateCaseAfterDonation(caseIsExist, amount);
@@ -173,28 +172,12 @@ const updateCaseInfo = asyncHandler(async (data) => {
   await transactionUtils.confirmSavingCase();
   console.log({ status: newTransaction.status, data: newTransaction });
 
-  return newTransaction;
-  // } catch (err) {
-  //   console.log(err);
-  // }
-});
+  return { newTransaction: newTransaction };
+};
 const getAllTransactions = async (user) => {
-  const transactionPromises = user.transactions.map(async (item, index) => {
-    const myTransaction = await Transactions.findById(item);
-    if (!myTransaction) {
-      user.transactions.splice(index, 1);
-      return null;
-    } else {
-      // console.log(myTransaction.user);
-      if (myTransaction.user.toString() !== user._id.toString()) {
-        throw new BadRequestError('you dont have access to this !');
-      }
-      return myTransaction;
-    }
-  });
-  const allTransactions = await Promise.all(transactionPromises);
-  await user.save();
-  return allTransactions;
+  const allTransactionsPromised =
+    await transactionUtils.getAllTransactionsPromised(user);
+  return { allTransactions: allTransactionsPromised };
 };
 export const transactionService = {
   preCreateTransaction,

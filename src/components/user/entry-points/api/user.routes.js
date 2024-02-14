@@ -9,7 +9,7 @@ import {
   requestResetEmailUserValidation,
   tokenUserValidation,
 } from '../../../../libraries/validation/components/user/allUserValidation.js';
-import { getAllTransactions } from '../../../../controllers/transaction.controller.js';
+import { getAllTransactions } from '../../../transaction/domain/transaction.use-case.js';
 import logger from '../../../../utils/logger.js';
 
 export default function defineRoutes(expressApp) {
