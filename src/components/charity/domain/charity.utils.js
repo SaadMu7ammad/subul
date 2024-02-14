@@ -138,14 +138,14 @@ const addPaymentAccounts = async (accountObj, charity, type) => {
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;
         const { accNumber, iban, swiftCode } = bankAccount[0];
-        const docsBank = bankAccount.docsBank[0];
+        const bankDocs = bankAccount.bankDocs[0];
         const temp = {
             accNumber,
             iban,
             swiftCode,
-            docsBank,
+            bankDocs,
         };
-        if (accNumber && iban && swiftCode && docsBank) {
+        if (accNumber && iban && swiftCode && bankDocs) {
             charity.paymentMethods['bankAccount'].push(temp);
         } else {
             throw new BadRequestError('must provide complete information');
@@ -210,7 +210,7 @@ const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
     const methodMap = {
         bankAccount: {
             fields: ['accNumber', 'iban', 'swiftCode'], // ??
-            docsField: 'docsBank',
+            docsField: 'bankDocs',
         },
         fawry: {
             fields: ['number'],

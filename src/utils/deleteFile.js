@@ -53,7 +53,7 @@ const deleteCharityDocs = (req, type) => {
         }
     } if (type === 'payment' || type === 'all') {
         [
-            ['bankAccount', 'docsBank'],
+            ['bankAccount', 'bankDocs'],
             ['fawry', 'fawryDocs'],
             ['vodafoneCash', 'vodafoneCashDocs'],
         ].forEach((pm) => {

@@ -23,7 +23,7 @@ const uploadDocs = upload.fields([
   { name: 'charityDocs[docs2]', maxCount: 2 },
   { name: 'charityDocs[docs3]', maxCount: 2 },
   { name: 'charityDocs[docs4]', maxCount: 10 },
-  { name: 'paymentMethods.bankAccount[0][docsBank]', maxCount: 2 },
+  { name: 'paymentMethods.bankAccount[0][bankDocs]', maxCount: 2 },
   { name: 'paymentMethods.fawry[0][fawryDocs]', maxCount: 2 },
   { name: 'paymentMethods.vodafoneCash[0][vodafoneCashDocs]', maxCount: 2 },
 ]);
@@ -50,9 +50,9 @@ async function processDocs(docsKey, ref, req) {
       if (
         req.body.paymentMethods &&
         req.body.paymentMethods.bankAccount &&
-        docsKey === 'docsBank'
+        docsKey === 'bankDocs'
       ) {
-        req.body.paymentMethods.bankAccount.docsBank.push(fileName);
+        req.body.paymentMethods.bankAccount.bankDocs.push(fileName);
       }
       if (
         req.body.paymentMethods &&
@@ -79,7 +79,7 @@ const resizeDoc = async (req, res, next) => {
   req.body.charityDocs.docs3 = [];
   req.body.charityDocs.docs4 = [];
   if (req.body.paymentMethods && req.body.paymentMethods.bankAccount) {
-    req.body.paymentMethods.bankAccount.docsBank = [];
+    req.body.paymentMethods.bankAccount.bankDocs = [];
   }
   if (req.body.paymentMethods && req.body.paymentMethods.fawry) {
     req.body.paymentMethods.fawry.fawryDocs = [];
@@ -96,7 +96,7 @@ const resizeDoc = async (req, res, next) => {
     !req.files['charityDocs[docs2]'] ||
     !req.files['charityDocs[docs3]'] ||
     (!req.files['charityDocs[docs4]'] &&
-      (!req.files['paymentMethods.bankAccount[0][docsBank]'] ||
+      (!req.files['paymentMethods.bankAccount[0][bankDocs]'] ||
         !req.files['paymentMethods.fawry[0][fawryDocs]'] ||
         !req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]']))
   ) {
@@ -106,10 +106,10 @@ const resizeDoc = async (req, res, next) => {
   await processDocs('docs2', req.files['charityDocs[docs2]'], req);
   await processDocs('docs3', req.files['charityDocs[docs3]'], req);
   await processDocs('docs4', req.files['charityDocs[docs4]'], req);
-  if (req.files['paymentMethods.bankAccount[0][docsBank]'])
+  if (req.files['paymentMethods.bankAccount[0][bankDocs]'])
     await processDocs(
-      'docsBank',
-      req.files['paymentMethods.bankAccount[0][docsBank]'],
+      'bankDocs',
+      req.files['paymentMethods.bankAccount[0][bankDocs]'],
       req
     );
 

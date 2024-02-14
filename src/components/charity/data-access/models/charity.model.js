@@ -69,7 +69,7 @@ const paymentMethodSchema = new Schema({
         type: String,
         // required: true,
       },
-      docsBank: {
+      bankDocs: {
         type: [String], // Define it as an array of strings
         // required: true, // The entire array is required
       },
@@ -323,10 +323,10 @@ charitySchema.pre('save', async function (next) {
 //     // account.forEach((img, indx) => {
 //     // console.log(img);//before adding localhost
 //     // console.log('acc=');
-//     // console.log(account.docsBank[0]);
-//     if (field === 'docsBank') {
+//     // console.log(account.bankDocs[0]);
+//     if (field === 'bankDocs') {
 //       console.log('editDocUrlPayment');
-//       account.docsBank.forEach((sub, indx) => {
+//       account.bankDocs.forEach((sub, indx) => {
 //         console.log('before ' + sub);
 //         const url = `http://${configurationProvider.getValue(
 //           'environment.host'
@@ -334,10 +334,10 @@ charitySchema.pre('save', async function (next) {
 //           'environment.port'
 //         )}/charityDocs/${sub}`;
 //         sub = url;
-//         account.docsBank[indx] = sub;
+//         account.bankDocs[indx] = sub;
 //         console.log('after ' + sub);
 //       });
-//       // account.docsBank[0] = url;
+//       // account.bankDocs[0] = url;
 //     } else if (field === 'fawryDocs') {
 //       account.fawryDocs.forEach((sub, indx) => {
 //         // console.log(sub);
@@ -363,7 +363,7 @@ charitySchema.pre('save', async function (next) {
 //     }
 
 //     // console.log(img);//after adding localhost
-//     // ref.account[index] =  account.docsBank;
+//     // ref.account[index] =  account.bankDocs;
 //   });
 //   // })
 // };
@@ -378,9 +378,9 @@ charitySchema.pre('save', async function (next) {
 //     console.log('modifieddd');
 //     editImgUrl(doc);
 //   }
-//   // if (doc.paymentMethods && (doc.paymentMethods.bankAccount, 'docsBank')) {
+//   // if (doc.paymentMethods && (doc.paymentMethods.bankAccount, 'bankDocs')) {
 //   //   console.log('xcxcxc');
-//   //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+//   //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'bankDocs');
 //   // }
 //   // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
 //   //   editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
@@ -422,8 +422,8 @@ charitySchema.pre('save', async function (next) {
 //     editDocUrl(doc.charityDocs, 'docs2');
 //     editDocUrl(doc.charityDocs, 'docs3');
 //     editDocUrl(doc.charityDocs, 'docs4');
-//     // if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
-//     //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+//     // if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'bankDocs')) {
+//     //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'bankDocs');
 //     // }
 //     // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
 //     //   editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
@@ -449,8 +449,8 @@ charitySchema.pre('save', async function (next) {
 //     editDocUrl(doc.charityDocs, 'docs3');
 //     editDocUrl(doc.charityDocs, 'docs4');
 //   }
-//   if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'docsBank')) {
-//     editDocUrlPayment(doc.paymentMethods.bankAccount, 'docsBank');
+//   if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'bankDocs')) {
+//     editDocUrlPayment(doc.paymentMethods.bankAccount, 'bankDocs');
 //   }
 //   if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
 //     editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
