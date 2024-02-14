@@ -30,19 +30,19 @@ const rejectingCharity = async (charity) => {
   charity.isConfirmed = false;
 
   for (let i = 1; i <= 4; ++i) {
-    deleteOldImgs('docsCharities', charity.charityDocs['docs' + i]);
+    deleteOldImgs('charityDocs', charity.charityDocs['docs' + i]);
   }
   charity.charityDocs = {};
 
   const paymentMethods = new Map([
-    ['bankAccount', 'docsBank'],
-    ['fawry', 'docsFawry'],
-    ['vodafoneCash', 'docsVodafoneCash'],
+    ['bankAccount', 'bankDocs'],
+    ['fawry', 'fawryDocs'],
+    ['vodafoneCash', 'vodafoneCashDocs'],
   ]);
 
   for (let [method, docs] of paymentMethods) {
     charity.paymentMethods[method]?.forEach((acc) => {
-      deleteOldImgs('docsCharities', acc[docs]);
+      deleteOldImgs('charityDocs', acc[docs]);
     });
     charity.paymentMethods[method] = [];
   }
@@ -95,18 +95,18 @@ const rejectingPaymentAccount = async (charity, paymentMethod, idx) => {
   let urlOldImage;
 
   if (paymentMethod === 'bankAccount') {
-    urlOldImage = charity.paymentMethods[paymentMethod][idx].docsBank;
+    urlOldImage = charity.paymentMethods[paymentMethod][idx].bankDocs;
   } else if (paymentMethod === 'vodafoneCash') {
-    urlOldImage = charity.paymentMethods[paymentMethod][idx].docsVodafoneCash;
+    urlOldImage = charity.paymentMethods[paymentMethod][idx].vodafoneCashDocs;
   } else if (paymentMethod === 'fawry') {
-    urlOldImage = charity.paymentMethods[paymentMethod][idx].docsFawry;
+    urlOldImage = charity.paymentMethods[paymentMethod][idx].fawryDocs;
   }
 
   charity.paymentMethods[paymentMethod].splice(idx, 1); //delete the account
-  // url: 'http://localhost:5000/docsCharities/docsBank-name.jpeg';
-  // const url = path.join('./uploads/docsCharities', charity.paymentMethods[paymentMethod][idx].docsFawry[0])
+  // url: 'http://localhost:5000/charityDocs/bankDocs-name.jpeg';
+  // const url = path.join('./uploads/charityDocs', charity.paymentMethods[paymentMethod][idx].fawryDocs[0])
   if (urlOldImage) {
-    deleteOldImgs('docsCharities', urlOldImage);
+    deleteOldImgs('charityDocs', urlOldImage);
   } else {
     throw new BadRequestError('No docs found for that account');
   }

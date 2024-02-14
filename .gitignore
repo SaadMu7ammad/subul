@@ -1,6 +1,6 @@
 node_modules
 .env
-uploads/LogoCharities/*
-uploads/docsCharities/*
-uploads/casesCoverImages/*
+uploads/charityLogos/*
+uploads/charityDocs/*
+uploads/caseCoverImages/*
 .gitattributes

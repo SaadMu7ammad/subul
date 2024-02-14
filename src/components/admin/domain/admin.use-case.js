@@ -27,21 +27,21 @@ const getAllRequestsPaymentMethodsForConfirmedCharities = async (req, res, next)
 
 const confirmCharity = async (req, res, next) => {
   const { id } = req.params;
-  const charityConfirmed = await adminService.confirmCharity(id);
+  const confirmedCharity = await adminService.confirmCharity(id);
 
   return {
-    message: charityConfirmed.message,
-    charity: charityConfirmed.charity,
+    message: confirmedCharity.message,
+    charity: confirmedCharity.charity,
   };
 };
 
 const rejectCharity = async (req, res, next) => {
   const { id } = req.params;
-  const charityRejected = await adminService.rejectCharity(id);
+  const rejectedCharity = await adminService.rejectCharity(id);
 
   return {
-    message: charityRejected.message,
-    charity: charityRejected.charity,
+    message: rejectedCharity.message,
+    charity: rejectedCharity.charity,
   };
 };
 
@@ -49,7 +49,7 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (req, res, next)
   const { id } = req.params; //charityId
   const { paymentMethod, paymentAccountID } = req.body;
 
-  const paymentAccountConfirmed =
+  const confirmedPaymentAccount =
     await adminService.confirmPaymentAccountRequestForConfirmedCharities(
       id,
       paymentMethod,
@@ -57,22 +57,22 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (req, res, next)
     );
 
   return {
-    charity: paymentAccountConfirmed.charity,
-    message: paymentAccountConfirmed.message,
+    charity: confirmedPaymentAccount.charity,
+    message: confirmedPaymentAccount.message,
   };
 };
 const rejectPaymentAccountRequestForConfirmedCharities = async (req, res, next) => {
   const { id } = req.params; //charityId
   const { paymentMethod, paymentAccountID } = req.body;
-  const paymentAccountRejected = await adminService.rejectPaymentAccountRequestForConfirmedCharities(
+  const rejectedPaymentAccount = await adminService.rejectPaymentAccountRequestForConfirmedCharities(
     id,
     paymentMethod,
     paymentAccountID
   );
 
   return {
-    charity: paymentAccountRejected.charity,
-    message: paymentAccountRejected.message,
+    charity: rejectedPaymentAccount.charity,
+    message: rejectedPaymentAccount.message,
   };
 };
 export const adminUseCase = {

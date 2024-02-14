@@ -24,28 +24,28 @@ async function processDocs(docsKey, ref, req) {
                 .toFormat('jpeg')
                 .jpeg({ quality: 90 });
 
-            await saveImg(sharpPromise, 'docsCharities', fileName);
+            await saveImg(sharpPromise, 'charityDocs', fileName);
 
             if (
                 req.body.paymentMethods &&
                 req.body.paymentMethods.bankAccount &&
-                docsKey === 'docsBank'
+                docsKey === 'bankDocs'
             ) {
-                req.body.paymentMethods.bankAccount[indx].docsBank.push(fileName);
+                req.body.paymentMethods.bankAccount[indx].bankDocs.push(fileName);
             }
             if (
                 req.body.paymentMethods &&
                 req.body.paymentMethods.fawry &&
-                docsKey === 'docsFawry'
+                docsKey === 'fawryDocs'
             ) {
-                req.body.paymentMethods.fawry[indx].docsFawry.push(fileName);
+                req.body.paymentMethods.fawry[indx].fawryDocs.push(fileName);
             }
             if (
                 req.body.paymentMethods &&
                 req.body.paymentMethods.vodafoneCash &&
-                docsKey === 'docsVodafoneCash'
+                docsKey === 'vodafoneCashDocs'
             ) {
-                req.body.paymentMethods.vodafoneCash[indx].docsVodafoneCash.push(
+                req.body.paymentMethods.vodafoneCash[indx].vodafoneCashDocs.push(
                     fileName
                 );
             }
@@ -54,13 +54,13 @@ async function processDocs(docsKey, ref, req) {
 }
 const resizeDocReq = async (req, res, next) => {
     if (req.body.paymentMethods && req.body.paymentMethods.bankAccount) {
-        req.body.paymentMethods.bankAccount[0].docsBank = [];
+        req.body.paymentMethods.bankAccount[0].bankDocs = [];
     }
     if (req.body.paymentMethods && req.body.paymentMethods.fawry) {
-        req.body.paymentMethods.fawry[0].docsFawry = [];
+        req.body.paymentMethods.fawry[0].fawryDocs = [];
     }
     if (req.body.paymentMethods && req.body.paymentMethods.vodafoneCash) {
-        req.body.paymentMethods.vodafoneCash[0].docsVodafoneCash = [];
+        req.body.paymentMethods.vodafoneCash[0].vodafoneCashDocs = [];
     }
 
     if (!req.files) {
@@ -68,31 +68,31 @@ const resizeDocReq = async (req, res, next) => {
     }
     if (
         //if not upload docs
-        !req.files['paymentMethods.bankAccount[0][docsBank]'] &&
-        !req.files['paymentMethods.fawry[0][docsFawry]'] &&
-        !req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]']
+        !req.files['paymentMethods.bankAccount[0][bankDocs]'] &&
+        !req.files['paymentMethods.fawry[0][fawryDocs]'] &&
+        !req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]']
     ) {
         throw new BadRequestError('docs are required');
     }
 
-    if (req.files['paymentMethods.bankAccount[0][docsBank]'])
+    if (req.files['paymentMethods.bankAccount[0][bankDocs]'])
         await processDocs(
-            'docsBank',
-            req.files['paymentMethods.bankAccount[0][docsBank]'],
+            'bankDocs',
+            req.files['paymentMethods.bankAccount[0][bankDocs]'],
             req
         );
 
-    if (req.files['paymentMethods.fawry[0][docsFawry]'])
+    if (req.files['paymentMethods.fawry[0][fawryDocs]'])
         await processDocs(
-            'docsFawry',
-            req.files['paymentMethods.fawry[0][docsFawry]'],
+            'fawryDocs',
+            req.files['paymentMethods.fawry[0][fawryDocs]'],
             req
         );
 
-    if (req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]'])
+    if (req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'])
         await processDocs(
-            'docsVodafoneCash',
-            req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]'],
+            'vodafoneCashDocs',
+            req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'],
             req
         );
 
@@ -106,9 +106,9 @@ const resizeDocReq = async (req, res, next) => {
 const multerStorage = multer.memoryStorage();
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 const uploadDocsReq = upload.fields([
-    { name: 'paymentMethods.bankAccount[0][docsBank]', maxCount: 2 },
-    { name: 'paymentMethods.fawry[0][docsFawry]', maxCount: 2 },
-    { name: 'paymentMethods.vodafoneCash[0][docsVodafoneCash]', maxCount: 2 },
+    { name: 'paymentMethods.bankAccount[0][bankDocs]', maxCount: 2 },
+    { name: 'paymentMethods.fawry[0][fawryDocs]', maxCount: 2 },
+    { name: 'paymentMethods.vodafoneCash[0][vodafoneCashDocs]', maxCount: 2 },
 
     
 ]);

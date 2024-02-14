@@ -97,7 +97,7 @@ export default function defineRoutes(expressApp) {
       }
     }
   );
-  // // const upload = multer({ dest: 'uploads/docsCharities/' });
+  // // const upload = multer({ dest: 'uploads/charityDocs/' });
   router.post('/logout', (req, res, next) => {
     try {
       logger.info(`Charity API was called to logout`);
@@ -200,21 +200,21 @@ export default function defineRoutes(expressApp) {
         const sendDocsResponse = await charityUseCase.sendDocs(req, res, next);
         return res.json(sendDocsResponse);
       } catch (error) {
-        deleteOldImgs('docsCharities', req?.body?.charityDocs?.docs2);
-        deleteOldImgs('docsCharities', req?.body?.charityDocs?.docs1);
-        deleteOldImgs('docsCharities', req?.body?.charityDocs?.docs3);
-        deleteOldImgs('docsCharities', req?.body?.charityDocs?.docs4);
+        deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs2);
+        deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs1);
+        deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs3);
+        deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs4);
         deleteOldImgs(
-          'docsCharities',
-          req?.body?.paymentMethods?.bankAccount?.docsBank
+          'charityDocs',
+          req?.body?.paymentMethods?.bankAccount?.bankDocs
         );
         deleteOldImgs(
-          'docsCharities',
-          req?.body?.paymentMethods?.fawry?.docsFawry
+          'charityDocs',
+          req?.body?.paymentMethods?.fawry?.fawryDocs
         );
         deleteOldImgs(
-          'docsCharities',
-          req?.body?.paymentMethods?.vodafoneCash?.docsVodafoneCash
+          'charityDocs',
+          req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs
         );
         next(error);
         return undefined;

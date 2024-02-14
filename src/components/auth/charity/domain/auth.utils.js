@@ -41,13 +41,13 @@ const createCharity = async (dataInputs) => {
     dataInputs.email
   );
   if (charityExist) {
-    deleteOldImgs('LogoCharities', dataInputs.image);
+    deleteOldImgs('charityLogos', dataInputs.image);
     throw new BadRequestError('charity is registered already');
   }
   const newCharity = await authCharityRepository.createCharity(dataInputs);
   console.log('newww' + newCharity);
   if (!newCharity) {
-    deleteOldImgs('LogoCharities', dataInputs.image);
+    deleteOldImgs('charityLogos', dataInputs.image);
     throw new BadRequestError('Error created while creaing the charity');
   }
   return { charity: newCharity };

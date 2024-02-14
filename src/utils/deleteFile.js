@@ -49,20 +49,19 @@ const deleteOldImgs = (imgsFolder, imgsNames) => {
 const deleteCharityDocs = (req, type) => {
     if (type === 'charityDocs' || type === 'all') {
         for(let i = 1 ; i<=4;++i){
-          deleteOldImgs('docsCharities', req?.body?.charityDocs[`docs${i}`]);
+          deleteOldImgs('charityDocs', req?.body?.charityDocs[`docs${i}`]);
         }
     } if (type === 'payment' || type === 'all') {
-      console.log('please',Object.keys(req.body));
         [
-            ['bankAccount', 'docsBank'],
-            ['fawry', 'docsFawry'],
-            ['vodafoneCash', 'docsVodafoneCash'],
+            ['bankAccount', 'bankDocs'],
+            ['fawry', 'fawryDocs'],
+            ['vodafoneCash', 'vodafoneCashDocs'],
         ].forEach((pm) => {
             let paymentMethod = pm[0];
             let paymentDocs = pm[1];
             let paymentMethodObj = req.body.paymentMethods[paymentMethod];
             if (paymentMethodObj && paymentMethodObj[0][paymentDocs])
-                deleteOldImgs('docsCharities', paymentMethodObj[0][paymentDocs]);
+                deleteOldImgs('charityDocs', paymentMethodObj[0][paymentDocs]);
         });
     }
 };

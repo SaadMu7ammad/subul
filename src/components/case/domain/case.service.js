@@ -3,7 +3,7 @@ import { caseUtils } from './case.utils.js';
 const addCase = async (caseData, image, charity) => {
     const newCase = await caseUtils.createCase({
         ...caseData,
-        imageCover: image,
+        coverImage: image,
         charity: charity._id,
     });
     charity.cases.push(newCase._id);

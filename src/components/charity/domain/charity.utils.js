@@ -109,7 +109,7 @@ const replaceProfileImage = async (charity, oldImg, newImg) => {
     charity.image = newImg;
     console.log(oldImg);
     await charity.save();
-    deleteOldImgs('LogoCharities', oldImg);
+    deleteOldImgs('charityLogos', oldImg);
     return { image: charity.image };
 };
 const addDocs = async (reqBody, charity) => {
@@ -138,14 +138,14 @@ const addPaymentAccounts = async (accountObj, charity, type) => {
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;
         const { accNumber, iban, swiftCode } = bankAccount[0];
-        const docsBank = bankAccount.docsBank[0];
+        const bankDocs = bankAccount.bankDocs[0];
         const temp = {
             accNumber,
             iban,
             swiftCode,
-            docsBank,
+            bankDocs,
         };
-        if (accNumber && iban && swiftCode && docsBank) {
+        if (accNumber && iban && swiftCode && bankDocs) {
             charity.paymentMethods['bankAccount'].push(temp);
         } else {
             throw new BadRequestError('must provide complete information');
@@ -154,11 +154,11 @@ const addPaymentAccounts = async (accountObj, charity, type) => {
     if (type === 'fawry') {
         const { fawry } = accountObj.paymentMethods;
         const { number } = fawry[0];
-        const docsFawry = fawry.docsFawry[0];
-        if (number && docsFawry) {
+        const fawryDocs = fawry.fawryDocs[0];
+        if (number && fawryDocs) {
             const temp = {
                 number,
-                docsFawry,
+                fawryDocs,
             };
             charity.paymentMethods['fawry'].push(temp);
         } else {
@@ -168,11 +168,11 @@ const addPaymentAccounts = async (accountObj, charity, type) => {
     if (type === 'vodafoneCash') {
         const { vodafoneCash } = accountObj.paymentMethods;
         const { number } = vodafoneCash[0];
-        const docsVodafoneCash = vodafoneCash.docsVodafoneCash[0];
-        if (number && docsVodafoneCash) {
+        const vodafoneCashDocs = vodafoneCash.vodafoneCashDocs[0];
+        if (number && vodafoneCashDocs) {
             const temp = {
                 number,
-                docsVodafoneCash,
+                vodafoneCashDocs,
             };
             charity.paymentMethods['vodafoneCash'].push(temp);
         } else {
@@ -210,15 +210,15 @@ const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
     const methodMap = {
         bankAccount: {
             fields: ['accNumber', 'iban', 'swiftCode'], // ??
-            docsField: 'docsBank',
+            docsField: 'bankDocs',
         },
         fawry: {
             fields: ['number'],
-            docsField: 'docsFawry',
+            docsField: 'fawryDocs',
         },
         vodafoneCash: {
             fields: ['number'],
-            docsField: 'docsVodafoneCash',
+            docsField: 'vodafoneCashDocs',
         },
     };
 
@@ -230,7 +230,7 @@ const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
             temp[field] = methodData[field];
         });
 
-        temp[docsField] = reqPaymentMethodsObj[selector][docsField][0];
+        temp[docsField] = methodData[docsField][0];
     }
 
     return temp;
@@ -240,7 +240,7 @@ const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector, idx) => {
     for (let key in temp) {
         if (key.startsWith('docs')) {
             deleteOldImgs(
-                'docsCharities',
+                'charityDocs',
                 charityPaymentMethodsObj[selector][idx][key]
             );
 
