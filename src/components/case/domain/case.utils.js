@@ -84,7 +84,7 @@ const deleteCaseFromDB = async (id) => {
         throw new NotFoundError('No Such Case With this Id!');
     }
 
-    deleteOldImgs('casesCoverImages', deletedCase.imageCover);
+    deleteOldImgs('caseCoverImages', deletedCase.coverImage);
 
     return deletedCase;
 };
@@ -106,13 +106,13 @@ const editCase = async (caseData, caseId) => {
 };
 
 const replaceCaseImg = async (caseData, caseId) => {
-    caseData.imageCover = caseData.image[0];
+    caseData.coverImage = caseData.image[0];
 
     const caseObject = await caseRepository.getCaseById(caseId);
 
-    let oldCoverImage = caseObject.imageCover;
+    let oldCoverImage = caseObject.coverImage;
 
-    return deleteOldImgs.bind(this,'casesCoverImages', oldCoverImage);
+    return deleteOldImgs.bind(this,'caseCoverImages', oldCoverImage);
 };
 
 export const caseUtils = {

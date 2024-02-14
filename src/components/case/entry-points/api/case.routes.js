@@ -32,7 +32,7 @@ export default function defineRoutes(expressApp) {
                 );
                 return res.json(addCaseResponse);
             } catch (error) {
-                deleteOldImgs('casesCoverImages', req.body.image);
+                deleteOldImgs('caseCoverImages', req.body.image);
                 next(error);
                 return undefined;
             }
@@ -108,8 +108,8 @@ export default function defineRoutes(expressApp) {
                     );
                     return res.json(editCaseResponse);
                 } catch (error) {
-                    const image = req.body.imageCover || req.body.image;
-                    if (image) deleteOldImgs('casesCoverImages', image);
+                    const image = req.body.coverImage || req.body.image;
+                    if (image) deleteOldImgs('caseCoverImages', image);
                     next(error);
                     return undefined;
                 }

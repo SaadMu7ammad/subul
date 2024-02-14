@@ -28,9 +28,9 @@ const caseSchema = new mongoose.Schema(
             ],
             required: [true, 'maintype for that case must be provided'],
         },
-        imageCover: {
+        coverImage: {
             type: String,
-            required: [true, 'imageCover for that case must be provided'],
+            required: [true, 'coverImage for that case must be provided'],
         },
         location: [{ type: locationSchema, required: true }],
         subType: {
