@@ -37,7 +37,7 @@ const rejectingCharity = async (charity) => {
   const paymentMethods = new Map([
     ['bankAccount', 'docsBank'],
     ['fawry', 'fawryDocs'],
-    ['vodafoneCash', 'docsVodafoneCash'],
+    ['vodafoneCash', 'vodafoneCashDocs'],
   ]);
 
   for (let [method, docs] of paymentMethods) {
@@ -97,7 +97,7 @@ const rejectingPaymentAccount = async (charity, paymentMethod, idx) => {
   if (paymentMethod === 'bankAccount') {
     urlOldImage = charity.paymentMethods[paymentMethod][idx].docsBank;
   } else if (paymentMethod === 'vodafoneCash') {
-    urlOldImage = charity.paymentMethods[paymentMethod][idx].docsVodafoneCash;
+    urlOldImage = charity.paymentMethods[paymentMethod][idx].vodafoneCashDocs;
   } else if (paymentMethod === 'fawry') {
     urlOldImage = charity.paymentMethods[paymentMethod][idx].fawryDocs;
   }

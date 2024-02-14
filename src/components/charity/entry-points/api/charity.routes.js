@@ -214,7 +214,7 @@ export default function defineRoutes(expressApp) {
         );
         deleteOldImgs(
           'charityDocs',
-          req?.body?.paymentMethods?.vodafoneCash?.docsVodafoneCash
+          req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs
         );
         next(error);
         return undefined;

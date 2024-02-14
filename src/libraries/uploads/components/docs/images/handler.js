@@ -25,7 +25,7 @@ const uploadDocs = upload.fields([
   { name: 'charityDocs[docs4]', maxCount: 10 },
   { name: 'paymentMethods.bankAccount[0][docsBank]', maxCount: 2 },
   { name: 'paymentMethods.fawry[0][fawryDocs]', maxCount: 2 },
-  { name: 'paymentMethods.vodafoneCash[0][docsVodafoneCash]', maxCount: 2 },
+  { name: 'paymentMethods.vodafoneCash[0][vodafoneCashDocs]', maxCount: 2 },
 ]);
 
 async function processDocs(docsKey, ref, req) {
@@ -64,9 +64,9 @@ async function processDocs(docsKey, ref, req) {
       if (
         req.body.paymentMethods &&
         req.body.paymentMethods.vodafoneCash &&
-        docsKey === 'docsVodafoneCash'
+        docsKey === 'vodafoneCashDocs'
       ) {
-        req.body.paymentMethods.vodafoneCash.docsVodafoneCash.push(fileName);
+        req.body.paymentMethods.vodafoneCash.vodafoneCashDocs.push(fileName);
       }
     })
   );
@@ -85,7 +85,7 @@ const resizeDoc = async (req, res, next) => {
     req.body.paymentMethods.fawry.fawryDocs = [];
   }
   if (req.body.paymentMethods && req.body.paymentMethods.vodafoneCash) {
-    req.body.paymentMethods.vodafoneCash.docsVodafoneCash = [];
+    req.body.paymentMethods.vodafoneCash.vodafoneCashDocs = [];
   }
   if (!req.files) {
     throw new BadRequestError('docs are required');
@@ -98,7 +98,7 @@ const resizeDoc = async (req, res, next) => {
     (!req.files['charityDocs[docs4]'] &&
       (!req.files['paymentMethods.bankAccount[0][docsBank]'] ||
         !req.files['paymentMethods.fawry[0][fawryDocs]'] ||
-        !req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]']))
+        !req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]']))
   ) {
     throw new BadRequestError('docs are required');
   }
@@ -120,10 +120,10 @@ const resizeDoc = async (req, res, next) => {
       req
     );
 
-  if (req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]'])
+  if (req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'])
     await processDocs(
-      'docsVodafoneCash',
-      req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]'],
+      'vodafoneCashDocs',
+      req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'],
       req
     );
 

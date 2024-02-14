@@ -103,7 +103,7 @@ const paymentMethodSchema = new Schema({
         // required: true,
       },
 
-      docsVodafoneCash: {
+      vodafoneCashDocs: {
         type: [String],
         // required: true,
       },
@@ -349,8 +349,8 @@ charitySchema.pre('save', async function (next) {
 //         sub = url;
 //         account.fawryDocs[indx] = sub;
 //       });
-//     } else if (field === 'docsVodafoneCash') {
-//       account.docsVodafoneCash.forEach((sub, indx) => {
+//     } else if (field === 'vodafoneCashDocs') {
+//       account.vodafoneCashDocs.forEach((sub, indx) => {
 //         // console.log(sub);
 //         const url = `http://${configurationProvider.getValue(
 //           'environment.host'
@@ -358,7 +358,7 @@ charitySchema.pre('save', async function (next) {
 //           'environment.port'
 //         )}/charityDocs/${sub}`;
 //         sub = url;
-//         account.docsVodafoneCash[indx] = sub;
+//         account.vodafoneCashDocs[indx] = sub;
 //       });
 //     }
 
@@ -385,8 +385,8 @@ charitySchema.pre('save', async function (next) {
 //   // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
 //   //   editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
 //   // }
-//   // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
-//   //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
+//   // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs')) {
+//   //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs');
 //   // }
 //   // if (
 //   //   !doc.isModified('charityDocs[docs1]') &&
@@ -428,8 +428,8 @@ charitySchema.pre('save', async function (next) {
 //     // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
 //     //   editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
 //     // }
-//     // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
-//     //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
+//     // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs')) {
+//     //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs');
 //     // }
 //   }
 // });
@@ -455,8 +455,8 @@ charitySchema.pre('save', async function (next) {
 //   if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
 //     editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
 //   }
-//   if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash')) {
-//     editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'docsVodafoneCash');
+//   if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs')) {
+//     editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs');
 //   }
 // });
 // charitySchema.pre('findOneAndUpdate', async function (next) {

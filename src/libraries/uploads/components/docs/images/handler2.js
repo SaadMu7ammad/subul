@@ -43,9 +43,9 @@ async function processDocs(docsKey, ref, req) {
             if (
                 req.body.paymentMethods &&
                 req.body.paymentMethods.vodafoneCash &&
-                docsKey === 'docsVodafoneCash'
+                docsKey === 'vodafoneCashDocs'
             ) {
-                req.body.paymentMethods.vodafoneCash[indx].docsVodafoneCash.push(
+                req.body.paymentMethods.vodafoneCash[indx].vodafoneCashDocs.push(
                     fileName
                 );
             }
@@ -60,7 +60,7 @@ const resizeDocReq = async (req, res, next) => {
         req.body.paymentMethods.fawry[0].fawryDocs = [];
     }
     if (req.body.paymentMethods && req.body.paymentMethods.vodafoneCash) {
-        req.body.paymentMethods.vodafoneCash[0].docsVodafoneCash = [];
+        req.body.paymentMethods.vodafoneCash[0].vodafoneCashDocs = [];
     }
 
     if (!req.files) {
@@ -70,7 +70,7 @@ const resizeDocReq = async (req, res, next) => {
         //if not upload docs
         !req.files['paymentMethods.bankAccount[0][docsBank]'] &&
         !req.files['paymentMethods.fawry[0][fawryDocs]'] &&
-        !req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]']
+        !req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]']
     ) {
         throw new BadRequestError('docs are required');
     }
@@ -89,10 +89,10 @@ const resizeDocReq = async (req, res, next) => {
             req
         );
 
-    if (req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]'])
+    if (req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'])
         await processDocs(
-            'docsVodafoneCash',
-            req.files['paymentMethods.vodafoneCash[0][docsVodafoneCash]'],
+            'vodafoneCashDocs',
+            req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'],
             req
         );
 
@@ -108,7 +108,7 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 const uploadDocsReq = upload.fields([
     { name: 'paymentMethods.bankAccount[0][docsBank]', maxCount: 2 },
     { name: 'paymentMethods.fawry[0][fawryDocs]', maxCount: 2 },
-    { name: 'paymentMethods.vodafoneCash[0][docsVodafoneCash]', maxCount: 2 },
+    { name: 'paymentMethods.vodafoneCash[0][vodafoneCashDocs]', maxCount: 2 },
 
     
 ]);
