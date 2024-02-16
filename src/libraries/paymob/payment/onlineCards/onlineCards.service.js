@@ -1,11 +1,10 @@
-import { createPayment } from '../payment/payment.service.js';
-import * as configurationProvider from '../../configuration-provider/index.js';
-const payWithOnlineCard = async (req, res, next) => {
-  let { amount, charityId, caseId, caseTitle } = req.body;
-  amount = +amount;
+import { createPayment } from '../payment.service.js';
+import * as configurationProvider from '../../../configuration-provider/index.js';
+const payWithOnlineCard = async (reqBody, user) => {
+  const { amount, charityId, caseId, caseTitle } = reqBody;
   const { orderId, tokenThirdStep } = await createPayment(
-    req.user,
-    amount,
+    user,
+    +amount,
     charityId,
     caseId,
     caseTitle,
@@ -19,4 +18,4 @@ const payWithOnlineCard = async (req, res, next) => {
   };
 };
 
-export { payWithOnlineCard };
+export const OnlineCardService = { payWithOnlineCard };

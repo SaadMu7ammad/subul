@@ -2,17 +2,21 @@ import { BadRequestError } from '../../../libraries/errors/components/index.js';
 
 import { transactionService } from './transaction.service.js';
 const preCreateTransaction = async (req, res, next) => {
-  const data = req.body;
-  const transaction = await transactionService.preCreateTransaction(
-    data,
-    req.user
-  );
-  if (!transaction) {
-    throw new BadRequestError(
-      'transaction not completed ... please try again!'
+  try {
+    const data = req.body;
+    const transaction = await transactionService.preCreateTransaction(
+      data,
+      req.user
     );
+    if (!transaction) {
+      throw new BadRequestError(
+        'transaction not completed ... please try again!'
+      );
+    }
+    next();
+  } catch (err) {
+    next(err);
   }
-  next();
 };
 const getAllTransactions = async (req, res, next) => {
   const myTransactions = await transactionService.getAllTransactions(req.user);
@@ -52,7 +56,7 @@ const updateCaseInfo = async (req, res, next) => {
       'transaction not completed ... please try again!'
     );
   }
-  return { status: transaction.status, data: transaction };
+  return { status: transaction.status, data: transaction.newTransaction };
   // } catch (err) {
   //     console.log(err);
   // }

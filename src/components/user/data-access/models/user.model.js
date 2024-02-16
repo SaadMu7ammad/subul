@@ -139,7 +139,7 @@ const userSchema = new mongoose.Schema(
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) {
         //to not change password every time we edit the user data
-        next();
+        return next();
     }
     const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
     this.password = await bcrypt.hash(this.password, salt);

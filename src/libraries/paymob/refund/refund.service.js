@@ -3,7 +3,7 @@ import {
   BadRequestError,
   NotFoundError,
 } from '../../errors/components/index.js';
-import Transaction from '../../../components/transaction/data-access/models/transactionModel.js';
+import Transaction from '../../../components/transaction/data-access/models/transaction.model.js';
 const refund = async (transaction_id) => {
   const stepOneToken = await getTransactionByIdService.getTokenStepOne();
   if (!stepOneToken) throw new NotFoundError('no token provided');

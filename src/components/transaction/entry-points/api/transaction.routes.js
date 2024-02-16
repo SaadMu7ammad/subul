@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express from 'express';
 
 import { auth, isActivated } from '../../../auth/shared/index.js';
 import { isAdmin } from '../../../admin/index.js';
@@ -8,10 +8,11 @@ import {
 } from '../../domain/transaction.use-case.js';
 
 import { hmacSetting } from '../../../../libraries/paymob/hmac/hmac.controller.js';
-import { payWithOnlineCard } from '../../../../libraries/paymob/onlineCards/onlineCards.controller.js';
-import { paywithMobileWallet } from '../../../../libraries/paymob/mobileWallets/mobileWallets.controller.js';
+import { payWithOnlineCard } from '../../../../libraries/paymob/payment/onlineCards/onlineCards.controller.js';
+import { paywithMobileWallet } from '../../../../libraries/paymob/payment/mobileWallets/mobileWallets.controller.js';
 import { getTransactionById } from '../../../../libraries/paymob/admin/getTransactionById.controller.js';
 import { refund } from '../../../../libraries/paymob/refund/refund.controller.js';
+import logger from '../../../../utils/logger.js';
 
 export default function defineRoutes(expressApp) {
   const router = express.Router();
@@ -74,8 +75,15 @@ export default function defineRoutes(expressApp) {
   //then
   //Transaction response callback
   router.get('/paymob/callback', (req, res, next) => {
-    console.log('get cb');
-    res.send(req.query);
+    try {
+      logger.info(`transaction API was called to finish the callback`);
+      console.log('get cb');
+      res.send(req.query);
+    } catch (error) {
+      next(error);
+      return undefined;
+    }
+
     // res.send(req.query['data.message']);
   });
 

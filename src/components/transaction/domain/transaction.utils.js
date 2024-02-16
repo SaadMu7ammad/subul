@@ -25,23 +25,23 @@ const updateCaseAfterRefund = async (cause, amount) => {
   if (cause.dateFinished) cause.dateFinished = null;
   await cause.save();
 };
-const checkIsLastDonation = async (cause, amount) => {
+const checkIsLastDonation = (cause, amount) => {
   const currentAmount = +cause.currentDonationAmount + +amount;
-
   if (+cause.targetDonationAmount === currentAmount) {
     cause.dateFinished = Date.now();
     cause.finished = true;
   }
   return cause;
 };
-const updateCaseAfterDonation = async (cause, amount) => {
+const updateCaseAfterDonation = (cause, amount) => {
   +cause.donationNumbers++;
   cause.currentDonationAmount += +amount;
   return cause;
 };
-const addTransactionIdToUserTransactionIds = async (user, id) => {
-  user.transactions.push(newTransaction._id);
+const addTransactionIdToUserTransactionIds = async (user, newTransactionId) => {
+  user.transactions.push(newTransactionId);
   await user.save();
+  return user;
 };
 const confirmSavingCase = async (cause) => {
   await cause.save();

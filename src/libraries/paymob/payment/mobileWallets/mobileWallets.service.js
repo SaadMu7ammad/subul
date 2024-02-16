@@ -1,11 +1,10 @@
-import { createPayment } from '../payment/payment.service.js';
-import * as configurationProvider from '../../configuration-provider/index.js';
-const paywithMobileWallet = (async (req, res, next) => {
-  let { amount, charityId, caseId, caseTitle } = req.body;
-  amount = +amount;
+import { createPayment } from '../payment.service.js';
+import * as configurationProvider from '../../../configuration-provider/index.js';
+const paywithMobileWallet = async (reqBody, user) => {
+  const { amount, charityId, caseId, caseTitle } = reqBody;
   const { tokenThirdStep } = await createPayment(
-    req.user,
-    amount,
+    user,
+    +amount,
     charityId,
     caseId,
     caseTitle,
@@ -29,6 +28,5 @@ const paywithMobileWallet = (async (req, res, next) => {
   );
   const response = await request.json();
   return { data: response };
-});
-
-export { paywithMobileWallet };
+};
+export const mobileWalletService = { paywithMobileWallet };
