@@ -114,6 +114,21 @@ const getAllTransactionsPromised = async (user) => {
   await confirmSavingUser(user);
   return allTransactionsPromised;
 };
+const refundUtility = async (transaction,amount) => {
+  const caseId = transaction.case; //get the id of the case
+  if (!caseId) throw new NotFoundError('case id not found');
+
+  const caseIsExistForRefund = await transactionRepository.findCaseById(caseId);
+  if (!caseIsExistForRefund) throw new NotFoundError('case id not found');
+
+  await updateTransactionAfterRefund(transaction);
+  //update the case and decrement donation info
+  await updateCaseAfterRefund(caseIsExistForRefund, amount);
+  //in the next middleware will update the externalTransactionId with the new refund transaction
+  console.log('transaction updated partially in db to be refunded');
+
+  return { transaction: transaction };
+};
 export const transactionUtils = {
   checkPreCreateTransaction,
   checkCaseIsValidToDonate,
@@ -126,4 +141,5 @@ export const transactionUtils = {
   addTransactionIdToUserTransactionIds,
   confirmSavingCase,
   getAllTransactionsPromised,
+  refundUtility,
 };

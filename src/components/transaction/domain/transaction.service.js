@@ -67,28 +67,19 @@ const updateCaseInfo = async (data) => {
     orderId: orderId,
   };
 
-  const transactionIsExist = await transactionRepository.findTransactionByQuery(
+  let transactionIsExist = await transactionRepository.findTransactionByQuery(
     queryObj
   );
   if (transactionIsExist) {
     //transaction must updated not created again
-    console.log('transaction updated partially in db be refunded');
-    const caseId = transactionIsExist.case; //get the id of the case
-    if (!caseId) throw new NotFoundError('case id not found');
-    const caseIsExistForRefund = await transactionRepository.findCaseById(
-      caseId
+    transactionIsExist = await transactionUtils.refundUtility(
+      transactionIsExist,
+      amount
     );
-    if (!caseIsExistForRefund) throw new NotFoundError('case id not found');
-
-    await transactionUtils.updateTransactionAfterRefund(transactionIsExist);
-    //update the case and decrement donation info
-    await transactionUtils.updateCaseAfterRefund(caseIsExistForRefund, amount);
     //in the next middleware will update the externalTransactionId with the new refund transaction
+    return { transactionIsExist: transactionIsExist.transaction };
+  } //else  console.log('no transaction found for refund so will create new one');
 
-    return { transactionIsExist: transactionIsExist };
-  } else {
-    // console.log('no transaction found for refund so will create new one');
-  }
   //what if status = pending?
 
   //start updating the case info
@@ -98,7 +89,7 @@ const updateCaseInfo = async (data) => {
 
   //now everything is ready for creating the transaction
 
-  // according to it we know the type of the payment method the donor paid with
+  // to know the type of payment method that donor paid with
   let paymentMethod;
   if (paymentMethodType === 'card') {
     paymentMethod = {
