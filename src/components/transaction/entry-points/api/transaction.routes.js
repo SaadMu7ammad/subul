@@ -66,6 +66,7 @@ export default function defineRoutes(expressApp) {
     try {
       logger.info(`transaction API was called to update Case Info`);
       const updateCaseInfoResponse = await updateCaseInfo(req, res, next);
+      logger.info('transaction created & case updated');
       return res.json(updateCaseInfoResponse);
     } catch (error) {
       next(error);

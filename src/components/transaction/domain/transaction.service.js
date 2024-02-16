@@ -63,115 +63,108 @@ const preCreateTransaction = async (data, user) => {
   return checker;
 };
 const updateCaseInfo = async (data) => {
-  try {
-    //start updating
-    const {
-      user,
-      items,
-      externalTransactionId,
-      orderId,
-      amount,
-      date,
-      paymentMethodType,
-      status,
-      currency,
-      secretInfoPayment,
-    } = data;
-    //check case is stored or not in the case table
-    let caseIsExist = await transactionRepository.findCaseById(items[0].name); //the id of the case
-    if (!caseIsExist) {
-      throw new NotFoundError('case is not found');
-    }
-    //check user who made the transaction exist
-    const userIsExist = await transactionRepository.findUserByEmail(user.email);
-    if (!userIsExist) throw new BadRequestError('no user found');
-
-    // implement the refund here
-    const queryObj = {
-      externalTransactionId: externalTransactionId,
-      orderId: orderId,
-    };
-
-    const transactionIsExist =
-      await transactionRepository.findTransactionByQuery(queryObj);
-    if (transactionIsExist) {
-      //transaction must updated not created again
-      console.log('transaction updated partially in db be refunded');
-      const caseId = transactionIsExist.case; //get the id of the case
-      if (!caseId) throw new NotFoundError('case id not found');
-      const caseIsExistForRefund = await transactionRepository.findCaseById(
-        caseId
-      );
-      if (!caseIsExistForRefund) throw new NotFoundError('case id not found');
-
-      await transactionUtils.updateTransactionAfterRefund(transactionIsExist);
-      //update the case and decrement donation info
-      await transactionUtils.updateCaseAfterRefund(
-        caseIsExistForRefund,
-        amount
-      );
-      //in the next middleware will update the externalTransactionId with the new refund transaction
-
-      return { transactionIsExist: transactionIsExist };
-    } else {
-      // console.log('no transaction found for refund so will create new one');
-    }
-    //what if status = pending?
-
-    //start updating the case info
-    //check if that is the last donation to finish this case
-    caseIsExist = transactionUtils.checkIsLastDonation(caseIsExist, amount);
-    caseIsExist = transactionUtils.updateCaseAfterDonation(caseIsExist, amount);
-
-    //now everything is ready for creating the transaction
-
-    // according to it we know the type of the payment method the donor paid with
-    let paymentMethod;
-    if (paymentMethodType === 'card') {
-      paymentMethod = {
-        onlineCard: {
-          lastFourDigits: secretInfoPayment,
-        },
-      };
-    } else if (paymentMethodType === 'wallet') {
-      paymentMethod = {
-        mobileWallet: {
-          number: secretInfoPayment,
-        },
-      };
-    }
-    //what if the payment happened but the transaction not stored in the db??i think must make a report or something like that to alert that to support
-    const transactionData = {
-      case: caseIsExist._id,
-      user: userIsExist._id,
-      moneyPaid: +amount,
-      paidAt: date,
-      externalTransactionId: externalTransactionId,
-      orderId: orderId,
-      paymentInfo: paymentMethod,
-      status,
-      currency,
-    };
-    const newTransaction = await transactionRepository.createTransaction(
-      transactionData
-    );
-    if (!newTransaction) throw new BadRequestError('no transaction found');
-    //add the transaction id to the user
-    await transactionUtils.addTransactionIdToUserTransactionIds(
-      userIsExist,
-      newTransaction._id
-    );
-    if (status == 'failed') {
-      return newTransaction;
-      // throw new BadRequestError('transaction failed please try again');
-    }
-    await transactionUtils.confirmSavingCase(caseIsExist);
-    console.log({ status: newTransaction.status }); //, data: newTransaction });
-    return { newTransaction: newTransaction };
-  } catch (err) {
-    console.log(err);
-    next(err);
+  //start updating
+  const {
+    user,
+    items,
+    externalTransactionId,
+    orderId,
+    amount,
+    date,
+    paymentMethodType,
+    status,
+    currency,
+    secretInfoPayment,
+  } = data;
+  //check case is stored or not in the case table
+  let caseIsExist = await transactionRepository.findCaseById(items[0].name); //the id of the case
+  if (!caseIsExist) {
+    throw new NotFoundError('case is not found');
   }
+  //check user who made the transaction exist
+  const userIsExist = await transactionRepository.findUserByEmail(user.email);
+  if (!userIsExist) throw new BadRequestError('no user found');
+
+  // implement the refund here
+  const queryObj = {
+    externalTransactionId: externalTransactionId,
+    orderId: orderId,
+  };
+
+  const transactionIsExist = await transactionRepository.findTransactionByQuery(
+    queryObj
+  );
+  if (transactionIsExist) {
+    //transaction must updated not created again
+    console.log('transaction updated partially in db be refunded');
+    const caseId = transactionIsExist.case; //get the id of the case
+    if (!caseId) throw new NotFoundError('case id not found');
+    const caseIsExistForRefund = await transactionRepository.findCaseById(
+      caseId
+    );
+    if (!caseIsExistForRefund) throw new NotFoundError('case id not found');
+
+    await transactionUtils.updateTransactionAfterRefund(transactionIsExist);
+    //update the case and decrement donation info
+    await transactionUtils.updateCaseAfterRefund(caseIsExistForRefund, amount);
+    //in the next middleware will update the externalTransactionId with the new refund transaction
+
+    return { transactionIsExist: transactionIsExist };
+  } else {
+    // console.log('no transaction found for refund so will create new one');
+  }
+  //what if status = pending?
+
+  //start updating the case info
+  //check if that is the last donation to finish this case
+  caseIsExist = transactionUtils.checkIsLastDonation(caseIsExist, amount);
+  caseIsExist = transactionUtils.updateCaseAfterDonation(caseIsExist, amount);
+
+  //now everything is ready for creating the transaction
+
+  // according to it we know the type of the payment method the donor paid with
+  let paymentMethod;
+  if (paymentMethodType === 'card') {
+    paymentMethod = {
+      onlineCard: {
+        lastFourDigits: secretInfoPayment,
+      },
+    };
+  } else if (paymentMethodType === 'wallet') {
+    paymentMethod = {
+      mobileWallet: {
+        number: secretInfoPayment,
+      },
+    };
+  }
+  //what if the payment happened but the transaction not stored in the db??i think must make a report or something like that to alert that to support
+  const transactionData = {
+    case: caseIsExist._id,
+    user: userIsExist._id,
+    moneyPaid: +amount,
+    paidAt: date,
+    externalTransactionId: externalTransactionId,
+    orderId: orderId,
+    paymentInfo: paymentMethod,
+    status,
+    currency,
+  };
+  const newTransaction = await transactionRepository.createTransaction(
+    transactionData
+  );
+  if (!newTransaction) throw new BadRequestError('no transaction found');
+  //add the transaction id to the user
+  await transactionUtils.addTransactionIdToUserTransactionIds(
+    userIsExist,
+    newTransaction._id
+  );
+  if (status == 'failed') {
+    return newTransaction;
+    // throw new BadRequestError('transaction failed please try again');
+  }
+  await transactionUtils.confirmSavingCase(caseIsExist);
+  console.log({ status: newTransaction.status }); //, data: newTransaction });
+  return { newTransaction: newTransaction };
 };
 const getAllTransactions = async (user) => {
   const allTransactionsPromised =

@@ -4,9 +4,10 @@ import { transactionService } from './transaction.service.js';
 const preCreateTransaction = async (req, res, next) => {
   try {
     const data = req.body;
+    const storedUser = req.user;
     const transaction = await transactionService.preCreateTransaction(
       data,
-      req.user
+      storedUser
     );
     if (!transaction) {
       throw new BadRequestError(
@@ -26,7 +27,7 @@ const getAllTransactions = async (req, res, next) => {
   return { status: 'success', data: myTransactions };
 };
 const updateCaseInfo = async (req, res, next) => {
-  // try {
+  try {
   //ensure that transaction is not pending
   const data = {
     user: {
@@ -57,9 +58,9 @@ const updateCaseInfo = async (req, res, next) => {
     );
   }
   return { status: transaction.status, data: transaction.newTransaction };
-  // } catch (err) {
-  //     console.log(err);
-  // }
+  } catch (err) {
+      console.log(err);
+  }
 };
 
 export { preCreateTransaction, getAllTransactions, updateCaseInfo };
