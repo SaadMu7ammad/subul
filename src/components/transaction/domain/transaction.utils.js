@@ -1,5 +1,50 @@
+import {
+  BadRequestError,
+  NotFoundError,
+} from '../../../libraries/errors/components/index.js';
 import { transactionRepository } from '../data-access/transaction.repository.js';
 
+const checkPreCreateTransaction = (data) => {
+  const { charityId, caseId, amount, mainTypePayment } = data;
+  if (!charityId) {
+    throw new NotFoundError('charity is not found');
+  } else if (!caseId) {
+    throw new NotFoundError('id is not found');
+  } else if (+amount === 0) {
+    throw new BadRequestError('Invalid amount of donation');
+  } else if (
+    mainTypePayment !== 'mobileWallet' &&
+    mainTypePayment !== 'onlineCard'
+  ) {
+    throw new NotFoundError('no payment method has been chosen');
+  }
+};
+const checkCharityIsValidToDonate = (charity) => {
+  if (
+    charity.isConfirmed === false ||
+    charity.isPending === true ||
+    charity.isEnabled === false
+  ) {
+    throw new BadRequestError(
+      'charity is not completed its authentication stages'
+    );
+  }
+  if (
+    charity.emailVerification.isVerified === false &&
+    charity.phoneVerification.isVerified === false
+  ) {
+    throw new BadRequestError(
+      'charity is not verified..must verify the account by email or phone number'
+    );
+  }
+};
+const checkCaseIsValidToDonate = (cause) => {
+  if (cause.finished === true || cause.freezed === true) {
+    throw new BadRequestError(
+      'this case is finished...choose case not completed'
+    );
+  }
+};
 const donationAmountAssertion = (cause, amount) => {
   const currentAmount = +cause.currentDonationAmount + +amount;
   if (
@@ -70,6 +115,9 @@ const getAllTransactionsPromised = async (user) => {
   return allTransactionsPromised;
 };
 export const transactionUtils = {
+  checkPreCreateTransaction,
+  checkCaseIsValidToDonate,
+  checkCharityIsValidToDonate,
   donationAmountAssertion,
   updateTransactionAfterRefund,
   updateCaseAfterRefund,

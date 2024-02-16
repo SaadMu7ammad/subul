@@ -2,24 +2,15 @@ import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components/index.js';
+import { checkValueEquality } from '../../../utils/shared.js';
 import { transactionRepository } from '../data-access/transaction.repository.js';
 import { transactionUtils } from './transaction.utils.js';
 const preCreateTransaction = async (data, user) => {
   //must check the account for the charity is valid or not
   const { charityId, caseId, amount, mainTypePayment } = data;
   //pre processing
-  if (!charityId) {
-    throw new NotFoundError('charity is not found');
-  } else if (!caseId) {
-    throw new NotFoundError('id is not found');
-  } else if (+amount === 0) {
-    throw new BadRequestError('Invalid amount of donation');
-  } else if (
-    mainTypePayment !== 'mobileWallet' &&
-    mainTypePayment !== 'onlineCard'
-  ) {
-    throw new NotFoundError('no payment method has been chosen');
-  }
+  transactionUtils.checkPreCreateTransaction(data);
+
   const caseIsExist = await transactionRepository.findCaseById(caseId);
   if (!caseIsExist) {
     throw new NotFoundError('case is not found');
@@ -31,33 +22,18 @@ const preCreateTransaction = async (data, user) => {
     throw new NotFoundError('charity is not found');
   }
   //check that charity is not confirmed or pending or the account not freezed
-  if (
-    charityIsExist.isConfirmed === false ||
-    charityIsExist.isPending === true ||
-    charityIsExist.isEnabled === false
-  ) {
-    throw new BadRequestError(
-      'charity is not completed its authentication stages'
-    );
-  }
-  if (
-    charityIsExist.emailVerification.isVerified === false &&
-    charityIsExist.phoneVerification.isVerified === false
-  ) {
-    throw new BadRequestError(
-      'charity is not verified..must verify the account by email or phone number'
-    );
-  }
-  if (caseIsExist.charity.toString() !== charityId.toString()) {
-    //to check that the case is related to the charity id in the database
+  transactionUtils.checkCharityIsValidToDonate(charityIsExist);
+
+  //to check that the case is related to the charity id in the database
+  const isMatch = checkValueEquality(
+    caseIsExist.charity.toString(),
+    charityId.toString()
+  );
+  if (!isMatch)
     throw new BadRequestError('mismatching while donating ...please try again');
-  }
+
   //check the case is finished or being freezed by the website admin
-  if (caseIsExist.finished === true || caseIsExist.freezed === true) {
-    throw new BadRequestError(
-      'this case is finished...choose case not completed'
-    );
-  }
+  transactionUtils.checkCaseIsValidToDonate(caseIsExist);
   //check that donor only donates with the remain part of money and not exceed the target amount
   const checker = transactionUtils.donationAmountAssertion(caseIsExist, amount);
   return checker;
