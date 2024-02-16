@@ -24,25 +24,25 @@ const preCreateTransaction = async (data, user) => {
   if (!caseIsExist) {
     throw new NotFoundError('case is not found');
   }
-  const chariyIsExist = await transactionRepository.findCharityById(
+  const charityIsExist = await transactionRepository.findCharityById(
     caseIsExist.charity
   );
-  if (!chariyIsExist) {
+  if (!charityIsExist) {
     throw new NotFoundError('charity is not found');
   }
   //check that charity is not confirmed or pending or the account not freezed
   if (
-    chariyIsExist.isConfirmed === false ||
-    chariyIsExist.isPending === true ||
-    chariyIsExist.isEnabled === false
+    charityIsExist.isConfirmed === false ||
+    charityIsExist.isPending === true ||
+    charityIsExist.isEnabled === false
   ) {
     throw new BadRequestError(
       'charity is not completed its authentication stages'
     );
   }
   if (
-    chariyIsExist.emailVerification.isVerified === false &&
-    chariyIsExist.phoneVerification.isVerified === false
+    charityIsExist.emailVerification.isVerified === false &&
+    charityIsExist.phoneVerification.isVerified === false
   ) {
     throw new BadRequestError(
       'charity is not verified..must verify the account by email or phone number'
