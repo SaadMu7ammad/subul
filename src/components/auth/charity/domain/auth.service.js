@@ -1,4 +1,3 @@
-import { deleteOldImgs } from '../../../../utils/deleteFile.js';
 import generateToken from '../../../../utils/generateToken.js';
 import {
   generateResetTokenTemp,

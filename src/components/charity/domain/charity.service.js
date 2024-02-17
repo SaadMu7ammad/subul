@@ -11,7 +11,6 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
-import { deleteOldImgs } from '../../../utils/deleteFile.js';
 
 const requestResetPassword = async (reqBody) => {
     const charityResponse = await charityUtils.checkCharityIsExist(

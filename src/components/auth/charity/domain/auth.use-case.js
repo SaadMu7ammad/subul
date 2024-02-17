@@ -1,4 +1,3 @@
-import { BadRequestError } from '../../../../libraries/errors/components/index.js';
 import { authCharityService } from './auth.service.js';
 //@desc   submit login page
 //@route  POST /api/users/auth
