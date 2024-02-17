@@ -44,11 +44,13 @@ const authCharity = async (req, res, next) => {
       charity: charityResponsed,
       message:
         'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
+      token: dataResponsed.token,
     };
   }
   const returnedObj = {
     charity: charityResponsed,
     message: '',
+    token: dataResponsed.token,
   };
   //second stage
   //isPending = true and isConfirmed= false

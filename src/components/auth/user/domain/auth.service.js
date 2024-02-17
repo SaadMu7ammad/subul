@@ -8,17 +8,20 @@ import {
 const authUser = async (reqBody, res) => {
   const { email, password } = reqBody;
   const userResponse = await authUserUtils.checkUserPassword(email, password);
-  generateToken(res, userResponse.user._id, 'user');
+  const token = generateToken(res, userResponse.user._id, 'user');
   const userObj = {
     _id: userResponse.user._id,
     name: userResponse.user.name,
     email: userResponse.user.email,
   };
-  const IsCharityVerified = authUserUtils.checkUserIsVerified(userResponse.user);
+  const IsCharityVerified = authUserUtils.checkUserIsVerified(
+    userResponse.user
+  );
   if (IsCharityVerified) {
     return {
       user: userObj,
       emailAlert: false,
+      token: token,
     };
   } else {
     //not verified(not activated)
@@ -42,7 +45,7 @@ const authUser = async (reqBody, res) => {
 };
 const registerUser = async (reqBody, res) => {
   const newCreatedUser = await authUserUtils.createUser(reqBody);
-  generateToken(res, newCreatedUser.user._id, 'user');
+  // generateToken(res, newCreatedUser.user._id, 'user');
   await setupMailSender(
     newCreatedUser.user.email,
     'welcome alert',
