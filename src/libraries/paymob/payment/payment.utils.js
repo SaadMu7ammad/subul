@@ -1,3 +1,5 @@
+import { NotFoundError } from '../../errors/components/index.js';
+
 const checkBeforeCreateLinkForPayment = (
   user,
   amount,
