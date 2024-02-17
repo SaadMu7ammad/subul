@@ -1,4 +1,3 @@
-import { deleteOldImgs } from '../../../../utils/deleteFile.js';
 import generateToken from '../../../../utils/generateToken.js';
 import {
   generateResetTokenTemp,
@@ -12,7 +11,7 @@ const authCharity = async (reqBody, res) => {
     email,
     password
   );
-  generateToken(res, charityResponse.charity._id, 'charity');
+  const token = generateToken(res, charityResponse.charity._id, 'charity');
   const charityObj = {
     _id: charityResponse.charity._id,
     name: charityResponse.charity.name,
@@ -29,11 +28,12 @@ const authCharity = async (reqBody, res) => {
     return {
       charity: charityObj,
       emailAlert: false,
+      token: token,
     };
   } else {
     //not verified(not activated)
     const token = await generateResetTokenTemp();
-    await authCharityUtils.setTokenToCharity(charityResponse.charity,token)
+    await authCharityUtils.setTokenToCharity(charityResponse.charity, token);
     await setupMailSender(
       charityResponse.charity.email,
       'login alert',
@@ -44,12 +44,13 @@ const authCharity = async (reqBody, res) => {
     return {
       charity: charityObj,
       emailAlert: true,
+      token: token,
     };
   }
 };
 const registerCharity = async (reqBody, res) => {
   const newCreatedCharity = await authCharityUtils.createCharity(reqBody);
-  generateToken(res, newCreatedCharity.charity._id, 'charity');
+  // generateToken(res, newCreatedCharity.charity._id, 'charity');
   await setupMailSender(
     newCreatedCharity.charity.email,
     'welcome alert',

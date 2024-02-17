@@ -1,4 +1,3 @@
-import { BadRequestError } from '../../../../libraries/errors/components/index.js';
 import { authCharityService } from './auth.service.js';
 //@desc   submit login page
 //@route  POST /api/users/auth
@@ -44,11 +43,13 @@ const authCharity = async (req, res, next) => {
       charity: charityResponsed,
       message:
         'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
+      token: dataResponsed.token,
     };
   }
   const returnedObj = {
     charity: charityResponsed,
     message: '',
+    token: dataResponsed.token,
   };
   //second stage
   //isPending = true and isConfirmed= false

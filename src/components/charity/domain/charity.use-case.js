@@ -1,21 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import bcryptjs from 'bcryptjs';
-import { charityRepository } from '../data-access/charity.repository.js';
 import { charityService } from './charity.service.js';
-import generateToken from '../../../utils/generateToken.js';
-import asyncHandler from 'express-async-handler';
-import {
-  setupMailSender,
-  generateResetTokenTemp,
-} from '../../../utils/mailer.js';
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthenticatedError,
-} from '../../../libraries/errors/components/index.js';
-import { deleteOldImgs } from '../../../utils/deleteFile.js';
-// import logger from '../utils/logger.js';
 
 const activateCharityAccount = async (req, res, next) => {
   let storedCharity = req.charity;
@@ -165,5 +148,4 @@ export const charityUseCase = {
   editCharityProfile,
   showCharityProfile,
   requestEditCharityPayments,
-  // addCharityPayments,
 };

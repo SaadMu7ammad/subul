@@ -4,7 +4,6 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv/config';
 import connectDB from './config/db.js';
-import cookieParser from 'cookie-parser';
 import logger from './utils/logger.js';
 //Configuration ⚙️
 import * as configurationProvider from './libraries/configuration-provider/index.js';
@@ -35,8 +34,6 @@ app.use(express.json());
 //http://localhost:5000/charityDocs/docs1-sss--.jpeg
 app.use(express.static(path.join(__dirname, `uploads`)));
 // app.use('/uploads',express.static( `uploads`));
-
-app.use(cookieParser());
 
 transactionRoutes(app);
 authUserRoutes(app);

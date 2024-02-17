@@ -1,39 +1,47 @@
 import jwt from 'jsonwebtoken';
-import asyncHandler from 'express-async-handler';
 
 import User from '../../user/data-access/models/user.model.js';
 import Charity from '../../charity/data-access/models/charity.model.js';
 import { UnauthenticatedError } from '../../../libraries/errors/components/index.js';
 import logger from '../../../utils/logger.js';
-import * as configurationProvider from '../../../libraries/configuration-provider/index.js'
+import * as configurationProvider from '../../../libraries/configuration-provider/index.js';
 
 const auth = async (req, res, next) => {
   try {
-    const authCookie = req.cookies.jwt; //according to cookie parser
-    if (!authCookie) {
-      throw new UnauthenticatedError('Authentication invalid');
-    }
-    const decoded = jwt.verify(authCookie, configurationProvider.getValue('hashing.jwtSecret'));
-    // attach the user to the job routes
-    if (decoded.userId) {
-      // check first the user or chariy exists in the db
-      const IsUserExist = await User.findById(decoded.userId).select(
-        '-password'
+    if (req.headers && req.headers.cookie) {
+      // throw new customError.UnauthenticatedError('no token found');
+      const authHeader = req.headers.cookie;
+      const jwtToken = authHeader.split('=')[1];
+      if (!jwtToken) {
+        throw new UnauthenticatedError('no token found');
+      }
+      // const authCookie = req.headers.jwt; //according to cookie parser
+      const decoded = jwt.verify(
+        jwtToken,
+        configurationProvider.getValue('hashing.jwtSecret')
       );
-      if (!IsUserExist)
-        throw new UnauthenticatedError('Authentication invalid');
-      req.user = IsUserExist;
-    } else if (decoded.charityId) {
-      const IsCharityExist = await Charity.findById(decoded.charityId).select(
-        '-password'
-      );
-      if (!IsCharityExist)
-        throw new UnauthenticatedError('Authentication invalid');
+      // attach the user to the job routes
+      if (decoded.userId) {
+        // check first the user or chariy exists in the db
+        const IsUserExist = await User.findById(decoded.userId).select(
+          '-password'
+        );
+        if (!IsUserExist)
+          throw new UnauthenticatedError('Authentication invalid');
+        req.user = IsUserExist;
+      } else if (decoded.charityId) {
+        const IsCharityExist = await Charity.findById(decoded.charityId).select(
+          '-password'
+        );
+        if (!IsCharityExist)
+          throw new UnauthenticatedError('Authentication invalid');
 
-      req.charity = IsCharityExist;
+        req.charity = IsCharityExist;
+      }
+      next();
+    } else {
+      throw new UnauthenticatedError('No Header Sent');
     }
-    // console.log(req.user);
-    next();
   } catch (err) {
     next(err);
   }
