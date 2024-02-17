@@ -1,5 +1,5 @@
-import * as configurationProvider from '../../../configuration-provider/index.js';
-import { NotFoundError } from '../../../errors/components/index.js';
+import * as configurationProvider from '../../configuration-provider/index.js';
+import { NotFoundError } from '../../errors/components/index.js';
 import { paymentUtils } from './payment.utils.js';
 const CreateAuthenticationRequest = async () => {
   try {
