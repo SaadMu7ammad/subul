@@ -1,4 +1,4 @@
-import { createPayment } from '../payment.service.js';
+import { createPayment } from '../index/payment.service.js';
 import * as configurationProvider from '../../../configuration-provider/index.js';
 const payWithOnlineCard = async (reqBody, user) => {
   const { amount, charityId, caseId, caseTitle } = reqBody;
