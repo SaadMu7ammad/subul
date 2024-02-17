@@ -1,5 +1,6 @@
 import * as configurationProvider from '../../configuration-provider/index.js';
 import { NotFoundError } from '../../errors/components/index.js';
+import { paymentUtils } from './payment.utils.js';
 const CreateAuthenticationRequest = async () => {
   try {
     const request = await fetch('https://accept.paymob.com/api/auth/tokens', {
@@ -101,13 +102,13 @@ const createPayment = async (
   caseTitle,
   integration_id
 ) => {
-  if (!user) throw new NotFoundError('user not found');
-  if (!amount || typeof amount !== 'number' || amount <= 0)
-    throw new NotFoundError('Invalid amount');
-  if (!charityId) throw new NotFoundError('charity not found');
-  if (!caseId) throw new NotFoundError('case not found');
-  if (!caseTitle) throw new NotFoundError('no complete data entered');
-
+  paymentUtils.checkBeforeCreateLinkForPayment(
+    user,
+    amount,
+    charityId,
+    caseId,
+    caseTitle
+  );
   const { token } = await CreateAuthenticationRequest();
   if (!token) throw new NotFoundError('token not found');
   const { id } = await OrderRegistrationAPI(
