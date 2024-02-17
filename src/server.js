@@ -12,7 +12,7 @@ import configurationSchema from './config/config.js';
 //Errors ⛔️
 import { NotFound, errorHandler } from './libraries/errors/index.js';
 //Routes 🛤️
-import transactionRoutes from './paymob/routes/transactionRoutes.js';
+import transactionRoutes from './components/transaction/entry-points/api/transaction.routes.js';
 import userRoutes from './components/user/entry-points/api/user.routes.js';
 import authUserRoutes from './components/auth/user/entry-points/api/auth.routes.js';
 import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes.js';
@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 
 app.use(cookieParser());
 
-app.use('/api/payment', transactionRoutes);
+transactionRoutes(app);
 authUserRoutes(app);
 authCharityRoutes(app);
 charityRoutes(app);
