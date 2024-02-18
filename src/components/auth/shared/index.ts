@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 import User from '../../user/data-access/models/user.model.js';
 import Charity from '../../charity/data-access/models/charity.model.js';
@@ -16,10 +16,10 @@ const auth = async (req, res, next) => {
         throw new UnauthenticatedError('no token found');
       }
       // const authCookie = req.headers.jwt; //according to cookie parser
-      const decoded = jwt.verify(
+      const decoded : JwtPayload = jwt.verify(
         jwtToken,
-        configurationProvider.getValue('hashing.jwtSecret')
-      );
+        configurationProvider.getValue('hashing.jwtSecret') 
+      ) as JwtPayload;
       // attach the user to the job routes
       if (decoded.userId) {
         // check first the user or chariy exists in the db
@@ -47,7 +47,7 @@ const auth = async (req, res, next) => {
   }
 };
 const isConfirmed = (req, res, next) => {
-  //for the sending docs to the admin website for Chariy Only
+  //for the sending docs to the admin website for Charity Only
   if (req.user) {
     throw new UnauthenticatedError('Users Are Not Allowed To Do This Action!');
   }
