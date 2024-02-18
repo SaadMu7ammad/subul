@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { saveImg } from '../../index.js';
 import { BadRequestError } from '../../../../errors/components/index.js';
+import 'express-async-errors';
 //memoryStorage
 const multerFilterOnlyImgs = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
