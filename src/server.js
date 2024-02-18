@@ -28,7 +28,7 @@ const host = configurationProvider.getValue('environment.host');
 const app = express();
 app.use(
   cors({
-    origin: 'https://charity-proj.netlify.app',
+    origin: '*',
     credentials: true, // Allow credentials
   })
 );
