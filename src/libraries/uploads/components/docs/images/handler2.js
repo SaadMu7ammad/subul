@@ -30,7 +30,9 @@ async function processDocs(docsKey, ref, req) {
                 req.body.paymentMethods.bankAccount &&
                 docsKey === 'bankDocs'
             ) {
-                req.body.paymentMethods.bankAccount[indx].bankDocs.push(fileName);
+                req.body.paymentMethods.bankAccount[indx].bankDocs.push(
+                    fileName
+                );
             }
             if (
                 req.body.paymentMethods &&
@@ -44,58 +46,62 @@ async function processDocs(docsKey, ref, req) {
                 req.body.paymentMethods.vodafoneCash &&
                 docsKey === 'vodafoneCashDocs'
             ) {
-                req.body.paymentMethods.vodafoneCash[indx].vodafoneCashDocs.push(
-                    fileName
-                );
+                req.body.paymentMethods.vodafoneCash[
+                    indx
+                ].vodafoneCashDocs.push(fileName);
             }
         })
     );
 }
 const resizeDocReq = async (req, res, next) => {
-    if (req.body.paymentMethods && req.body.paymentMethods.bankAccount) {
-        req.body.paymentMethods.bankAccount[0].bankDocs = [];
-    }
-    if (req.body.paymentMethods && req.body.paymentMethods.fawry) {
-        req.body.paymentMethods.fawry[0].fawryDocs = [];
-    }
-    if (req.body.paymentMethods && req.body.paymentMethods.vodafoneCash) {
-        req.body.paymentMethods.vodafoneCash[0].vodafoneCashDocs = [];
-    }
+    try {
+        if (req.body.paymentMethods && req.body.paymentMethods.bankAccount) {
+            req.body.paymentMethods.bankAccount[0].bankDocs = [];
+        }
+        if (req.body.paymentMethods && req.body.paymentMethods.fawry) {
+            req.body.paymentMethods.fawry[0].fawryDocs = [];
+        }
+        if (req.body.paymentMethods && req.body.paymentMethods.vodafoneCash) {
+            req.body.paymentMethods.vodafoneCash[0].vodafoneCashDocs = [];
+        }
 
-    if (!req.files) {
-        throw new BadRequestError('docs are required');
+        if (!req.files) {
+            throw new BadRequestError('docs are required');
+        }
+        if (
+            //if not upload docs
+            !req.files['paymentMethods.bankAccount[0][bankDocs]'] &&
+            !req.files['paymentMethods.fawry[0][fawryDocs]'] &&
+            !req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]']
+        ) {
+            throw new BadRequestError('docs are required');
+        }
+
+        if (req.files['paymentMethods.bankAccount[0][bankDocs]'])
+            await processDocs(
+                'bankDocs',
+                req.files['paymentMethods.bankAccount[0][bankDocs]'],
+                req
+            );
+
+        if (req.files['paymentMethods.fawry[0][fawryDocs]'])
+            await processDocs(
+                'fawryDocs',
+                req.files['paymentMethods.fawry[0][fawryDocs]'],
+                req
+            );
+
+        if (req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'])
+            await processDocs(
+                'vodafoneCashDocs',
+                req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'],
+                req
+            );
+
+        next();
+    } catch (error) {
+        next(error);
     }
-    if (
-        //if not upload docs
-        !req.files['paymentMethods.bankAccount[0][bankDocs]'] &&
-        !req.files['paymentMethods.fawry[0][fawryDocs]'] &&
-        !req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]']
-    ) {
-        throw new BadRequestError('docs are required');
-    }
-
-    if (req.files['paymentMethods.bankAccount[0][bankDocs]'])
-        await processDocs(
-            'bankDocs',
-            req.files['paymentMethods.bankAccount[0][bankDocs]'],
-            req
-        );
-
-    if (req.files['paymentMethods.fawry[0][fawryDocs]'])
-        await processDocs(
-            'fawryDocs',
-            req.files['paymentMethods.fawry[0][fawryDocs]'],
-            req
-        );
-
-    if (req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'])
-        await processDocs(
-            'vodafoneCashDocs',
-            req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'],
-            req
-        );
-
-    next();
 };
 
 //diskStorage
@@ -108,8 +114,6 @@ const uploadDocsReq = upload.fields([
     { name: 'paymentMethods.bankAccount[0][bankDocs]', maxCount: 2 },
     { name: 'paymentMethods.fawry[0][fawryDocs]', maxCount: 2 },
     { name: 'paymentMethods.vodafoneCash[0][vodafoneCashDocs]', maxCount: 2 },
-
-    
 ]);
 
 export { uploadDocsReq, resizeDocReq };
