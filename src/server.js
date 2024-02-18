@@ -26,7 +26,12 @@ const port = configurationProvider.getValue('environment.port');
 const host = configurationProvider.getValue('environment.host');
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: 'https://charity-proj.netlify.app',
+    credentials: true, // Allow credentials
+  })
+);
 app.use(express.urlencoded({ extended: true })); //form data
 app.use(express.json());
 
