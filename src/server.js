@@ -29,7 +29,7 @@ const app = express();
 app.use(
   cors({
     origin: 'https://charity-proj.netlify.app',
-    credentials: true, // Allow credentials
+    credentials: "include", // Allow credentials
   })
 );
 app.use(express.urlencoded({ extended: true })); //form data
