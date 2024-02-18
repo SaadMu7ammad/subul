@@ -6,7 +6,7 @@ import {
 } from '../../../../libraries/errors/components/index.js';
 import { authCharityRepository } from '../data-access/charity.repository.js';
 import { deleteOldImgs } from '../../../../utils/deleteFile.js';
-const checkCharityPassword = async (email, password) => {
+const checkCharityPassword = async (email:string, password:string) => {
   const charity = await authCharityRepository.findCharity(email);
   if (!charity) throw new NotFoundError('email not found');
   const isMatch = await bcryptjs.compare(password, charity.password);
@@ -24,7 +24,7 @@ const checkCharityIsVerified = (charity) => {
   }
   return false;
 };
-const checkIsEmailDuplicated = async (email) => {
+const checkIsEmailDuplicated = async (email:string) => {
   const isDuplicatedEmail = await authCharityRepository.findCharity(email);
   if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
@@ -32,7 +32,7 @@ const resetSentToken = async (charity) => {
   charity.verificationCode = null;
   await charity.save();
 };
-const setTokenToCharity = async (charity, token) => {
+const setTokenToCharity = async (charity, token:string) => {
   charity.verificationCode = token;
   await charity.save();
 };
@@ -45,10 +45,10 @@ const createCharity = async (dataInputs) => {
     throw new BadRequestError('charity is registered already');
   }
   const newCharity = await authCharityRepository.createCharity(dataInputs);
-  console.log('newww' + newCharity);
+  console.log('New' + newCharity);
   if (!newCharity) {
     deleteOldImgs('charityLogos', dataInputs.image);
-    throw new BadRequestError('Error created while creaing the charity');
+    throw new BadRequestError('Error while Creating the charity');
   }
   return { charity: newCharity };
 };
