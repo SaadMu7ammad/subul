@@ -4,3 +4,4 @@ uploads/charityLogos/*
 uploads/charityDocs/*
 uploads/caseCoverImages/*
 .gitattributes
+dist
