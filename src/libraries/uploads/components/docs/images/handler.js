@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { saveImg } from '../../index.js';
 import { BadRequestError } from '../../../../errors/components/index.js';
-import 'express-async-errors';
 //memoryStorage
 const multerFilterOnlyImgs = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -73,7 +72,8 @@ async function processDocs(docsKey, ref, req) {
 }
 
 const resizeDoc = async (req, res, next) => {
-  req.body.charityDocs = {};
+  try{
+    req.body.charityDocs = {};
   req.body.charityDocs.docs1 = [];
   req.body.charityDocs.docs2 = [];
   req.body.charityDocs.docs3 = [];
@@ -128,6 +128,10 @@ const resizeDoc = async (req, res, next) => {
     );
 
   next();
+  }catch(error){
+    next(error);
+  }
+  
 };
 
 export { uploadDocs, resizeDoc };

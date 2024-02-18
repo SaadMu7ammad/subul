@@ -15,10 +15,12 @@ const authUser = async (req, res, next) => {
     return {
       user: userResponsed,
       msg: 'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
+      token: dataResponsed.token,
     };
   } else {
     return {
       user: userResponsed,
+      token: dataResponsed.token,
     };
   }
 };
@@ -27,7 +29,10 @@ const authUser = async (req, res, next) => {
 //@access public
 const registerUser = async (req, res, next) => {
   const registerInputsData = req.body;
-  const dataResponsed = await authUserService.registerUser(registerInputsData, res);
+  const dataResponsed = await authUserService.registerUser(
+    registerInputsData,
+    res
+  );
   const userResponsed = {
     ...dataResponsed.user,
   };

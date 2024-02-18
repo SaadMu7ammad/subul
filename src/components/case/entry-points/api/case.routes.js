@@ -3,6 +3,7 @@ import {
     imageAssertion,
     resizeImg,
 } from '../../../../libraries/uploads/components/images/handlers.js';
+import { postCaseValidation } from '../../../../libraries/validation/components/case/postCaseValidation.js';
 import { editCaseValidation } from '../../../../libraries/validation/components/case/editCaseValidation.js';
 import { validate } from '../../../../libraries/validation/index.js';
 import { deleteOldImgs } from '../../../../utils/deleteFile.js';
@@ -19,7 +20,7 @@ export default function defineRoutes(expressApp) {
         auth,
         isConfirmed,
         imageAssertion,
-        editCaseValidation,
+        postCaseValidation,
         validate,
         resizeImg,
         async (req, res, next) => {
