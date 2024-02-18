@@ -2,7 +2,7 @@
 import * as path from 'path';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv/config';
+import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import logger from './utils/logger.js';
@@ -19,6 +19,8 @@ import authCharityRoutes from './components/auth/charity/entry-points/api/auth.r
 import charityRoutes from './components/charity/entry-points/api/charity.routes.js';
 import casesRoutes from './components/case/entry-points/api/case.routes.js';
 import adminRoutes from './components/admin/entry-points/api/admin.routes.js';
+
+dotenv.config();
 
 configurationProvider.initializeAndValidate(configurationSchema);
 
