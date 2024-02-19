@@ -1,11 +1,11 @@
-import express from 'express';
+import express, { Application } from 'express';
 
 import { adminUseCase } from '../../domain/admin.use-case.js';
 import { auth } from '../../../auth/shared/index.js';
 import { isAdmin } from '../../index.js';
 import logger from '../../../../utils/logger.js';
 
-export default function defineRoutes(expressApp) {
+export default function defineRoutes(expressApp:Application) {
   const router = express.Router();
 
   router.get('/AllRequestsCharities', auth, isAdmin, async (req, res, next) => {

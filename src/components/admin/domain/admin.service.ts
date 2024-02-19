@@ -2,7 +2,8 @@ import { adminRepository } from '../data-access/admin.repository.js';
 import { BadRequestError } from '../../../libraries/errors/components/index.js';
 import { setupMailSender } from '../../../utils/mailer.js';
 import { adminUtils } from './admin.utils.js';
-const getAllOrOnePendingRequestsCharities = async (id) => {
+import { Number } from 'mongoose';
+const getAllOrOnePendingRequestsCharities = async (id:string|null=null) => {
   const queryObject = {
     $and: [
       { isPending: true },
@@ -27,9 +28,9 @@ const getAllOrOnePendingRequestsCharities = async (id) => {
   return { allPendingCharities: allPendingCharities };
 };
 const confirmPaymentAccountRequestForConfirmedCharities = async (
-  charityId,
-  paymentMethod,
-  paymentAccountID
+  charityId:string,
+  paymentMethod:string,
+  paymentAccountID:string
 ) => {
   const queryObject = {
     $and: [
@@ -49,7 +50,7 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
     queryObject
   );
 
-  const idx = adminUtils.checkPaymentMethodAvailability(
+  const idx:number = adminUtils.checkPaymentMethodAvailability(
     charity,
     paymentMethod,
     paymentAccountID
@@ -70,9 +71,9 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
 };
 
 const rejectPaymentAccountRequestForConfirmedCharities = async (
-  charityId,
-  paymentMethod,
-  paymentAccountID
+  charityId:string,
+  paymentMethod:string,
+  paymentAccountID:string
 ) => {
   const queryObject = {
     $and: [
@@ -90,7 +91,7 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
   };
   const charity = await adminUtils.getConfirmedCharities(queryObject);
 
-  const idx = adminUtils.checkPaymentMethodAvailability(
+  const idx:number = adminUtils.checkPaymentMethodAvailability(
     charity,
     paymentMethod,
     paymentAccountID
@@ -108,7 +109,7 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
     message: 'Charity payment account has been rejected',
   };
 };
-const getPendingPaymentRequestsForConfirmedCharityById = async (id) => {
+const getPendingPaymentRequestsForConfirmedCharityById = async (id:string) => {
   const queryObject = {
     $and: [
       { isPending: false },
@@ -123,7 +124,7 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (id) => {
       { _id: id }
     ],
   };
-  const paymentRequests = await adminRepository.findConfirmedCharityById(
+  const paymentRequests:any = await adminRepository.findConfirmedCharityById(
     queryObject,
     'paymentMethods _id'
   );
@@ -163,7 +164,7 @@ const getAllRequestsPaymentMethodsForConfirmedCharities = async () => {
     },
   };
 };
-const confirmCharity = async (id) => {
+const confirmCharity = async (id:string) => {
   const charity = await getAllOrOnePendingRequestsCharities(id);
   await adminUtils.confirmingCharity(charity.allPendingCharities[0]);
 
@@ -178,7 +179,7 @@ const confirmCharity = async (id) => {
     message: 'Charity has been confirmed successfully',
   };
 };
-const rejectCharity = async (id) => {
+const rejectCharity = async (id:string) => {
   const charity = await getAllOrOnePendingRequestsCharities(id);
   await adminUtils.rejectingCharity(charity.allPendingCharities[0]);
 

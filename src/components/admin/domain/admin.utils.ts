@@ -52,8 +52,8 @@ const rejectingCharity = async (charity) => {
 
 const checkPaymentMethodAvailability = (
   charity,
-  paymentMethod,
-  paymentAccountID
+  paymentMethod:string,
+  paymentAccountID:string
 ) => {
   if (
     paymentMethod !== 'bankAccount' &&
@@ -63,7 +63,7 @@ const checkPaymentMethodAvailability = (
     throw new BadRequestError('Invalid Payment Method type');
   }
 
-  const idx = charity.paymentMethods[paymentMethod].findIndex(
+  const idx:number = charity.paymentMethods[paymentMethod].findIndex(
     (item) => item._id == paymentAccountID
   );
 
@@ -80,7 +80,7 @@ const getConfirmedCharities = async (queryObject) => {
   return charities[0];
 };
 
-const confirmingPaymentAccount = async (charity, paymentMethod, idx) => {
+const confirmingPaymentAccount = async (charity, paymentMethod:string, idx:number) => {
   if (charity.paymentMethods[paymentMethod][idx].enable === false) {
     charity.paymentMethods[paymentMethod][idx].enable = true;
   } else {
@@ -88,11 +88,11 @@ const confirmingPaymentAccount = async (charity, paymentMethod, idx) => {
   }
   await charity.save();
 };
-const rejectingPaymentAccount = async (charity, paymentMethod, idx) => {
+const rejectingPaymentAccount = async (charity, paymentMethod:string, idx:number) => {
   if (charity.paymentMethods[paymentMethod][idx].enable === true)
     throw new BadRequestError('Already this payment account is enabled');
 
-  let urlOldImage;
+  let urlOldImage:string|null=null;
 
   if (paymentMethod === 'bankAccount') {
     urlOldImage = charity.paymentMethods[paymentMethod][idx].bankDocs;
