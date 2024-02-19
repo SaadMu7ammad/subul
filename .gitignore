@@ -5,3 +5,4 @@ uploads/charityDocs/*
 uploads/caseCoverImages/*
 .gitattributes
 dist
+.vscode
