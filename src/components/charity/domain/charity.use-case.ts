@@ -18,7 +18,7 @@ const activateCharityAccount = async (req, res, next) => {
 };
 
 const requestResetPassword = async (req, res, next) => {
-  const { email } = req.body;
+  const { email }:{email:string} = req.body;
   const data = {
     email,
   };
@@ -30,7 +30,7 @@ const requestResetPassword = async (req, res, next) => {
 };
 
 const confirmResetPassword = async (req, res, next) => {
-  const { token, email, password } = req.body;
+  const { token, email, password }:{token:string,email:string,password:string} = req.body;
   const data = {
     token,
     email,
@@ -45,7 +45,7 @@ const confirmResetPassword = async (req, res, next) => {
 };
 
 const changePassword = async (req, res, next) => {
-  const { password } = req.body;
+  const { password }:{password:string} = req.body;
   const storedCharity = req.charity;
   const changePasswordResponse = await charityService.changePassword(
     password,
@@ -83,7 +83,7 @@ const editCharityProfile = async (req, res, next) => {
   };
 };
 const changeProfileImage = async (req, res, next) => {
-  const data = {
+  const data:{image:string} = {
     image: req.body.image[0],
   };
   const storedCharity = req.charity;
@@ -110,7 +110,7 @@ const requestEditCharityPayments = async (req, res, next) => {
 
 
 const logout = (req, res, next) => {
-  const responseData = charityService.logoutCharity(res);
+  const responseData:{message:string} = charityService.logoutCharity(res);
   return {
     message: responseData.message,
   };

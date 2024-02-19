@@ -10,7 +10,7 @@ import {
 import { checkValueEquality } from '../../../utils/shared.js';
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
 
-const checkCharityIsExist = async (email) => {
+const checkCharityIsExist = async (email:string) => {
     //return charity if it exists
     const charityIsExist = await charityRepository.findCharity(email);
     if (!charityIsExist) {
@@ -29,13 +29,13 @@ const logout = (res) => {
 const getCharity = (req) => {
     return { charity: req.charity };
 };
-const checkIsEmailDuplicated = async (email) => {
+const checkIsEmailDuplicated = async (email:string) => {
     const isDuplicatedEmail = await charityRepository.findCharity(email);
     if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
 const changeCharityEmailWithMailAlert = async (
     CharityBeforeUpdate,
-    newEmail
+    newEmail:string
 ) => {
     //for sending email if changed or edited
     CharityBeforeUpdate.email = newEmail;
@@ -63,15 +63,15 @@ const resetSentToken = async (charity) => {
     charity.verificationCode = null;
     await charity.save();
 };
-const setTokenToCharity = async (charity, token) => {
+const setTokenToCharity = async (charity, token:string) => {
     charity.verificationCode = token;
     await charity.save();
 };
-const changePassword = async (charity, newPassword) => {
+const changePassword = async (charity, newPassword:string) => {
     charity.password = newPassword;
     await charity.save();
 };
-const changeCharityPasswordWithMailAlert = async (charity, newPassword) => {
+const changeCharityPasswordWithMailAlert = async (charity, newPassword:string) => {
     await changePassword(charity, newPassword);
     await resetSentToken(charity); //after saving and changing the password
     await setupMailSender(
@@ -81,7 +81,7 @@ const changeCharityPasswordWithMailAlert = async (charity, newPassword) => {
             `<h3>go to link(www.dummy.com) to freeze your account</h3>`
     );
 };
-const editCharityProfileAddress = async (charity, id, updatedLocation) => {
+const editCharityProfileAddress = async (charity, id:string, updatedLocation) => {
     for (let i = 0; i < charity.location.length; i++) {
         const isMatch = checkValueEquality(charity.location[i]._id, id);
         if (isMatch) {
@@ -105,7 +105,7 @@ const addCharityProfileAddress = async (charity, updatedLocation) => {
     return { charity: charity };
 };
 
-const replaceProfileImage = async (charity, oldImg, newImg) => {
+const replaceProfileImage = async (charity, oldImg:string, newImg:string) => {
     charity.image = newImg;
     console.log(oldImg);
     await charity.save();
@@ -133,7 +133,7 @@ const makeCharityIsPending = async (charity) => {
     charity.isPending = true;
     await charity.save();
 };
-const addPaymentAccounts = async (accountObj, charity, type) => {
+const addPaymentAccounts = async (accountObj, charity, type:string) => {
     if (charity.paymentMethods === undefined) charity.paymentMethods = {};
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;
@@ -204,7 +204,7 @@ const getPaymentMethodIdx = (
     return idx;
 };
 
-const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
+const makeTempPaymentObj = (selector:string, reqPaymentMethodsObj) => {
     const temp = {};
 
     const methodMap = {
@@ -236,7 +236,7 @@ const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
     return temp;
 };
 
-const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector, idx) => {
+const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector:string, idx:number) => {
     for (let key in temp) {
         if (key.endsWith('docs')) {
             deleteOldImgs(
@@ -251,7 +251,7 @@ const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector, idx) => {
     charityPaymentMethodsObj[selector][idx].enable = false;
 };
 
-const addNewPayment = (charityPaymentMethodsObj, temp, selector) => {
+const addNewPayment = (charityPaymentMethodsObj, temp, selector:string) => {
     charityPaymentMethodsObj[selector].push(temp);
 };
 

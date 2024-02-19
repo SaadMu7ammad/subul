@@ -16,7 +16,7 @@ const requestResetPassword = async (reqBody) => {
     const charityResponse = await charityUtils.checkCharityIsExist(
         reqBody.email
     );
-    const token = await generateResetTokenTemp();
+    const token:string = await generateResetTokenTemp();
     await charityUtils.setTokenToCharity(charityResponse.charity, token);
     await setupMailSender(
         charityResponse.charity.email,
@@ -32,7 +32,7 @@ const requestResetPassword = async (reqBody) => {
 
 const confirmResetPassword = async (reqBody) => {
     let updatedCharity = await charityUtils.checkCharityIsExist(reqBody.email);
-    const isEqual = checkValueEquality(
+    const isEqual:boolean = checkValueEquality(
         updatedCharity.charity.verificationCode,
         reqBody.token
     );
@@ -57,7 +57,7 @@ const activateAccount = async (reqBody, charity, res) => {
     if (storedCharity.emailVerification.isVerified) {
         return { message: 'account already is activated' };
     }
-    const isMatch = checkValueEquality(
+    const isMatch:boolean = checkValueEquality(
         storedCharity.verificationCode,
         reqBody.token
     );
@@ -144,9 +144,9 @@ const editCharityProfile = async (reqBody, charity) => {
     };
 };
 const changeProfileImage = async (reqBody, charity) => {
-    const oldImg = charity.image;
-    const newImg = reqBody.image;
-    const updatedImg = await charityUtils.replaceProfileImage(
+    const oldImg:string = charity.image;
+    const newImg:string = reqBody.image;
+    const updatedImg:{image:string} = await charityUtils.replaceProfileImage(
         charity,
         oldImg,
         newImg
@@ -196,7 +196,7 @@ const requestEditCharityPayments = async (
     let changedPaymentMethod =
         charityUtils.getChangedPaymentMethod(reqPaymentMethodsObj);
 
-    const idx = charityUtils.getPaymentMethodIdx(
+    const idx:number = charityUtils.getPaymentMethodIdx(
         charityPaymentMethodsObj,
         changedPaymentMethod,
         paymentId
@@ -224,7 +224,7 @@ const requestEditCharityPayments = async (
 
     await charityObj.save();
 
-    const len = charityObj.paymentMethods[changedPaymentMethod].length - 1;
+    const len:number = charityObj.paymentMethods[changedPaymentMethod].length - 1;
 
     return {
         paymentMethod:
