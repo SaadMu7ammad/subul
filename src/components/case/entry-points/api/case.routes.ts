@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Application } from 'express';
 import {
     imageAssertion,
     resizeImg,
@@ -12,7 +12,7 @@ import { caseUseCase } from '../../domain/case.use-case.js';
 import logger from '../../../../utils/logger.js';
 import { getAllCasesValidation } from '../../../../libraries/validation/components/case/getAllCasesValidation.js';
 
-export default function defineRoutes(expressApp) {
+export default function defineRoutes(expressApp:Application) {
     const router = express.Router();
 
     router.post(

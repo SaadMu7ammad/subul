@@ -1,6 +1,6 @@
 import { caseUtils } from './case.utils.js';
 
-const addCase = async (caseData, image, charity) => {
+const addCase = async (caseData, image:string, charity) => {
     const newCase = await caseUtils.createCase({
         ...caseData,
         coverImage: image,
@@ -11,12 +11,12 @@ const addCase = async (caseData, image, charity) => {
     return { case: newCase };
 };
 
-const getAllCases = async (charityId, queryParams) => {
+const getAllCases = async (charityId:string, queryParams) => {
     const sortObj = caseUtils.getSortObj(queryParams.sort);
 
     const filterObj = caseUtils.getFilterObj(charityId, queryParams);
 
-    const { page, pageLimit } = caseUtils.getCasesPagination(queryParams);
+    const { page, pageLimit }:{page:number, pageLimit:number} = caseUtils.getCasesPagination(queryParams);
 
     const cases = await caseUtils.getAllCases(
         sortObj,
@@ -28,7 +28,7 @@ const getAllCases = async (charityId, queryParams) => {
     return { cases };
 };
 
-const getCaseById = async (charityCases, caseId) => {
+const getCaseById = async (charityCases, caseId:string) => {
     caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
 
     const _case = await caseUtils.getCaseByIdFromDB(caseId);
@@ -38,8 +38,8 @@ const getCaseById = async (charityCases, caseId) => {
     };
 };
 
-const deleteCase = async (charity, caseId) => {
-    const idx = caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
+const deleteCase = async (charity, caseId:string) => {
+    const idx:number = caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
     const deletedCase = await caseUtils.deleteCaseFromDB(caseId);
 
@@ -50,10 +50,10 @@ const deleteCase = async (charity, caseId) => {
     };
 };
 
-const editCase = async (charity, caseData, caseId) => {
+const editCase = async (charity, caseData, caseId:string) => {
     caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
-    let deleteOldImg;
+    let deleteOldImg:(()=>void )| null = null;
     if (caseData.image) {
         deleteOldImg = await caseUtils.replaceCaseImg(caseData, caseId);
     }

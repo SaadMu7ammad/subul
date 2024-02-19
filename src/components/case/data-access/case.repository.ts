@@ -8,7 +8,7 @@ const createCase = async (caseData) => {
     return newCase;
 };
 
-const getAllCases = async (sortObj, filterObj, page, pageLimit) => {
+const getAllCases = async (sortObj, filterObj, page:number, pageLimit:number) => {
     const charityCases = await Case.aggregate([
         {
             $match: filterObj,
@@ -19,24 +19,33 @@ const getAllCases = async (sortObj, filterObj, page, pageLimit) => {
     ])
         .skip((page - 1) * pageLimit)
         .limit(pageLimit)
-        .project(
-            '-gender -upVotes -views -dateFinished -donationNumbers -helpedNumbers -freezed -createdAt -updatedAt -__v'
-        );
+        .project({
+            gender: 0,
+            upVotes: 0,
+            views: 0,
+            dateFinished: 0,
+            donationNumbers: 0,
+            helpedNumbers: 0,
+            freezed: 0,
+            createdAt: 0,
+            updatedAt: 0,
+            __v: 0
+        });
 
     return charityCases;
 };
 
-const getCaseById = async (id) => {
+const getCaseById = async (id:string) => {
     const _case = await Case.findById(id);
     return _case;
 };
 
-const deleteCaseById = async (id) => {
+const deleteCaseById = async (id:string) => {
     const _case = await Case.findByIdAndDelete(id);
     return _case;
 };
 
-const editCase = async (caseData,id) => {
+const editCase = async (caseData,id:string) => {
     const updatedCase = await Case.findByIdAndUpdate(
         id,
         {
