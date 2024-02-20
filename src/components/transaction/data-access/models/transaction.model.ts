@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-
+import { TransactionDocument,TransactionModel,TransactionSchema } from '../../../../interfaces/transaction.interface';
 const paymentMethodSchema = new Schema({
   // name: {
   //   type: String,
@@ -25,7 +25,7 @@ const paymentMethodSchema = new Schema({
   },
 });
 
-const transactionSchema = new Schema(
+const transactionSchema : TransactionSchema= new Schema(
   {
     case: {
       type: mongoose.Schema.Types.ObjectId,
@@ -70,6 +70,6 @@ const transactionSchema = new Schema(
   { timestamps: true }
 );
 
-const Transaction = mongoose.model('Transaction', transactionSchema);
+const Transaction :TransactionModel= mongoose.model<TransactionDocument, TransactionModel>('Transaction', transactionSchema);
 
 export default Transaction;
