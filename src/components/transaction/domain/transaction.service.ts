@@ -5,9 +5,10 @@ import {
 import { checkValueEquality } from '../../../utils/shared.js';
 import { transactionRepository } from '../data-access/transaction.repository.js';
 import { transactionUtils } from './transaction.utils.js';
+import Transaction from '../data-access/models/transaction.model.js';
 const preCreateTransaction = async (data, user) => {
   //must check the account for the charity is valid or not
-  const { charityId, caseId, amount, mainTypePayment } = data;
+  const { charityId, caseId, amount, mainTypePayment }:{charityId:string, caseId:string, amount:number, mainTypePayment:string} = data;
   //pre processing
   transactionUtils.checkPreCreateTransaction(data);
 
@@ -16,7 +17,7 @@ const preCreateTransaction = async (data, user) => {
     throw new NotFoundError('case is not found');
   }
   const charityIsExist = await transactionRepository.findCharityById(
-    caseIsExist.charity
+    caseIsExist.charity.toString()
   );
   if (!charityIsExist) {
     throw new NotFoundError('charity is not found');
@@ -25,7 +26,7 @@ const preCreateTransaction = async (data, user) => {
   transactionUtils.checkCharityIsValidToDonate(charityIsExist);
 
   //to check that the case is related to the charity id in the database
-  const isMatch = checkValueEquality(
+  const isMatch:boolean = checkValueEquality(
     caseIsExist.charity.toString(),
     charityId.toString()
   );
@@ -38,7 +39,7 @@ const preCreateTransaction = async (data, user) => {
   const checker = transactionUtils.donationAmountAssertion(caseIsExist, amount);
   return checker;
 };
-const updateCaseInfo = async (data) => {
+const updateCaseInfo = async (data)=> {
   //start updating
   const {
     user,
@@ -77,7 +78,7 @@ const updateCaseInfo = async (data) => {
       amount
     );
     //in the next middleware will update the externalTransactionId with the new refund transaction
-    return { transactionIsExist: transactionIsExist.transaction };
+    return {transactionIsExist};
   } //else  console.log('no transaction found for refund so will create new one');
 
   //what if status = pending?
@@ -123,7 +124,7 @@ const updateCaseInfo = async (data) => {
   //add the transaction id to the user
   await transactionUtils.addTransactionIdToUserTransactionIds(
     userIsExist,
-    newTransaction._id
+    newTransaction._id.toString()
   );
   if (status == 'failed') {
     return newTransaction;
@@ -131,7 +132,7 @@ const updateCaseInfo = async (data) => {
   }
   await transactionUtils.confirmSavingCase(caseIsExist);
   console.log({ status: newTransaction.status }); //, data: newTransaction });
-  return { newTransaction: newTransaction };
+  return newTransaction;
 };
 const getAllTransactions = async (user) => {
   const allTransactionsPromised =

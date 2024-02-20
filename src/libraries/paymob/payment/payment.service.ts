@@ -12,17 +12,17 @@ const CreateAuthenticationRequest = async () => {
     });
     const response = await request.json();
     return response;
-  } catch (error) {
+  } catch (error:any) {
     throw new Error(error);
   }
 };
 
 const OrderRegistrationAPI = async (
-  token,
-  amount,
-  charityId,
-  caseId,
-  caseTitle
+  token:string,
+  amount:number,
+  charityId:string,
+  caseId:string,
+  caseTitle:string
 ) => {
   const request = await fetch(
     `https://accept.paymobsolutions.com/api/ecommerce/orders`,
@@ -51,10 +51,10 @@ const OrderRegistrationAPI = async (
 };
 
 const generatePaymentKey = async (
-  token,
-  order_id,
+  token:string,
+  order_id:string,
   user,
-  amount,
+  amount:number,
   integration_id
 ) => {
   try {
@@ -90,16 +90,16 @@ const generatePaymentKey = async (
     );
     const response = await request.json();
     return response;
-  } catch (error) {
+  } catch (error:any) {
     throw new Error(error);
   }
 };
 const createPayment = async (
   user,
-  amount,
-  charityId,
-  caseId,
-  caseTitle,
+  amount:number,
+  charityId:string,
+  caseId:string,
+  caseTitle:string,
   integration_id
 ) => {
   paymentUtils.checkBeforeCreateLinkForPayment(
@@ -109,7 +109,7 @@ const createPayment = async (
     caseId,
     caseTitle
   );
-  const { token } = await CreateAuthenticationRequest();
+  const { token }:{token:string} = await CreateAuthenticationRequest();
   if (!token) throw new NotFoundError('token not found');
   const { id } = await OrderRegistrationAPI(
     token,

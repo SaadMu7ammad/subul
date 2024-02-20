@@ -57,7 +57,7 @@ const updateCaseInfo = async (req, res, next) => {
       'transaction not completed ... please try again!'
     );
   }
-  return { status: transaction.status, data: transaction.newTransaction };
+  return { status: transaction.status, data: transaction};
   } catch (err) {
       console.log(err);
   }
