@@ -3,6 +3,7 @@ import User from '../../user/data-access/models/user.model.js';
 import Case from '../../case/data-access/models/case.model.js';
 import Transaction from './models/transaction.model.js';
 import { NotFoundError } from '../../../libraries/errors/components/not-found.js';
+import { TransactionDocument } from '../../../interfaces/transaction.interface.js';
 const findCaseById = async (id:string) => {
   const cases = await Case.findById(id);
   if(!cases) throw new NotFoundError('case not found');
@@ -14,12 +15,12 @@ const findCharityById = async (id:string) => {
   if(!charity) throw new NotFoundError('charity not found');
   return charity;
 };
-const findTransactionByQuery = async (queryObj)=> {
+const findTransactionByQuery = async (queryObj):Promise<TransactionDocument>=> {
   const transaction= await Transaction.findOne(queryObj);
   if(!transaction) throw new NotFoundError('transaction not found');
   return transaction;
 };
-const findTransactionById = async (id:string):Promise<any> => {
+const findTransactionById = async (id:string):Promise<TransactionDocument> => {
   const transaction = await Transaction.findOne({ _id: id });
   if(!transaction) throw new NotFoundError('transaction not found');
   return transaction;
@@ -29,7 +30,7 @@ const findUserByEmail = async (email:string) => {
   if(!user) throw new NotFoundError('user not found');
   return user;
 };
-const createTransaction = async (transaction) => {
+const createTransaction = async (transaction):Promise<TransactionDocument> => {
   const newTransaction = await Transaction.create(transaction);
   return newTransaction;
 };

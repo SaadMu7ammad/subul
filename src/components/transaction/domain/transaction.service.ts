@@ -6,6 +6,7 @@ import { checkValueEquality } from '../../../utils/shared.js';
 import { transactionRepository } from '../data-access/transaction.repository.js';
 import { transactionUtils } from './transaction.utils.js';
 import Transaction from '../data-access/models/transaction.model.js';
+import { TransactionDocument } from '../../../interfaces/transaction.interface.js';
 const preCreateTransaction = async (data, user) => {
   //must check the account for the charity is valid or not
   const { charityId, caseId, amount, mainTypePayment }:{charityId:string, caseId:string, amount:number, mainTypePayment:string} = data;
@@ -39,7 +40,7 @@ const preCreateTransaction = async (data, user) => {
   const checker = transactionUtils.donationAmountAssertion(caseIsExist, amount);
   return checker;
 };
-const updateCaseInfo = async (data)=> {
+const updateCaseInfo = async (data):Promise<TransactionDocument>=> {
   //start updating
   const {
     user,
@@ -78,7 +79,7 @@ const updateCaseInfo = async (data)=> {
       amount
     );
     //in the next middleware will update the externalTransactionId with the new refund transaction
-    return {transactionIsExist};
+    return transactionIsExist;
   } //else  console.log('no transaction found for refund so will create new one');
 
   //what if status = pending?
