@@ -6,15 +6,15 @@ import {
 } from '../../../../utils/mailer.js';
 
 const authUser = async (reqBody, res) => {
-  const { email, password } = reqBody;
+  const { email, password } :{email:string,password:string}= reqBody;
   const userResponse = await authUserUtils.checkUserPassword(email, password);
-  const token = generateToken(res, userResponse.user._id, 'user');
+  const token:string = generateToken(res, userResponse.user._id, 'user');
   const userObj = {
     _id: userResponse.user._id,
     name: userResponse.user.name,
     email: userResponse.user.email,
   };
-  const IsCharityVerified = authUserUtils.checkUserIsVerified(
+  const IsCharityVerified:boolean = authUserUtils.checkUserIsVerified(
     userResponse.user
   );
   if (IsCharityVerified) {
@@ -25,7 +25,7 @@ const authUser = async (reqBody, res) => {
     };
   } else {
     //not verified(not activated)
-    const token = await generateResetTokenTemp();
+    const token:string = await generateResetTokenTemp();
     userResponse.user.verificationCode = token;
     await userResponse.user.save();
     await setupMailSender(

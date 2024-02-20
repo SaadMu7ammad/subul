@@ -3,7 +3,7 @@ import { authUserService } from './auth.service.js';
 //@route  POST /api/users/auth
 //@access public
 const authUser = async (req, res, next) => {
-  const data = {
+  const data :{email:string,password:string}= {
     email: req.body.email,
     password: req.body.password,
   };
