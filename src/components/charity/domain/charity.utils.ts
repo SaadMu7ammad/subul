@@ -2,14 +2,14 @@ import {
     BadRequestError,
     NotFoundError,
 } from '../../../libraries/errors/components/index.js';
-import { charityRepository } from '../data-access/charity.repository.js';
+import { CharityRepository } from '../data-access/charity.repository.js';
 import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
 import { checkValueEquality } from '../../../utils/shared.js';
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
-
+const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (email:string) => {
     //return charity if it exists
     const charityIsExist = await charityRepository.findCharity(email);
