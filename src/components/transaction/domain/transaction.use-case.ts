@@ -1,11 +1,12 @@
 import { BadRequestError } from '../../../libraries/errors/components/index.js';
+import {TransactionDocument } from '../data-access/interfaces/transaction.interface.js';
 
 import { transactionService } from './transaction.service.js';
 const preCreateTransaction = async (req, res, next) => {
   try {
     const data = req.body;
     const storedUser = req.user;
-    const transaction = await transactionService.preCreateTransaction(
+    const transaction:boolean= await transactionService.preCreateTransaction(
       data,
       storedUser
     );
@@ -20,7 +21,7 @@ const preCreateTransaction = async (req, res, next) => {
   }
 };
 const getAllTransactions = async (req, res, next) => {
-  const myTransactions = await transactionService.getAllTransactions(req.user);
+  const myTransactions:{allTransactions:TransactionDocument[]} = await transactionService.getAllTransactions(req.user);
   if (!myTransactions) {
     throw new BadRequestError('no transactions found');
   }
@@ -51,13 +52,13 @@ const updateCaseInfo = async (req, res, next) => {
   };
   // create a new transaction here
   //before update the case info check if the transaction is a refund or payment donation
-  const transaction = await transactionService.updateCaseInfo(data);
+  const transaction:TransactionDocument = await transactionService.updateCaseInfo(data);
   if (!transaction) {
     throw new BadRequestError(
       'transaction not completed ... please try again!'
     );
   }
-  return { status: transaction.status, data: transaction.newTransaction };
+  return { status: transaction.status, data: transaction};
   } catch (err) {
       console.log(err);
   }
