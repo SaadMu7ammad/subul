@@ -2,6 +2,7 @@ import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components/index.js';
+import { TransactionDocument } from '../data-access/interfaces/transaction.interface.js';
 import { transactionRepository } from '../data-access/transaction.repository.js';
 
 const checkPreCreateTransaction = (data) => {
@@ -94,8 +95,8 @@ const confirmSavingCase = async (cause) => {
 const confirmSavingUser = async (user) => {
   await user.save();
 };
-const getAllTransactionsPromised = async (user) => {
-  const transactionPromises = user.transactions.map(async (itemId, index) => {
+const getAllTransactionsPromised = async (user):Promise<TransactionDocument[]> => {
+  const transactionPromises:TransactionDocument[] = user.transactions.map(async (itemId, index) => {
     const myTransaction = await transactionRepository.findTransactionById(
       itemId
     );
@@ -114,7 +115,7 @@ const getAllTransactionsPromised = async (user) => {
   await confirmSavingUser(user);
   return allTransactionsPromised;
 };
-const refundUtility = async (transaction,amount:number) => {
+const refundUtility = async (transaction:TransactionDocument,amount:number):Promise<TransactionDocument> => {
   const caseId:string = transaction.case; //get the id of the case
   if (!caseId) throw new NotFoundError('case id not found');
 
