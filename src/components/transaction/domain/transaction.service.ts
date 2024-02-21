@@ -49,7 +49,7 @@ const preCreateTransaction = async (data, user) => {
     //check the case is finished or being freezed by the website admin
     transactionUtils.checkCaseIsValidToDonate(caseIsExist);
     //check that donor only donates with the remain part of money and not exceed the target amount
-    const checker = transactionUtils.donationAmountAssertion(
+    const checker:boolean = transactionUtils.donationAmountAssertion(
         caseIsExist,
         amount
     );
@@ -79,12 +79,12 @@ const updateCaseInfo = async (data): Promise<TransactionDocument> => {
     if (!userIsExist) throw new BadRequestError('no user found');
 
     // implement the refund here
-    const queryObj = {
+    const queryObj:{externalTransactionId:string,orderId:string} = {
         externalTransactionId: externalTransactionId,
         orderId: orderId,
     };
 
-    let transactionIsExist = await transactionRepository.findTransactionByQuery(
+    let transactionIsExist:TransactionDocument = await transactionRepository.findTransactionByQuery(
         queryObj
     );
     if (transactionIsExist) {
@@ -107,7 +107,7 @@ const updateCaseInfo = async (data): Promise<TransactionDocument> => {
     //now everything is ready for creating the transaction
 
     // to know the type of payment method that donor paid with
-    let paymentMethod;
+    let paymentMethod;//TODO: should be typed but I can't get it now. 
     if (paymentMethodType === 'card') {
         paymentMethod = {
             onlineCard: {
@@ -150,7 +150,7 @@ const updateCaseInfo = async (data): Promise<TransactionDocument> => {
     console.log({ status: newTransaction.status }); //, data: newTransaction });
     return newTransaction;
 };
-const getAllTransactions = async (user) => {
+const getAllTransactions = async (user):Promise<{allTransactions:TransactionDocument[]}> => {
     const allTransactionsPromised =
         await transactionUtils.getAllTransactionsPromised(user);
     return { allTransactions: allTransactionsPromised };
