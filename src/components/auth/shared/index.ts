@@ -5,7 +5,7 @@ import Charity from '../../charity/data-access/models/charity.model.js';
 import { UnauthenticatedError } from '../../../libraries/errors/components/index.js';
 import logger from '../../../utils/logger.js';
 import * as configurationProvider from '../../../libraries/configuration-provider/index.js';
-
+import { CharityDocument } from '../../charity/data-access/interfaces/charity.interface.js';
 const auth = async (req, res, next) => {
   try {
     if (req.headers && req.headers.cookie) {

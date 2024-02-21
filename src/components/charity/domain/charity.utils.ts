@@ -9,10 +9,11 @@ import {
 } from '../../../utils/mailer.js';
 import { checkValueEquality } from '../../../utils/shared.js';
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
+import { CharityDocument } from '../data-access/interfaces/charity.interface.js';
 const charityRepository = new CharityRepository();
-const checkCharityIsExist = async (email:string) => {
+const checkCharityIsExist = async (email:string):Promise<{charity:CharityDocument}> => {
     //return charity if it exists
-    const charityIsExist = await charityRepository.findCharity(email);
+    const charityIsExist:CharityDocument|null = await charityRepository.findCharity(email);
     if (!charityIsExist) {
         throw new NotFoundError('email not found Please use another one');
     }
@@ -26,15 +27,15 @@ const logout = (res) => {
         expires: new Date(0),
     });
 };
-const getCharity = (req) => {
-    return { charity: req.charity };
+const getCharity = (req): {charity:CharityDocument}=> {
+    return { charity: req.charity  };
 };
 const checkIsEmailDuplicated = async (email:string) => {
-    const isDuplicatedEmail = await charityRepository.findCharity(email);
+    const isDuplicatedEmail:CharityDocument|null = await charityRepository.findCharity(email);
     if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
 const changeCharityEmailWithMailAlert = async (
-    CharityBeforeUpdate,
+    CharityBeforeUpdate:CharityDocument,
     newEmail:string
 ) => {
     //for sending email if changed or edited
