@@ -3,7 +3,9 @@ import {
   NotFoundError,
 } from '../../../libraries/errors/components/index.js';
 import { TransactionDocument } from '../data-access/interfaces/transaction.interface.js';
-import { transactionRepository } from '../data-access/transaction.repository.js';
+import { TransactionRepository } from '../data-access/transaction.repository.js';
+
+const transactionRepository = new TransactionRepository();
 
 const checkPreCreateTransaction = (data) => {
   const { charityId, caseId, amount, mainTypePayment }:{charityId:string, caseId:string, amount:number, mainTypePayment:string} = data;

@@ -1,5 +1,5 @@
 import { BadRequestError } from '../../../libraries/errors/components/index.js';
-import { Transaction, TransactionDocument } from '../data-access/interfaces/transaction.interface.js';
+import {TransactionDocument } from '../data-access/interfaces/transaction.interface.js';
 
 import { transactionService } from './transaction.service.js';
 const preCreateTransaction = async (req, res, next) => {

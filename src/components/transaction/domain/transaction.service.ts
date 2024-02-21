@@ -3,10 +3,11 @@ import {
     NotFoundError,
 } from '../../../libraries/errors/components/index.js';
 import { checkValueEquality } from '../../../utils/shared.js';
-import { transactionRepository } from '../data-access/transaction.repository.js';
+import { TransactionRepository } from '../data-access/transaction.repository.js';
 import { transactionUtils } from './transaction.utils.js';
 import Transaction from '../data-access/models/transaction.model.js';
 import { TransactionDocument } from '../data-access/interfaces/transaction.interface.js';
+const transactionRepository = new TransactionRepository();
 const preCreateTransaction = async (data, user) => {
     //must check the account for the charity is valid or not
     const {
