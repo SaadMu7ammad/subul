@@ -1,10 +1,10 @@
 import User from './models/user.model.js';
 
-const findUser = async (email) => {
+const findUser = async (email:string) => {
   const user = await User.findOne({ email: email });
   return user;
 };
-const findUserById = async (id) => {
+const findUserById = async (id:string) => {
   const user = await User.findById(id);
   return user;
 };

@@ -7,7 +7,7 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
-const checkUserIsExist = async (email) => {
+const checkUserIsExist = async (email:string) => {
     //return user if it exists
     const userIsExist = await userRepository.findUser(email);
     if (!userIsExist) {
@@ -26,11 +26,11 @@ const logout = (res) => {
 const getUser = (req) => {
     return { user: req.user };
 };
-const checkIsEmailDuplicated = async (email) => {
+const checkIsEmailDuplicated = async (email:string) => {
     const isDuplicatedEmail = await userRepository.findUser(email);
     if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
-const changeUserEmailWithMailAlert = async (UserBeforeUpdate, newEmail) => {
+const changeUserEmailWithMailAlert = async (UserBeforeUpdate, newEmail:string) => {
     //for sending email if changed or edited
     UserBeforeUpdate.email = newEmail;
     UserBeforeUpdate.emailVerification.isVerified = false;

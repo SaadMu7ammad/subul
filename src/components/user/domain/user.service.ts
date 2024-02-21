@@ -33,22 +33,22 @@ const confirmReset = async (reqBody) => {
         reqBody.token
     );
     if (!isEqual) {
-        updatedUser.user.verificationCode = null;
+        updatedUser.user.verificationCode = null as unknown as string | undefined;;
         updatedUser.user = await updatedUser.user.save();
         throw new UnauthenticatedError(
             'invalid token send request again to reset a password'
         );
     }
     updatedUser.user.password = reqBody.password;
-    updatedUser.user.verificationCode = null;
+    updatedUser.user.verificationCode = null as unknown as string | undefined;;
     updatedUser.user = await updatedUser.user.save();
     await setupMailSender(
         updatedUser.user.email,
         'password changed alert',
         `hi ${
-            updatedUser.user.name.firstName +
+            updatedUser.user.name?.firstName +
             ' ' +
-            updatedUser.user.name.lastName
+            updatedUser.user.name?.lastName
         } <h3>contact us if you did not changed the password</h3>` +
             `<h3>go to link(www.dummy.com) to freeze your account</h3>`
     );
@@ -79,7 +79,7 @@ const activateAccount = async (reqBody, user, res) => {
         reqBody.token
     );
     if (!isMatch) {
-        await userUtils.resetSentToken();
+        await userUtils.resetSentToken(storedUser);
         userUtils.logout(res);
         throw new UnauthenticatedError(
             'invalid token you have been logged out'
@@ -107,7 +107,7 @@ const editUserProfile = async (reqBody, user) => {
     // const updateUserArgs = dot.dot(req.body);
     if (!reqBody) throw new BadRequestError('no data sent');
     if (
-        //put restrection on the edit elements
+        //put restriction  on the edit elements
         !reqBody.name &&
         !reqBody.email &&
         !reqBody.location &&
@@ -116,7 +116,7 @@ const editUserProfile = async (reqBody, user) => {
     )
         throw new BadRequestError('cant edit that');
 
-    const { email } = { ...reqBody };
+    const { email=undefined  } = { ...reqBody };
     if (email) {
         //if the edit for email
         // const alreadyRegisteredEmail = await User.findOne({ email });

@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index.js'
+import {UserDocument,UserModel,UserSchema} from '../interfaces/user.interface.js';
 const locationSchema = new mongoose.Schema({
     governorate: {
         type: String,
@@ -47,7 +48,7 @@ const locationSchema = new mongoose.Schema({
     },
 },{_id:false});
 
-const userSchema = new mongoose.Schema(
+const userSchema:UserSchema = new mongoose.Schema(
     {
         name: {
             firstName: {
@@ -99,7 +100,6 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: false,
         },
-
         verificationCode: {
             type: String,
             required: false,
@@ -156,8 +156,8 @@ userSchema.pre('save', async function (next) {
 //       const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
 //       this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
 //     }
-  
+
 // });
 
-const User = mongoose.model('Users', userSchema);
+const User :UserModel= mongoose.model<UserDocument,UserModel>('Users', userSchema);
 export default User;
