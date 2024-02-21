@@ -14,7 +14,7 @@ import { getTransactionById } from '../../../../libraries/paymob/admin/getTransa
 import { refund } from '../../../../libraries/paymob/refund/refund.controller.js';
 import logger from '../../../../utils/logger.js';
 
-export default function defineRoutes(expressApp:Application) {
+export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
 
   //for user
