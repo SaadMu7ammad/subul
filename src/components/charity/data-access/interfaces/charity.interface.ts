@@ -152,11 +152,11 @@ export type Charity = {
   verificationCode?: string;
   emailVerification: {
     isVerified?: boolean;
-    verificationDate?: Date;
+    verificationDate?: Date|null;
   };
   phoneVerification: {
     isVerified?: boolean;
-    verificationDate?: Date;
+    verificationDate?: Date|null;
   };
   isEnabled: boolean;
   isConfirmed: boolean;
@@ -380,11 +380,11 @@ export type CharityDocument = mongoose.Document<
     verificationCode?: string;
     emailVerification: {
       isVerified?: boolean;
-      verificationDate?: Date;
+      verificationDate?: Date|null;
     };
     phoneVerification: {
       isVerified?: boolean;
-      verificationDate?: Date;
+      verificationDate?: Date|null;
     };
     isEnabled: boolean;
     isConfirmed: boolean;
