@@ -149,14 +149,14 @@ export type Charity = {
   };
   description: string;
   totalDonationsIncome?: number;
-  verificationCode?: string;
+  verificationCode?: string|null;
   emailVerification: {
     isVerified?: boolean;
-    verificationDate?: Date|null;
+    verificationDate?: Date|number|null;
   };
   phoneVerification: {
     isVerified?: boolean;
-    verificationDate?: Date|null;
+    verificationDate?: Date|number|null;
   };
   isEnabled: boolean;
   isConfirmed: boolean;
@@ -377,14 +377,14 @@ export type CharityDocument = mongoose.Document<
     };
     description: string;
     totalDonationsIncome?: number;
-    verificationCode?: string;
+    verificationCode?: string|null;
     emailVerification: {
       isVerified?: boolean;
-      verificationDate?: Date|null;
+      verificationDate?: Date|number|null;
     };
     phoneVerification: {
       isVerified?: boolean;
-      verificationDate?: Date|null;
+      verificationDate?: Date|number|null;
     };
     isEnabled: boolean;
     isConfirmed: boolean;
