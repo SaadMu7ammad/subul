@@ -1,4 +1,3 @@
-import { RequestHandler } from 'express';
 import { charityService } from './charity.service.js';
 import { CharityDocument } from '../data-access/interfaces/charity.interface.js';
 
@@ -66,7 +65,7 @@ const showCharityProfile = (req, res, next) => {
   };
 };
 const editCharityProfile = async (req, res, next) => {
-  const dataInput = {
+const inputData:Partial<CharityDocument>&{locationId :string} = {
     name: req.body.name,
     email: req.body.email,
     location: req.body.location,
@@ -76,7 +75,7 @@ const editCharityProfile = async (req, res, next) => {
   };
   const storedCharity:CharityDocument = req.charity;
   const responseData :{charity:CharityDocument,message:string}= await charityService.editCharityProfile(
-    dataInput,
+    inputData,
     storedCharity
   );
   return {

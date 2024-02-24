@@ -11,6 +11,7 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
+import { CharityDocument } from '../data-access/interfaces/charity.interface.js';
 
 const requestResetPassword = async (reqBody) => {
     const charityResponse = await charityUtils.checkCharityIsExist(
@@ -83,7 +84,7 @@ const logoutCharity = (res) => {
     charityUtils.logout(res);
     return { message: 'logout' };
 };
-const getCharityProfileData = (charity) => {
+const getCharityProfileData = (charity:CharityDocument) => {
     return { charity: charity };
 };
 const editCharityProfile = async (reqBody, charity) => {
