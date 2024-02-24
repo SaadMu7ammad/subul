@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index.js';
-import { IUser } from '../interfaces/user.interface.js';
+import { IUser, IUserDocument } from '../interfaces/user.interface.js';
 const locationSchema = new mongoose.Schema(
   {
     governorate: {
@@ -51,7 +51,7 @@ const locationSchema = new mongoose.Schema(
   { _id: false }
 );
 
-const userSchema: Schema<IUser & Document> = new mongoose.Schema(
+const userSchema: Schema<IUser> = new mongoose.Schema(
   {
     name: {
       firstName: {
@@ -165,5 +165,5 @@ userSchema.pre('save', async function (next) {
 
 // });
 
-const UserModel = mongoose.model<IUser & Document>('Users', userSchema);
+const UserModel = mongoose.model<IUserDocument>('Users', userSchema);
 export default UserModel;

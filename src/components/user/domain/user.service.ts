@@ -13,7 +13,7 @@ import {
   updateNestedProperties,
 } from '../../../utils/shared.js';
 import {
-  IUser,
+  IUserDocument,
   IUserResponse,
   dataForActivateAccount,
   dataForChangePassword,
@@ -66,7 +66,7 @@ const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
 
   return { message: 'user password changed successfully' };
 };
-const changePassword = async (reqBody: dataForChangePassword, user: IUser) => {
+const changePassword = async (reqBody: dataForChangePassword, user: IUserDocument) => {
   let updatedUser = user;
   updatedUser.password = reqBody.password;
   await updatedUser.save();
@@ -82,7 +82,7 @@ const changePassword = async (reqBody: dataForChangePassword, user: IUser) => {
 };
 const activateAccount = async (
   reqBody: dataForActivateAccount,
-  user: IUser,
+  user: IUserDocument,
   res: Response
 ) => {
   let storedUser = user;
@@ -113,12 +113,12 @@ const logoutUser = (res) => {
   userUtils.logout(res);
   return { message: 'logout' };
 };
-const getUserProfileData = (user: IUser) => {
+const getUserProfileData = (user: IUserDocument) => {
   return { user: user };
 };
 const editUserProfile = async (
-  reqBody: Partial<IUser>,
-  user: IUser
+  reqBody: Partial<IUserDocument>,
+  user: IUserDocument
 ): Promise<IUserResponse> => {
   // const updateUserArgs = dot.dot(req.body);
   if (!reqBody) throw new BadRequestError('no data sent');
@@ -142,7 +142,7 @@ const editUserProfile = async (
       user,
       email
     ); //email is the NewEmail
-    const userObj: Partial<IUser> = {
+    const userObj: Partial<IUserDocument> = {
       name: userWithEmailUpdated?.user?.name,
       email: userWithEmailUpdated?.user?.email,
       locationUser: userWithEmailUpdated?.user?.locationUser,
@@ -151,12 +151,12 @@ const editUserProfile = async (
     };
     return {
       emailEdited: true,
-      user: <IUser>userObj,
+      user: <IUserDocument>userObj,
     };
   }
   updateNestedProperties(user, reqBody);
   await user.save();
-  const userObj: Partial<IUser> = {
+  const userObj: Partial<IUserDocument> = {
     name: user.name,
     email: user.email,
     locationUser: user.locationUser, //.governorate,
@@ -165,7 +165,7 @@ const editUserProfile = async (
   };
   return {
     emailEdited: false,
-    user: <IUser>userObj,
+    user: <IUserDocument>userObj,
   };
 };
 export const userService = {

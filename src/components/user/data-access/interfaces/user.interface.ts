@@ -1,4 +1,4 @@
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model,Document } from 'mongoose';
 import { Transaction } from '../../../transaction/data-access/interfaces/transaction.interface';
 import UserModel from '../models/user.model';
 export interface UserLocation {
@@ -36,8 +36,8 @@ export interface UserLocation {
   street?: string;
 }
 
+
 export interface IUser {
-  save(): unknown;
   name: {
     firstName: string;
     lastName: string;
@@ -65,10 +65,37 @@ export interface IUser {
   createdAt?: Date;
   updatedAt?: Date;
 }
-
+export interface IUserDocument extends Document {
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  email: string;
+  password: string;
+  isAdmin: boolean;
+  pointsOnDonations: number;
+  totalDonationsAmount?: number;
+  locationUser: UserLocation;
+  gender: 'male' | 'female';
+  phone?: string;
+  verificationCode?: string;
+  emailVerification: {
+    isVerified?: boolean;
+    verificationDate?: Date;
+  };
+  phoneVerification: {
+    isVerified?: boolean;
+    verificationDate?: Date;
+  };
+  isEnabled: boolean;
+  transactions: (Transaction['_id'] | Transaction)[];
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 export interface IUserResponse {
   emailEdited?: boolean;
-  user: IUser;
+  user: IUserDocument;
   message?: string;
 }
 // export interface IUserResponseModel {

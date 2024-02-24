@@ -8,7 +8,10 @@ import {
   setupMailSender,
 } from '../../../utils/mailer.js';
 import { Response, Request } from 'express';
-import { IUser, IUserResponse } from '../data-access/interfaces/user.interface';
+import {
+  IUserDocument,
+  IUserResponse,
+} from '../data-access/interfaces/user.interface';
 const userRepositoryObj = new userRepository();
 const checkUserIsExist = async (email: string): Promise<IUserResponse> => {
   //return user if it exists
@@ -35,7 +38,7 @@ const checkIsEmailDuplicated = async (email: string): Promise<boolean> => {
   return isDuplicatedEmail ? true : false;
 };
 const changeUserEmailWithMailAlert = async (
-  UserBeforeUpdate: IUser,
+  UserBeforeUpdate: IUserDocument,
   newEmail: string
 ): Promise<IUserResponse> => {
   //for sending email if changed or edited
