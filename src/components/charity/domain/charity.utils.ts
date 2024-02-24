@@ -82,7 +82,7 @@ const changeCharityPasswordWithMailAlert = async (charity:CharityDocument, newPa
             `<h3>go to link(www.dummy.com) to freeze your account</h3>`
     );
 };
-const editCharityProfileAddress = async (charity:CharityDocument, id:string, updatedLocation:CharityLocationDocument):Promise<{charity:CharityDocument}> => { //TODO: Should we use Partial<CharityLocationDocument>?
+const editCharityProfileAddress = async (charity:CharityDocument, id:string, updatedLocation:CharityLocationDocument[]):Promise<{charity:CharityDocument}> => { //TODO: Should we use Partial<CharityLocationDocument>?
     for (let i = 0; i < charity.location.length; i++) {
         const isMatch = checkValueEquality(charity.location[i]._id, id);
         if (isMatch) {
@@ -100,7 +100,7 @@ const editCharityProfileAddress = async (charity:CharityDocument, id:string, upd
     throw new BadRequestError('no id found');
 };
 // };
-const addCharityProfileAddress = async (charity:CharityDocument, updatedLocation:CharityLocationDocument):Promise<{charity:CharityDocument}> => {
+const addCharityProfileAddress = async (charity:CharityDocument, updatedLocation:CharityLocationDocument[]):Promise<{charity:CharityDocument}> => {
     charity.location.push(updatedLocation);
     await charity.save();
     return { charity: charity };
@@ -205,8 +205,8 @@ const getPaymentMethodIdx = (
     return idx;
 };
 
-const makeTempPaymentObj = (selector:string, reqPaymentMethodsObj) => {
-    const temp = {};
+const makeTempPaymentObj = (selector:string, reqPaymentMethodsObj:CharityPaymentMethodDocument) => {
+    const temp:CharityPaymentMethodDocument = {};
 
     const methodMap = {
         bankAccount: {

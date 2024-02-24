@@ -11,10 +11,10 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
-import { CharityDocument } from '../data-access/interfaces/charity.interface.js';
+import { CharityDocument, CharityLocationDocument,CharityPaymentMethodDocument } from '../data-access/interfaces/charity.interface.js';
 
-const requestResetPassword = async (reqBody) => {
-    const charityResponse = await charityUtils.checkCharityIsExist(
+const requestResetPassword = async (reqBody:{email:string}) => {
+    const charityResponse:{charity:CharityDocument} = await charityUtils.checkCharityIsExist(
         reqBody.email
     );
     const token:string = await generateResetTokenTemp();
@@ -31,8 +31,8 @@ const requestResetPassword = async (reqBody) => {
     };
 };
 
-const confirmResetPassword = async (reqBody) => {
-    let updatedCharity = await charityUtils.checkCharityIsExist(reqBody.email);
+const confirmResetPassword = async (reqBody:{token:string,email:string,password:string}) => {
+    let updatedCharity:{charity:CharityDocument} = await charityUtils.checkCharityIsExist(reqBody.email);
     const isEqual:boolean = checkValueEquality(
         updatedCharity.charity.verificationCode,
         reqBody.token
@@ -49,12 +49,12 @@ const confirmResetPassword = async (reqBody) => {
     );
     return { message: 'charity password changed successfully' };
 };
-const changePassword = async (password, charity) => {
+const changePassword = async (password:string, charity:CharityDocument) => {
     await charityUtils.changeCharityPasswordWithMailAlert(charity, password);
     return { message: 'Charity password changed successfully' };
 };
-const activateAccount = async (reqBody, charity, res) => {
-    let storedCharity = charity;
+const activateAccount = async (reqBody:{token:string}, charity:CharityDocument, res) => {
+    let storedCharity:CharityDocument = charity;
     if (storedCharity.emailVerification.isVerified) {
         return { message: 'account already is activated' };
     }
@@ -87,10 +87,10 @@ const logoutCharity = (res) => {
 const getCharityProfileData = (charity:CharityDocument) => {
     return { charity: charity };
 };
-const editCharityProfile = async (reqBody, charity) => {
+const editCharityProfile = async (reqBody:Partial<CharityDocument>&{locationId :string} , charity:CharityDocument) => {
     if (!reqBody) throw new BadRequestError('no data sent');
-    const { email, location, locationId } = reqBody;
-    let storedCharity = charity;
+    const { email, location, locationId }= reqBody;
+    let storedCharity:CharityDocument = charity;
     if (
         //put restriction on the edit elements
         !reqBody.name &&
@@ -108,32 +108,32 @@ const editCharityProfile = async (reqBody, charity) => {
         description: reqBody.description,
     };
     if (email) {
-        const charityUpdated =
+        const updatedCharity:{charity:CharityDocument} =
             await charityUtils.changeCharityEmailWithMailAlert(
                 storedCharity,
                 email
             );
         return {
             emailEdited: true,
-            charity: charityUpdated.charity,
+            charity: updatedCharity.charity,
             message:'email has been sent to your gmail'
         };
     }
     if (location) {
         //edit
         if (locationId) {
-            const charityUpdated = await charityUtils.editCharityProfileAddress(
+            const updatedCharity:{charity:CharityDocument} = await charityUtils.editCharityProfileAddress(
                 storedCharity,
                 locationId,
                 location
             );
-            storedCharity = charityUpdated.charity;
+            storedCharity = updatedCharity.charity;
         } else {
-            const charityUpdated = await charityUtils.addCharityProfileAddress(
+            const updatedCharity:{charity:CharityDocument} = await charityUtils.addCharityProfileAddress(
                 storedCharity,
                 location
             );
-            storedCharity = charityUpdated.charity;
+            storedCharity = updatedCharity.charity;
         }
     }
     updateNestedProperties(storedCharity, charityObj);
@@ -161,7 +161,7 @@ const sendDocs = async (reqBody, charity) => {
         !charity.isConfirmed &&
         !charity.isPending
     ) {
-        const addCharityPaymentsResponse = await charityUtils.addDocs(
+        const addCharityPaymentsResponse:{paymentMethods:CharityPaymentMethodDocument} = await charityUtils.addDocs(
             reqBody,
             charity
         );
@@ -184,17 +184,18 @@ const sendDocs = async (reqBody, charity) => {
 };
 
 const requestEditCharityPayments = async (
-    charityObj,
-    paymentId,
-    reqPaymentMethodsObj,
+    charityObj:CharityDocument,
+    paymentId:string,
+    reqPaymentMethodsObj:CharityPaymentMethodDocument,
 ) => {
     if (!reqPaymentMethodsObj) {
         throw new BadRequestError('Incomplete Data!');
     }
+    charityObj.paymentMethods = charityObj.paymentMethods as CharityPaymentMethodDocument;//Clunky Soluiton 👀
 
-    let charityPaymentMethodsObj = charityObj.paymentMethods;
+    let charityPaymentMethodsObj:CharityPaymentMethodDocument= charityObj.paymentMethods; 
 
-    let changedPaymentMethod =
+    let changedPaymentMethod:string =
         charityUtils.getChangedPaymentMethod(reqPaymentMethodsObj);
 
     const idx:number = charityUtils.getPaymentMethodIdx(
@@ -203,7 +204,7 @@ const requestEditCharityPayments = async (
         paymentId
     );
 
-    const temp = charityUtils.makeTempPaymentObj(
+    const temp:CharityPaymentMethodDocument = charityUtils.makeTempPaymentObj(
         changedPaymentMethod,
         reqPaymentMethodsObj
     ); //👋

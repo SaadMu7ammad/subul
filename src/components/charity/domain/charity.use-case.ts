@@ -1,5 +1,5 @@
 import { charityService } from './charity.service.js';
-import { CharityDocument, CharityPaymentMethod } from '../data-access/interfaces/charity.interface.js';
+import { CharityDocument, CharityPaymentMethodDocument } from '../data-access/interfaces/charity.interface.js';
 
 const activateCharityAccount = async (req, res, next) => {
 let storedCharity:CharityDocument = req.charity;
@@ -93,7 +93,7 @@ const changeProfileImage = async (req, res, next) => {
 };
 
 const requestEditCharityPayments = async (req, res, next) => {
-    const reqPaymentMethodsObj:CharityPaymentMethod = req.body.paymentMethods;
+    const reqPaymentMethodsObj:CharityPaymentMethodDocument = req.body.paymentMethods;
     const responseData = await charityService.requestEditCharityPayments(
         req.charity,
         req.body.payment_id,
@@ -115,7 +115,7 @@ const logout = (req, res, next) => {
 };
 
 const sendDocs = async (req, res, next) => {
-  const data:{charityDocs:{docs1:string,docs2:string,docs3:string,docs4:string},paymentMethods:Partial<CharityPaymentMethod>} = {
+  const data:{charityDocs:{docs1:string,docs2:string,docs3:string,docs4:string},paymentMethods:Partial<CharityPaymentMethodDocument>} = {
     charityDocs: {
       docs1: req.body.charityDocs.docs1,
       docs2: req.body.charityDocs.docs2,
