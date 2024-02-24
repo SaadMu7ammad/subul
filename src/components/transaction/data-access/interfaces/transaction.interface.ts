@@ -10,7 +10,7 @@ export interface TransactionPaymentInfo {
   _id: mongoose.Types.ObjectId;
 }
 
-export interface Transaction {
+export interface ITransaction {
   case?: Case['_id'] | Case;
   user?: User['_id'] | User;
   moneyPaid: number;

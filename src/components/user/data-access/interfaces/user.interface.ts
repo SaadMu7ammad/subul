@@ -1,5 +1,5 @@
 import mongoose, { Model } from 'mongoose';
-import { Transaction } from '../../../transaction/data-access/interfaces/transaction.interface';
+import { ITransaction } from '../../../transaction/data-access/interfaces/transaction.interface';
 import UserModel from '../models/user.model';
 export interface UserLocation {
   governorate:
@@ -37,7 +37,6 @@ export interface UserLocation {
 }
 
 export interface IUser {
-  save(): unknown;
   name: {
     firstName: string;
     lastName: string;
@@ -60,7 +59,7 @@ export interface IUser {
     verificationDate?: Date;
   };
   isEnabled: boolean;
-  transactions: (Transaction['_id'] | Transaction)[];
+  transactions: (ITransaction['_id'] | ITransaction)[];
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;

@@ -1,3 +1,4 @@
+import { IUser } from '../../../components/user/data-access/interfaces/user.interface.js';
 import * as configurationProvider from '../../configuration-provider/index.js';
 import { NotFoundError } from '../../errors/components/index.js';
 import { paymentUtils } from './payment.utils.js';
@@ -53,7 +54,7 @@ const OrderRegistrationAPI = async (
 const generatePaymentKey = async (
   token:string,
   order_id:string,
-  user,
+  user:IUser,
   amount:number,
   integration_id
 ) => {
@@ -71,16 +72,16 @@ const generatePaymentKey = async (
           billing_data: {
             email: user.email || 'NA',
             phone_number: user.phone,
-            apartment: user.address ? user.address.apartment : 'NA',
-            floor: user.address ? user.address.floor : 'NA',
-            building: user.address ? user.address.building : 'NA',
-            street: user.address ? user.address.street : 'NA',
-            city: user.address ? user.address.city : 'NA',
+            apartment: 'NA',//user.address?.apartment ? user.address.apartment : 'NA',
+            floor: 'NA',//user.address ? user.address.floor : 'NA',
+            building:'NA',// user.address ? user.address.building : 'NA',
+            street: user.locationUser ? user.locationUser.street : 'NA',
+            city: user.locationUser ? user.locationUser.city : 'NA',
             country: 'Egypt', //"user.address ? user.address.country ": 'NA',
             first_name: user.name.firstName,
             last_name: user.name.lastName,
-            state: user.location ? user.location.governorate : 'NA',
-            zip_code: user.address ? user.address.zip_code : 'NA',
+            state: user.locationUser ? user.locationUser.governorate : 'NA',
+            zip_code:'NA',// user.locationUser ? user.locationUser.zip_code : 'NA',
           },
           currency: 'EGP',
           integration_id: +integration_id,
@@ -95,7 +96,7 @@ const generatePaymentKey = async (
   }
 };
 const createPayment = async (
-  user,
+  user:IUser,
   amount:number,
   charityId:string,
   caseId:string,

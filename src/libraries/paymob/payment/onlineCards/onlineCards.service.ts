@@ -1,6 +1,8 @@
 import { createPayment } from '../payment.service.js';
 import * as configurationProvider from '../../../configuration-provider/index.js';
-const payWithOnlineCard = async (reqBody, user) => {
+import { IPaymentInfoData } from '../payment.interface.js';
+import { IUser } from '../../../../components/user/data-access/interfaces/user.interface.js';
+const payWithOnlineCard = async (reqBody:IPaymentInfoData, user:IUser) => {
   const { amount, charityId, caseId, caseTitle }:{amount:number, charityId:string, caseId:string, caseTitle:string} = reqBody;
   const { orderId, tokenThirdStep } = await createPayment(
     user,

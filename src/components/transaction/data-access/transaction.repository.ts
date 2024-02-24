@@ -2,7 +2,7 @@ import Charity from '../../charity/data-access/models/charity.model.js';
 import User from '../../user/data-access/models/user.model.js';
 import Case from '../../case/data-access/models/case.model.js';
 import { NotFoundError } from '../../../libraries/errors/components/not-found.js';
-import { Transaction } from './interfaces/transaction.interface.js';
+import { ITransaction } from './interfaces/transaction.interface.js';
 import { Promise, FilterQuery } from 'mongoose';
 import { TransactionDataStore } from './interfaces/transaction.dao.js';
 import TransactionModel from './models/transaction.model.js';
@@ -10,23 +10,23 @@ import TransactionModel from './models/transaction.model.js';
 export class TransactionRepository implements TransactionDataStore {
   async findCaseById(id: string) {
     const cases = await Case.findById(id);
-    if (!cases) throw new NotFoundError('case not found');
+    if (!cases)return undefined
     return cases;
   }
 
   async findCharityById(id: string) {
     const charity = await Charity.findById(id);
-    if (!charity) throw new NotFoundError('charity not found');
+    if (!charity) return undefined
     return charity;
   }
   async findTransactionByQuery(
-    queryObj: FilterQuery<Partial<Transaction>>
-  ): Promise<Transaction | undefined> {
+    queryObj: FilterQuery<Partial<ITransaction>>
+  ): Promise<ITransaction | undefined> {
     const transaction = await TransactionModel.findOne(queryObj);
-    if (!transaction) throw new NotFoundError('transaction not found');
+    if (!transaction) return undefined//throw new NotFoundError('transaction not found');
     return transaction;
   }
-  async findTransactionById(id: string): Promise<Transaction | undefined> {
+  async findTransactionById(id: string): Promise<ITransaction | undefined> {
     const transaction = await TransactionModel.findOne({ _id: id });
     if (!transaction) throw new NotFoundError('transaction not found');
     return transaction;
@@ -37,8 +37,8 @@ export class TransactionRepository implements TransactionDataStore {
     return user;
   }
   async createTransaction(
-    transaction: Partial<Transaction>
-  ): Promise<Transaction | undefined> {
+    transaction: Partial<ITransaction>
+  ): Promise<ITransaction | undefined> {
     const newTransaction = await TransactionModel.create(transaction);
     return newTransaction;
   }
