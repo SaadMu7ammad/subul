@@ -11,7 +11,7 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
-import { CharityDocument, CharityLocationDocument,CharityPaymentMethodDocument } from '../data-access/interfaces/charity.interface.js';
+import { CharityDocs, CharityDocument, CharityLocationDocument,CharityObject,CharityPaymentMethodDocument,CharityPaymentMethod } from '../data-access/interfaces/charity.interface.js';
 
 const requestResetPassword = async (reqBody:{email:string}) => {
     const charityResponse:{charity:CharityDocument} = await charityUtils.checkCharityIsExist(
@@ -87,7 +87,7 @@ const logoutCharity = (res) => {
 const getCharityProfileData = (charity:CharityDocument) => {
     return { charity: charity };
 };
-const editCharityProfile = async (reqBody:Partial<CharityDocument>&{locationId :string} , charity:CharityDocument) => {
+const editCharityProfile = async (reqBody:Partial<CharityObject>&{locationId :string} , charity:CharityDocument) => {
     if (!reqBody) throw new BadRequestError('no data sent');
     const { email, location, locationId }= reqBody;
     let storedCharity:CharityDocument = charity;
@@ -154,7 +154,7 @@ const changeProfileImage = async (reqBody, charity) => {
     );
     return { image: updatedImg.image,message:'image changed successfully' };
 };
-const sendDocs = async (reqBody, charity) => {
+const sendDocs = async (reqBody:CharityDocs, charity:CharityDocument) => {
     if (
         (charity.emailVerification.isVerified ||
             charity.phoneVerification.isVerified) &&
@@ -175,18 +175,18 @@ const sendDocs = async (reqBody, charity) => {
     ) {
         throw new UnauthenticatedError('you must verify your account again');
     } else if (charity.isConfirmed) {
-        throw new BadRequestError('Charity is confrimed already!');
+        throw new BadRequestError('Charity is Confirmed already!');
     } else if (charity.isPending) {
         throw new BadRequestError('soon response... still reviewing docs');
     } else {
-        throw new BadRequestError('error occured, try again later');
+        throw new BadRequestError('error occurred, try again later');
     }
 };
 
 const requestEditCharityPayments = async (
     charityObj:CharityDocument,
     paymentId:string,
-    reqPaymentMethodsObj:CharityPaymentMethodDocument,
+    reqPaymentMethodsObj:CharityPaymentMethod,
 ) => {
     if (!reqPaymentMethodsObj) {
         throw new BadRequestError('Incomplete Data!');
@@ -204,7 +204,7 @@ const requestEditCharityPayments = async (
         paymentId
     );
 
-    const temp:CharityPaymentMethodDocument = charityUtils.makeTempPaymentObj(
+    const temp:CharityPaymentMethod= charityUtils.makeTempPaymentObj(
         changedPaymentMethod,
         reqPaymentMethodsObj
     ); //👋

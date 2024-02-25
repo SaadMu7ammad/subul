@@ -25,6 +25,35 @@ export type CharityPaymentMethodBankAccount = {
 };
 
 /**
+ * Charity Docs [docs & paymentDocs]
+ */
+export type CharityDocs = {
+  charityDocs: {
+    docs1: string[];
+    docs2: string[];
+    docs3: string[];
+    docs4: string[];
+  };
+
+    paymentMethods:{
+        bankAccount:{
+          accNumber?: string;
+          iban?: string;
+          swiftCode?: string;
+          bankDocs: string[];
+        } 
+        fawry:{
+          number?: string;
+          fawryDocs: string[];
+        } 
+        vodafoneCash:{
+          number?: string;
+          vodafoneCashDocs: string[];
+        }
+    } 
+};
+
+/**
  * Lean version of CharityPaymentMethodFawryDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CharityPaymentMethodDocument.toObject()`.
@@ -298,6 +327,12 @@ export type CharityPaymentMethodDocument =
     vodafoneCash: mongoose.Types.DocumentArray<CharityPaymentMethodVodafoneCashDocument>;
     _id: mongoose.Types.ObjectId;
   };
+  
+// export type CharityPaymentMethodBankAccountDocumentArray = mongoose.Types.DocumentArray<CharityPaymentMethodBankAccountDocument>;
+
+// export type CharityPaymentMethodFawryDocumentArray = mongoose.Types.DocumentArray<CharityPaymentMethodFawryDocument>;
+
+// export type CharityPaymentMethodVodafoneCashDocumentArray = mongoose.Types.DocumentArray<CharityPaymentMethodVodafoneCashDocument>;
 
 /**
  * Mongoose Subdocument type

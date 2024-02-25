@@ -9,7 +9,7 @@ import {
 } from '../../../utils/mailer.js';
 import { checkValueEquality } from '../../../utils/shared.js';
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
-import { CharityDocument, CharityLocationDocument, CharityObject, CharityPaymentMethod, CharityPaymentMethodDocument } from '../data-access/interfaces/charity.interface.js';
+import { CharityDocs, CharityDocument, CharityLocationDocument, CharityObject, CharityPaymentMethod, CharityPaymentMethodDocument ,CharityLocation} from '../data-access/interfaces/charity.interface.js';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (email:string):Promise<{charity:CharityDocument}> => {
     //return charity if it exists
@@ -82,12 +82,12 @@ const changeCharityPasswordWithMailAlert = async (charity:CharityDocument, newPa
             `<h3>go to link(www.dummy.com) to freeze your account</h3>`
     );
 };
-const editCharityProfileAddress = async (charity:CharityDocument, id:string, updatedLocation:CharityLocationDocument[]):Promise<{charity:CharityDocument}> => { //TODO: Should we use Partial<CharityLocationDocument>?
+const editCharityProfileAddress = async (charity:CharityDocument, id:string, updatedLocation:CharityLocation[]):Promise<{charity:CharityDocument}> => { //TODO: Should we use Partial<CharityLocationDocument>?
     for (let i = 0; i < charity.location.length; i++) {
         const isMatch = checkValueEquality(charity.location[i]._id, id);
         if (isMatch) {
             // charity.location[i] = updatedLocation;//make a new id
-            const { governorate, city, street } = updatedLocation;
+            const { governorate, city, street } = updatedLocation[i];//🤔 IDK how it was working with the idx [i] ?
             governorate
                 ? (charity.location[i].governorate = governorate)
                 : null;
@@ -100,7 +100,7 @@ const editCharityProfileAddress = async (charity:CharityDocument, id:string, upd
     throw new BadRequestError('no id found');
 };
 // };
-const addCharityProfileAddress = async (charity:CharityDocument, updatedLocation:CharityLocationDocument[]):Promise<{charity:CharityDocument}> => {
+const addCharityProfileAddress = async (charity:CharityDocument, updatedLocation:CharityLocation[]):Promise<{charity:CharityDocument}> => {
     charity.location.push(updatedLocation);
     await charity.save();
     return { charity: charity };
@@ -113,11 +113,12 @@ const replaceProfileImage = async (charity:CharityDocument, oldImg:string, newIm
     deleteOldImgs('charityLogos', oldImg);
     return { image: charity.image };
 };
-const addDocs = async (reqBody:CharityDocument, charity:CharityDocument):Promise<{paymentMethods:CharityPaymentMethodDocument}> => {
-    charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
+const addDocs = async (reqBody:CharityDocs, charity:CharityDocument):Promise<{paymentMethods:CharityPaymentMethodDocument}> => {
+    // charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
+    charity.charityDocs.docs1 = reqBody.charityDocs.docs1;
     if (!reqBody.paymentMethods) {
         throw new BadRequestError(
-            'must send one of payment gateways inforamtions..'
+            'must send one of payment gateways information..'
         );
     }
     if (reqBody.paymentMethods.bankAccount)
@@ -128,14 +129,14 @@ const addDocs = async (reqBody:CharityDocument, charity:CharityDocument):Promise
         await addPaymentAccounts(reqBody, charity, 'vodafoneCash');
     await makeCharityIsPending(charity); // update and save changes
     console.log(charity.paymentMethods);
-    return { paymentMethods: charity.paymentMethods };
+    return { paymentMethods: charity.paymentMethods as CharityPaymentMethodDocument };//Compiler Can't infer that paymentMethods are set to the charity , paymentMethods are not undefined any more 👍️ 
 };
 const makeCharityIsPending = async (charity:CharityDocument) => {
     charity.isPending = true;
     await charity.save();
 };
-const addPaymentAccounts = async (accountObj:CharityDocument, charity:CharityDocument, type:string):Promise<void> => {
-    if (charity.paymentMethods === undefined) charity.paymentMethods = {};
+const addPaymentAccounts = async (accountObj:CharityDocs, charity:CharityDocument, type:string):Promise<void> => {
+    if (charity.paymentMethods === undefined) charity.paymentMethods = {}as CharityPaymentMethodDocument;
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;
         const { accNumber, iban, swiftCode } = bankAccount[0];
@@ -183,8 +184,8 @@ const addPaymentAccounts = async (accountObj:CharityDocument, charity:CharityDoc
     await charity.save();
 };
 
-const getChangedPaymentMethod = (reqPaymentMethodsObj) => {
-    let changedPaymentMethod;
+const getChangedPaymentMethod = (reqPaymentMethodsObj:CharityPaymentMethod) => {
+    let changedPaymentMethod:string='';
 
     ['bankAccount', 'fawry', 'vodafoneCash'].forEach((pm) => {
         if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
@@ -194,19 +195,19 @@ const getChangedPaymentMethod = (reqPaymentMethodsObj) => {
 };
 
 const getPaymentMethodIdx = (
-    charityPaymentMethodsObj,
+    charityPaymentMethodsObj:CharityPaymentMethodDocument,
     changedPaymentMethod:string,
     paymentId:string
 ):number => {
     const idx:number = charityPaymentMethodsObj[changedPaymentMethod].findIndex(
-        (paymentMethods) => paymentMethods._id.toString() === paymentId
+        (paymentMethods:CharityPaymentMethod) => paymentMethods._id.toString() === paymentId
     );
 
     return idx;
 };
 
-const makeTempPaymentObj = (selector:string, reqPaymentMethodsObj:CharityPaymentMethodDocument) => {
-    const temp:CharityPaymentMethodDocument = {};
+const makeTempPaymentObj = (selector:string, reqPaymentMethodsObj:CharityPaymentMethod) => {
+    const temp:CharityPaymentMethod = {};
 
     const methodMap = {
         bankAccount: {
@@ -237,7 +238,7 @@ const makeTempPaymentObj = (selector:string, reqPaymentMethodsObj:CharityPayment
     return temp;
 };
 
-const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector:string, idx:number):void => {
+const swapPaymentInfo = (charityPaymentMethodsObj:CharityPaymentMethodDocument, temp:CharityPaymentMethod, selector:string, idx:number):void => {
     for (let key in temp) {
         if (key.endsWith('docs')) {
             deleteOldImgs(
@@ -252,7 +253,7 @@ const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector:string, idx:nu
     charityPaymentMethodsObj[selector][idx].enable = false;
 };
 
-const addNewPayment = (charityPaymentMethodsObj, temp, selector:string):void => {
+const addNewPayment = (charityPaymentMethodsObj:CharityPaymentMethodDocument, temp:CharityPaymentMethod, selector:string):void => {
     charityPaymentMethodsObj[selector].push(temp);
 };
 
