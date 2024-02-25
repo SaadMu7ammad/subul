@@ -8,6 +8,26 @@
 import mongoose from "mongoose";
 
 /**
+ * My Custom Types 
+ */
+export type ConfirmResetPasswordData = {
+  token: string;
+  password: string;
+  email:string;
+}
+export type EditCharityProfileData = {
+  name: string;
+  contactInfo: {
+    email: string;
+    phone: number;
+    websiteUrl: string;
+  };
+  email:string;
+  description: string;
+  location:CharityLocation[]; 
+  locationId:string;
+}
+/**
  * Lean version of CharityPaymentMethodBankAccountDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CharityPaymentMethodDocument.toObject()`.
