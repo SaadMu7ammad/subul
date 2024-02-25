@@ -114,8 +114,7 @@ const replaceProfileImage = async (charity:CharityDocument, oldImg:string, newIm
     return { image: charity.image };
 };
 const addDocs = async (reqBody:CharityDocs, charity:CharityDocument):Promise<{paymentMethods:CharityPaymentMethodDocument}> => {
-    // charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
-    charity.charityDocs.docs1 = reqBody.charityDocs.docs1;
+    charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
     if (!reqBody.paymentMethods) {
         throw new BadRequestError(
             'must send one of payment gateways information..'
@@ -207,7 +206,7 @@ const getPaymentMethodIdx = (
 };
 
 const makeTempPaymentObj = (selector:string, reqPaymentMethodsObj:CharityPaymentMethod) => {
-    const temp:CharityPaymentMethod = {};
+    const temp:CharityPaymentMethod = {} as CharityPaymentMethod;
 
     const methodMap = {
         bankAccount: {

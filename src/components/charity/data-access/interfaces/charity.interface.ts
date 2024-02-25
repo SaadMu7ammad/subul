@@ -29,10 +29,10 @@ export type CharityPaymentMethodBankAccount = {
  */
 export type CharityDocs = {
   charityDocs: {
-    docs1: string[];
-    docs2: string[];
-    docs3: string[];
-    docs4: string[];
+    docs1: string[] | mongoose.Types.Array<string>;
+    docs2: string[] | mongoose.Types.Array<string>;
+    docs3: string[] | mongoose.Types.Array<string>;
+    docs4: string[] | mongoose.Types.Array<string>;
   };
 
     paymentMethods:{
@@ -434,10 +434,10 @@ export type CharityDocument = mongoose.Document<
       establishedDate: string;
     };
     charityDocs: {
-      docs1: mongoose.Types.Array<string>;
-      docs2: mongoose.Types.Array<string>;
-      docs3: mongoose.Types.Array<string>;
-      docs4: mongoose.Types.Array<string>;
+      docs1: string[] ;
+      docs2: string[] ;
+      docs3: string[] ;
+      docs4: string[] ;
     };
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
