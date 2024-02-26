@@ -52,12 +52,12 @@ const confirmResetPassword = async (req, res, next) => {
 };
 
 const changePassword = async (req, res, next) => {
-  const { password }:DataForChangePassword = req.body;
+  const data:DataForChangePassword ={password:req.body.password} ;
 
   const storedCharity:CharityDocument = req.charity;
 
   const changePasswordResponse = await charityService.changePassword(
-    password,
+    data,
     storedCharity
   );
 
@@ -73,7 +73,7 @@ const showCharityProfile = (req, res, next) => {
   };
 };
 const editCharityProfile = async (req, res, next) => {
-const inputData:DataForEditCharityProfile= {
+const data:DataForEditCharityProfile= {
     name: req.body.name,
     email: req.body.email,
     location: req.body.location,
@@ -85,7 +85,7 @@ const inputData:DataForEditCharityProfile= {
   const storedCharity:CharityDocument = req.charity;
 
   const responseData = await charityService.editCharityProfile(
-    inputData,
+    data,
     storedCharity
   );
 

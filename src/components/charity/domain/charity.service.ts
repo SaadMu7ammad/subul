@@ -11,9 +11,9 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
-import { CharityDocs, CharityDocument,CharityPaymentMethodDocument,CharityPaymentMethod, DataForEditCharityProfile} from '../data-access/interfaces/charity.interface.js';
+import { CharityDocs, CharityDocument,CharityPaymentMethodDocument,CharityPaymentMethod, DataForEditCharityProfile, DataForActivateCharityAccount, DataForRequestResetPassword, DataForConfirmResetPassword, DataForChangePassword} from '../data-access/interfaces/charity.interface.js';
 
-const requestResetPassword = async (reqBody:{email:string}) => {
+const requestResetPassword = async (reqBody:DataForRequestResetPassword) => {
     const charityResponse:{charity:CharityDocument} = await charityUtils.checkCharityIsExist(
         reqBody.email
     );
@@ -31,7 +31,7 @@ const requestResetPassword = async (reqBody:{email:string}) => {
     };
 };
 
-const confirmResetPassword = async (reqBody:{token:string,email:string,password:string}) => {
+const confirmResetPassword = async (reqBody:DataForConfirmResetPassword) => {
     let updatedCharity:{charity:CharityDocument} = await charityUtils.checkCharityIsExist(reqBody.email);
     const isEqual:boolean = checkValueEquality(
         updatedCharity.charity.verificationCode,
@@ -49,11 +49,11 @@ const confirmResetPassword = async (reqBody:{token:string,email:string,password:
     );
     return { message: 'charity password changed successfully' };
 };
-const changePassword = async (password:string, charity:CharityDocument) => {
-    await charityUtils.changeCharityPasswordWithMailAlert(charity, password);
+const changePassword = async (reqBody:DataForChangePassword, charity:CharityDocument) => {
+    await charityUtils.changeCharityPasswordWithMailAlert(charity,reqBody.password);
     return { message: 'Charity password changed successfully' };
 };
-const activateAccount = async (reqBody:{token:string}, charity:CharityDocument, res) => {
+const activateAccount = async (reqBody:DataForActivateCharityAccount, charity:CharityDocument, res) => {
     let storedCharity:CharityDocument = charity;
     if (storedCharity.emailVerification.isVerified) {
         return { message: 'account already is activated' };
