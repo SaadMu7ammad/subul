@@ -1,10 +1,10 @@
 import { charityService } from './charity.service.js';
-import { CharityDocs, CharityDocument, CharityPaymentMethod, ConfirmResetPasswordData, EditCharityProfileData} from '../data-access/interfaces/charity.interface.js';
+import { DataForActivateCharityAccount, CharityDocs, CharityDocument, CharityPaymentMethod, DataForConfirmResetPassword,DataForEditCharityProfile, DataForRequestResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForRequestEditCharityPayments, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
 
 const activateCharityAccount = async (req, res, next) => {
   let storedCharity:CharityDocument = req.charity;
 
-  const { token } :{token:string}= req.body;
+  const { token } :DataForActivateCharityAccount= req.body;
 
   const data = {
     token,
@@ -22,7 +22,7 @@ const activateCharityAccount = async (req, res, next) => {
 };
 
 const requestResetPassword = async (req, res, next) => {
-  const { email }:{email:string}= req.body;
+  const { email }:DataForRequestResetPassword= req.body;
 
   const data = {
     email,
@@ -37,7 +37,7 @@ const requestResetPassword = async (req, res, next) => {
 };
 
 const confirmResetPassword = async (req, res, next) => {
-  const { token, email, password }:ConfirmResetPasswordData = req.body;
+  const { token, email, password }:DataForConfirmResetPassword = req.body;
   
   const data = {
     token,
@@ -52,7 +52,7 @@ const confirmResetPassword = async (req, res, next) => {
 };
 
 const changePassword = async (req, res, next) => {
-  const { password }:{password:string} = req.body;
+  const { password }:DataForChangePassword = req.body;
 
   const storedCharity:CharityDocument = req.charity;
 
@@ -73,7 +73,7 @@ const showCharityProfile = (req, res, next) => {
   };
 };
 const editCharityProfile = async (req, res, next) => {
-const inputData:EditCharityProfileData= {
+const inputData:DataForEditCharityProfile= {
     name: req.body.name,
     email: req.body.email,
     location: req.body.location,
@@ -95,7 +95,7 @@ const inputData:EditCharityProfileData= {
   };
 };
 const changeProfileImage = async (req, res, next) => {
-  const data:{image:string} = {
+  const data:DataForChangeProfileImage = {
     image: req.body.image[0],
   };
   const storedCharity:CharityDocument = req.charity;
@@ -107,11 +107,14 @@ const changeProfileImage = async (req, res, next) => {
 };
 
 const requestEditCharityPayments = async (req, res, next) => {
-    const reqPaymentMethodsObj:CharityPaymentMethod = req.body.paymentMethods;
+    const data:DataForRequestEditCharityPayments = {
+        paymentMethods: req.body.paymentMethods,
+        paymentId: req.body.payment_id,
+    }
     const responseData = await charityService.requestEditCharityPayments(
         req.charity,
-        req.body.payment_id,
-        reqPaymentMethodsObj,
+        data.paymentId, 
+        data.paymentMethods,
     );
 
     return {
@@ -129,7 +132,7 @@ const logout = (req, res, next) => {
 };
 
 const sendDocs = async (req, res, next) => {
-  const data:CharityDocs = {
+  const data:DataForSendDocs= {
     charityDocs: {
       docs1: req.body.charityDocs.docs1,
       docs2: req.body.charityDocs.docs2,

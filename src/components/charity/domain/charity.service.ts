@@ -11,7 +11,7 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
-import { CharityDocs, CharityDocument,CharityPaymentMethodDocument,CharityPaymentMethod, EditCharityProfileData } from '../data-access/interfaces/charity.interface.js';
+import { CharityDocs, CharityDocument,CharityPaymentMethodDocument,CharityPaymentMethod, DataForEditCharityProfile} from '../data-access/interfaces/charity.interface.js';
 
 const requestResetPassword = async (reqBody:{email:string}) => {
     const charityResponse:{charity:CharityDocument} = await charityUtils.checkCharityIsExist(
@@ -87,7 +87,7 @@ const logoutCharity = (res) => {
 const getCharityProfileData = (charity:CharityDocument) => {
     return { charity: charity };
 };
-const editCharityProfile = async (reqBody:EditCharityProfileData , charity:CharityDocument) => {
+const editCharityProfile = async (reqBody:DataForEditCharityProfile, charity:CharityDocument) => {
     if (!reqBody) throw new BadRequestError('no data sent');
     const { email, location, locationId }= reqBody;
     let storedCharity:CharityDocument = charity;

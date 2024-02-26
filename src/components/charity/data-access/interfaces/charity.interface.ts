@@ -10,12 +10,12 @@ import mongoose from "mongoose";
 /**
  * My Custom Types 
  */
-export type ConfirmResetPasswordData = {
+export type DataForConfirmResetPassword = {
   token: string;
   password: string;
   email:string;
 }
-export type EditCharityProfileData = {
+export type DataForEditCharityProfile = {
   name: string;
   contactInfo: {
     email: string;
@@ -27,6 +27,25 @@ export type EditCharityProfileData = {
   location:CharityLocation[]; 
   locationId:string;
 }
+export type DataForActivateCharityAccount = {
+  token: string;
+}
+export type DataForRequestResetPassword = {
+  email: string;
+}
+export type DataForChangePassword = {
+  password:string;
+}
+export type DataForChangeProfileImage = {
+  image:string;
+}
+export type DataForRequestEditCharityPayments = {
+  paymentMethods:CharityPaymentMethod;
+  paymentId: string;
+}
+export type DataForSendDocs =CharityDocs; 
+  
+
 /**
  * Lean version of CharityPaymentMethodBankAccountDocument
  *
