@@ -11,7 +11,7 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
-import { CharityDocs, CharityDocument,CharityPaymentMethodDocument,CharityPaymentMethod, DataForEditCharityProfile, DataForActivateCharityAccount, DataForRequestResetPassword, DataForConfirmResetPassword, DataForChangePassword} from '../data-access/interfaces/charity.interface.js';
+import { CharityDocs, CharityDocument,CharityPaymentMethodDocument,CharityPaymentMethod, DataForEditCharityProfile, DataForActivateCharityAccount, DataForRequestResetPassword, DataForConfirmResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
 
 const requestResetPassword = async (reqBody:DataForRequestResetPassword) => {
     const charityResponse:{charity:CharityDocument} = await charityUtils.checkCharityIsExist(
@@ -144,7 +144,7 @@ const editCharityProfile = async (reqBody:DataForEditCharityProfile, charity:Cha
         message:'data changed successfully'
     };
 };
-const changeProfileImage = async (reqBody, charity) => {
+const changeProfileImage = async (reqBody:DataForChangeProfileImage, charity:CharityDocument) => {
     const oldImg:string = charity.image;
     const newImg:string = reqBody.image;
     const updatedImg:{image:string} = await charityUtils.replaceProfileImage(
@@ -154,7 +154,7 @@ const changeProfileImage = async (reqBody, charity) => {
     );
     return { image: updatedImg.image,message:'image changed successfully' };
 };
-const sendDocs = async (reqBody:CharityDocs, charity:CharityDocument) => {
+const sendDocs = async (reqBody:DataForSendDocs, charity:CharityDocument) => {
     if (
         (charity.emailVerification.isVerified ||
             charity.phoneVerification.isVerified) &&
