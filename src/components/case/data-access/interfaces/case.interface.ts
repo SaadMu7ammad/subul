@@ -8,14 +8,14 @@
 import mongoose from "mongoose";
 
 /**
- * Lean version of CasesLocationDocument
+ * Lean version of CaseLocationDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `CasesDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `CaseDocument.toObject()`.
  * ```
  * const casesObject = cases.toObject();
  * ```
  */
-export type CasesLocation = {
+export type CaseLocation = {
   governorate:
     | "Alexandria"
     | "Assiut"
@@ -50,14 +50,14 @@ export type CasesLocation = {
 };
 
 /**
- * Lean version of CasesDocument
+ * Lean version of CaseDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `CasesDocument.toObject()`. To avoid conflicts with model names, use the type alias `CasesObject`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `CaseDocument.toObject()`. To avoid conflicts with model names, use the type alias `CaseObject`.
  * ```
  * const casesObject = cases.toObject();
  * ```
  */
-export type Cases = {
+export type Case = {
   charity?: Charity["_id"] | Charity;
   title: string;
   description: string;
@@ -70,7 +70,7 @@ export type Cases = {
     | "Campains"
     | "UsedProperties";
   coverImage: string;
-  location: CasesLocation[];
+  location: CaseLocation[];
   subType:
     | "Aqeeqa"
     | "BloodDonation"
@@ -108,69 +108,69 @@ export type Cases = {
 };
 
 /**
- * Lean version of CasesDocument (type alias of `Cases`)
+ * Lean version of CaseDocument (type alias of `Case`)
  *
  * Use this type alias to avoid conflicts with model names:
  * ```
- * import { Cases } from "../models"
- * import { CasesObject } from "../interfaces/mongoose.gen.ts"
+ * import { Case } from "../models"
+ * import { CaseObject } from "../interfaces/mongoose.gen.ts"
  *
- * const casesObject: CasesObject = cases.toObject();
+ * const casesObject: CaseObject = cases.toObject();
  * ```
  */
-export type CasesObject = Cases;
+export type CaseObject = Case;
 
 /**
  * Mongoose Query type
  *
  * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
  */
-export type CasesQuery = mongoose.Query<any, CasesDocument, CasesQueries> &
-  CasesQueries;
+export type CaseQuery = mongoose.Query<any, CaseDocument, CaseQueries> &
+  CaseQueries;
 
 /**
  * Mongoose Query helper types
  *
- * This type represents `CasesSchema.query`. For most use cases, you should not need to use this type explicitly.
+ * This type represents `CaseSchema.query`. For most use cases, you should not need to use this type explicitly.
  */
-export type CasesQueries = {};
+export type CaseQueries = {};
 
-export type CasesMethods = {};
+export type CaseMethods = {};
 
-export type CasesStatics = {};
+export type CaseStatics = {};
 
 /**
  * Mongoose Model type
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const Cases = mongoose.model<CasesDocument, CasesModel>("Cases", CasesSchema);
+ * const Case = mongoose.model<CaseDocument, CaseModel>("Case", CaseSchema);
  * ```
  */
-export type CasesModel = mongoose.Model<CasesDocument, CasesQueries> &
-  CasesStatics;
+export type CaseModel = mongoose.Model<CaseDocument, CaseQueries> &
+  CaseStatics;
 
 /**
  * Mongoose Schema type
  *
- * Assign this type to new Cases schema instances:
+ * Assign this type to new Case schema instances:
  * ```
- * const CasesSchema: CasesSchema = new mongoose.Schema({ ... })
+ * const CaseSchema: CaseSchema = new mongoose.Schema({ ... })
  * ```
  */
-export type CasesSchema = mongoose.Schema<
-  CasesDocument,
-  CasesModel,
-  CasesMethods,
-  CasesQueries
+export type CaseSchema = mongoose.Schema<
+  CaseDocument,
+  CaseModel,
+  CaseMethods,
+  CaseQueries
 >;
 
 /**
  * Mongoose Subdocument type
  *
- * Type of `CasesDocument["location"]` element.
+ * Type of `CaseDocument["location"]` element.
  */
-export type CasesLocationDocument = mongoose.Types.Subdocument & {
+export type CaseLocationDocument = mongoose.Types.Subdocument & {
   governorate:
     | "Alexandria"
     | "Assiut"
@@ -209,14 +209,14 @@ export type CasesLocationDocument = mongoose.Types.Subdocument & {
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const Cases = mongoose.model<CasesDocument, CasesModel>("Cases", CasesSchema);
+ * const Case = mongoose.model<CaseDocument, CaseModel>("Case", CaseSchema);
  * ```
  */
-export type CasesDocument = mongoose.Document<
+export type CaseDocument = mongoose.Document<
   mongoose.Types.ObjectId,
-  CasesQueries
+  CaseQueries
 > &
-  CasesMethods & {
+  CaseMethods & {
     charity?: CharityDocument["_id"] | CharityDocument;
     title: string;
     description: string;
@@ -229,7 +229,7 @@ export type CasesDocument = mongoose.Document<
       | "Campains"
       | "UsedProperties";
     coverImage: string;
-    location: mongoose.Types.DocumentArray<CasesLocationDocument>;
+    location: mongoose.Types.DocumentArray<CaseLocationDocument>;
     subType:
       | "Aqeeqa"
       | "BloodDonation"
