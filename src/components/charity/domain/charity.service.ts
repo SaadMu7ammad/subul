@@ -89,7 +89,7 @@ const getCharityProfileData = (charity:CharityDocument) => {
 };
 const editCharityProfile = async (reqBody:DataForEditCharityProfile, charity:CharityDocument) => {
     if (!reqBody) throw new BadRequestError('no data sent');
-    const { email, location, locationId }= reqBody;
+    const { email, location, locationId }:DataForEditCharityProfile = reqBody;
     let storedCharity:CharityDocument = charity;
     if (
         //put restriction on the edit elements
@@ -191,7 +191,9 @@ const requestEditCharityPayments = async (
     if (!reqPaymentMethodsObj) {
         throw new BadRequestError('Incomplete Data!');
     }
-    charityObj.paymentMethods = charityObj.paymentMethods as CharityPaymentMethodDocument;//Clunky Soluiton 👀
+    if(!charityObj.paymentMethods){
+        throw new BadRequestError('No Payment Methods Found!');
+    }
 
     let charityPaymentMethodsObj:CharityPaymentMethodDocument= charityObj.paymentMethods; 
 
