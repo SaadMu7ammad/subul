@@ -32,7 +32,7 @@ const caseSchema = new mongoose.Schema(
             type: String,
             required: [true, 'coverImage for that case must be provided'],
         },
-        location: [{ type: locationSchema, required: true }],
+        location: { type: [locationSchema], required: true },
         subType: {
             type: String,
             required: [true, 'subType for that case must be provided'],

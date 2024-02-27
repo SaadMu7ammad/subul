@@ -1,6 +1,7 @@
+import { CaseDocument, CaseObject } from './interfaces/case.interface.js';
 import Case from './models/case.model.js';
 
-const createCase = async (caseData) => {
+const createCase = async (caseData:CaseObject):Promise<CaseDocument> => {
     const newCase = new Case(caseData);
 
     await newCase.save();

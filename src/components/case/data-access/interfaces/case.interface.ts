@@ -5,19 +5,19 @@
 
 // NOTE: ANY CHANGES MADE WILL BE OVERWRITTEN ON SUBSEQUENT EXECUTIONS OF MONGOOSE-TSGEN.
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 /**
  * Custom Types
  */
 export type GetAllCasesQueryParams = {
-  limit?: number;
-  page?: number;
-  sort?: string;
-  mainType?: string;
-  subType?: string;
-  nestedSubType?: string;
-}
+    limit?: number;
+    offset?: number;
+    sort?: string;
+    mainType?: string;
+    subType?: string;
+    nestedSubType?: string;
+};
 /**
  * Lean version of CaseLocationDocument
  *
@@ -27,37 +27,37 @@ export type GetAllCasesQueryParams = {
  * ```
  */
 export type CaseLocation = {
-  governorate:
-    | "Alexandria"
-    | "Assiut"
-    | "Aswan"
-    | "Beheira"
-    | "Bani Suef"
-    | "Cairo"
-    | "Daqahliya"
-    | "Damietta"
-    | "Fayyoum"
-    | "Gharbiya"
-    | "Giza"
-    | "Helwan"
-    | "Ismailia"
-    | "Kafr El Sheikh"
-    | "Luxor"
-    | "Marsa Matrouh"
-    | "Minya"
-    | "Monofiya"
-    | "New Valley"
-    | "North Sinai"
-    | "Port Said"
-    | "Qalioubiya"
-    | "Qena"
-    | "Red Sea"
-    | "Sharqiya"
-    | "Sohag"
-    | "South Sinai"
-    | "Suez"
-    | "Tanta";
-  city?: string;
+    governorate:
+        | 'Alexandria'
+        | 'Assiut'
+        | 'Aswan'
+        | 'Beheira'
+        | 'Bani Suef'
+        | 'Cairo'
+        | 'Daqahliya'
+        | 'Damietta'
+        | 'Fayyoum'
+        | 'Gharbiya'
+        | 'Giza'
+        | 'Helwan'
+        | 'Ismailia'
+        | 'Kafr El Sheikh'
+        | 'Luxor'
+        | 'Marsa Matrouh'
+        | 'Minya'
+        | 'Monofiya'
+        | 'New Valley'
+        | 'North Sinai'
+        | 'Port Said'
+        | 'Qalioubiya'
+        | 'Qena'
+        | 'Red Sea'
+        | 'Sharqiya'
+        | 'Sohag'
+        | 'South Sinai'
+        | 'Suez'
+        | 'Tanta';
+    city?: string;
 };
 
 /**
@@ -69,53 +69,53 @@ export type CaseLocation = {
  * ```
  */
 export type Case = {
-  charity?: Charity["_id"] | Charity;
-  title: string;
-  description: string;
-  mainType:
-    | "Sadaqa"
-    | "Zakah"
-    | "BloodDonation"
-    | "kafarat"
-    | "Adahi"
-    | "Campains"
-    | "UsedProperties";
-  coverImage: string;
-  location: CaseLocation[];
-  subType:
-    | "Aqeeqa"
-    | "BloodDonation"
-    | "Campains"
-    | "Yameen"
-    | "Fediat Siam"
-    | "Foqaraa"
-    | "Masakeen"
-    | "Gharemat"
-    | "Soqia Maa"
-    | "Health"
-    | "General Support"
-    | "Adahy"
-    | "usedBefore";
-  nestedSubType?:
-    | "Wasla"
-    | "Hafr Beer"
-    | "Burns"
-    | "Operations & AssistiveDevices"
-    | "Mini Projects"
-    | "General Support";
-  gender?: "male" | "female" | "none";
-  finished?: boolean;
-  upVotes?: number;
-  views?: number;
-  dateFinished?: Date;
-  donationNumbers?: number;
-  helpedNumbers: number;
-  freezed?: boolean;
-  targetDonationAmount: number;
-  currentDonationAmount?: number;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
+    charity?: Charity['_id'] | Charity;
+    title: string;
+    description: string;
+    mainType:
+        | 'Sadaqa'
+        | 'Zakah'
+        | 'BloodDonation'
+        | 'kafarat'
+        | 'Adahi'
+        | 'Campains'
+        | 'UsedProperties';
+    coverImage: string;
+    location: CaseLocation[];
+    subType:
+        | 'Aqeeqa'
+        | 'BloodDonation'
+        | 'Campains'
+        | 'Yameen'
+        | 'Fediat Siam'
+        | 'Foqaraa'
+        | 'Masakeen'
+        | 'Gharemat'
+        | 'Soqia Maa'
+        | 'Health'
+        | 'General Support'
+        | 'Adahy'
+        | 'usedBefore';
+    nestedSubType?:
+        | 'Wasla'
+        | 'Hafr Beer'
+        | 'Burns'
+        | 'Operations & AssistiveDevices'
+        | 'Mini Projects'
+        | 'General Support';
+    gender?: 'male' | 'female' | 'none';
+    finished?: boolean;
+    upVotes?: number;
+    views?: number;
+    dateFinished?: Date;
+    donationNumbers?: number;
+    helpedNumbers: number;
+    freezed?: boolean;
+    targetDonationAmount: number;
+    currentDonationAmount?: number;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
 };
 
 /**
@@ -137,7 +137,7 @@ export type CaseObject = Case;
  * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
  */
 export type CaseQuery = mongoose.Query<any, CaseDocument, CaseQueries> &
-  CaseQueries;
+    CaseQueries;
 
 /**
  * Mongoose Query helper types
@@ -158,8 +158,7 @@ export type CaseStatics = {};
  * const Case = mongoose.model<CaseDocument, CaseModel>("Case", CaseSchema);
  * ```
  */
-export type CaseModel = mongoose.Model<CaseDocument, CaseQueries> &
-  CaseStatics;
+export type CaseModel = mongoose.Model<CaseDocument, CaseQueries> & CaseStatics;
 
 /**
  * Mongoose Schema type
@@ -170,10 +169,10 @@ export type CaseModel = mongoose.Model<CaseDocument, CaseQueries> &
  * ```
  */
 export type CaseSchema = mongoose.Schema<
-  CaseDocument,
-  CaseModel,
-  CaseMethods,
-  CaseQueries
+    CaseDocument,
+    CaseModel,
+    CaseMethods,
+    CaseQueries
 >;
 
 /**
@@ -182,37 +181,37 @@ export type CaseSchema = mongoose.Schema<
  * Type of `CaseDocument["location"]` element.
  */
 export type CaseLocationDocument = mongoose.Types.Subdocument & {
-  governorate:
-    | "Alexandria"
-    | "Assiut"
-    | "Aswan"
-    | "Beheira"
-    | "Bani Suef"
-    | "Cairo"
-    | "Daqahliya"
-    | "Damietta"
-    | "Fayyoum"
-    | "Gharbiya"
-    | "Giza"
-    | "Helwan"
-    | "Ismailia"
-    | "Kafr El Sheikh"
-    | "Luxor"
-    | "Marsa Matrouh"
-    | "Minya"
-    | "Monofiya"
-    | "New Valley"
-    | "North Sinai"
-    | "Port Said"
-    | "Qalioubiya"
-    | "Qena"
-    | "Red Sea"
-    | "Sharqiya"
-    | "Sohag"
-    | "South Sinai"
-    | "Suez"
-    | "Tanta";
-  city?: string;
+    governorate:
+        | 'Alexandria'
+        | 'Assiut'
+        | 'Aswan'
+        | 'Beheira'
+        | 'Bani Suef'
+        | 'Cairo'
+        | 'Daqahliya'
+        | 'Damietta'
+        | 'Fayyoum'
+        | 'Gharbiya'
+        | 'Giza'
+        | 'Helwan'
+        | 'Ismailia'
+        | 'Kafr El Sheikh'
+        | 'Luxor'
+        | 'Marsa Matrouh'
+        | 'Minya'
+        | 'Monofiya'
+        | 'New Valley'
+        | 'North Sinai'
+        | 'Port Said'
+        | 'Qalioubiya'
+        | 'Qena'
+        | 'Red Sea'
+        | 'Sharqiya'
+        | 'Sohag'
+        | 'South Sinai'
+        | 'Suez'
+        | 'Tanta';
+    city?: string;
 };
 
 /**
@@ -224,58 +223,58 @@ export type CaseLocationDocument = mongoose.Types.Subdocument & {
  * ```
  */
 export type CaseDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  CaseQueries
+    mongoose.Types.ObjectId,
+    CaseQueries
 > &
-  CaseMethods & {
-    charity?: CharityDocument["_id"] | CharityDocument;
-    title: string;
-    description: string;
-    mainType:
-      | "Sadaqa"
-      | "Zakah"
-      | "BloodDonation"
-      | "kafarat"
-      | "Adahi"
-      | "Campains"
-      | "UsedProperties";
-    coverImage: string;
-    location: mongoose.Types.DocumentArray<CaseLocationDocument>;
-    subType:
-      | "Aqeeqa"
-      | "BloodDonation"
-      | "Campains"
-      | "Yameen"
-      | "Fediat Siam"
-      | "Foqaraa"
-      | "Masakeen"
-      | "Gharemat"
-      | "Soqia Maa"
-      | "Health"
-      | "General Support"
-      | "Adahy"
-      | "usedBefore";
-    nestedSubType?:
-      | "Wasla"
-      | "Hafr Beer"
-      | "Burns"
-      | "Operations & AssistiveDevices"
-      | "Mini Projects"
-      | "General Support";
-    gender?: "male" | "female" | "none";
-    finished?: boolean;
-    upVotes?: number;
-    views?: number;
-    dateFinished?: Date;
-    donationNumbers?: number;
-    helpedNumbers: number;
-    freezed?: boolean;
-    targetDonationAmount: number;
-    currentDonationAmount?: number;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
+    CaseMethods & {
+        charity?: CharityDocument['_id'] | CharityDocument;
+        title: string;
+        description: string;
+        mainType:
+            | 'Sadaqa'
+            | 'Zakah'
+            | 'BloodDonation'
+            | 'kafarat'
+            | 'Adahi'
+            | 'Campains'
+            | 'UsedProperties';
+        coverImage: string;
+        location:CaseLocationDocument[];
+        subType:
+            | 'Aqeeqa'
+            | 'BloodDonation'
+            | 'Campains'
+            | 'Yameen'
+            | 'Fediat Siam'
+            | 'Foqaraa'
+            | 'Masakeen'
+            | 'Gharemat'
+            | 'Soqia Maa'
+            | 'Health'
+            | 'General Support'
+            | 'Adahy'
+            | 'usedBefore';
+        nestedSubType?:
+            | 'Wasla'
+            | 'Hafr Beer'
+            | 'Burns'
+            | 'Operations & AssistiveDevices'
+            | 'Mini Projects'
+            | 'General Support';
+        gender?: 'male' | 'female' | 'none';
+        finished?: boolean;
+        upVotes?: number;
+        views?: number;
+        dateFinished?: Date;
+        donationNumbers?: number;
+        helpedNumbers: number;
+        freezed?: boolean;
+        targetDonationAmount: number;
+        currentDonationAmount?: number;
+        _id: mongoose.Types.ObjectId;
+        createdAt?: Date;
+        updatedAt?: Date;
+    };
 
 /**
  * Check if a property on a document is populated:
@@ -286,7 +285,7 @@ export type CaseDocument = mongoose.Document<
  * ```
  */
 export function IsPopulated<T>(doc: T | mongoose.Types.ObjectId): doc is T {
-  return doc instanceof mongoose.Document;
+    return doc instanceof mongoose.Document;
 }
 
 /**
@@ -306,9 +305,9 @@ type ChildProperty<T> = T extends `${string}.${infer C}` ? C : never;
  * for ref documents (i.e. `mongoose.Types.ObjectId | UserDocument` -> `UserDocument`)
  */
 type PopulatedProperty<Root, T extends keyof Root> = Omit<Root, T> & {
-  [ref in T]: Root[T] extends mongoose.Types.Array<infer U>
-    ? mongoose.Types.Array<Exclude<U, mongoose.Types.ObjectId>>
-    : Exclude<Root[T], mongoose.Types.ObjectId>;
+    [ref in T]: Root[T] extends mongoose.Types.Array<infer U>
+        ? mongoose.Types.Array<Exclude<U, mongoose.Types.ObjectId>>
+        : Exclude<Root[T], mongoose.Types.ObjectId>;
 };
 
 /**
@@ -322,22 +321,22 @@ type PopulatedProperty<Root, T extends keyof Root> = Omit<Root, T> & {
  * ```
  */
 export type PopulatedDocument<DocType, T> = T extends keyof DocType
-  ? PopulatedProperty<DocType, T>
-  : ParentProperty<T> extends keyof DocType
-  ? Omit<DocType, ParentProperty<T>> & {
-      [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
-        infer U
-      >
-        ? mongoose.Types.Array<
-            ChildProperty<T> extends keyof U
-              ? PopulatedProperty<U, ChildProperty<T>>
-              : PopulatedDocument<U, ChildProperty<T>>
+    ? PopulatedProperty<DocType, T>
+    : ParentProperty<T> extends keyof DocType
+    ? Omit<DocType, ParentProperty<T>> & {
+          [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
+              infer U
           >
-        : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
-        ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
-        : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
-    }
-  : DocType;
+              ? mongoose.Types.Array<
+                    ChildProperty<T> extends keyof U
+                        ? PopulatedProperty<U, ChildProperty<T>>
+                        : PopulatedDocument<U, ChildProperty<T>>
+                >
+              : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
+              ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
+              : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
+      }
+    : DocType;
 
 /**
  * Helper types used by the populate overloads
@@ -348,35 +347,37 @@ type Modify<T, R> = Omit<T, keyof R> & R;
 /**
  * Augment mongoose with Query.populate overloads
  */
-declare module "mongoose" {
-  interface Query<ResultType, DocType, THelpers = {}> {
-    populate<T extends string>(
-      path: T,
-      select?: string | any,
-      model?: string | Model<any, THelpers>,
-      match?: any
-    ): Query<
-      ResultType extends Array<DocType>
-        ? Array<PopulatedDocument<Unarray<ResultType>, T>>
-        : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
-      DocType,
-      THelpers
-    > &
-      THelpers;
+declare module 'mongoose' {
+    interface Query<ResultType, DocType, THelpers = {}> {
+        populate<T extends string>(
+            path: T,
+            select?: string | any,
+            model?: string | Model<any, THelpers>,
+            match?: any
+        ): Query<
+            ResultType extends Array<DocType>
+                ? Array<PopulatedDocument<Unarray<ResultType>, T>>
+                : ResultType extends DocType
+                ? PopulatedDocument<Unarray<ResultType>, T>
+                : ResultType,
+            DocType,
+            THelpers
+        > &
+            THelpers;
 
-    populate<T extends string>(
-      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>
-    ): Query<
-      ResultType extends Array<DocType>
-        ? Array<PopulatedDocument<Unarray<ResultType>, T>>
-        : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
-      DocType,
-      THelpers
-    > &
-      THelpers;
-  }
+        populate<T extends string>(
+            options:
+                | Modify<PopulateOptions, { path: T }>
+                | Array<PopulateOptions>
+        ): Query<
+            ResultType extends Array<DocType>
+                ? Array<PopulatedDocument<Unarray<ResultType>, T>>
+                : ResultType extends DocType
+                ? PopulatedDocument<Unarray<ResultType>, T>
+                : ResultType,
+            DocType,
+            THelpers
+        > &
+            THelpers;
+    }
 }

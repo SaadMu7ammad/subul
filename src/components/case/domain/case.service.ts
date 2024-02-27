@@ -1,7 +1,7 @@
 import { caseUtils } from './case.utils.js';
-
-const addCase = async (caseData, image:string, charity) => {
-    const newCase = await caseUtils.createCase({
+import {Case, CaseDocument} from '../data-access/interfaces/case.interface.js';
+const addCase = async (caseData:Case, image:string, charity) => {
+    const newCase:CaseDocument = await caseUtils.createCase({
         ...caseData,
         coverImage: image,
         charity: charity._id,
