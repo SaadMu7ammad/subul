@@ -19,7 +19,14 @@ const addCase = async (req, res, next) => {
 };
 
 const getAllCases = async (req, res, next) => {
-    const queryParams = req.query;
+    const queryParams:{
+        sort?:string,
+        mainType?:string,
+        subType?:string,
+        nestedSubType?:string
+        page?:number,
+        limit?:number
+    } = req.query;
     const charityId :string = req.charity._id;
 
     const responseData = await caseService.getAllCases(charityId, queryParams);
