@@ -13,8 +13,11 @@ const addCase = async (caseData: Case, image: string, charity) => {
         coverImage: image,
         charity: charity._id,
     });
+
     charity.cases.push(newCase._id);
+
     await charity.save();
+
     return { case: newCase };
 };
 

@@ -1,6 +1,6 @@
 import { NotFoundError } from '../../../libraries/errors/components/not-found.js';
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
-import { caseRepository } from '../data-access/case.repository.js';
+import { CaseRepository } from '../data-access/case.repository.js';
 import {
     FilterObj,
     FilterQueryParams,
@@ -8,6 +8,8 @@ import {
     PaginationObj,
     SortObj,
 } from '../data-access/interfaces/case.interface.js';
+
+const caseRepository = new CaseRepository();
 
 const createCase = async (caseData) => {
     return await caseRepository.createCase(caseData);

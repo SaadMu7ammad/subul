@@ -127,16 +127,6 @@ const caseSchema = new mongoose.Schema(
 // caseSchema.virtual('charityName.name').get(function () {
 //   return this.charityName ? this.charityName.name : '';
 // });
-// function enforceNonEmptyArray(schema, options) {
-//     schema.path(options.field).validate(function (value) {
-//         return value.length > 0;
-//     }, options.message);
-// }
-
-// caseSchema.plugin(enforceNonEmptyArray, {
-//     field: 'location',
-//     message: 'At least one location is required.',
-// });
 
 const Case = mongoose.model('Cases', caseSchema);
 export default Case;
