@@ -263,7 +263,7 @@ const charitySchema: CharitySchema = new Schema(
                 required: true,
             },
         ],
-        location: [{ type: locationSchema, required: true }],
+        location: { type: [locationSchema],default:undefined, required: [true,'At least one location is required.']},
         // files: [{}],
         charityInfo: {
             registeredNumber: {
