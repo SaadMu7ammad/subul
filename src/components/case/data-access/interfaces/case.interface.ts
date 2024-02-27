@@ -8,6 +8,17 @@
 import mongoose from "mongoose";
 
 /**
+ * Custom Types
+ */
+export type GetAllCasesQueryParams = {
+  limit?: number;
+  page?: number;
+  sort?: string;
+  mainType?: string;
+  subType?: string;
+  nestedSubType?: string;
+}
+/**
  * Lean version of CaseLocationDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CaseDocument.toObject()`.

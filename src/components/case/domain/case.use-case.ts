@@ -1,4 +1,4 @@
-import { Case, CaseDocument } from '../data-access/interfaces/case.interface.js';
+import { Case, CaseDocument, GetAllCasesQueryParams } from '../data-access/interfaces/case.interface.js';
 import { caseService } from './case.service.js';
 
 const addCase = async (req, res, next) => {
@@ -19,14 +19,7 @@ const addCase = async (req, res, next) => {
 };
 
 const getAllCases = async (req, res, next) => {
-    const queryParams:{
-        sort?:string,
-        mainType?:string,
-        subType?:string,
-        nestedSubType?:string
-        page?:number,
-        limit?:number
-    } = req.query;
+    const queryParams:GetAllCasesQueryParams = req.query;
     const charityId :string = req.charity._id;
 
     const responseData = await caseService.getAllCases(charityId, queryParams);
