@@ -32,7 +32,7 @@ const caseSchema = new mongoose.Schema(
             type: String,
             required: [true, 'coverImage for that case must be provided'],
         },
-        location: { type: [locationSchema], required: true },
+        location: { type: [locationSchema],default:undefined, required: true },
         subType: {
             type: String,
             required: [true, 'subType for that case must be provided'],
@@ -127,16 +127,16 @@ const caseSchema = new mongoose.Schema(
 // caseSchema.virtual('charityName.name').get(function () {
 //   return this.charityName ? this.charityName.name : '';
 // });
-function enforceNonEmptyArray(schema, options) {
-    schema.path(options.field).validate(function (value) {
-        return value.length > 0;
-    }, options.message);
-}
+// function enforceNonEmptyArray(schema, options) {
+//     schema.path(options.field).validate(function (value) {
+//         return value.length > 0;
+//     }, options.message);
+// }
 
-caseSchema.plugin(enforceNonEmptyArray, {
-    field: 'location',
-    message: 'At least one location is required.',
-});
+// caseSchema.plugin(enforceNonEmptyArray, {
+//     field: 'location',
+//     message: 'At least one location is required.',
+// });
 
 const Case = mongoose.model('Cases', caseSchema);
 export default Case;
