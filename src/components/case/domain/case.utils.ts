@@ -3,15 +3,16 @@ import { deleteOldImgs } from '../../../utils/deleteFile.js';
 import { CaseRepository } from '../data-access/case.repository.js';
 import {
     FilterObj,
-    FilterQueryParams,
     GetAllCasesQueryParams,
-    PaginationObj,
     SortObj,
+    Case,
+    PaginationObj,
+    CaseDocument
 } from '../data-access/interfaces/case.interface.js';
 
 const caseRepository = new CaseRepository();
 
-const createCase = async (caseData) => {
+const createCase = async (caseData: Case) => {
     return await caseRepository.createCase(caseData);
 };
 
@@ -55,7 +56,7 @@ const getFilterObj = (
 
 const getCasesPagination = (
     queryParams:GetAllCasesQueryParams 
-): { page: number; limit: number } => {
+): PaginationObj => {
     const limit = queryParams?.limit ? +queryParams.limit : 10;
 
     const page = queryParams?.page ? +queryParams.page: 1;
@@ -63,8 +64,8 @@ const getCasesPagination = (
     return { limit, page };
 };
 
-const getAllCases = async (sortObj, filterObj, page: number, limit: number) => {
-    const cases = await caseRepository.getAllCases(
+const getAllCases = async (sortObj: SortObj, filterObj: FilterObj, page: number, limit: number) => {
+    const cases: CaseDocument[] = await caseRepository.getAllCases(
         sortObj,
         filterObj,
         page,
@@ -74,15 +75,15 @@ const getAllCases = async (sortObj, filterObj, page: number, limit: number) => {
     return cases;
 };
 
-const getCaseByIdFromDB = async (caseId: string) => {
-    const _case = await caseRepository.getCaseById(caseId);
+const getCaseByIdFromDB = async (caseId: string): Promise<CaseDocument> => {
+    const _case: CaseDocument | null = await caseRepository.getCaseById(caseId);
 
     if (!_case) throw new NotFoundError('No Such Case With this Id!');
 
     return _case;
 };
 
-const checkIfCaseBelongsToCharity = (charityCasesArray, caseId: string) => {
+const checkIfCaseBelongsToCharity = (charityCasesArray, caseId: string): number => {
     const idx: number = charityCasesArray.findIndex(function (id) {
         return id.toString() === caseId;
     });
@@ -95,7 +96,7 @@ const checkIfCaseBelongsToCharity = (charityCasesArray, caseId: string) => {
 };
 
 const deleteCaseFromDB = async (id: string) => {
-    const deletedCase = await caseRepository.deleteCaseById(id);
+    const deletedCase: CaseDocument|null = await caseRepository.deleteCaseById(id);
 
     if (!deletedCase) {
         throw new NotFoundError('No Such Case With this Id!');
@@ -116,8 +117,8 @@ const deleteCaseFromCharityCasesArray = async (charity, idx: number) => {
     await charity.save();
 };
 
-const editCase = async (caseData, caseId: string) => {
-    const updatedCase = await caseRepository.editCase(caseData, caseId);
+const editCase = async (caseData: Case, caseId: string) => {
+    const updatedCase: CaseDocument|null = await caseRepository.editCase(caseData, caseId);
 
     if(!updatedCase) throw new NotFoundError('No Such Case With this Id!');
 
@@ -127,7 +128,7 @@ const editCase = async (caseData, caseId: string) => {
 const replaceCaseImg = async (caseData, caseId: string) => {
     caseData.coverImage = caseData.image[0];
 
-    const caseObject = await caseRepository.getCaseById(caseId);
+    const caseObject: CaseDocument|null = await caseRepository.getCaseById(caseId);
 
     if (!caseObject) throw new NotFoundError('No Such Case With this Id!');
 
