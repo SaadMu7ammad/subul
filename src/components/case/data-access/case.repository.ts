@@ -1,7 +1,7 @@
 import { CaseDocument, CaseObject } from './interfaces/case.interface.js';
 import Case from './models/case.model.js';
 
-const createCase = async (caseData:CaseObject):Promise<CaseDocument> => {
+const createCase = async (caseData: CaseObject): Promise<CaseDocument> => {
     const newCase = new Case(caseData);
 
     await newCase.save();
@@ -9,7 +9,7 @@ const createCase = async (caseData:CaseObject):Promise<CaseDocument> => {
     return newCase;
 };
 
-const getAllCases = async (sortObj, filterObj, page:number, pageLimit:number) => {
+const getAllCases = async (sortObj, filterObj, page: number, limit: number) => {
     const charityCases = await Case.aggregate([
         {
             $match: filterObj,
@@ -18,8 +18,8 @@ const getAllCases = async (sortObj, filterObj, page:number, pageLimit:number) =>
             $sort: sortObj,
         },
     ])
-        .skip((page - 1) * pageLimit)
-        .limit(pageLimit)
+        .skip((page - 1) * limit)
+        .limit(limit)
         .project({
             gender: 0,
             upVotes: 0,
@@ -30,23 +30,23 @@ const getAllCases = async (sortObj, filterObj, page:number, pageLimit:number) =>
             freezed: 0,
             createdAt: 0,
             updatedAt: 0,
-            __v: 0
+            __v: 0,
         });
 
     return charityCases;
 };
 
-const getCaseById = async (id:string) => {
+const getCaseById = async (id: string) => {
     const _case = await Case.findById(id);
     return _case;
 };
 
-const deleteCaseById = async (id:string) => {
+const deleteCaseById = async (id: string) => {
     const _case = await Case.findByIdAndDelete(id);
     return _case;
 };
 
-const editCase = async (caseData,id:string) => {
+const editCase = async (caseData, id: string) => {
     const updatedCase = await Case.findByIdAndUpdate(
         id,
         {
@@ -66,5 +66,5 @@ export const caseRepository = {
     getAllCases,
     getCaseById,
     deleteCaseById,
-    editCase
+    editCase,
 };

@@ -11,6 +11,7 @@ import mongoose from 'mongoose';
  * Custom Types
  */
 export type GetAllCasesQueryParams = {
+    page?:number;
     limit?: number;
     offset?: number;
     sort?: string;
@@ -18,6 +19,12 @@ export type GetAllCasesQueryParams = {
     subType?: string;
     nestedSubType?: string;
 };
+export type FilterQueryParams =Pick<GetAllCasesQueryParams,'mainType'|'subType'|'nestedSubType'>; 
+export type FilterObj = FilterQueryParams&{charity:string};
+export type SortObj = {[key:string]:number};
+export type PaginationObj = {page:number,limit:number};
+
+
 /**
  * Lean version of CaseLocationDocument
  *

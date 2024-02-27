@@ -60,7 +60,7 @@ const editCase = async (req, res, next) => {
 
     const caseId:string = req.params.caseId;
 
-    const caseData:Case = req.body;
+    const caseData:Case & { image: string } = req.body;
 
     const responseData = await caseService.editCase(charity,caseData, caseId);
 
