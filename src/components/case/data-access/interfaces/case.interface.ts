@@ -246,7 +246,7 @@ export type CaseDocument = mongoose.Document<
             | 'Campains'
             | 'UsedProperties';
         coverImage: string;
-        location:CaseLocationDocument[];
+        location:mongoose.Types.Array<CaseLocationDocument>;
         subType:
             | 'Aqeeqa'
             | 'BloodDonation'
