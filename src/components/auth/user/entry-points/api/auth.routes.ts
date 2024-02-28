@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Application } from 'express';
 import logger from '../../../../../utils/logger.js';
 import { authUseCase } from '../../domain/auth.use-case.js';
 import {
@@ -7,7 +7,7 @@ import {
 } from '../../../../../libraries/validation/components/user/userAuthValidation.js';
 import { validate } from '../../../../../libraries/validation/index.js';
 
-export default function defineRoutes(expressApp) {
+export default function defineRoutes(expressApp:Application) {
     const router = express.Router();
 
     router.post(

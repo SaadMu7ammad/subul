@@ -15,9 +15,9 @@ const registerCharity = async (req, res, next) => {
     charityInfo: req.body.charityInfo,
     image: req.body.image[0],
   };
-  const dataResponsed = await authCharityService.registerCharity(data, res);
+  const responseData = await authCharityService.registerCharity(data, res);
   const charityResponsed = {
-    ...dataResponsed.charity,
+    ...responseData.charity,
   };
   return {
     charity: {
@@ -32,24 +32,24 @@ const authCharity = async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
   };
-  const dataResponsed = await authCharityService.authCharity(data, res);
+  const responseData = await authCharityService.authCharity(data, res);
   const charityResponsed = {
-    ...dataResponsed.charity,
+    ...responseData.charity,
   };
   //first stage check if it verified or not
-  if (dataResponsed.emailAlert) {
+  if (responseData.emailAlert) {
     //token sent to ur email
     return {
       charity: charityResponsed,
       message:
         'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
-      token: dataResponsed.token,
+      token: responseData.token,
     };
   }
   const returnedObj = {
     charity: charityResponsed,
     message: '',
-    token: dataResponsed.token,
+    token: responseData.token,
   };
   //second stage
   //isPending = true and isConfirmed= false

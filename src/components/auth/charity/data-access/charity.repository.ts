@@ -1,6 +1,6 @@
 import Charity from '../../../charity/data-access/models/charity.model.js';
 
-const findCharity = async (email) => {
+const findCharity = async (email:string) => {
   const charity = await Charity.findOne({ email: email });
   return charity;
 };

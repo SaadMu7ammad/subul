@@ -1,6 +1,6 @@
 import User from '../../../user/data-access/models/user.model.js';
 
-const findUser = async (email) => {
+const findUser = async (email:string) => {
   const user = await User.findOne({ email: email });
   return user;
 };
