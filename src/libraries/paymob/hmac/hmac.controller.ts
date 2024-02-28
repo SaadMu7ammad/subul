@@ -1,11 +1,13 @@
 import { BadRequestError } from '../../errors/components/index.js';
 import { hmacService } from './hmac.service.js';
 import * as configurationProvider from '../../configuration-provider/index.js';
-const hmacSetting = (req, res, next) => {
+import { Idata } from './hmac.interface.js';
+import { RequestHandler } from 'express';
+const hmacSetting: RequestHandler= (req, res, next) => {
   // Extract HMAC from query parameter
   const receivedHMAC = req.query.hmac;
   // Extract required data from request body
-  const data = {
+  const data :Idata= {
     amount_cents: req.body.obj.amount_cents,
     created_at: req.body.obj.created_at,
     currency: req.body.obj.currency,

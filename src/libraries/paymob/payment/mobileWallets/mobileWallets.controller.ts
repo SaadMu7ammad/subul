@@ -1,5 +1,7 @@
+import { NextFunction, Response } from 'express';
 import { mobileWalletService } from './mobileWallets.service.js';
-const paywithMobileWallet = async (req, res, next) => {
+import { authedRequest } from '../../../../components/auth/user/data-access/auth.interface.js';
+const paywithMobileWallet = async (req:authedRequest, res:Response, next:NextFunction) => {
   const { amount, charityId, caseId, caseTitle }:{amount:number, charityId:string, caseId:string, caseTitle:string} = req.body;
   const storedUser = req.user;
   const data = {

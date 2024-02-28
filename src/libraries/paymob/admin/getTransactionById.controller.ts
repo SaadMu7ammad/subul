@@ -1,8 +1,9 @@
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { getTransactionByIdService } from './getTransactionById.service.js';
 
-const getTransactionById = (async (req, res, next) => {
-  const { id }:{id:string} = req.params; //transaction_id
-  const token:string = await getTransactionByIdService.getTokenStepOne();
+const getTransactionById: RequestHandler = async (req, res, next) => {
+  const { id } = req.params; //transaction_id
+  const token: string = await getTransactionByIdService.getTokenStepOne();
   const data = await getTransactionByIdService.getTransactionInfo(token, id);
   const { transactionId, amount_cents, success, pending } = data;
   return { data };
@@ -12,5 +13,5 @@ const getTransactionById = (async (req, res, next) => {
   //   success,
   //   pending,
   // });
-});
+};
 export { getTransactionById };
