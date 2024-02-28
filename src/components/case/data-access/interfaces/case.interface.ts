@@ -115,7 +115,7 @@ export type Case = {
     finished?: boolean;
     upVotes?: number;
     views?: number;
-    dateFinished?: Date;
+    dateFinished?: Date | number;
     donationNumbers?: number;
     helpedNumbers: number;
     freezed?: boolean;
@@ -273,7 +273,7 @@ export type CaseDocument = mongoose.Document<
         finished?: boolean;
         upVotes?: number;
         views?: number;
-        dateFinished?: Date;
+        dateFinished?: Date | number;
         donationNumbers?: number;
         helpedNumbers: number;
         freezed?: boolean;

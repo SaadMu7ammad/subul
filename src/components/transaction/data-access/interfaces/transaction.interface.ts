@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import { Case } from '../../../case/data-access/interfaces/case.interface';
+import { IUser } from '../../../user/data-access/interfaces/user.interface';
 
 export interface TransactionPaymentInfo {
   onlineCard: {
@@ -12,7 +14,7 @@ export interface TransactionPaymentInfo {
 
 export interface ITransaction {
   case?: Case['_id'] | Case;
-  user?: User['_id'] | User;
+  user?: IUser['_id'] | IUser;
   moneyPaid: number;
   paidAt?: Date;
   externalTransactionId: string;

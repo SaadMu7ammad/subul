@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import { Transaction } from '../interfaces/transaction.interface';
+import { ITransaction } from '../interfaces/transaction.interface';
 
 const paymentMethodSchema = new Schema({
   // name: {
@@ -25,7 +25,7 @@ const paymentMethodSchema = new Schema({
   },
 });
 
-const transactionSchema: Schema<Transaction & Document> = new Schema(
+const transactionSchema: Schema<ITransaction & Document> = new Schema(
   {
     case: {
       type: mongoose.Schema.Types.ObjectId,
@@ -69,7 +69,7 @@ const transactionSchema: Schema<Transaction & Document> = new Schema(
   },
   { timestamps: true }
 );
-const TransactionModel = mongoose.model<Transaction>(
+const TransactionModel = mongoose.model<ITransaction>(
   'Transaction',
   transactionSchema
 );

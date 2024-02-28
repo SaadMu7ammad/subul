@@ -6,7 +6,7 @@ import { checkValueEquality } from '../../../utils/shared.js';
 import { TransactionRepository } from '../data-access/transaction.repository';
 import { transactionUtils } from './transaction.utils';
 import TransactionModel from '../data-access/models/transaction.model';
-import { Transaction } from '../data-access/interfaces/transaction.interface';
+import { ITransaction } from '../data-access/interfaces/transaction.interface';
 const transactionRepository = new TransactionRepository();
 const preCreateTransaction = async (data, user) => {
   //must check the account for the charity is valid or not
@@ -54,7 +54,7 @@ const preCreateTransaction = async (data, user) => {
   );
   return checker;
 };
-const updateCaseInfo = async (data): Promise<Transaction | undefined> => {
+const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
   //start updating
   const {
     user,
@@ -83,7 +83,7 @@ const updateCaseInfo = async (data): Promise<Transaction | undefined> => {
     orderId: orderId,
   };
 
-  let transactionIsExist: Transaction | undefined =
+  let transactionIsExist: ITransaction | undefined =
     await transactionRepository.findTransactionByQuery(queryObj);
   if (transactionIsExist) {
     //transaction must updated not created again
@@ -150,7 +150,7 @@ const updateCaseInfo = async (data): Promise<Transaction | undefined> => {
 };
 const getAllTransactions = async (
   user
-): Promise<{ allTransactions: Transaction[] }> => {
+): Promise<{ allTransactions: ITransaction[] }> => {
   const allTransactionsPromised =
     await transactionUtils.getAllTransactionsPromised(user);
   return { allTransactions: allTransactionsPromised };

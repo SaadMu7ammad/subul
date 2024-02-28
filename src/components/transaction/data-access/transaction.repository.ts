@@ -6,6 +6,7 @@ import { ITransaction } from './interfaces/transaction.interface.js';
 import { Promise, FilterQuery } from 'mongoose';
 import { TransactionDataStore } from './interfaces/transaction.dao.js';
 import TransactionModel from './models/transaction.model.js';
+import { CaseDocument } from '../../case/data-access/interfaces/case.interface.js';
 
 export class TransactionRepository implements TransactionDataStore {
   async findCaseById(id: string) {

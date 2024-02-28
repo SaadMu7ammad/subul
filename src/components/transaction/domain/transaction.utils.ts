@@ -2,7 +2,8 @@ import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components/index.js';
-import { Transaction } from '../data-access/interfaces/transaction.interface.js';
+import { CaseDocument } from '../../case/data-access/interfaces/case.interface.js';
+import { ITransaction } from '../data-access/interfaces/transaction.interface.js';
 import { TransactionRepository } from '../data-access/transaction.repository.js';
 
 const transactionRepository = new TransactionRepository();
@@ -83,8 +84,8 @@ const updateCaseAfterRefund = async (cause, amount: number) => {
   if (cause.dateFinished) cause.dateFinished = null;
   await cause.save();
 };
-const checkIsLastDonation = (cause, amount: number) => {
-  const currentAmount: number = +cause.currentDonationAmount + +amount;
+const checkIsLastDonation = (cause:CaseDocument, amount: number) => {
+  const currentAmount: number = +cause.currentDonationAmount! + +amount;
   if (+cause.targetDonationAmount === currentAmount) {
     cause.dateFinished = Date.now();
     cause.finished = true;
@@ -110,8 +111,8 @@ const confirmSavingCase = async (cause) => {
 const confirmSavingUser = async (user) => {
   await user.save();
 };
-const getAllTransactionsPromised = async (user): Promise<Transaction[]> => {
-  const transactionPromises: Transaction[] = user.transactions.map(
+const getAllTransactionsPromised = async (user): Promise<ITransaction[]> => {
+  const transactionPromises: ITransaction[] = user.transactions.map(
     async (itemId, index) => {
       const myTransaction = await transactionRepository.findTransactionById(
         itemId
@@ -133,9 +134,9 @@ const getAllTransactionsPromised = async (user): Promise<Transaction[]> => {
   return allTransactionsPromised;
 };
 const refundUtility = async (
-  transaction: Transaction,
+  transaction: ITransaction,
   amount: number
-): Promise<Transaction> => {
+): Promise<ITransaction> => {
   const caseId: string = transaction.case; //get the id of the case
   if (!caseId) throw new NotFoundError('case id not found');
 

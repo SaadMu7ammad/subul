@@ -1,5 +1,5 @@
 import { BadRequestError } from '../../../libraries/errors/components/index.js';
-import { Transaction } from '../data-access/interfaces/transaction.interface.js';
+import { ITransaction } from '../data-access/interfaces/transaction.interface.js';
 
 import { transactionService } from './transaction.service.js';
 const preCreateTransaction = async (req, res, next) => {
@@ -21,7 +21,7 @@ const preCreateTransaction = async (req, res, next) => {
   }
 };
 const getAllTransactions = async (req, res, next) => {
-  const myTransactions: { allTransactions: Transaction[] } =
+  const myTransactions: { allTransactions: ITransaction[] } =
     await transactionService.getAllTransactions(req.user);
   if (!myTransactions) {
     throw new BadRequestError('no transactions found');
@@ -53,7 +53,7 @@ const updateCaseInfo = async (req, res, next) => {
     };
     // create a new transaction here
     //before update the case info check if the transaction is a refund or payment donation
-    const transaction: Transaction | undefined =
+    const transaction: ITransaction | undefined =
       await transactionService.updateCaseInfo(data);
     if (!transaction) {
       throw new BadRequestError(
