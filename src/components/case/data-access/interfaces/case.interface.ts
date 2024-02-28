@@ -6,6 +6,7 @@
 // NOTE: ANY CHANGES MADE WILL BE OVERWRITTEN ON SUBSEQUENT EXECUTIONS OF MONGOOSE-TSGEN.
 
 import mongoose from 'mongoose';
+import { Charity,CharityDocument } from '../../../charity/data-access/interfaces/charity.interface';
 
 /**
  * Custom Types
