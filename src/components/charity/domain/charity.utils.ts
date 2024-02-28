@@ -2,17 +2,18 @@ import {
     BadRequestError,
     NotFoundError,
 } from '../../../libraries/errors/components/index.js';
-import { charityRepository } from '../data-access/charity.repository.js';
+import { CharityRepository } from '../data-access/charity.repository.js';
 import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
 import { checkValueEquality } from '../../../utils/shared.js';
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
-
-const checkCharityIsExist = async (email) => {
+import { CharityDocs, CharityDocument, CharityLocationDocument, CharityObject, CharityPaymentMethod, CharityPaymentMethodDocument ,CharityLocation} from '../data-access/interfaces/charity.interface.js';
+const charityRepository = new CharityRepository();
+const checkCharityIsExist = async (email:string):Promise<{charity:CharityDocument}> => {
     //return charity if it exists
-    const charityIsExist = await charityRepository.findCharity(email);
+    const charityIsExist:CharityDocument|null = await charityRepository.findCharity(email);
     if (!charityIsExist) {
         throw new NotFoundError('email not found Please use another one');
     }
@@ -20,28 +21,28 @@ const checkCharityIsExist = async (email) => {
         charity: charityIsExist,
     };
 };
-const logout = (res) => {
+const logout = (res) : void => {
     res.cookie('jwt', '', {
         httpOnly: true,
         expires: new Date(0),
     });
 };
-const getCharity = (req) => {
-    return { charity: req.charity };
+const getCharity = (req): {charity:CharityDocument}=> {
+    return { charity: req.charity  };
 };
-const checkIsEmailDuplicated = async (email) => {
-    const isDuplicatedEmail = await charityRepository.findCharity(email);
+const checkIsEmailDuplicated = async (email:string) :Promise<void>=> {
+    const isDuplicatedEmail:CharityDocument|null = await charityRepository.findCharity(email);
     if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
 const changeCharityEmailWithMailAlert = async (
-    CharityBeforeUpdate,
-    newEmail
-) => {
+    CharityBeforeUpdate:CharityDocument,
+    newEmail:string
+):Promise<{charity:CharityDocument}> => {
     //for sending email if changed or edited
     CharityBeforeUpdate.email = newEmail;
     CharityBeforeUpdate.emailVerification.isVerified = false;
     CharityBeforeUpdate.emailVerification.verificationDate = null;
-    const token = await generateResetTokenTemp();
+    const token:string = await generateResetTokenTemp();
     CharityBeforeUpdate.verificationCode = token;
     await setupMailSender(
         CharityBeforeUpdate.email,
@@ -53,25 +54,25 @@ const changeCharityEmailWithMailAlert = async (
     await CharityBeforeUpdate.save();
     return { charity: CharityBeforeUpdate };
 };
-const verifyCharityAccount = async (charity) => {
+const verifyCharityAccount = async (charity:CharityDocument):Promise<void>=> {
     charity.verificationCode = null;
     charity.emailVerification.isVerified = true;
     charity.emailVerification.verificationDate = Date.now();
     await charity.save();
 };
-const resetSentToken = async (charity) => {
+const resetSentToken = async (charity:CharityDocument): Promise<void>=> {
     charity.verificationCode = null;
     await charity.save();
 };
-const setTokenToCharity = async (charity, token) => {
+const setTokenToCharity = async (charity:CharityDocument, token:string) : Promise<void>=> {
     charity.verificationCode = token;
     await charity.save();
 };
-const changePassword = async (charity, newPassword) => {
+const changePassword = async (charity:CharityDocument, newPassword:string) : Promise<void>=> {
     charity.password = newPassword;
     await charity.save();
 };
-const changeCharityPasswordWithMailAlert = async (charity, newPassword) => {
+const changeCharityPasswordWithMailAlert = async (charity:CharityDocument, newPassword:string) : Promise<void>=> {
     await changePassword(charity, newPassword);
     await resetSentToken(charity); //after saving and changing the password
     await setupMailSender(
@@ -81,12 +82,12 @@ const changeCharityPasswordWithMailAlert = async (charity, newPassword) => {
             `<h3>go to link(www.dummy.com) to freeze your account</h3>`
     );
 };
-const editCharityProfileAddress = async (charity, id, updatedLocation) => {
+const editCharityProfileAddress = async (charity:CharityDocument, id:string, updatedLocation:CharityLocation[]):Promise<{charity:CharityDocument}> => { //TODO: Should we use Partial<CharityLocationDocument>?
     for (let i = 0; i < charity.location.length; i++) {
-        const isMatch = checkValueEquality(charity.location[i]._id, id);
+        const isMatch:boolean= checkValueEquality(charity.location[i]._id, id);
         if (isMatch) {
             // charity.location[i] = updatedLocation;//make a new id
-            const { governorate, city, street } = updatedLocation;
+            const { governorate, city, street } = updatedLocation[i];//🤔 IDK how it was working without the idx [i] ?
             governorate
                 ? (charity.location[i].governorate = governorate)
                 : null;
@@ -99,24 +100,24 @@ const editCharityProfileAddress = async (charity, id, updatedLocation) => {
     throw new BadRequestError('no id found');
 };
 // };
-const addCharityProfileAddress = async (charity, updatedLocation) => {
+const addCharityProfileAddress = async (charity:CharityDocument, updatedLocation:CharityLocation[]):Promise<{charity:CharityDocument}> => {
     charity.location.push(updatedLocation);
     await charity.save();
     return { charity: charity };
 };
 
-const replaceProfileImage = async (charity, oldImg, newImg) => {
+const replaceProfileImage = async (charity:CharityDocument, oldImg:string, newImg:string):Promise<{image:string}> => {
     charity.image = newImg;
     console.log(oldImg);
     await charity.save();
     deleteOldImgs('charityLogos', oldImg);
     return { image: charity.image };
 };
-const addDocs = async (reqBody, charity) => {
+const addDocs = async (reqBody:CharityDocs, charity:CharityDocument):Promise<{paymentMethods:CharityPaymentMethodDocument}> => {
     charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
     if (!reqBody.paymentMethods) {
         throw new BadRequestError(
-            'must send one of payment gateways inforamtions..'
+            'must send one of payment gateways information..'
         );
     }
     if (reqBody.paymentMethods.bankAccount)
@@ -127,14 +128,14 @@ const addDocs = async (reqBody, charity) => {
         await addPaymentAccounts(reqBody, charity, 'vodafoneCash');
     await makeCharityIsPending(charity); // update and save changes
     console.log(charity.paymentMethods);
-    return { paymentMethods: charity.paymentMethods };
+    return { paymentMethods: charity.paymentMethods as CharityPaymentMethodDocument };//Compiler Can't infer that paymentMethods are set to the charity , paymentMethods are not Possibly undefined any more 👍️ 
 };
-const makeCharityIsPending = async (charity) => {
+const makeCharityIsPending = async (charity:CharityDocument):Promise<void> => {
     charity.isPending = true;
     await charity.save();
 };
-const addPaymentAccounts = async (accountObj, charity, type) => {
-    if (charity.paymentMethods === undefined) charity.paymentMethods = {};
+const addPaymentAccounts = async (accountObj:CharityDocs, charity:CharityDocument, type:string):Promise<void> => {
+    if (charity.paymentMethods === undefined) charity.paymentMethods = {} as CharityPaymentMethodDocument;
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;
         const { accNumber, iban, swiftCode } = bankAccount[0];
@@ -182,8 +183,8 @@ const addPaymentAccounts = async (accountObj, charity, type) => {
     await charity.save();
 };
 
-const getChangedPaymentMethod = (reqPaymentMethodsObj) => {
-    let changedPaymentMethod;
+const getChangedPaymentMethod = (reqPaymentMethodsObj:CharityPaymentMethod):string => {
+    let changedPaymentMethod:string='';
 
     ['bankAccount', 'fawry', 'vodafoneCash'].forEach((pm) => {
         if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
@@ -193,19 +194,19 @@ const getChangedPaymentMethod = (reqPaymentMethodsObj) => {
 };
 
 const getPaymentMethodIdx = (
-    charityPaymentMethodsObj,
-    changedPaymentMethod,
-    paymentId
-) => {
-    const idx = charityPaymentMethodsObj[changedPaymentMethod].findIndex(
-        (paymentMethods) => paymentMethods._id.toString() === paymentId
+    charityPaymentMethodsObj:CharityPaymentMethodDocument,
+    changedPaymentMethod:string,
+    paymentId:string
+):number => {
+    const idx:number = charityPaymentMethodsObj[changedPaymentMethod].findIndex(
+        (paymentMethods:CharityPaymentMethod) => paymentMethods._id.toString() === paymentId
     );
 
     return idx;
 };
 
-const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
-    const temp = {};
+const makeTempPaymentObj = (selector:string, reqPaymentMethodsObj:CharityPaymentMethod):CharityPaymentMethod => {
+    const temp:CharityPaymentMethod = {} as CharityPaymentMethod;
 
     const methodMap = {
         bankAccount: {
@@ -226,7 +227,7 @@ const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
         const { fields, docsField } = methodMap[selector];
         const methodData = reqPaymentMethodsObj[selector][0];
 
-        fields.forEach((field) => {
+        fields.forEach((field:string) => {
             temp[field] = methodData[field];
         });
 
@@ -236,7 +237,7 @@ const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
     return temp;
 };
 
-const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector, idx) => {
+const swapPaymentInfo = (charityPaymentMethodsObj:CharityPaymentMethodDocument, temp:CharityPaymentMethod, selector:string, idx:number):void => {
     for (let key in temp) {
         if (key.endsWith('docs')) {
             deleteOldImgs(
@@ -251,7 +252,7 @@ const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector, idx) => {
     charityPaymentMethodsObj[selector][idx].enable = false;
 };
 
-const addNewPayment = (charityPaymentMethodsObj, temp, selector) => {
+const addNewPayment = (charityPaymentMethodsObj:CharityPaymentMethodDocument, temp:CharityPaymentMethod, selector:string):void => {
     charityPaymentMethodsObj[selector].push(temp);
 };
 

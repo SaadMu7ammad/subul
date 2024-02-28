@@ -7,20 +7,20 @@ const authUser = async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
   };
-  const dataResponsed = await authUserService.authUser(data, res);
+  const responseData = await authUserService.authUser(data, res);
   const userResponsed = {
-    ...dataResponsed.user,
+    ...responseData.user,
   };
-  if (dataResponsed.emailAlert) {
+  if (responseData.emailAlert) {
     return {
       user: userResponsed,
       msg: 'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
-      token: dataResponsed.token,
+      token: responseData.token,
     };
   } else {
     return {
       user: userResponsed,
-      token: dataResponsed.token,
+      token: responseData.token,
     };
   }
 };
@@ -29,12 +29,12 @@ const authUser = async (req, res, next) => {
 //@access public
 const registerUser = async (req, res, next) => {
   const registerInputsData = req.body;
-  const dataResponsed = await authUserService.registerUser(
+  const responseData = await authUserService.registerUser(
     registerInputsData,
     res
   );
   const userResponsed = {
-    ...dataResponsed.user,
+    ...responseData.user,
   };
   return { user: userResponsed };
 };

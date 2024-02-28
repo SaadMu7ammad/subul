@@ -11,12 +11,13 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
+import { CharityDocs, CharityDocument,CharityPaymentMethodDocument,CharityPaymentMethod, DataForEditCharityProfile, DataForActivateCharityAccount, DataForRequestResetPassword, DataForConfirmResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
 
-const requestResetPassword = async (reqBody) => {
-    const charityResponse = await charityUtils.checkCharityIsExist(
+const requestResetPassword = async (reqBody:DataForRequestResetPassword) => {
+    const charityResponse:{charity:CharityDocument} = await charityUtils.checkCharityIsExist(
         reqBody.email
     );
-    const token = await generateResetTokenTemp();
+    const token:string = await generateResetTokenTemp();
     await charityUtils.setTokenToCharity(charityResponse.charity, token);
     await setupMailSender(
         charityResponse.charity.email,
@@ -30,9 +31,9 @@ const requestResetPassword = async (reqBody) => {
     };
 };
 
-const confirmResetPassword = async (reqBody) => {
-    let updatedCharity = await charityUtils.checkCharityIsExist(reqBody.email);
-    const isEqual = checkValueEquality(
+const confirmResetPassword = async (reqBody:DataForConfirmResetPassword) => {
+    let updatedCharity:{charity:CharityDocument} = await charityUtils.checkCharityIsExist(reqBody.email);
+    const isEqual:boolean = checkValueEquality(
         updatedCharity.charity.verificationCode,
         reqBody.token
     );
@@ -48,16 +49,16 @@ const confirmResetPassword = async (reqBody) => {
     );
     return { message: 'charity password changed successfully' };
 };
-const changePassword = async (password, charity) => {
-    await charityUtils.changeCharityPasswordWithMailAlert(charity, password);
+const changePassword = async (reqBody:DataForChangePassword, charity:CharityDocument) => {
+    await charityUtils.changeCharityPasswordWithMailAlert(charity,reqBody.password);
     return { message: 'Charity password changed successfully' };
 };
-const activateAccount = async (reqBody, charity, res) => {
-    let storedCharity = charity;
+const activateAccount = async (reqBody:DataForActivateCharityAccount, charity:CharityDocument, res) => {
+    let storedCharity:CharityDocument = charity;
     if (storedCharity.emailVerification.isVerified) {
         return { message: 'account already is activated' };
     }
-    const isMatch = checkValueEquality(
+    const isMatch:boolean = checkValueEquality(
         storedCharity.verificationCode,
         reqBody.token
     );
@@ -83,13 +84,13 @@ const logoutCharity = (res) => {
     charityUtils.logout(res);
     return { message: 'logout' };
 };
-const getCharityProfileData = (charity) => {
+const getCharityProfileData = (charity:CharityDocument) => {
     return { charity: charity };
 };
-const editCharityProfile = async (reqBody, charity) => {
+const editCharityProfile = async (reqBody:DataForEditCharityProfile, charity:CharityDocument) => {
     if (!reqBody) throw new BadRequestError('no data sent');
-    const { email, location, locationId } = reqBody;
-    let storedCharity = charity;
+    const { email, location, locationId }:DataForEditCharityProfile = reqBody;
+    let storedCharity:CharityDocument = charity;
     if (
         //put restriction on the edit elements
         !reqBody.name &&
@@ -107,32 +108,32 @@ const editCharityProfile = async (reqBody, charity) => {
         description: reqBody.description,
     };
     if (email) {
-        const charityUpdated =
+        const updatedCharity:{charity:CharityDocument} =
             await charityUtils.changeCharityEmailWithMailAlert(
                 storedCharity,
                 email
             );
         return {
             emailEdited: true,
-            charity: charityUpdated.charity,
+            charity: updatedCharity.charity,
             message:'email has been sent to your gmail'
         };
     }
     if (location) {
         //edit
         if (locationId) {
-            const charityUpdated = await charityUtils.editCharityProfileAddress(
+            const updatedCharity:{charity:CharityDocument} = await charityUtils.editCharityProfileAddress(
                 storedCharity,
                 locationId,
                 location
             );
-            storedCharity = charityUpdated.charity;
+            storedCharity = updatedCharity.charity;
         } else {
-            const charityUpdated = await charityUtils.addCharityProfileAddress(
+            const updatedCharity:{charity:CharityDocument} = await charityUtils.addCharityProfileAddress(
                 storedCharity,
                 location
             );
-            storedCharity = charityUpdated.charity;
+            storedCharity = updatedCharity.charity;
         }
     }
     updateNestedProperties(storedCharity, charityObj);
@@ -143,24 +144,24 @@ const editCharityProfile = async (reqBody, charity) => {
         message:'data changed successfully'
     };
 };
-const changeProfileImage = async (reqBody, charity) => {
-    const oldImg = charity.image;
-    const newImg = reqBody.image;
-    const updatedImg = await charityUtils.replaceProfileImage(
+const changeProfileImage = async (reqBody:DataForChangeProfileImage, charity:CharityDocument) => {
+    const oldImg:string = charity.image;
+    const newImg:string = reqBody.image;
+    const updatedImg:{image:string} = await charityUtils.replaceProfileImage(
         charity,
         oldImg,
         newImg
     );
     return { image: updatedImg.image,message:'image changed successfully' };
 };
-const sendDocs = async (reqBody, charity) => {
+const sendDocs = async (reqBody:DataForSendDocs, charity:CharityDocument) => {
     if (
         (charity.emailVerification.isVerified ||
             charity.phoneVerification.isVerified) &&
         !charity.isConfirmed &&
         !charity.isPending
     ) {
-        const addCharityPaymentsResponse = await charityUtils.addDocs(
+        const addCharityPaymentsResponse:{paymentMethods:CharityPaymentMethodDocument} = await charityUtils.addDocs(
             reqBody,
             charity
         );
@@ -174,35 +175,38 @@ const sendDocs = async (reqBody, charity) => {
     ) {
         throw new UnauthenticatedError('you must verify your account again');
     } else if (charity.isConfirmed) {
-        throw new BadRequestError('Charity is confrimed already!');
+        throw new BadRequestError('Charity is Confirmed already!');
     } else if (charity.isPending) {
         throw new BadRequestError('soon response... still reviewing docs');
     } else {
-        throw new BadRequestError('error occured, try again later');
+        throw new BadRequestError('error occurred, try again later');
     }
 };
 
 const requestEditCharityPayments = async (
-    charityObj,
-    paymentId,
-    reqPaymentMethodsObj,
+    charityObj:CharityDocument,
+    paymentId:string,
+    reqPaymentMethodsObj:CharityPaymentMethod,
 ) => {
     if (!reqPaymentMethodsObj) {
         throw new BadRequestError('Incomplete Data!');
     }
+    if(!charityObj.paymentMethods){
+        throw new BadRequestError('No Payment Methods Found!');
+    }
 
-    let charityPaymentMethodsObj = charityObj.paymentMethods;
+    let charityPaymentMethodsObj:CharityPaymentMethodDocument= charityObj.paymentMethods; 
 
-    let changedPaymentMethod =
+    let changedPaymentMethod:string =
         charityUtils.getChangedPaymentMethod(reqPaymentMethodsObj);
 
-    const idx = charityUtils.getPaymentMethodIdx(
+    const idx:number = charityUtils.getPaymentMethodIdx(
         charityPaymentMethodsObj,
         changedPaymentMethod,
         paymentId
     );
 
-    const temp = charityUtils.makeTempPaymentObj(
+    const temp:CharityPaymentMethod= charityUtils.makeTempPaymentObj(
         changedPaymentMethod,
         reqPaymentMethodsObj
     ); //👋
@@ -224,7 +228,7 @@ const requestEditCharityPayments = async (
 
     await charityObj.save();
 
-    const len = charityObj.paymentMethods[changedPaymentMethod].length - 1;
+    const len:number = charityObj.paymentMethods[changedPaymentMethod].length - 1;
 
     return {
         paymentMethod:

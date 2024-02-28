@@ -1,11 +1,15 @@
 import { charityService } from './charity.service.js';
+import { DataForActivateCharityAccount, CharityDocs, CharityDocument, CharityPaymentMethod, DataForConfirmResetPassword,DataForEditCharityProfile, DataForRequestResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForRequestEditCharityPayments, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
 
 const activateCharityAccount = async (req, res, next) => {
-  let storedCharity = req.charity;
-  const { token } = req.body;
+  let storedCharity:CharityDocument = req.charity;
+
+  const { token } :DataForActivateCharityAccount= req.body;
+
   const data = {
     token,
   };
+
   const activateCharityAccountResponse = await charityService.activateAccount(
     data,
     storedCharity,
@@ -18,26 +22,29 @@ const activateCharityAccount = async (req, res, next) => {
 };
 
 const requestResetPassword = async (req, res, next) => {
-  const { email } = req.body;
+  const { email }:DataForRequestResetPassword= req.body;
+
   const data = {
     email,
   };
+  
   const requestResetPasswordResponse =
     await charityService.requestResetPassword(data);
+
   return {
     message: requestResetPasswordResponse.message,
   };
 };
 
 const confirmResetPassword = async (req, res, next) => {
-  const { token, email, password } = req.body;
+  const { token, email, password }:DataForConfirmResetPassword = req.body;
+  
   const data = {
     token,
     email,
     password,
   };
-  // let charity = await Charity.findOne({ email });
-  // if (!charity) throw new NotFoundError('No charity found with this email');
+
   const confirmResetPasswordResponse =
     await charityService.confirmResetPassword(data);
 
@@ -45,26 +52,28 @@ const confirmResetPassword = async (req, res, next) => {
 };
 
 const changePassword = async (req, res, next) => {
-  const { password } = req.body;
-  const storedCharity = req.charity;
+  const data:DataForChangePassword ={password:req.body.password} ;
+
+  const storedCharity:CharityDocument = req.charity;
+
   const changePasswordResponse = await charityService.changePassword(
-    password,
+    data,
     storedCharity
   );
+
   return { message: changePasswordResponse.message };
 };
 const showCharityProfile = (req, res, next) => {
-  // const charity = await charityRepository.findCharityById(req.charity._id).select(
-  //   '-_id -password -verificationCode -emailVerification -phoneVerification -isEnabled -isConfirmed -isPending'
-  // );
-  const storedCharity = req.charity;
+  const storedCharity:CharityDocument = req.charity;
+
   const responseData = charityService.getCharityProfileData(storedCharity);
+
   return {
     charity: responseData.charity,
   };
 };
 const editCharityProfile = async (req, res, next) => {
-  const dataInput = {
+const data:DataForEditCharityProfile= {
     name: req.body.name,
     email: req.body.email,
     location: req.body.location,
@@ -72,21 +81,24 @@ const editCharityProfile = async (req, res, next) => {
     contactInfo: req.body.contactInfo,
     description: req.body.description,
   };
-  const storedCharity = req.charity;
+
+  const storedCharity:CharityDocument = req.charity;
+
   const responseData = await charityService.editCharityProfile(
-    dataInput,
+    data,
     storedCharity
   );
+
   return {
     charity: responseData.charity,
     message: responseData.message,
   };
 };
 const changeProfileImage = async (req, res, next) => {
-  const data = {
+  const data:DataForChangeProfileImage = {
     image: req.body.image[0],
   };
-  const storedCharity = req.charity;
+  const storedCharity:CharityDocument = req.charity;
   const responseData = await charityService.changeProfileImage(
     data,
     storedCharity
@@ -95,11 +107,14 @@ const changeProfileImage = async (req, res, next) => {
 };
 
 const requestEditCharityPayments = async (req, res, next) => {
-    const reqPaymentMethodsObj = req.body.paymentMethods;
+    const data:DataForRequestEditCharityPayments = {
+        paymentMethods: req.body.paymentMethods,
+        paymentId: req.body.payment_id,
+    }
     const responseData = await charityService.requestEditCharityPayments(
         req.charity,
-        req.body.payment_id,
-        reqPaymentMethodsObj,
+        data.paymentId, 
+        data.paymentMethods,
     );
 
     return {
@@ -117,7 +132,7 @@ const logout = (req, res, next) => {
 };
 
 const sendDocs = async (req, res, next) => {
-  const data = {
+  const data:DataForSendDocs= {
     charityDocs: {
       docs1: req.body.charityDocs.docs1,
       docs2: req.body.charityDocs.docs2,
@@ -125,12 +140,12 @@ const sendDocs = async (req, res, next) => {
       docs4: req.body.charityDocs.docs4,
     },
     paymentMethods: {
-      bankAccount: req.body.paymentMethods['bankAccount'],
+      bankAccount: req.body.paymentMethods['bankAccount'] , 
       fawry: req.body.paymentMethods['fawry'],
-      vodafoneCash: req.body.paymentMethods['vodafoneCash'],
+      vodafoneCash: req.body.paymentMethods['vodafoneCash'], 
     },
   };
-  const storedCharity = req.charity;
+  const storedCharity:CharityDocument = req.charity;
   const responseData = await charityService.sendDocs(data, storedCharity);
   return {
     paymentMethods: responseData.paymentMethods,
