@@ -83,7 +83,7 @@ const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
     orderId: orderId,
   };
 
-  let transactionIsExist: ITransaction | undefined =
+  let transactionIsExist: ITransaction | null =
     await transactionRepository.findTransactionByQuery(queryObj);
   if (transactionIsExist) {
     //transaction must updated not created again
@@ -150,7 +150,7 @@ const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
 };
 const getAllTransactions = async (
   user
-): Promise<{ allTransactions: ITransaction[] }> => {
+): Promise<{ allTransactions: (ITransaction|null)[] }> => {
   const allTransactionsPromised =
     await transactionUtils.getAllTransactionsPromised(user);
   return { allTransactions: allTransactionsPromised };

@@ -3,6 +3,7 @@ import {
   NotFoundError,
 } from '../../../libraries/errors/components/index.js';
 import { CaseDocument } from '../../case/data-access/interfaces/case.interface.js';
+import { IUser } from '../../user/data-access/interfaces/user.interface.js';
 import { ITransaction } from '../data-access/interfaces/transaction.interface.js';
 import { TransactionRepository } from '../data-access/transaction.repository.js';
 
@@ -92,9 +93,9 @@ const checkIsLastDonation = (cause:CaseDocument, amount: number) => {
   }
   return cause;
 };
-const updateCaseAfterDonation = (cause, amount: number) => {
-  +cause.donationNumbers++;
-  cause.currentDonationAmount += +amount;
+const updateCaseAfterDonation = (cause: CaseDocument, amount: number) => {
+  +cause.donationNumbers!++;
+  cause.currentDonationAmount! += +amount;
   return cause;
 };
 const addTransactionIdToUserTransactionIds = async (
@@ -111,18 +112,18 @@ const confirmSavingCase = async (cause) => {
 const confirmSavingUser = async (user) => {
   await user.save();
 };
-const getAllTransactionsPromised = async (user): Promise<ITransaction[]> => {
-  const transactionPromises: ITransaction[] = user.transactions.map(
+const getAllTransactionsPromised = async (user:IUser): Promise<(ITransaction|null)[]>  => {
+  const transactionPromises: Promise<ITransaction|null>[] = user.transactions.map(
     async (itemId, index) => {
       const myTransaction = await transactionRepository.findTransactionById(
-        itemId
+        itemId.toString()
       );
       if (!myTransaction) {
         user.transactions.splice(index, 1);
         return null;
       } else {
         // console.log(myTransaction.user);
-        if (myTransaction.user.toString() !== user._id.toString()) {
+        if (myTransaction?.user?.toString() !== user._id.toString()) {
           throw new BadRequestError("you don't have access to this !");
         }
         return myTransaction;
@@ -137,7 +138,7 @@ const refundUtility = async (
   transaction: ITransaction,
   amount: number
 ): Promise<ITransaction> => {
-  const caseId: string = transaction.case; //get the id of the case
+  const caseId: string|undefined = transaction?.case?.toString(); //get the id of the case
   if (!caseId) throw new NotFoundError('case id not found');
 
   const caseIsExistForRefund = await transactionRepository.findCaseById(caseId);

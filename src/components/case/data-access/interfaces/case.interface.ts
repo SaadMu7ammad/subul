@@ -77,7 +77,7 @@ export type CaseLocation = {
  * ```
  */
 export type Case = {
-    charity?: Charity['_id'] | Charity;
+    charity: Charity['_id'] | Charity;
     title: string;
     description: string;
     mainType:
@@ -235,7 +235,7 @@ export type CaseDocument = mongoose.Document<
     CaseQueries
 > &
     CaseMethods & {
-        charity?: CharityDocument['_id'] | CharityDocument;
+        charity: CharityDocument['_id'] | CharityDocument;
         title: string;
         description: string;
         mainType:
@@ -280,8 +280,8 @@ export type CaseDocument = mongoose.Document<
         targetDonationAmount: number;
         currentDonationAmount?: number;
         _id: mongoose.Types.ObjectId;
-        createdAt?: Date;
-        updatedAt?: Date;
+        createdAt: Date;
+        updatedAt: Date;
     };
 
 /**

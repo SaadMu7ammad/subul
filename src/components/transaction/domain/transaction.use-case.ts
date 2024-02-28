@@ -21,7 +21,7 @@ const preCreateTransaction = async (req, res, next) => {
   }
 };
 const getAllTransactions = async (req, res, next) => {
-  const myTransactions: { allTransactions: ITransaction[] } =
+  const myTransactions: { allTransactions: (ITransaction|null)[] } =
     await transactionService.getAllTransactions(req.user);
   if (!myTransactions) {
     throw new BadRequestError('no transactions found');
