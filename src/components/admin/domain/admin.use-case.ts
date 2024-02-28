@@ -6,14 +6,14 @@ const getAllPendingRequestsCharities = async (req, res, next) => {
 };
 
 const getPendingRequestCharityById = async (req, res, next) => {
-  const { id } = req.params;
+  const { id }:{id:string} = req.params;
   const pendingRequestCharityById =
     await adminService.getAllOrOnePendingRequestsCharities(id);
   return { pendingCharity: pendingRequestCharityById.allPendingCharities };
 };
 
 const getPendingPaymentRequestsForConfirmedCharityById = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } :{id:string}= req.params;
   const paymentRequests = await adminService.getPendingPaymentRequestsForConfirmedCharityById(
     id
   );
@@ -26,7 +26,7 @@ const getAllRequestsPaymentMethodsForConfirmedCharities = async (req, res, next)
 };
 
 const confirmCharity = async (req, res, next) => {
-  const { id } = req.params;
+  const { id }:{id:string} = req.params;
   const confirmedCharity = await adminService.confirmCharity(id);
 
   return {
@@ -36,7 +36,7 @@ const confirmCharity = async (req, res, next) => {
 };
 
 const rejectCharity = async (req, res, next) => {
-  const { id } = req.params;
+  const { id }:{id:string} = req.params;
   const rejectedCharity = await adminService.rejectCharity(id);
 
   return {
@@ -46,7 +46,7 @@ const rejectCharity = async (req, res, next) => {
 };
 
 const confirmPaymentAccountRequestForConfirmedCharities = async (req, res, next) => {
-  const { id } = req.params; //charityId
+  const { id }:{id:string} = req.params; //charityId
   const { paymentMethod, paymentAccountID } = req.body;
 
   const confirmedPaymentAccount =
@@ -62,8 +62,8 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (req, res, next)
   };
 };
 const rejectPaymentAccountRequestForConfirmedCharities = async (req, res, next) => {
-  const { id } = req.params; //charityId
-  const { paymentMethod, paymentAccountID } = req.body;
+  const { id }:{id:string} = req.params; //charityId
+  const { paymentMethod, paymentAccountID }:{paymentMethod:string, paymentAccountID:string} = req.body;
   const rejectedPaymentAccount = await adminService.rejectPaymentAccountRequestForConfirmedCharities(
     id,
     paymentMethod,

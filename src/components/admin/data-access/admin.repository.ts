@@ -1,19 +1,19 @@
 import Charity from '../../charity/data-access/models/charity.model.js';
 
-const findAllPendingCharities = async (queryObject, selection) => {
-  const pendingcharities = await Charity.find(queryObject, selection).exec();
+const findAllPendingCharities = async (queryObject, selection:string) => {
+  const pendingCharities = await Charity.find(queryObject, selection).exec();
   // .select('name email charityDocs paymentMethods')
-  return pendingcharities;
+  return pendingCharities;
 };
-const findCharitiesByQueryWithOptionalId = async (queryObject, selection) => {
-  const pendingcharities = await Charity.find(queryObject, selection).exec();
-  return pendingcharities;
+const findCharitiesByQueryWithOptionalId = async (queryObject, selection:string) => {
+  const pendingCharities = await Charity.find(queryObject, selection).exec();
+  return pendingCharities;
 };
-const findConfirmedCharityById = async (queryObject, selection) => {
+const findConfirmedCharityById = async (queryObject, selection:string) => {
   const charity = await Charity.findOne(queryObject, selection).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
   return charity;
 };
-const getPendingPaymentAccountByAggregation = async (paymentMethod) => {
+const getPendingPaymentAccountByAggregation = async (paymentMethod:string) => {
   const charity = await Charity.aggregate([
     {
       $match: {
