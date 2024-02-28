@@ -7,7 +7,7 @@
 
 import mongoose from "mongoose";
 import { Case,CaseDocument } from "../../../case/data-access/interfaces/case.interface";
-
+import { IUser,IUserDocument } from "../../../user/data-access/interfaces/user.interface";
 /**
  * My Custom Types 
  */
@@ -147,7 +147,7 @@ export type CharityPaymentMethod = {
  * ```
  */
 export type CharityDonorRequest = {
-  user: user["_id"] | user;
+  user: IUser["_id"] | IUser;
   requestTitle: string;
   requestMessage: string;
   _id: mongoose.Types.ObjectId;
@@ -380,7 +380,7 @@ export type CharityPaymentMethodDocument =
  * Type of `CharityDocument["donorRequests"]` element.
  */
 export type CharityDonorRequestDocument = mongoose.Types.Subdocument & {
-  user: userDocument["_id"] | userDocument;
+  user: IUserDocument["_id"] | IUserDocument;
   requestTitle: string;
   requestMessage: string;
   _id: mongoose.Types.ObjectId;
