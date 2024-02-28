@@ -2,10 +2,10 @@ import { NotFoundError } from '../../errors/components/index.js';
 
 const checkBeforeCreateLinkForPayment = (
   user,
-  amount,
-  charityId,
-  caseId,
-  caseTitle
+  amount:number,
+  charityId:string,
+  caseId:string,
+  caseTitle:string
 ) => {
   if (!user) throw new NotFoundError('user not found');
   if (!amount || typeof amount !== 'number' || amount <= 0)

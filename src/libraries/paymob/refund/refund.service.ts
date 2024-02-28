@@ -4,6 +4,7 @@ import {
   NotFoundError,
 } from '../../errors/components/index.js';
 import Transaction from '../../../components/transaction/data-access/models/transaction.model.js';
+import { TransactionDocument } from '../../../components/transaction/data-access/interfaces/transaction.interface.js';
 const refund = async (transaction_id) => {
   const stepOneToken = await getTransactionByIdService.getTokenStepOne();
   if (!stepOneToken) throw new NotFoundError('no token provided');
@@ -15,7 +16,7 @@ const refund = async (transaction_id) => {
   const { id, amount_cents, success, pending } = data;
   const orderId = data.order.id;
   //a solution indexing for the transaction table on externalTransactionId
-  const transactionIsExist = await Transaction.findOne({
+  const transactionIsExist:TransactionDocument|null = await Transaction.findOne({
     externalTransactionId: transaction_id,
   });
   console.log('transaction in refund service');

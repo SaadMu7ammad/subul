@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { Router, Application } from 'express';
 import { userUseCase } from '../../domain/user.use-case.js';
 import { validate } from '../../../../libraries/validation/index.js';
 import { auth, isActivated } from '../../../auth/shared/index.js';
@@ -12,7 +12,7 @@ import {
 import { getAllTransactions } from '../../../transaction/domain/transaction.use-case.js';
 import logger from '../../../../utils/logger.js';
 
-export default function defineRoutes(expressApp) {
+export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
 
   router.post('/logout', (req, res, next) => {
@@ -26,7 +26,7 @@ export default function defineRoutes(expressApp) {
     }
   });
 
-  //notice reset and /reset/confirm without isActivated coz the if the user didnt activate his account and want to reset the pass
+  //notice reset and /reset/confirm without isActivated coz the if the user didn't activate his account and want to reset the pass
   router.post(
     '/reset',
     requestResetEmailUserValidation,

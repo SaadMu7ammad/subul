@@ -1,8 +1,11 @@
+import { authedRequest } from '../../auth/user/data-access/auth.interface';
+import { IUser, IUserResponse } from '../data-access/interfaces/user.interface';
 import { userService } from './user.service.js';
+import { Request, Response, NextFunction } from 'express';
 //@desc   reset password
 //@route  POST /api/users/reset
 //@access public
-const resetUser = async (req, res, next) => {
+const resetUser = async (req: Request, res: Response, next: NextFunction) => {
   const resetInputsData = req.body;
   const responseData = await userService.resetUser(resetInputsData);
   return {
@@ -12,7 +15,11 @@ const resetUser = async (req, res, next) => {
 //@desc   reset password
 //@route  POST /api/users/confirm
 //@access public
-const confirmReset = async (req, res, next) => {
+const confirmReset = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const resetInputsData = req.body;
   const responseData = await userService.confirmReset(resetInputsData);
   return {
@@ -23,7 +30,11 @@ const confirmReset = async (req, res, next) => {
 //@desc   change password
 //@route  POST /api/users/changepassword
 //@access private
-const changePassword = async (req, res, next) => {
+const changePassword = async (
+  req: authedRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const changePasswordInputsData = req.body;
   const storedUser = req.user;
   const responseData = await userService.changePassword(
@@ -38,7 +49,11 @@ const changePassword = async (req, res, next) => {
 //@desc   activate account email
 //@route  POST /api/users/activate
 //@access private
-const activateAccount = async (req, res, next) => {
+const activateAccount = async (
+  req: authedRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const activateAccountInputsData = req.body;
   const storedUser = req.user;
   const responseData = await userService.activateAccount(
@@ -53,7 +68,7 @@ const activateAccount = async (req, res, next) => {
 //@desc   logout user
 //@route  POST /api/users/logout
 //@access private
-const logoutUser = (req, res, next) => {
+const logoutUser = (req: Request, res: Response, next: NextFunction) => {
   const responseData = userService.logoutUser(res);
   return {
     message: responseData.message,
@@ -62,19 +77,24 @@ const logoutUser = (req, res, next) => {
 //@desc   edit user profile
 //@route  POST /api/users/profile/edit
 //@access private
-const editUserProfile = async (req, res, next) => {
-  // const userObj = {//for TS
-  //   name: {
-  //     firstName: req.body?.name?.firstName,
-  //     lastName: req.body?.name?.lastName,
-  //   },
-  //   email: req.body?.email,
-  //   location: req.body?.location?.governorate,
-  //   gender: req.body?.gender,
-  //   phone: req.body?.phone,
-  // };
-  // const editUserProfileInputsData = userObj;
-  const editUserProfileInputsData = req.body;
+const editUserProfile = async (
+  req: authedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<IUserResponse> => {
+  const userObj = {
+    //for TS
+    name: {
+      firstName: req.body?.name?.firstName,
+      lastName: req.body?.name?.lastName,
+    },
+    email: req.body?.email,
+    location: req.body?.location?.governorate,
+    gender: req.body?.gender,
+    phone: req.body?.phone,
+  };
+  const editUserProfileInputsData = userObj;
+  // const editUserProfileInputsData: Partial<IUser> = req.body;
   const storedUser = req.user;
   const responseData = await userService.editUserProfile(
     editUserProfileInputsData,
@@ -96,16 +116,20 @@ const editUserProfile = async (req, res, next) => {
 //@desc   get user profile
 //@route  GET /api/users/profile
 //@access private
-const getUserProfileData = (req, res, next) => {
+const getUserProfileData = (
+  req: authedRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const storedUser = req.user;
   const responseData = userService.getUserProfileData(storedUser);
   return {
     user: responseData.user,
-    message:'User Profile Fetched Successfully'
+    message: 'User Profile Fetched Successfully',
   };
 };
 
-export const userUseCase={
+export const userUseCase = {
   logoutUser,
   resetUser,
   confirmReset,

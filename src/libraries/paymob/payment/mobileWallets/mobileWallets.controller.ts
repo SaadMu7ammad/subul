@@ -1,6 +1,6 @@
 import { mobileWalletService } from './mobileWallets.service.js';
 const paywithMobileWallet = async (req, res, next) => {
-  const { amount, charityId, caseId, caseTitle } = req.body;
+  const { amount, charityId, caseId, caseTitle }:{amount:number, charityId:string, caseId:string, caseTitle:string} = req.body;
   const storedUser = req.user;
   const data = {
     amount,
