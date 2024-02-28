@@ -5,8 +5,10 @@ import Charity from '../../charity/data-access/models/charity.model.js';
 import { UnauthenticatedError } from '../../../libraries/errors/components/index.js';
 import logger from '../../../utils/logger.js';
 import * as configurationProvider from '../../../libraries/configuration-provider/index.js';
+import { authedRequest } from '../user/data-access/auth.interface.js';
+import { Decoded } from './interface';
 
-const auth = async (req, res, next) => {
+const auth = async (req: authedRequest, res, next) => {
   try {
     if (req.headers && req.headers.cookie) {
       // throw new customError.UnauthenticatedError('no token found');
@@ -16,7 +18,7 @@ const auth = async (req, res, next) => {
         throw new UnauthenticatedError('no token found');
       }
       // const authCookie = req.headers.jwt; //according to cookie parser
-      const decoded : JwtPayload = jwt.verify(
+      const decoded =<Decoded> jwt.verify(
         jwtToken,
         configurationProvider.getValue('hashing.jwtSecret') 
       ) as JwtPayload;

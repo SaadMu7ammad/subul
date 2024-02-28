@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Application } from 'express';
 
 import { auth, isActivated } from '../../../auth/shared/index.js';
 import { isAdmin } from '../../../admin/index.js';
@@ -14,7 +14,7 @@ import { getTransactionById } from '../../../../libraries/paymob/admin/getTransa
 import { refund } from '../../../../libraries/paymob/refund/refund.controller.js';
 import logger from '../../../../utils/logger.js';
 
-export default function defineRoutes(expressApp) {
+export default function defineRoutes(expressApp:Application) {
   const router = express.Router();
 
   //for user

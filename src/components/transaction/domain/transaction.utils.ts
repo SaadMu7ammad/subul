@@ -2,10 +2,13 @@ import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components/index.js';
-import { transactionRepository } from '../data-access/transaction.repository.js';
+import { TransactionDocument } from '../data-access/interfaces/transaction.interface.js';
+import { TransactionRepository } from '../data-access/transaction.repository.js';
+
+const transactionRepository = new TransactionRepository();
 
 const checkPreCreateTransaction = (data) => {
-  const { charityId, caseId, amount, mainTypePayment } = data;
+  const { charityId, caseId, amount, mainTypePayment }:{charityId:string, caseId:string, amount:number, mainTypePayment:string} = data;
   if (!charityId) {
     throw new NotFoundError('charity is not found');
   } else if (!caseId) {
@@ -45,8 +48,8 @@ const checkCaseIsValidToDonate = (cause) => {
     );
   }
 };
-const donationAmountAssertion = (cause, amount) => {
-  const currentAmount = +cause.currentDonationAmount + +amount;
+const donationAmountAssertion = (cause, amount:number) => {
+  const currentAmount:number = +cause.currentDonationAmount + +amount;
   if (
     +cause.targetDonationAmount < currentAmount &&
     cause.targetDonationAmount !== currentAmount
@@ -62,7 +65,7 @@ const updateTransactionAfterRefund = async (transaction) => {
   transaction.status = 'refunded';
   await transaction.save();
 };
-const updateCaseAfterRefund = async (cause, amount) => {
+const updateCaseAfterRefund = async (cause, amount:number) => {
   if (cause.finished) cause.finished = false; //re open the case again
   if (cause.currentDonationAmount >= amount)
     cause.currentDonationAmount -= amount;
@@ -70,20 +73,20 @@ const updateCaseAfterRefund = async (cause, amount) => {
   if (cause.dateFinished) cause.dateFinished = null;
   await cause.save();
 };
-const checkIsLastDonation = (cause, amount) => {
-  const currentAmount = +cause.currentDonationAmount + +amount;
+const checkIsLastDonation = (cause, amount:number) => {
+  const currentAmount:number = +cause.currentDonationAmount + +amount;
   if (+cause.targetDonationAmount === currentAmount) {
     cause.dateFinished = Date.now();
     cause.finished = true;
   }
   return cause;
 };
-const updateCaseAfterDonation = (cause, amount) => {
+const updateCaseAfterDonation = (cause, amount:number) => {
   +cause.donationNumbers++;
   cause.currentDonationAmount += +amount;
   return cause;
 };
-const addTransactionIdToUserTransactionIds = async (user, newTransactionId) => {
+const addTransactionIdToUserTransactionIds = async (user, newTransactionId:string) => {
   user.transactions.push(newTransactionId);
   await user.save();
   return user;
@@ -94,8 +97,8 @@ const confirmSavingCase = async (cause) => {
 const confirmSavingUser = async (user) => {
   await user.save();
 };
-const getAllTransactionsPromised = async (user) => {
-  const transactionPromises = user.transactions.map(async (itemId, index) => {
+const getAllTransactionsPromised = async (user):Promise<TransactionDocument[]> => {
+  const transactionPromises:TransactionDocument[] = user.transactions.map(async (itemId, index) => {
     const myTransaction = await transactionRepository.findTransactionById(
       itemId
     );
@@ -105,7 +108,7 @@ const getAllTransactionsPromised = async (user) => {
     } else {
       // console.log(myTransaction.user);
       if (myTransaction.user.toString() !== user._id.toString()) {
-        throw new BadRequestError('you dont have access to this !');
+        throw new BadRequestError('you don\'t have access to this !');
       }
       return myTransaction;
     }
@@ -114,8 +117,8 @@ const getAllTransactionsPromised = async (user) => {
   await confirmSavingUser(user);
   return allTransactionsPromised;
 };
-const refundUtility = async (transaction,amount) => {
-  const caseId = transaction.case; //get the id of the case
+const refundUtility = async (transaction:TransactionDocument,amount:number):Promise<TransactionDocument> => {
+  const caseId:string = transaction.case; //get the id of the case
   if (!caseId) throw new NotFoundError('case id not found');
 
   const caseIsExistForRefund = await transactionRepository.findCaseById(caseId);
@@ -127,7 +130,7 @@ const refundUtility = async (transaction,amount) => {
   //in the next middleware will update the externalTransactionId with the new refund transaction
   console.log('transaction updated partially in db to be refunded');
 
-  return { transaction: transaction };
+  return transaction;
 };
 export const transactionUtils = {
   checkPreCreateTransaction,
