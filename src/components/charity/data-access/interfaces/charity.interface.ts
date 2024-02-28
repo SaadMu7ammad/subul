@@ -6,6 +6,7 @@
 // NOTE: ANY CHANGES MADE WILL BE OVERWRITTEN ON SUBSEQUENT EXECUTIONS OF MONGOOSE-TSGEN.
 
 import mongoose from "mongoose";
+import { Case,CaseDocument } from "../../../case/data-access/interfaces/case.interface";
 
 /**
  * My Custom Types 
