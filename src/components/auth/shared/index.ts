@@ -9,7 +9,7 @@ import { authedRequest } from '../user/data-access/auth.interface.js';
 import { Decoded } from './interface';
 
 const auth = async (req: authedRequest, res, next) => {
-  try {
+  try{
     if (req.headers && req.headers.cookie) {
       // throw new customError.UnauthenticatedError('no token found');
       const authHeader = req.headers.cookie;

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Application } from 'express';
 
 import { auth, isConfirmed, isActivated } from '../../../auth/shared/index.js';
 import { charityUseCase } from '../../domain/charity.use-case.js';
@@ -25,7 +25,7 @@ import {
 import { deleteCharityDocs,deleteOldImgs} from '../../../../utils/deleteFile.js';
 import { uploadDocsReq,resizeDocReq } from '../../../../libraries/uploads/components/docs/images/handler2.js';
 
-export default function defineRoutes(expressApp) {
+export default function defineRoutes(expressApp:Application) {
   const router = express.Router();
   router.post(
     '/activate',
