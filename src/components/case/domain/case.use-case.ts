@@ -1,8 +1,9 @@
+import { Case, CaseDocument, GetAllCasesQueryParams } from '../data-access/interfaces/case.interface.js';
 import { caseService } from './case.service.js';
 
 const addCase = async (req, res, next) => {
-    const caseData = req.body;
-    const caseImage = req.body.image[0];
+    const caseData:Case = req.body;
+    const caseImage:string = req.body.image[0];
     const charity = req.charity;
 
     const responseData = await caseService.addCase(
@@ -18,8 +19,8 @@ const addCase = async (req, res, next) => {
 };
 
 const getAllCases = async (req, res, next) => {
-    const queryParams = req.query;
-    const charityId = req.charity._id;
+    const queryParams:GetAllCasesQueryParams = req.query;
+    const charityId :string = req.charity._id;
 
     const responseData = await caseService.getAllCases(charityId, queryParams);
 
@@ -30,8 +31,8 @@ const getAllCases = async (req, res, next) => {
 };
 
 const getCaseById = async (req, res, next) => {
-    const charityCases = req.charity.cases;
-    const caseId = req.params.caseId;
+    const charityCases:CaseDocument[] = req.charity.cases;
+    const caseId:string = req.params.caseId;
 
     const responseData = await caseService.getCaseById(charityCases, caseId);
 
@@ -44,7 +45,7 @@ const getCaseById = async (req, res, next) => {
 const deleteCase = async (req, res, next) => {
     const charity = req.charity;
 
-    const caseId = req.params.caseId;
+    const caseId:string = req.params.caseId;
 
     const responseData = await caseService.deleteCase(charity, caseId);
 
@@ -57,9 +58,9 @@ const deleteCase = async (req, res, next) => {
 const editCase = async (req, res, next) => {
     const charity = req.charity;
 
-    const caseId = req.params.caseId;
+    const caseId:string = req.params.caseId;
 
-    const caseData = req.body;
+    const caseData:Case & { image: string } = req.body;
 
     const responseData = await caseService.editCase(charity,caseData, caseId);
 
