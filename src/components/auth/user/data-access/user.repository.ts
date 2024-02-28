@@ -1,5 +1,5 @@
-import User from '../../../user/data-access/models/user.model';
-import { IUser } from '../../../user/data-access/interfaces/user.interface';
+import User from '../../../user/data-access/models/user.model.js';
+import { IUser } from '../../../user/data-access/interfaces/user.interface.js';
 const findUser = async (email: string): Promise<IUser | undefined> => {
   let user = await User.findOne({ email: email });
   if (!user) return undefined;

@@ -1,6 +1,6 @@
-import { userDataStore } from './interfaces/user.dao';
-import {  IUserDocument } from './interfaces/user.interface';
-import UserModel from './models/user.model';
+import { userDataStore } from './interfaces/user.dao.js';
+import {  IUserDocument } from './interfaces/user.interface.js';
+import UserModel from './models/user.model.js';
 
 export class userRepository implements userDataStore {
   async findUser(email: string): Promise<IUserDocument | undefined> {
