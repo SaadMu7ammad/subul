@@ -5,7 +5,7 @@ import * as configurationProvider from '../configuration-provider/index.js';
 const NotFound = (req, res, next) => {
   logger.error('Not Found Error');
   res.status(404); 
-  next(new Error(`not found' ${req.originalUrl}`));
+  next(new Error(`${req.originalUrl}  Route Is Not Found `));
 };
 
 //global error handling middleware
