@@ -17,6 +17,7 @@ const saveImg = async (sharpPromise:Sharp, destinationFolder:string, fileName:st
             destinationFolder,
             fileName.split('.jpeg')[0]
         );
+        //@ts-ignore
         console.log({ imgUrl: uploadResult.secure_url });
     }
 };

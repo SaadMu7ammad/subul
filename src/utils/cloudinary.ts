@@ -11,7 +11,7 @@ class Cloudinary {
       api_secret: configurationProvider.getValue('cloudinary.apiSecret'),
     });
   }
-  uploadImg = (async (imgBuffer, folder, publicId) => {
+  uploadImg = (async (imgBuffer:Buffer, folder:string, publicId:string) => {
     const uploadResult = await new Promise((resolve) => {
       cloudinary.uploader
         .upload_stream(
@@ -25,7 +25,7 @@ class Cloudinary {
     return uploadResult;
   });
 
-  deleteImg = (async (folder, publicId) => {
+  deleteImg = (async (folder:string, publicId:string) => {
     try {
       const result = await cloudinary.uploader.destroy(`${folder}/${publicId}`);
 
