@@ -47,7 +47,7 @@ const resizeImg = async (req, res, next) => {
   }
 };
 
-const addImgsToReqBody = (req, fileName) => {
+const addImgsToReqBody = (req, fileName:string) => {
   req.body.image = []; //container for deleting imgs
   req.body.image.push(fileName);
 };

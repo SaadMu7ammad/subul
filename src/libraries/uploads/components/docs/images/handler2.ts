@@ -1,4 +1,4 @@
-import multer from 'multer';
+import multer,{Multer,StorageEngine} from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { BadRequestError } from '../../../../errors/components/bad-request.js';
@@ -11,7 +11,7 @@ const multerFilter = (req, file, cb) => {
         cb(new BadRequestError('invalid type,Only images allowed'));
     }
 };
-async function processDocs(docsKey, ref, req) {
+async function processDocs(docsKey:string, ref, req) {
     return Promise.all(
         ref.map(async (obj, indx) => {
             const ex = obj.mimetype.split('/')[1];
@@ -108,8 +108,8 @@ const resizeDocReq = async (req, res, next) => {
 // const upload = multer({ storage: multerStorage,fileFilter:multerFilter });
 // const uploadCoverImage = upload.single('image');
 //memoryStorage
-const multerStorage = multer.memoryStorage();
-const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+const multerStorage:StorageEngine = multer.memoryStorage();
+const upload:Multer = multer({ storage: multerStorage, fileFilter: multerFilter });
 const uploadDocsReq = upload.fields([
     { name: 'paymentMethods.bankAccount[0][bankDocs]', maxCount: 2 },
     { name: 'paymentMethods.fawry[0][fawryDocs]', maxCount: 2 },
