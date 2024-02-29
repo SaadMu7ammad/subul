@@ -47,7 +47,7 @@ export type DataForChangeProfileImage = {
     image: string;
 };
 export type DataForRequestEditCharityPayments = {
-    paymentMethods: CharityPaymentMethod;
+    paymentMethods: ICharityPaymentMethod;
     paymentId: string;
 };
 export type DataForSendDocs = ICharityDocs;
@@ -57,7 +57,7 @@ export type DataForSendDocs = ICharityDocs;
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CharityPaymentMethodDocument.toObject()`.
  * ```
- * const charitypaymentmethodObject = charitypaymentmethod.toObject();
+ * const charitypaymentmethodObject = ICharityPaymentMethod.toObject();
  * ```
  */
 export type CharityPaymentMethodBankAccount = {
@@ -103,7 +103,7 @@ export type ICharityDocs = {
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CharityPaymentMethodDocument.toObject()`.
  * ```
- * const charitypaymentmethodObject = charitypaymentmethod.toObject();
+ * const charitypaymentmethodObject = ICharityPaymentMethod.toObject();
  * ```
  */
 export type CharityPaymentMethodFawry = {
@@ -118,7 +118,7 @@ export type CharityPaymentMethodFawry = {
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CharityPaymentMethodDocument.toObject()`.
  * ```
- * const charitypaymentmethodObject = charitypaymentmethod.toObject();
+ * const charitypaymentmethodObject = ICharityPaymentMethod.toObject();
  * ```
  */
 export type CharityPaymentMethodVodafoneCash = {
@@ -136,7 +136,7 @@ export type CharityPaymentMethodVodafoneCash = {
  * const charityObject = charity.toObject();
  * ```
  */
-export type CharityPaymentMethod = {
+export type ICharityPaymentMethod = {
     bankAccount: CharityPaymentMethodBankAccount[];
     fawry: CharityPaymentMethodFawry[];
     vodafoneCash: CharityPaymentMethodVodafoneCash[];
@@ -235,7 +235,7 @@ export type ICharity = {
     isEnabled: boolean;
     isConfirmed: boolean;
     isPending: boolean;
-    paymentMethods?: CharityPaymentMethod;
+    paymentMethods?: ICharityPaymentMethod;
     rate?: number;
     donorRequests: CharityDonorRequest[];
     currency: string[];
