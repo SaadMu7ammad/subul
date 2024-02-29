@@ -1,4 +1,4 @@
-const checkValueEquality = (inputOne, inputTwo) => {
+const checkValueEquality = (inputOne:any, inputTwo:any) => {
   if (inputOne == inputTwo) {
     return true;
   }
@@ -17,7 +17,7 @@ const checkValueEquality = (inputOne, inputTwo) => {
 //     }
 //   }
 // };
-const updateNestedProperties = (target, updateObject) => {//target storedCharity, updateObj=newInput
+const updateNestedProperties = (target:any, updateObject:any) => {//target storedCharity, updateObj=newInput
   for (const key in updateObject) {
     if (typeof updateObject[key] === 'object'&&updateObject[key] && target[key]) {
       // If the current property in updateObject is an object and the corresponding property in the target is also an object,

@@ -1,9 +1,10 @@
 import * as configurationProvider from '../../configuration-provider/index.js';
 import Cloudinary from '../../../utils/cloudinary.js';
-const saveImg = async (sharpPromise, destinationFolder, fileName) => {
+import {Sharp} from 'sharp';
+const saveImg = async (sharpPromise:Sharp, destinationFolder:string, fileName:string) => {
     const cloudinaryObj = new Cloudinary();
 
-    const environment = configurationProvider.getValue('environment.nodeEnv');
+    const environment:string = configurationProvider.getValue('environment.nodeEnv');
 
     if (environment === 'development') {
         //saving locally
@@ -16,13 +17,14 @@ const saveImg = async (sharpPromise, destinationFolder, fileName) => {
             destinationFolder,
             fileName.split('.jpeg')[0]
         );
+        //@ts-ignore
         console.log({ imgUrl: uploadResult.secure_url });
     }
 };
 
-const getImageConfiguration = (path) => {
-    let suffix;
-    let destinationFolder;
+const getImageConfiguration = (path:string) => {
+    let suffix:string = '';
+    let destinationFolder:string = '';
 
     if (path === '/register' || path === '/edit-profileImg') {
         (destinationFolder = 'charityLogos'), (suffix = 'charityLogo');

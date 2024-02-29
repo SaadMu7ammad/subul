@@ -3,15 +3,15 @@ import path from 'path';
 import logger from './logger.js';
 import Cloudinary from './cloudinary.js';
 import * as configurationProvider from '../libraries/configuration-provider/index.js';
-const deleteFile = (filePath) => {
+const deleteFile = (filePath:string) => {
   logger.warn(filePath);
   fs.unlink(filePath, (err) => {
     if (err) logger.error(err);
-    else logger.info('The File is Deleted Successfully!');
+    else logger.info('File is Deleted Successfully!');
   });
 };
 
-const deleteFiles = (pathToFolder, folderName, ...filesNames) => {
+const deleteFiles = (pathToFolder:string, folderName:string, ...filesNames:string[]) => {
   filesNames.forEach((fileName) => {
     if (fileName) {
       const filePath = path.join(pathToFolder, folderName, fileName);
@@ -28,7 +28,7 @@ const deleteFiles = (pathToFolder, folderName, ...filesNames) => {
   });
 };
 
-const deleteOldImgs = (imgsFolder, imgsNames) => {
+const deleteOldImgs = (imgsFolder:string, imgsNames:string|string[]) => {
   const cloudinaryObj = new Cloudinary();
 
   const imgsNamesArray = Array.isArray(imgsNames) ? imgsNames : [imgsNames];
@@ -46,7 +46,7 @@ const deleteOldImgs = (imgsFolder, imgsNames) => {
   imgsNamesArray.length = 0;
 };
 
-const deleteCharityDocs = (req, type) => {
+const deleteCharityDocs = (req, type:string) => {
     if (type === 'charityDocs' || type === 'all') {
         for(let i = 1 ; i<=4;++i){
           deleteOldImgs('charityDocs', req?.body?.charityDocs[`docs${i}`]);

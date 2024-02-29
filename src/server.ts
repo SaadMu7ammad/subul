@@ -1,8 +1,8 @@
 //Packages 📦️
 import * as path from 'path';
-import express from 'express';
+import express, { Application } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv/config';
+import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import logger from './utils/logger.js';
 //Configuration ⚙️
@@ -19,13 +19,15 @@ import charityRoutes from './components/charity/entry-points/api/charity.routes.
 import casesRoutes from './components/case/entry-points/api/case.routes.js';
 import adminRoutes from './components/admin/entry-points/api/admin.routes.js';
 
+dotenv.config();
+
 configurationProvider.initializeAndValidate(configurationSchema);
 
 const __dirname = path.resolve();
-const port = configurationProvider.getValue('environment.port');
-const host = configurationProvider.getValue('environment.host');
+const port:number = configurationProvider.getValue('environment.port');
+const host:string = configurationProvider.getValue('environment.host');
 
-const app = express();
+const app:Application = express();
 app.use(
   cors({
     origin: 'https://charity-proj.netlify.app',
@@ -48,11 +50,10 @@ adminRoutes(app);
 userRoutes(app);
 casesRoutes(app);
 
-// app.use('/api/charities', charityRoutes);
-
 app.get('/', (req, res) => {
-  res.send('subul charity');
+  res.send('Welcome To Subul API 👋');
 });
+
 app.use(NotFound);
 app.use(errorHandler);
 await connectDB();

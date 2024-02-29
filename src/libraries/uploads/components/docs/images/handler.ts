@@ -29,10 +29,10 @@ const uploadDocs = upload.fields([
 
 async function processDocs(docsKey, ref, req) {
   return Promise.all(
-    ref.map(async (obj, indx) => {
+    ref.map(async (obj, indx:number) => {
       const ex = obj.mimetype.split('/')[1];
-      const uniquePrefix = uuidv4();
-      const fileName = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
+      const uniquePrefix:string = uuidv4();
+      const fileName:string = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
       //   req.body.docsSent.push(fileName);
 
       const sharpPromise = sharp(obj.buffer)
