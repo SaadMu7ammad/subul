@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index.js';
 import {
-    CharitySchema,
-    CharityModel,
+    ICharitySchema,
+    ICharityModel,
     ICharityDocument,
 } from '../interfaces/charity.interface.js';
 const Schema = mongoose.Schema;
@@ -136,7 +136,7 @@ const paymentMethodSchema = new Schema({
 //   return value.length > 0;
 // }, 'At least one vodafoneCash account must be provided.');
 
-const charitySchema: CharitySchema = new Schema(
+const charitySchema: ICharitySchema = new Schema(
     {
         cases: [
             {
@@ -478,7 +478,7 @@ charitySchema.pre('save', async function (next) {
 //     this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
 //   }
 // });
-const Charity: CharityModel = mongoose.model<ICharityDocument, CharityModel>(
+const Charity: ICharityModel = mongoose.model<ICharityDocument, ICharityModel>(
     'Charity',
     charitySchema
 );

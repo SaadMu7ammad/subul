@@ -2,7 +2,7 @@ import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components/index.js';
-import { CaseDocument } from '../../case/data-access/interfaces/case.interface.js';
+import { ICaseDocument } from '../../case/data-access/interfaces/case.interface.js';
 import { IUser } from '../../user/data-access/interfaces/user.interface.js';
 import { ITransaction } from '../data-access/interfaces/transaction.interface.js';
 import { TransactionRepository } from '../data-access/transaction.repository.js';
@@ -85,7 +85,7 @@ const updateCaseAfterRefund = async (cause, amount: number) => {
   if (cause.dateFinished) cause.dateFinished = null;
   await cause.save();
 };
-const checkIsLastDonation = (cause:CaseDocument, amount: number) => {
+const checkIsLastDonation = (cause:ICaseDocument, amount: number) => {
   const currentAmount: number = +cause.currentDonationAmount! + +amount;
   if (+cause.targetDonationAmount === currentAmount) {
     cause.dateFinished = Date.now();
@@ -93,7 +93,7 @@ const checkIsLastDonation = (cause:CaseDocument, amount: number) => {
   }
   return cause;
 };
-const updateCaseAfterDonation = (cause: CaseDocument, amount: number) => {
+const updateCaseAfterDonation = (cause: ICaseDocument, amount: number) => {
   +cause.donationNumbers!++;
   cause.currentDonationAmount! += +amount;
   return cause;

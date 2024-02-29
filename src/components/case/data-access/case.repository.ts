@@ -1,9 +1,9 @@
-import { CaseDocument, CaseObject } from './interfaces/case.interface.js';
+import { ICaseDocument, ICase, SortObj } from './interfaces/case.interface.js';
 import Case from './models/case.model.js';
 import { CaseDao } from './interfaces/case.dao.js';
 
 export class CaseRepository implements CaseDao {
-    createCase = async (caseData: CaseObject): Promise<CaseDocument> => {
+    createCase = async (caseData:ICase): Promise<ICaseDocument> => {
         const newCase = new Case(caseData);
 
         await newCase.save();
@@ -48,7 +48,7 @@ export class CaseRepository implements CaseDao {
         return _case;
     };
 
-    editCase = async (caseData, id: string) => {
+    editCase = async (caseData:ICase, id: string) => {
         const updatedCase = await Case.findByIdAndUpdate(
             id,
             {

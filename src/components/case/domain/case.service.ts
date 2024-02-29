@@ -1,14 +1,14 @@
 import { caseUtils } from './case.utils.js';
 import {
-    Case,
-    CaseDocument,
+    ICase,
+    ICaseDocument,
     FilterObj,
     GetAllCasesQueryParams,
     PaginationObj,
     SortObj,
 } from '../data-access/interfaces/case.interface.js';
-const addCase = async (caseData: Case, image: string, charity) => {
-    const newCase: CaseDocument = await caseUtils.createCase({
+const addCase = async (caseData: ICase, image: string, charity) => {
+    const newCase: ICaseDocument = await caseUtils.createCase({
         ...caseData,
         coverImage: image,
         charity: charity._id,
@@ -34,10 +34,10 @@ const getAllCases = async (charityId: string, queryParams:GetAllCasesQueryParams
     return { cases };
 };
 
-const getCaseById = async (charityCases:CaseDocument[], caseId: string) => {
+const getCaseById = async (charityCases:ICaseDocument[], caseId: string) => {
     caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
 
-    const _case: CaseDocument = await caseUtils.getCaseByIdFromDB(caseId);
+    const _case: ICaseDocument = await caseUtils.getCaseByIdFromDB(caseId);
 
     return {
         case: _case,
@@ -50,7 +50,7 @@ const deleteCase = async (charity, caseId: string) => {
         caseId
     );
 
-    const deletedCase: CaseDocument = await caseUtils.deleteCaseFromDB(caseId);
+    const deletedCase: ICaseDocument = await caseUtils.deleteCaseFromDB(caseId);
 
     await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
 
@@ -59,7 +59,7 @@ const deleteCase = async (charity, caseId: string) => {
     };
 };
 
-const editCase = async (charity, caseData: Case & { image: string }, caseId: string) => {
+const editCase = async (charity, caseData: ICase & { image: string }, caseId: string) => {
     caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
     let deleteOldImg: (() => void) | null = null;
@@ -67,7 +67,7 @@ const editCase = async (charity, caseData: Case & { image: string }, caseId: str
         deleteOldImg = await caseUtils.replaceCaseImg(caseData, caseId);
     }
 
-    let updatedCase: CaseDocument = await caseUtils.editCase(caseData, caseId);
+    let updatedCase: ICaseDocument = await caseUtils.editCase(caseData, caseId);
 
     if (deleteOldImg) deleteOldImg();
 

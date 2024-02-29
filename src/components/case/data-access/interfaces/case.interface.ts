@@ -7,7 +7,7 @@
 
 import mongoose from 'mongoose';
 import {
-    Charity,
+    ICharity,
     ICharityDocument,
 } from '../../../charity/data-access/interfaces/charity.interface';
 
@@ -39,7 +39,7 @@ export type PaginationObj = { page: number; limit: number };
  * const casesObject = cases.toObject();
  * ```
  */
-export type CaseLocation = {
+export type ICaseLocation = {
     governorate:
         | 'Alexandria'
         | 'Assiut'
@@ -81,8 +81,8 @@ export type CaseLocation = {
  * const casesObject = cases.toObject();
  * ```
  */
-export type Case = {
-    charity: Charity['_id'] | Charity;
+export type ICase = {
+    charity: ICharity['_id'] | ICharity;
     title: string;
     description: string;
     mainType:
@@ -94,7 +94,7 @@ export type Case = {
         | 'Campains'
         | 'UsedProperties';
     coverImage: string;
-    location: CaseLocation[];
+    location: ICaseLocation[];
     subType:
         | 'Aqeeqa'
         | 'BloodDonation'
@@ -131,25 +131,13 @@ export type Case = {
     updatedAt?: Date;
 };
 
-/**
- * Lean version of CaseDocument (type alias of `Case`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { Case } from "../models"
- * import { CaseObject } from "../interfaces/mongoose.gen.ts"
- *
- * const casesObject: CaseObject = cases.toObject();
- * ```
- */
-export type CaseObject = Case;
 
 /**
  * Mongoose Query type
  *
  * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
  */
-export type CaseQuery = mongoose.Query<any, CaseDocument, CaseQueries> &
+export type CaseQuery = mongoose.Query<any, ICaseDocument, CaseQueries> &
     CaseQueries;
 
 /**
@@ -171,7 +159,7 @@ export type CaseStatics = {};
  * const Case = mongoose.model<CaseDocument, CaseModel>("Case", CaseSchema);
  * ```
  */
-export type CaseModel = mongoose.Model<CaseDocument, CaseQueries> & CaseStatics;
+export type ICaseModel = mongoose.Model<ICaseDocument, CaseQueries> & CaseStatics;
 
 /**
  * Mongoose Schema type
@@ -181,9 +169,9 @@ export type CaseModel = mongoose.Model<CaseDocument, CaseQueries> & CaseStatics;
  * const CaseSchema: CaseSchema = new mongoose.Schema({ ... })
  * ```
  */
-export type CaseSchema = mongoose.Schema<
-    CaseDocument,
-    CaseModel,
+export type ICaseSchema = mongoose.Schema<
+    ICaseDocument,
+    ICaseModel,
     CaseMethods,
     CaseQueries
 >;
@@ -193,7 +181,7 @@ export type CaseSchema = mongoose.Schema<
  *
  * Type of `CaseDocument["location"]` element.
  */
-export type CaseLocationDocument = mongoose.Types.Subdocument & {
+export type ICaseLocationDocument = mongoose.Types.Subdocument & {
     governorate:
         | 'Alexandria'
         | 'Assiut'
@@ -235,7 +223,7 @@ export type CaseLocationDocument = mongoose.Types.Subdocument & {
  * const Case = mongoose.model<CaseDocument, CaseModel>("Case", CaseSchema);
  * ```
  */
-export type CaseDocument = mongoose.Document<
+export type ICaseDocument = mongoose.Document<
     mongoose.Types.ObjectId,
     CaseQueries
 > &
@@ -252,7 +240,7 @@ export type CaseDocument = mongoose.Document<
             | 'Campains'
             | 'UsedProperties';
         coverImage: string;
-        location: mongoose.Types.Array<CaseLocationDocument>;
+        location: mongoose.Types.Array<ICaseLocationDocument>;
         subType:
             | 'Aqeeqa'
             | 'BloodDonation'

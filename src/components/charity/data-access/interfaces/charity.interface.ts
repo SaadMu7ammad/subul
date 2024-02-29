@@ -7,8 +7,8 @@
 
 import mongoose from 'mongoose';
 import {
-    Case,
-    CaseDocument,
+    ICase,
+    ICaseDocument,
 } from '../../../case/data-access/interfaces/case.interface';
 import {
     IUser,
@@ -211,7 +211,7 @@ export type ICharityLocation = {
  * ```
  */
 export type ICharity = {
-    cases: (Case['_id'] | Case)[];
+    cases: (ICase['_id'] | ICase)[];
     image: string;
     email: string;
     password: string;
@@ -286,7 +286,7 @@ export type CharityStatics = {};
  * const Charity = mongoose.model<ICharityDocument, CharityModel>("Charity", CharitySchema);
  * ```
  */
-export type CharityModel = mongoose.Model<ICharityDocument, CharityQueries> &
+export type ICharityModel = mongoose.Model<ICharityDocument, CharityQueries> &
     CharityStatics;
 
 /**
@@ -297,9 +297,9 @@ export type CharityModel = mongoose.Model<ICharityDocument, CharityQueries> &
  * const CharitySchema: CharitySchema = new mongoose.Schema({ ... })
  * ```
  */
-export type CharitySchema = mongoose.Schema<
+export type ICharitySchema = mongoose.Schema<
     ICharityDocument,
-    CharityModel,
+    ICharityModel,
     CharityMethods,
     CharityQueries
 >;
@@ -432,7 +432,7 @@ export type ICharityDocument = mongoose.Document<
     CharityQueries
 > &
     CharityMethods & {
-        cases: mongoose.Types.Array<CaseDocument['_id'] | CaseDocument>;
+        cases: mongoose.Types.Array<ICaseDocument['_id'] | ICaseDocument>;
         image: string;
         email: string;
         password: string;

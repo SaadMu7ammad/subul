@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Case } from '../../../case/data-access/interfaces/case.interface';
+import { ICase } from '../../../case/data-access/interfaces/case.interface';
 import { IUser } from '../../../user/data-access/interfaces/user.interface';
 
 export interface TransactionPaymentInfo {
@@ -13,7 +13,7 @@ export interface TransactionPaymentInfo {
 }
 
 export interface ITransaction {
-  case?: Case['_id'] | Case;
+  case?: ICase['_id'] | ICase;
   user?: IUser['_id'] | IUser;
   moneyPaid: number;
   paidAt?: Date;

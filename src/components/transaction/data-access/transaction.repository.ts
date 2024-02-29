@@ -6,11 +6,11 @@ import { ITransaction } from './interfaces/transaction.interface.js';
 import { Promise, FilterQuery } from 'mongoose';
 import { TransactionDataStore } from './interfaces/transaction.dao.js';
 import TransactionModel from './models/transaction.model.js';
-import { CaseDocument } from '../../case/data-access/interfaces/case.interface.js';
+import { ICaseDocument } from '../../case/data-access/interfaces/case.interface.js';
 import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface.js';
 import { IUser } from '../../user/data-access/interfaces/user.interface.js';
 export class TransactionRepository implements TransactionDataStore {
-    async findCaseById(id: string): Promise<CaseDocument | null> {
+    async findCaseById(id: string): Promise<ICaseDocument | null> {
         const cases = await Case.findById(id);
         return cases;
     }

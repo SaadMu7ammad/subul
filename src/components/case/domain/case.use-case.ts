@@ -1,8 +1,8 @@
-import { Case, CaseDocument, GetAllCasesQueryParams } from '../data-access/interfaces/case.interface.js';
+import { ICase, ICaseDocument, GetAllCasesQueryParams } from '../data-access/interfaces/case.interface.js';
 import { caseService } from './case.service.js';
 
 const addCase = async (req, res, next) => {
-    const caseData:Case = req.body;
+    const caseData:ICase = req.body;
     const caseImage:string = req.body.image[0];
     const charity = req.charity;
 
@@ -31,7 +31,7 @@ const getAllCases = async (req, res, next) => {
 };
 
 const getCaseById = async (req, res, next) => {
-    const charityCases:CaseDocument[] = req.charity.cases;
+    const charityCases:ICaseDocument[] = req.charity.cases;
     const caseId:string = req.params.caseId;
 
     const responseData = await caseService.getCaseById(charityCases, caseId);
@@ -60,7 +60,7 @@ const editCase = async (req, res, next) => {
 
     const caseId:string = req.params.caseId;
 
-    const caseData:Case & { image: string } = req.body;
+    const caseData:ICase & { image: string } = req.body;
 
     const responseData = await caseService.editCase(charity,caseData, caseId);
 

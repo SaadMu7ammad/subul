@@ -5,14 +5,14 @@ import {
     FilterObj,
     GetAllCasesQueryParams,
     SortObj,
-    Case,
+    ICase,
     PaginationObj,
-    CaseDocument
+    ICaseDocument
 } from '../data-access/interfaces/case.interface.js';
 
 const caseRepository = new CaseRepository();
 
-const createCase = async (caseData: Case) => {
+const createCase = async (caseData: ICase) => {
     return await caseRepository.createCase(caseData);
 };
 
@@ -65,7 +65,7 @@ const getCasesPagination = (
 };
 
 const getAllCases = async (sortObj: SortObj, filterObj: FilterObj, page: number, limit: number) => {
-    const cases: CaseDocument[] = await caseRepository.getAllCases(
+    const cases: ICaseDocument[] = await caseRepository.getAllCases(
         sortObj,
         filterObj,
         page,
@@ -75,8 +75,8 @@ const getAllCases = async (sortObj: SortObj, filterObj: FilterObj, page: number,
     return cases;
 };
 
-const getCaseByIdFromDB = async (caseId: string): Promise<CaseDocument> => {
-    const _case: CaseDocument | null = await caseRepository.getCaseById(caseId);
+const getCaseByIdFromDB = async (caseId: string): Promise<ICaseDocument> => {
+    const _case: ICaseDocument | null = await caseRepository.getCaseById(caseId);
 
     if (!_case) throw new NotFoundError('No Such Case With this Id!');
 
@@ -96,7 +96,7 @@ const checkIfCaseBelongsToCharity = (charityCasesArray, caseId: string): number 
 };
 
 const deleteCaseFromDB = async (id: string) => {
-    const deletedCase: CaseDocument|null = await caseRepository.deleteCaseById(id);
+    const deletedCase: ICaseDocument|null = await caseRepository.deleteCaseById(id);
 
     if (!deletedCase) {
         throw new NotFoundError('No Such Case With this Id!');
@@ -117,8 +117,8 @@ const deleteCaseFromCharityCasesArray = async (charity, idx: number) => {
     await charity.save();
 };
 
-const editCase = async (caseData: Case, caseId: string) => {
-    const updatedCase: CaseDocument|null = await caseRepository.editCase(caseData, caseId);
+const editCase = async (caseData: ICase, caseId: string) => {
+    const updatedCase: ICaseDocument|null = await caseRepository.editCase(caseData, caseId);
 
     if(!updatedCase) throw new NotFoundError('No Such Case With this Id!');
 
@@ -128,7 +128,7 @@ const editCase = async (caseData: Case, caseId: string) => {
 const replaceCaseImg = async (caseData, caseId: string) => {
     caseData.coverImage = caseData.image[0];
 
-    const caseObject: CaseDocument|null = await caseRepository.getCaseById(caseId);
+    const caseObject: ICaseDocument|null = await caseRepository.getCaseById(caseId);
 
     if (!caseObject) throw new NotFoundError('No Such Case With this Id!');
 
