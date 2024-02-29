@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken'
 import * as configurationProvider from '../libraries/configuration-provider/index.js'
-const generateToken = (res, id, payloadType) => {
-    let payload;
+const generateToken = (res, id, payloadType:string) => {
+    let payload:object|{charityId:string}|{userId:string}={};
     if(payloadType === 'user'){
         payload = {userId:id};
     }else if(payloadType === 'charity'){
         payload = {charityId:id};
     }
-    const token = jwt.sign(payload, configurationProvider.getValue('hashing.jwtSecret'), {
+    const token:string = jwt.sign(payload, configurationProvider.getValue('hashing.jwtSecret'), {
         expiresIn:'3d'
     })
     res.cookie('jwt', token, {
