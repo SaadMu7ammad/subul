@@ -14,7 +14,7 @@ import {
 import {
     ICharityDocs,
     ICharityDocument,
-    CharityPaymentMethodDocument,
+    ICharityPaymentMethodDocument,
     ICharityPaymentMethod,
     DataForEditCharityProfile,
     DataForActivateCharityAccount,
@@ -192,7 +192,7 @@ const sendDocs = async (
         !charity.isPending
     ) {
         const addCharityPaymentsResponse: {
-            paymentMethods: CharityPaymentMethodDocument;
+            paymentMethods: ICharityPaymentMethodDocument;
         } = await charityUtils.addDocs(reqBody, charity);
         return {
             paymentMethods: addCharityPaymentsResponse.paymentMethods,
@@ -224,7 +224,7 @@ const requestEditCharityPayments = async (
         throw new BadRequestError('No Payment Methods Found!');
     }
 
-    let charityPaymentMethodsObj: CharityPaymentMethodDocument =
+    let charityPaymentMethodsObj: ICharityPaymentMethodDocument =
         charityObj.paymentMethods;
 
     let changedPaymentMethod: string =

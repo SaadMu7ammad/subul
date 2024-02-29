@@ -31,7 +31,7 @@ export type DataForEditCharityProfile = {
     };
     email: string;
     description: string;
-    location: CharityLocation[];
+    location: ICharityLocation[];
     locationId: string;
 };
 export type DataForActivateCharityAccount = {
@@ -151,7 +151,7 @@ export type ICharityPaymentMethod = {
  * const charityObject = charity.toObject();
  * ```
  */
-export type CharityDonorRequest = {
+export type ICharityDonorRequest = {
     user: IUser['_id'] | IUser;
     requestTitle: string;
     requestMessage: string;
@@ -166,7 +166,7 @@ export type CharityDonorRequest = {
  * const charityObject = charity.toObject();
  * ```
  */
-export type CharityLocation = {
+export type ICharityLocation = {
     governorate:
         | 'Alexandria'
         | 'Assiut'
@@ -237,9 +237,9 @@ export type ICharity = {
     isPending: boolean;
     paymentMethods?: ICharityPaymentMethod;
     rate?: number;
-    donorRequests: CharityDonorRequest[];
+    donorRequests: ICharityDonorRequest[];
     currency: string[];
-    location: CharityLocation[];
+    location: ICharityLocation[];
     charityInfo: {
         registeredNumber: string;
         establishedDate: string;
@@ -352,7 +352,7 @@ export type CharityPaymentMethodVodafoneCashDocument =
  * const Charity = mongoose.model<ICharityDocument, CharityModel>("Charity", CharitySchema);
  * ```
  */
-export type CharityPaymentMethodDocument =
+export type ICharityPaymentMethodDocument =
     mongoose.Document<mongoose.Types.ObjectId> & {
         bankAccount: mongoose.Types.DocumentArray<CharityPaymentMethodBankAccountDocument>;
         fawry: mongoose.Types.DocumentArray<CharityPaymentMethodFawryDocument>;
@@ -371,7 +371,7 @@ export type CharityPaymentMethodDocument =
  *
  * Type of `ICharityDocument["donorRequests"]` element.
  */
-export type CharityDonorRequestDocument = mongoose.Types.Subdocument & {
+export type ICharityDonorRequestDocument = mongoose.Types.Subdocument & {
     user: IUserDocument['_id'] | IUserDocument;
     requestTitle: string;
     requestMessage: string;
@@ -383,7 +383,7 @@ export type CharityDonorRequestDocument = mongoose.Types.Subdocument & {
  *
  * Type of `ICharityDocument["location"]` element.
  */
-export type CharityLocationDocument = mongoose.Types.Subdocument & {
+export type ICharityLocationDocument = mongoose.Types.Subdocument & {
     governorate:
         | 'Alexandria'
         | 'Assiut'
@@ -456,11 +456,11 @@ export type ICharityDocument = mongoose.Document<
         isEnabled: boolean;
         isConfirmed: boolean;
         isPending: boolean;
-        paymentMethods?: CharityPaymentMethodDocument;
+        paymentMethods?: ICharityPaymentMethodDocument;
         rate?: number;
-        donorRequests: mongoose.Types.DocumentArray<CharityDonorRequestDocument>;
+        donorRequests: mongoose.Types.DocumentArray<ICharityDonorRequestDocument>;
         currency: mongoose.Types.Array<string>;
-        location: mongoose.Types.DocumentArray<CharityLocationDocument>;
+        location: mongoose.Types.DocumentArray<ICharityLocationDocument>;
         charityInfo: {
             registeredNumber: string;
             establishedDate: string;

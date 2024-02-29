@@ -12,10 +12,10 @@ import { deleteOldImgs } from '../../../utils/deleteFile.js';
 import {
     ICharityDocs,
     ICharityDocument,
-    CharityLocationDocument,
+    ICharityLocationDocument,
     ICharityPaymentMethod,
-    CharityPaymentMethodDocument,
-    CharityLocation,
+    ICharityPaymentMethodDocument,
+    ICharityLocation,
 } from '../data-access/interfaces/charity.interface.js';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (
@@ -107,7 +107,7 @@ const changeCharityPasswordWithMailAlert = async (
 const editCharityProfileAddress = async (
     charity: ICharityDocument,
     id: string,
-    updatedLocation: CharityLocation[]
+    updatedLocation: ICharityLocation[]
 ): Promise<{ charity: ICharityDocument }> => {
     //TODO: Should we use Partial<CharityLocationDocument>?
     for (let i = 0; i < charity.location.length; i++) {
@@ -132,7 +132,7 @@ const editCharityProfileAddress = async (
 // };
 const addCharityProfileAddress = async (
     charity: ICharityDocument,
-    updatedLocation: CharityLocation[]
+    updatedLocation: ICharityLocation[]
 ): Promise<{ charity: ICharityDocument }> => {
     charity.location.push(updatedLocation);
     await charity.save();
@@ -153,7 +153,7 @@ const replaceProfileImage = async (
 const addDocs = async (
     reqBody: ICharityDocs,
     charity: ICharityDocument
-): Promise<{ paymentMethods: CharityPaymentMethodDocument }> => {
+): Promise<{ paymentMethods: ICharityPaymentMethodDocument }> => {
     charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
     if (!reqBody.paymentMethods) {
         throw new BadRequestError(
@@ -169,7 +169,7 @@ const addDocs = async (
     await makeCharityIsPending(charity); // update and save changes
     console.log(charity.paymentMethods);
     return {
-        paymentMethods: charity.paymentMethods as CharityPaymentMethodDocument,
+        paymentMethods: charity.paymentMethods as ICharityPaymentMethodDocument,
     }; //Compiler Can't infer that paymentMethods are set to the charity , paymentMethods are not Possibly undefined any more 👍️
 };
 const makeCharityIsPending = async (
@@ -184,7 +184,7 @@ const addPaymentAccounts = async (
     type: string
 ): Promise<void> => {
     if (charity.paymentMethods === undefined)
-        charity.paymentMethods = {} as CharityPaymentMethodDocument;
+        charity.paymentMethods = {} as ICharityPaymentMethodDocument;
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;
         const { accNumber, iban, swiftCode } = bankAccount[0];
@@ -245,7 +245,7 @@ const getChangedPaymentMethod = (
 };
 
 const getPaymentMethodIdx = (
-    charityPaymentMethodsObj: CharityPaymentMethodDocument,
+    charityPaymentMethodsObj: ICharityPaymentMethodDocument,
     changedPaymentMethod: string,
     paymentId: string
 ): number => {
@@ -295,7 +295,7 @@ const makeTempPaymentObj = (
 };
 
 const swapPaymentInfo = (
-    charityPaymentMethodsObj: CharityPaymentMethodDocument,
+    charityPaymentMethodsObj: ICharityPaymentMethodDocument,
     temp: ICharityPaymentMethod,
     selector: string,
     idx: number
@@ -315,7 +315,7 @@ const swapPaymentInfo = (
 };
 
 const addNewPayment = (
-    charityPaymentMethodsObj: CharityPaymentMethodDocument,
+    charityPaymentMethodsObj: ICharityPaymentMethodDocument,
     temp: ICharityPaymentMethod,
     selector: string
 ): void => {
