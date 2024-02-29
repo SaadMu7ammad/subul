@@ -1,5 +1,5 @@
 import { charityService } from './charity.service.js';
-import { DataForActivateCharityAccount, CharityDocs, ICharityDocument, CharityPaymentMethod, DataForConfirmResetPassword,DataForEditCharityProfile, DataForRequestResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForRequestEditCharityPayments, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
+import { DataForActivateCharityAccount, ICharityDocs, ICharityDocument, CharityPaymentMethod, DataForConfirmResetPassword,DataForEditCharityProfile, DataForRequestResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForRequestEditCharityPayments, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
 
 const activateCharityAccount = async (req, res, next) => {
   let storedCharity:ICharityDocument = req.charity;

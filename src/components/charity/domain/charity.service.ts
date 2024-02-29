@@ -11,7 +11,7 @@ import {
     generateResetTokenTemp,
     setupMailSender,
 } from '../../../utils/mailer.js';
-import { CharityDocs, ICharityDocument,CharityPaymentMethodDocument,CharityPaymentMethod, DataForEditCharityProfile, DataForActivateCharityAccount, DataForRequestResetPassword, DataForConfirmResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
+import { ICharityDocs, ICharityDocument,CharityPaymentMethodDocument,CharityPaymentMethod, DataForEditCharityProfile, DataForActivateCharityAccount, DataForRequestResetPassword, DataForConfirmResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
 
 const requestResetPassword = async (reqBody:DataForRequestResetPassword) => {
     const charityResponse:{charity:ICharityDocument} = await charityUtils.checkCharityIsExist(

@@ -9,7 +9,7 @@ import {
 } from '../../../utils/mailer.js';
 import { checkValueEquality } from '../../../utils/shared.js';
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
-import { CharityDocs, ICharityDocument, CharityLocationDocument, CharityPaymentMethod, CharityPaymentMethodDocument ,CharityLocation} from '../data-access/interfaces/charity.interface.js';
+import { ICharityDocs, ICharityDocument, CharityLocationDocument, CharityPaymentMethod, CharityPaymentMethodDocument ,CharityLocation} from '../data-access/interfaces/charity.interface.js';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (email:string):Promise<{charity:ICharityDocument}> => {
     //return charity if it exists
@@ -113,7 +113,7 @@ const replaceProfileImage = async (charity:ICharityDocument, oldImg:string, newI
     deleteOldImgs('charityLogos', oldImg);
     return { image: charity.image };
 };
-const addDocs = async (reqBody:CharityDocs, charity:ICharityDocument):Promise<{paymentMethods:CharityPaymentMethodDocument}> => {
+const addDocs = async (reqBody:ICharityDocs, charity:ICharityDocument):Promise<{paymentMethods:CharityPaymentMethodDocument}> => {
     charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
     if (!reqBody.paymentMethods) {
         throw new BadRequestError(
@@ -134,7 +134,7 @@ const makeCharityIsPending = async (charity:ICharityDocument):Promise<void> => {
     charity.isPending = true;
     await charity.save();
 };
-const addPaymentAccounts = async (accountObj:CharityDocs, charity:ICharityDocument, type:string):Promise<void> => {
+const addPaymentAccounts = async (accountObj:ICharityDocs, charity:ICharityDocument, type:string):Promise<void> => {
     if (charity.paymentMethods === undefined) charity.paymentMethods = {} as CharityPaymentMethodDocument;
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;

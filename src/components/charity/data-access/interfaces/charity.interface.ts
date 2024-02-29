@@ -50,7 +50,7 @@ export type DataForRequestEditCharityPayments = {
     paymentMethods: CharityPaymentMethod;
     paymentId: string;
 };
-export type DataForSendDocs = CharityDocs;
+export type DataForSendDocs = ICharityDocs;
 
 /**
  * Lean version of CharityPaymentMethodBankAccountDocument
@@ -72,7 +72,7 @@ export type CharityPaymentMethodBankAccount = {
 /**
  * Charity Docs [docs & paymentDocs]
  */
-export type CharityDocs = {
+export type ICharityDocs = {
     charityDocs: {
         docs1: string[] | mongoose.Types.Array<string>;
         docs2: string[] | mongoose.Types.Array<string>;
