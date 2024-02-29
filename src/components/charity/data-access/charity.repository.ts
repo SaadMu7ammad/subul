@@ -1,6 +1,6 @@
 import Charity from './models/charity.model.js';
 import { CharityDao } from './interfaces/charity.dao.js';
-import { CharityDocument } from './interfaces/charity.interface.js';
+import { ICharityDocument } from './interfaces/charity.interface.js';
 export class CharityRepository implements CharityDao {
     findCharity = async (email: string) => {
         const charity = await Charity.findOne({ email: email });
@@ -12,7 +12,7 @@ export class CharityRepository implements CharityDao {
         return charity;
     };
 
-    createCharity = async (dataInputs:CharityDocument) => {
+    createCharity = async (dataInputs:ICharityDocument) => {
         const charity = await Charity.create(dataInputs);
         return charity;
     };

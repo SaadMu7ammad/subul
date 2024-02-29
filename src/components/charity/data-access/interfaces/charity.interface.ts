@@ -5,47 +5,52 @@
 
 // NOTE: ANY CHANGES MADE WILL BE OVERWRITTEN ON SUBSEQUENT EXECUTIONS OF MONGOOSE-TSGEN.
 
-import mongoose from "mongoose";
-import { Case,CaseDocument } from "../../../case/data-access/interfaces/case.interface";
-import { IUser,IUserDocument } from "../../../user/data-access/interfaces/user.interface";
+import mongoose from 'mongoose';
+import {
+    Case,
+    CaseDocument,
+} from '../../../case/data-access/interfaces/case.interface';
+import {
+    IUser,
+    IUserDocument,
+} from '../../../user/data-access/interfaces/user.interface';
 /**
- * My Custom Types 
+ * My Custom Types
  */
 export type DataForConfirmResetPassword = {
-  token: string;
-  password: string;
-  email:string;
-}
-export type DataForEditCharityProfile = {
-  name: string;
-  contactInfo: {
+    token: string;
+    password: string;
     email: string;
-    phone: number;
-    websiteUrl: string;
-  };
-  email:string;
-  description: string;
-  location:CharityLocation[]; 
-  locationId:string;
-}
+};
+export type DataForEditCharityProfile = {
+    name: string;
+    contactInfo: {
+        email: string;
+        phone: number;
+        websiteUrl: string;
+    };
+    email: string;
+    description: string;
+    location: CharityLocation[];
+    locationId: string;
+};
 export type DataForActivateCharityAccount = {
-  token: string;
-}
+    token: string;
+};
 export type DataForRequestResetPassword = {
-  email: string;
-}
+    email: string;
+};
 export type DataForChangePassword = {
-  password:string;
-}
+    password: string;
+};
 export type DataForChangeProfileImage = {
-  image:string;
-}
+    image: string;
+};
 export type DataForRequestEditCharityPayments = {
-  paymentMethods:CharityPaymentMethod;
-  paymentId: string;
-}
-export type DataForSendDocs =CharityDocs; 
-  
+    paymentMethods: CharityPaymentMethod;
+    paymentId: string;
+};
+export type DataForSendDocs = CharityDocs;
 
 /**
  * Lean version of CharityPaymentMethodBankAccountDocument
@@ -56,41 +61,41 @@ export type DataForSendDocs =CharityDocs;
  * ```
  */
 export type CharityPaymentMethodBankAccount = {
-  enable?: boolean;
-  accNumber?: string;
-  iban?: string;
-  swiftCode?: string;
-  bankDocs: string[];
-  _id: mongoose.Types.ObjectId;
+    enable?: boolean;
+    accNumber?: string;
+    iban?: string;
+    swiftCode?: string;
+    bankDocs: string[];
+    _id: mongoose.Types.ObjectId;
 };
 
 /**
  * Charity Docs [docs & paymentDocs]
  */
 export type CharityDocs = {
-  charityDocs: {
-    docs1: string[] | mongoose.Types.Array<string>;
-    docs2: string[] | mongoose.Types.Array<string>;
-    docs3: string[] | mongoose.Types.Array<string>;
-    docs4: string[] | mongoose.Types.Array<string>;
-  };
+    charityDocs: {
+        docs1: string[] | mongoose.Types.Array<string>;
+        docs2: string[] | mongoose.Types.Array<string>;
+        docs3: string[] | mongoose.Types.Array<string>;
+        docs4: string[] | mongoose.Types.Array<string>;
+    };
 
-    paymentMethods:{
-        bankAccount:{
-          accNumber?: string;
-          iban?: string;
-          swiftCode?: string;
-          bankDocs: string[];
-        } 
-        fawry:{
-          number?: string;
-          fawryDocs: string[];
-        } 
-        vodafoneCash:{
-          number?: string;
-          vodafoneCashDocs: string[];
-        }
-    } 
+    paymentMethods: {
+        bankAccount: {
+            accNumber?: string;
+            iban?: string;
+            swiftCode?: string;
+            bankDocs: string[];
+        };
+        fawry: {
+            number?: string;
+            fawryDocs: string[];
+        };
+        vodafoneCash: {
+            number?: string;
+            vodafoneCashDocs: string[];
+        };
+    };
 };
 
 /**
@@ -102,10 +107,10 @@ export type CharityDocs = {
  * ```
  */
 export type CharityPaymentMethodFawry = {
-  enable?: boolean;
-  number?: string;
-  fawryDocs: string[];
-  _id: mongoose.Types.ObjectId;
+    enable?: boolean;
+    number?: string;
+    fawryDocs: string[];
+    _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -117,151 +122,138 @@ export type CharityPaymentMethodFawry = {
  * ```
  */
 export type CharityPaymentMethodVodafoneCash = {
-  enable?: boolean;
-  number?: string;
-  vodafoneCashDocs: string[];
-  _id: mongoose.Types.ObjectId;
+    enable?: boolean;
+    number?: string;
+    vodafoneCashDocs: string[];
+    _id: mongoose.Types.ObjectId;
 };
 
 /**
  * Lean version of CharityPaymentMethodDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `CharityDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `ICharityDocument.toObject()`.
  * ```
  * const charityObject = charity.toObject();
  * ```
  */
 export type CharityPaymentMethod = {
-  bankAccount: CharityPaymentMethodBankAccount[];
-  fawry: CharityPaymentMethodFawry[];
-  vodafoneCash: CharityPaymentMethodVodafoneCash[];
-  _id: mongoose.Types.ObjectId;
+    bankAccount: CharityPaymentMethodBankAccount[];
+    fawry: CharityPaymentMethodFawry[];
+    vodafoneCash: CharityPaymentMethodVodafoneCash[];
+    _id: mongoose.Types.ObjectId;
 };
 
 /**
  * Lean version of CharityDonorRequestDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `CharityDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `ICharityDocument.toObject()`.
  * ```
  * const charityObject = charity.toObject();
  * ```
  */
 export type CharityDonorRequest = {
-  user: IUser["_id"] | IUser;
-  requestTitle: string;
-  requestMessage: string;
-  _id: mongoose.Types.ObjectId;
+    user: IUser['_id'] | IUser;
+    requestTitle: string;
+    requestMessage: string;
+    _id: mongoose.Types.ObjectId;
 };
 
 /**
  * Lean version of CharityLocationDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `CharityDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `ICharityDocument.toObject()`.
  * ```
  * const charityObject = charity.toObject();
  * ```
  */
 export type CharityLocation = {
-  governorate:
-    | "Alexandria"
-    | "Assiut"
-    | "Aswan"
-    | "Beheira"
-    | "Bani Suef"
-    | "Cairo"
-    | "Daqahliya"
-    | "Damietta"
-    | "Fayyoum"
-    | "Gharbiya"
-    | "Giza"
-    | "Helwan"
-    | "Ismailia"
-    | "Kafr El Sheikh"
-    | "Luxor"
-    | "Marsa Matrouh"
-    | "Minya"
-    | "Monofiya"
-    | "New Valley"
-    | "North Sinai"
-    | "Port Said"
-    | "Qalioubiya"
-    | "Qena"
-    | "Red Sea"
-    | "Sharqiya"
-    | "Sohag"
-    | "South Sinai"
-    | "Suez"
-    | "Tanta";
-  city?: string;
-  street?: string;
-  _id: mongoose.Types.ObjectId;
+    governorate:
+        | 'Alexandria'
+        | 'Assiut'
+        | 'Aswan'
+        | 'Beheira'
+        | 'Bani Suef'
+        | 'Cairo'
+        | 'Daqahliya'
+        | 'Damietta'
+        | 'Fayyoum'
+        | 'Gharbiya'
+        | 'Giza'
+        | 'Helwan'
+        | 'Ismailia'
+        | 'Kafr El Sheikh'
+        | 'Luxor'
+        | 'Marsa Matrouh'
+        | 'Minya'
+        | 'Monofiya'
+        | 'New Valley'
+        | 'North Sinai'
+        | 'Port Said'
+        | 'Qalioubiya'
+        | 'Qena'
+        | 'Red Sea'
+        | 'Sharqiya'
+        | 'Sohag'
+        | 'South Sinai'
+        | 'Suez'
+        | 'Tanta';
+    city?: string;
+    street?: string;
+    _id: mongoose.Types.ObjectId;
 };
 
 /**
- * Lean version of CharityDocument
+ * Lean version of ICharityDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `CharityDocument.toObject()`. To avoid conflicts with model names, use the type alias `CharityObject`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `ICharityDocument.toObject()`. To avoid conflicts with model names, use the type alias `CharityObject`.
  * ```
  * const charityObject = charity.toObject();
  * ```
  */
-export type Charity = {
-  cases: (Case["_id"] | Case)[];
-  image: string;
-  email: string;
-  password: string;
-  name: string;
-  contactInfo: {
+export type ICharity = {
+    cases: (Case['_id'] | Case)[];
+    image: string;
     email: string;
-    phone: number;
-    websiteUrl: string;
-  };
-  description: string;
-  totalDonationsIncome?: number;
-  verificationCode?: string|null;
-  emailVerification: {
-    isVerified?: boolean;
-    verificationDate?: Date|number|null;
-  };
-  phoneVerification: {
-    isVerified?: boolean;
-    verificationDate?: Date|number|null;
-  };
-  isEnabled: boolean;
-  isConfirmed: boolean;
-  isPending: boolean;
-  paymentMethods?: CharityPaymentMethod;
-  rate?: number;
-  donorRequests: CharityDonorRequest[];
-  currency: string[];
-  location: CharityLocation[];
-  charityInfo: {
-    registeredNumber: string;
-    establishedDate: string;
-  };
-  charityDocs: {
-    docs1: string[];
-    docs2: string[];
-    docs3: string[];
-    docs4: string[];
-  };
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
+    password: string;
+    name: string;
+    contactInfo: {
+        email: string;
+        phone: number;
+        websiteUrl: string;
+    };
+    description: string;
+    totalDonationsIncome?: number;
+    verificationCode?: string | null;
+    emailVerification: {
+        isVerified?: boolean;
+        verificationDate?: Date | number | null;
+    };
+    phoneVerification: {
+        isVerified?: boolean;
+        verificationDate?: Date | number | null;
+    };
+    isEnabled: boolean;
+    isConfirmed: boolean;
+    isPending: boolean;
+    paymentMethods?: CharityPaymentMethod;
+    rate?: number;
+    donorRequests: CharityDonorRequest[];
+    currency: string[];
+    location: CharityLocation[];
+    charityInfo: {
+        registeredNumber: string;
+        establishedDate: string;
+    };
+    charityDocs: {
+        docs1: string[];
+        docs2: string[];
+        docs3: string[];
+        docs4: string[];
+    };
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
 };
-
-/**
- * Lean version of CharityDocument (type alias of `Charity`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { Charity } from "../models"
- * import { CharityObject } from "../interfaces/mongoose.gen.ts"
- *
- * const charityObject: CharityObject = charity.toObject();
- * ```
- */
-export type CharityObject = Charity;
 
 /**
  * Mongoose Query type
@@ -269,11 +261,11 @@ export type CharityObject = Charity;
  * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
  */
 export type CharityQuery = mongoose.Query<
-  any,
-  CharityDocument,
-  CharityQueries
+    any,
+    ICharityDocument,
+    CharityQueries
 > &
-  CharityQueries;
+    CharityQueries;
 
 /**
  * Mongoose Query helper types
@@ -291,11 +283,11 @@ export type CharityStatics = {};
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const Charity = mongoose.model<CharityDocument, CharityModel>("Charity", CharitySchema);
+ * const Charity = mongoose.model<ICharityDocument, CharityModel>("Charity", CharitySchema);
  * ```
  */
-export type CharityModel = mongoose.Model<CharityDocument, CharityQueries> &
-  CharityStatics;
+export type CharityModel = mongoose.Model<ICharityDocument, CharityQueries> &
+    CharityStatics;
 
 /**
  * Mongoose Schema type
@@ -306,10 +298,10 @@ export type CharityModel = mongoose.Model<CharityDocument, CharityQueries> &
  * ```
  */
 export type CharitySchema = mongoose.Schema<
-  CharityDocument,
-  CharityModel,
-  CharityMethods,
-  CharityQueries
+    ICharityDocument,
+    CharityModel,
+    CharityMethods,
+    CharityQueries
 >;
 
 /**
@@ -318,14 +310,14 @@ export type CharitySchema = mongoose.Schema<
  * Type of `CharityPaymentMethodDocument["bankAccount"]` element.
  */
 export type CharityPaymentMethodBankAccountDocument =
-  mongoose.Types.Subdocument & {
-    enable?: boolean;
-    accNumber?: string;
-    iban?: string;
-    swiftCode?: string;
-    bankDocs: mongoose.Types.Array<string>;
-    _id: mongoose.Types.ObjectId;
-  };
+    mongoose.Types.Subdocument & {
+        enable?: boolean;
+        accNumber?: string;
+        iban?: string;
+        swiftCode?: string;
+        bankDocs: mongoose.Types.Array<string>;
+        _id: mongoose.Types.ObjectId;
+    };
 
 /**
  * Mongoose Subdocument type
@@ -333,10 +325,10 @@ export type CharityPaymentMethodBankAccountDocument =
  * Type of `CharityPaymentMethodDocument["fawry"]` element.
  */
 export type CharityPaymentMethodFawryDocument = mongoose.Types.Subdocument & {
-  enable?: boolean;
-  number?: string;
-  fawryDocs: mongoose.Types.Array<string>;
-  _id: mongoose.Types.ObjectId;
+    enable?: boolean;
+    number?: string;
+    fawryDocs: mongoose.Types.Array<string>;
+    _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -345,29 +337,29 @@ export type CharityPaymentMethodFawryDocument = mongoose.Types.Subdocument & {
  * Type of `CharityPaymentMethodDocument["vodafoneCash"]` element.
  */
 export type CharityPaymentMethodVodafoneCashDocument =
-  mongoose.Types.Subdocument & {
-    enable?: boolean;
-    number?: string;
-    vodafoneCashDocs: mongoose.Types.Array<string>;
-    _id: mongoose.Types.ObjectId;
-  };
+    mongoose.Types.Subdocument & {
+        enable?: boolean;
+        number?: string;
+        vodafoneCashDocs: mongoose.Types.Array<string>;
+        _id: mongoose.Types.ObjectId;
+    };
 
 /**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const Charity = mongoose.model<CharityDocument, CharityModel>("Charity", CharitySchema);
+ * const Charity = mongoose.model<ICharityDocument, CharityModel>("Charity", CharitySchema);
  * ```
  */
 export type CharityPaymentMethodDocument =
-  mongoose.Document<mongoose.Types.ObjectId> & {
-    bankAccount: mongoose.Types.DocumentArray<CharityPaymentMethodBankAccountDocument>;
-    fawry: mongoose.Types.DocumentArray<CharityPaymentMethodFawryDocument>;
-    vodafoneCash: mongoose.Types.DocumentArray<CharityPaymentMethodVodafoneCashDocument>;
-    _id: mongoose.Types.ObjectId;
-  };
-  
+    mongoose.Document<mongoose.Types.ObjectId> & {
+        bankAccount: mongoose.Types.DocumentArray<CharityPaymentMethodBankAccountDocument>;
+        fawry: mongoose.Types.DocumentArray<CharityPaymentMethodFawryDocument>;
+        vodafoneCash: mongoose.Types.DocumentArray<CharityPaymentMethodVodafoneCashDocument>;
+        _id: mongoose.Types.ObjectId;
+    };
+
 // export type CharityPaymentMethodBankAccountDocumentArray = mongoose.Types.DocumentArray<CharityPaymentMethodBankAccountDocument>;
 
 // export type CharityPaymentMethodFawryDocumentArray = mongoose.Types.DocumentArray<CharityPaymentMethodFawryDocument>;
@@ -377,54 +369,54 @@ export type CharityPaymentMethodDocument =
 /**
  * Mongoose Subdocument type
  *
- * Type of `CharityDocument["donorRequests"]` element.
+ * Type of `ICharityDocument["donorRequests"]` element.
  */
 export type CharityDonorRequestDocument = mongoose.Types.Subdocument & {
-  user: IUserDocument["_id"] | IUserDocument;
-  requestTitle: string;
-  requestMessage: string;
-  _id: mongoose.Types.ObjectId;
+    user: IUserDocument['_id'] | IUserDocument;
+    requestTitle: string;
+    requestMessage: string;
+    _id: mongoose.Types.ObjectId;
 };
 
 /**
  * Mongoose Subdocument type
  *
- * Type of `CharityDocument["location"]` element.
+ * Type of `ICharityDocument["location"]` element.
  */
 export type CharityLocationDocument = mongoose.Types.Subdocument & {
-  governorate:
-    | "Alexandria"
-    | "Assiut"
-    | "Aswan"
-    | "Beheira"
-    | "Bani Suef"
-    | "Cairo"
-    | "Daqahliya"
-    | "Damietta"
-    | "Fayyoum"
-    | "Gharbiya"
-    | "Giza"
-    | "Helwan"
-    | "Ismailia"
-    | "Kafr El Sheikh"
-    | "Luxor"
-    | "Marsa Matrouh"
-    | "Minya"
-    | "Monofiya"
-    | "New Valley"
-    | "North Sinai"
-    | "Port Said"
-    | "Qalioubiya"
-    | "Qena"
-    | "Red Sea"
-    | "Sharqiya"
-    | "Sohag"
-    | "South Sinai"
-    | "Suez"
-    | "Tanta";
-  city?: string;
-  street?: string;
-  _id: mongoose.Types.ObjectId;
+    governorate:
+        | 'Alexandria'
+        | 'Assiut'
+        | 'Aswan'
+        | 'Beheira'
+        | 'Bani Suef'
+        | 'Cairo'
+        | 'Daqahliya'
+        | 'Damietta'
+        | 'Fayyoum'
+        | 'Gharbiya'
+        | 'Giza'
+        | 'Helwan'
+        | 'Ismailia'
+        | 'Kafr El Sheikh'
+        | 'Luxor'
+        | 'Marsa Matrouh'
+        | 'Minya'
+        | 'Monofiya'
+        | 'New Valley'
+        | 'North Sinai'
+        | 'Port Said'
+        | 'Qalioubiya'
+        | 'Qena'
+        | 'Red Sea'
+        | 'Sharqiya'
+        | 'Sohag'
+        | 'South Sinai'
+        | 'Suez'
+        | 'Tanta';
+    city?: string;
+    street?: string;
+    _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -432,57 +424,57 @@ export type CharityLocationDocument = mongoose.Types.Subdocument & {
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const Charity = mongoose.model<CharityDocument, CharityModel>("Charity", CharitySchema);
+ * const Charity = mongoose.model<ICharityDocument, CharityModel>("Charity", CharitySchema);
  * ```
  */
-export type CharityDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  CharityQueries
+export type ICharityDocument = mongoose.Document<
+    mongoose.Types.ObjectId,
+    CharityQueries
 > &
-  CharityMethods & {
-    cases: mongoose.Types.Array<CaseDocument["_id"] | CaseDocument>;
-    image: string;
-    email: string;
-    password: string;
-    name: string;
-    contactInfo: {
-      email: string;
-      phone: number;
-      websiteUrl: string;
+    CharityMethods & {
+        cases: mongoose.Types.Array<CaseDocument['_id'] | CaseDocument>;
+        image: string;
+        email: string;
+        password: string;
+        name: string;
+        contactInfo: {
+            email: string;
+            phone: number;
+            websiteUrl: string;
+        };
+        description: string;
+        totalDonationsIncome?: number;
+        verificationCode?: string | null;
+        emailVerification: {
+            isVerified?: boolean;
+            verificationDate?: Date | number | null;
+        };
+        phoneVerification: {
+            isVerified?: boolean;
+            verificationDate?: Date | number | null;
+        };
+        isEnabled: boolean;
+        isConfirmed: boolean;
+        isPending: boolean;
+        paymentMethods?: CharityPaymentMethodDocument;
+        rate?: number;
+        donorRequests: mongoose.Types.DocumentArray<CharityDonorRequestDocument>;
+        currency: mongoose.Types.Array<string>;
+        location: mongoose.Types.DocumentArray<CharityLocationDocument>;
+        charityInfo: {
+            registeredNumber: string;
+            establishedDate: string;
+        };
+        charityDocs: {
+            docs1: string[];
+            docs2: string[];
+            docs3: string[];
+            docs4: string[];
+        };
+        _id: mongoose.Types.ObjectId;
+        createdAt?: Date;
+        updatedAt?: Date;
     };
-    description: string;
-    totalDonationsIncome?: number;
-    verificationCode?: string|null;
-    emailVerification: {
-      isVerified?: boolean;
-      verificationDate?: Date|number|null;
-    };
-    phoneVerification: {
-      isVerified?: boolean;
-      verificationDate?: Date|number|null;
-    };
-    isEnabled: boolean;
-    isConfirmed: boolean;
-    isPending: boolean;
-    paymentMethods?: CharityPaymentMethodDocument;
-    rate?: number;
-    donorRequests: mongoose.Types.DocumentArray<CharityDonorRequestDocument>;
-    currency: mongoose.Types.Array<string>;
-    location: mongoose.Types.DocumentArray<CharityLocationDocument>;
-    charityInfo: {
-      registeredNumber: string;
-      establishedDate: string;
-    };
-    charityDocs: {
-      docs1: string[] ;
-      docs2: string[] ;
-      docs3: string[] ;
-      docs4: string[] ;
-    };
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
 
 /**
  * Check if a property on a document is populated:
@@ -493,7 +485,7 @@ export type CharityDocument = mongoose.Document<
  * ```
  */
 export function IsPopulated<T>(doc: T | mongoose.Types.ObjectId): doc is T {
-  return doc instanceof mongoose.Document;
+    return doc instanceof mongoose.Document;
 }
 
 /**
@@ -513,9 +505,9 @@ type ChildProperty<T> = T extends `${string}.${infer C}` ? C : never;
  * for ref documents (i.e. `mongoose.Types.ObjectId | UserDocument` -> `UserDocument`)
  */
 type PopulatedProperty<Root, T extends keyof Root> = Omit<Root, T> & {
-  [ref in T]: Root[T] extends mongoose.Types.Array<infer U>
-    ? mongoose.Types.Array<Exclude<U, mongoose.Types.ObjectId>>
-    : Exclude<Root[T], mongoose.Types.ObjectId>;
+    [ref in T]: Root[T] extends mongoose.Types.Array<infer U>
+        ? mongoose.Types.Array<Exclude<U, mongoose.Types.ObjectId>>
+        : Exclude<Root[T], mongoose.Types.ObjectId>;
 };
 
 /**
@@ -529,22 +521,22 @@ type PopulatedProperty<Root, T extends keyof Root> = Omit<Root, T> & {
  * ```
  */
 export type PopulatedDocument<DocType, T> = T extends keyof DocType
-  ? PopulatedProperty<DocType, T>
-  : ParentProperty<T> extends keyof DocType
-  ? Omit<DocType, ParentProperty<T>> & {
-      [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
-        infer U
-      >
-        ? mongoose.Types.Array<
-            ChildProperty<T> extends keyof U
-              ? PopulatedProperty<U, ChildProperty<T>>
-              : PopulatedDocument<U, ChildProperty<T>>
+    ? PopulatedProperty<DocType, T>
+    : ParentProperty<T> extends keyof DocType
+    ? Omit<DocType, ParentProperty<T>> & {
+          [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
+              infer U
           >
-        : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
-        ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
-        : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
-    }
-  : DocType;
+              ? mongoose.Types.Array<
+                    ChildProperty<T> extends keyof U
+                        ? PopulatedProperty<U, ChildProperty<T>>
+                        : PopulatedDocument<U, ChildProperty<T>>
+                >
+              : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
+              ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
+              : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
+      }
+    : DocType;
 
 /**
  * Helper types used by the populate overloads
@@ -555,35 +547,37 @@ type Modify<T, R> = Omit<T, keyof R> & R;
 /**
  * Augment mongoose with Query.populate overloads
  */
-declare module "mongoose" {
-  interface Query<ResultType, DocType, THelpers = {}> {
-    populate<T extends string>(
-      path: T,
-      select?: string | any,
-      model?: string | Model<any, THelpers>,
-      match?: any
-    ): Query<
-      ResultType extends Array<DocType>
-        ? Array<PopulatedDocument<Unarray<ResultType>, T>>
-        : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
-      DocType,
-      THelpers
-    > &
-      THelpers;
+declare module 'mongoose' {
+    interface Query<ResultType, DocType, THelpers = {}> {
+        populate<T extends string>(
+            path: T,
+            select?: string | any,
+            model?: string | Model<any, THelpers>,
+            match?: any
+        ): Query<
+            ResultType extends Array<DocType>
+                ? Array<PopulatedDocument<Unarray<ResultType>, T>>
+                : ResultType extends DocType
+                ? PopulatedDocument<Unarray<ResultType>, T>
+                : ResultType,
+            DocType,
+            THelpers
+        > &
+            THelpers;
 
-    populate<T extends string>(
-      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>
-    ): Query<
-      ResultType extends Array<DocType>
-        ? Array<PopulatedDocument<Unarray<ResultType>, T>>
-        : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
-      DocType,
-      THelpers
-    > &
-      THelpers;
-  }
+        populate<T extends string>(
+            options:
+                | Modify<PopulateOptions, { path: T }>
+                | Array<PopulateOptions>
+        ): Query<
+            ResultType extends Array<DocType>
+                ? Array<PopulatedDocument<Unarray<ResultType>, T>>
+                : ResultType extends DocType
+                ? PopulatedDocument<Unarray<ResultType>, T>
+                : ResultType,
+            DocType,
+            THelpers
+        > &
+            THelpers;
+    }
 }

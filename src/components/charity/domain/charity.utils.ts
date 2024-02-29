@@ -9,11 +9,11 @@ import {
 } from '../../../utils/mailer.js';
 import { checkValueEquality } from '../../../utils/shared.js';
 import { deleteOldImgs } from '../../../utils/deleteFile.js';
-import { CharityDocs, CharityDocument, CharityLocationDocument, CharityObject, CharityPaymentMethod, CharityPaymentMethodDocument ,CharityLocation} from '../data-access/interfaces/charity.interface.js';
+import { CharityDocs, ICharityDocument, CharityLocationDocument, CharityPaymentMethod, CharityPaymentMethodDocument ,CharityLocation} from '../data-access/interfaces/charity.interface.js';
 const charityRepository = new CharityRepository();
-const checkCharityIsExist = async (email:string):Promise<{charity:CharityDocument}> => {
+const checkCharityIsExist = async (email:string):Promise<{charity:ICharityDocument}> => {
     //return charity if it exists
-    const charityIsExist:CharityDocument|null = await charityRepository.findCharity(email);
+    const charityIsExist:ICharityDocument|null = await charityRepository.findCharity(email);
     if (!charityIsExist) {
         throw new NotFoundError('email not found Please use another one');
     }
@@ -27,17 +27,17 @@ const logout = (res) : void => {
         expires: new Date(0),
     });
 };
-const getCharity = (req): {charity:CharityDocument}=> {
+const getCharity = (req): {charity:ICharityDocument}=> {
     return { charity: req.charity  };
 };
 const checkIsEmailDuplicated = async (email:string) :Promise<void>=> {
-    const isDuplicatedEmail:CharityDocument|null = await charityRepository.findCharity(email);
+    const isDuplicatedEmail:ICharityDocument|null = await charityRepository.findCharity(email);
     if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
 const changeCharityEmailWithMailAlert = async (
-    CharityBeforeUpdate:CharityDocument,
+    CharityBeforeUpdate:ICharityDocument,
     newEmail:string
-):Promise<{charity:CharityDocument}> => {
+):Promise<{charity:ICharityDocument}> => {
     //for sending email if changed or edited
     CharityBeforeUpdate.email = newEmail;
     CharityBeforeUpdate.emailVerification.isVerified = false;
@@ -54,25 +54,25 @@ const changeCharityEmailWithMailAlert = async (
     await CharityBeforeUpdate.save();
     return { charity: CharityBeforeUpdate };
 };
-const verifyCharityAccount = async (charity:CharityDocument):Promise<void>=> {
+const verifyCharityAccount = async (charity:ICharityDocument):Promise<void>=> {
     charity.verificationCode = null;
     charity.emailVerification.isVerified = true;
     charity.emailVerification.verificationDate = Date.now();
     await charity.save();
 };
-const resetSentToken = async (charity:CharityDocument): Promise<void>=> {
+const resetSentToken = async (charity:ICharityDocument): Promise<void>=> {
     charity.verificationCode = null;
     await charity.save();
 };
-const setTokenToCharity = async (charity:CharityDocument, token:string) : Promise<void>=> {
+const setTokenToCharity = async (charity:ICharityDocument, token:string) : Promise<void>=> {
     charity.verificationCode = token;
     await charity.save();
 };
-const changePassword = async (charity:CharityDocument, newPassword:string) : Promise<void>=> {
+const changePassword = async (charity:ICharityDocument, newPassword:string) : Promise<void>=> {
     charity.password = newPassword;
     await charity.save();
 };
-const changeCharityPasswordWithMailAlert = async (charity:CharityDocument, newPassword:string) : Promise<void>=> {
+const changeCharityPasswordWithMailAlert = async (charity:ICharityDocument, newPassword:string) : Promise<void>=> {
     await changePassword(charity, newPassword);
     await resetSentToken(charity); //after saving and changing the password
     await setupMailSender(
@@ -82,7 +82,7 @@ const changeCharityPasswordWithMailAlert = async (charity:CharityDocument, newPa
             `<h3>go to link(www.dummy.com) to freeze your account</h3>`
     );
 };
-const editCharityProfileAddress = async (charity:CharityDocument, id:string, updatedLocation:CharityLocation[]):Promise<{charity:CharityDocument}> => { //TODO: Should we use Partial<CharityLocationDocument>?
+const editCharityProfileAddress = async (charity:ICharityDocument, id:string, updatedLocation:CharityLocation[]):Promise<{charity:ICharityDocument}> => { //TODO: Should we use Partial<CharityLocationDocument>?
     for (let i = 0; i < charity.location.length; i++) {
         const isMatch:boolean= checkValueEquality(charity.location[i]._id, id);
         if (isMatch) {
@@ -100,20 +100,20 @@ const editCharityProfileAddress = async (charity:CharityDocument, id:string, upd
     throw new BadRequestError('no id found');
 };
 // };
-const addCharityProfileAddress = async (charity:CharityDocument, updatedLocation:CharityLocation[]):Promise<{charity:CharityDocument}> => {
+const addCharityProfileAddress = async (charity:ICharityDocument, updatedLocation:CharityLocation[]):Promise<{charity:ICharityDocument}> => {
     charity.location.push(updatedLocation);
     await charity.save();
     return { charity: charity };
 };
 
-const replaceProfileImage = async (charity:CharityDocument, oldImg:string, newImg:string):Promise<{image:string}> => {
+const replaceProfileImage = async (charity:ICharityDocument, oldImg:string, newImg:string):Promise<{image:string}> => {
     charity.image = newImg;
     console.log(oldImg);
     await charity.save();
     deleteOldImgs('charityLogos', oldImg);
     return { image: charity.image };
 };
-const addDocs = async (reqBody:CharityDocs, charity:CharityDocument):Promise<{paymentMethods:CharityPaymentMethodDocument}> => {
+const addDocs = async (reqBody:CharityDocs, charity:ICharityDocument):Promise<{paymentMethods:CharityPaymentMethodDocument}> => {
     charity.charityDocs = { ...reqBody.charityDocs }; //assign the docs
     if (!reqBody.paymentMethods) {
         throw new BadRequestError(
@@ -130,11 +130,11 @@ const addDocs = async (reqBody:CharityDocs, charity:CharityDocument):Promise<{pa
     console.log(charity.paymentMethods);
     return { paymentMethods: charity.paymentMethods as CharityPaymentMethodDocument };//Compiler Can't infer that paymentMethods are set to the charity , paymentMethods are not Possibly undefined any more 👍️ 
 };
-const makeCharityIsPending = async (charity:CharityDocument):Promise<void> => {
+const makeCharityIsPending = async (charity:ICharityDocument):Promise<void> => {
     charity.isPending = true;
     await charity.save();
 };
-const addPaymentAccounts = async (accountObj:CharityDocs, charity:CharityDocument, type:string):Promise<void> => {
+const addPaymentAccounts = async (accountObj:CharityDocs, charity:ICharityDocument, type:string):Promise<void> => {
     if (charity.paymentMethods === undefined) charity.paymentMethods = {} as CharityPaymentMethodDocument;
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;

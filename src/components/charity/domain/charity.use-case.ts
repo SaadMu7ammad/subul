@@ -1,8 +1,8 @@
 import { charityService } from './charity.service.js';
-import { DataForActivateCharityAccount, CharityDocs, CharityDocument, CharityPaymentMethod, DataForConfirmResetPassword,DataForEditCharityProfile, DataForRequestResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForRequestEditCharityPayments, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
+import { DataForActivateCharityAccount, CharityDocs, ICharityDocument, CharityPaymentMethod, DataForConfirmResetPassword,DataForEditCharityProfile, DataForRequestResetPassword, DataForChangePassword, DataForChangeProfileImage, DataForRequestEditCharityPayments, DataForSendDocs} from '../data-access/interfaces/charity.interface.js';
 
 const activateCharityAccount = async (req, res, next) => {
-  let storedCharity:CharityDocument = req.charity;
+  let storedCharity:ICharityDocument = req.charity;
 
   const { token } :DataForActivateCharityAccount= req.body;
 
@@ -54,7 +54,7 @@ const confirmResetPassword = async (req, res, next) => {
 const changePassword = async (req, res, next) => {
   const data:DataForChangePassword ={password:req.body.password} ;
 
-  const storedCharity:CharityDocument = req.charity;
+  const storedCharity:ICharityDocument = req.charity;
 
   const changePasswordResponse = await charityService.changePassword(
     data,
@@ -64,7 +64,7 @@ const changePassword = async (req, res, next) => {
   return { message: changePasswordResponse.message };
 };
 const showCharityProfile = (req, res, next) => {
-  const storedCharity:CharityDocument = req.charity;
+  const storedCharity:ICharityDocument = req.charity;
 
   const responseData = charityService.getCharityProfileData(storedCharity);
 
@@ -82,7 +82,7 @@ const data:DataForEditCharityProfile= {
     description: req.body.description,
   };
 
-  const storedCharity:CharityDocument = req.charity;
+  const storedCharity:ICharityDocument = req.charity;
 
   const responseData = await charityService.editCharityProfile(
     data,
@@ -98,7 +98,7 @@ const changeProfileImage = async (req, res, next) => {
   const data:DataForChangeProfileImage = {
     image: req.body.image[0],
   };
-  const storedCharity:CharityDocument = req.charity;
+  const storedCharity:ICharityDocument = req.charity;
   const responseData = await charityService.changeProfileImage(
     data,
     storedCharity
@@ -145,7 +145,7 @@ const sendDocs = async (req, res, next) => {
       vodafoneCash: req.body.paymentMethods['vodafoneCash'], 
     },
   };
-  const storedCharity:CharityDocument = req.charity;
+  const storedCharity:ICharityDocument = req.charity;
   const responseData = await charityService.sendDocs(data, storedCharity);
   return {
     paymentMethods: responseData.paymentMethods,

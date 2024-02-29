@@ -4,7 +4,7 @@ import * as configurationProvider from '../../../../libraries/configuration-prov
 import {
     CharitySchema,
     CharityModel,
-    CharityDocument,
+    ICharityDocument,
 } from '../interfaces/charity.interface.js';
 const Schema = mongoose.Schema;
 
@@ -478,7 +478,7 @@ charitySchema.pre('save', async function (next) {
 //     this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
 //   }
 // });
-const Charity: CharityModel = mongoose.model<CharityDocument, CharityModel>(
+const Charity: CharityModel = mongoose.model<ICharityDocument, CharityModel>(
     'Charity',
     charitySchema
 );

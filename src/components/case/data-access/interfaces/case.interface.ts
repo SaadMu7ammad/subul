@@ -6,13 +6,16 @@
 // NOTE: ANY CHANGES MADE WILL BE OVERWRITTEN ON SUBSEQUENT EXECUTIONS OF MONGOOSE-TSGEN.
 
 import mongoose from 'mongoose';
-import { Charity,CharityDocument } from '../../../charity/data-access/interfaces/charity.interface';
+import {
+    Charity,
+    ICharityDocument,
+} from '../../../charity/data-access/interfaces/charity.interface';
 
 /**
  * Custom Types
  */
 export type GetAllCasesQueryParams = {
-    page?:number;
+    page?: number;
     limit?: number;
     offset?: number;
     sort?: string;
@@ -20,11 +23,13 @@ export type GetAllCasesQueryParams = {
     subType?: string;
     nestedSubType?: string;
 };
-export type FilterQueryParams =Pick<GetAllCasesQueryParams,'mainType'|'subType'|'nestedSubType'>; 
-export type FilterObj = FilterQueryParams&{charity:string};
-export type SortObj = {[key:string]:number};
-export type PaginationObj = {page:number,limit:number};
-
+export type FilterQueryParams = Pick<
+    GetAllCasesQueryParams,
+    'mainType' | 'subType' | 'nestedSubType'
+>;
+export type FilterObj = FilterQueryParams & { charity: string };
+export type SortObj = { [key: string]: number };
+export type PaginationObj = { page: number; limit: number };
 
 /**
  * Lean version of CaseLocationDocument
@@ -235,7 +240,7 @@ export type CaseDocument = mongoose.Document<
     CaseQueries
 > &
     CaseMethods & {
-        charity: CharityDocument['_id'] | CharityDocument;
+        charity: ICharityDocument['_id'] | ICharityDocument;
         title: string;
         description: string;
         mainType:
@@ -247,7 +252,7 @@ export type CaseDocument = mongoose.Document<
             | 'Campains'
             | 'UsedProperties';
         coverImage: string;
-        location:mongoose.Types.Array<CaseLocationDocument>;
+        location: mongoose.Types.Array<CaseLocationDocument>;
         subType:
             | 'Aqeeqa'
             | 'BloodDonation'
