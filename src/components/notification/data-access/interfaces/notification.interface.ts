@@ -35,7 +35,8 @@ export type Notification = {
   message: string;
   read?: boolean;
   receiver: NotificationReceiver;
-  date: Date;
+  createdAt: Date;
+  maxAge: number;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -135,7 +136,7 @@ export type NotificationDocument = mongoose.Document<
     message: string;
     read?: boolean;
     receiver: NotificationReceiverDocument;
-    date: Date;
+    createdAt: Date;
     _id: mongoose.Types.ObjectId;
   };
 

@@ -33,7 +33,7 @@ const notificationSchema: Schema = new Schema({
         type: notificationReceiverSchema,
         required: true,
     },
-    date: {
+    createdAt: {
         type: Date,
         required: true,
     },
