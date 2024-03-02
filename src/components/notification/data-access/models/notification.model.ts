@@ -37,6 +37,10 @@ const notificationSchema: Schema = new Schema({
         type: Date,
         required: true,
     },
+    maxAge:{//Expiry Date in MS
+        type:Number,
+        required : false,
+    }
 });
 
 export default mongoose.model('Notification', notificationSchema);
