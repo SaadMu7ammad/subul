@@ -5,7 +5,7 @@ const notificationReceiverSchema: Schema = new Schema(
         receiverType: {
             type: String,
             required: true,
-            enum: ['Charity', 'User', 'Admin'],
+            enum: ['Charity', 'User'],
         },
         receiverId: {
             type: mongoose.Schema.Types.ObjectId,
