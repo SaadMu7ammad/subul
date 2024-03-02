@@ -100,7 +100,7 @@ const editUserProfile = async (
     editUserProfileInputsData,
     storedUser
   );
-  if (responseData.emailEdited) {
+  if (responseData.emailAlert) {
     return {
       user: responseData.user,
       message:

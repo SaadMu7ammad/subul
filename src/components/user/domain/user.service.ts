@@ -121,7 +121,6 @@ const editUserProfile = async (
   reqBody: Partial<IUserDocument>,
   user: IUserDocument
 ): Promise<IUserResponse> => {
-  // const updateUserArgs = dot.dot(req.body);
   if (!reqBody) throw new BadRequestError('no data sent');
   if (
     //put restriction  on the edit elements
@@ -151,8 +150,8 @@ const editUserProfile = async (
       phone: userWithEmailUpdated?.user?.phone,
     };
     return {
-      emailEdited: true,
-      user: <IUserDocument>userObj,
+      emailAlert: true,
+      user: userObj,
     };
   }
   updateNestedProperties(user, reqBody);
@@ -165,8 +164,8 @@ const editUserProfile = async (
     phone: user.phone,
   };
   return {
-    emailEdited: false,
-    user: <IUserDocument>userObj,
+    emailAlert: false,
+    user:userObj,
   };
 };
 export const userService = {

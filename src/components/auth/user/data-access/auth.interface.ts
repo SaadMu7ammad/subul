@@ -5,3 +5,7 @@ export interface AuthedRequest extends Request {
     user: IUserDocument;
     charity: ICharityDocument;
 }
+export interface IloginData  {
+    email: string;
+    password:string;
+}

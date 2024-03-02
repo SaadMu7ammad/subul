@@ -5,7 +5,8 @@ import {
   UnauthenticatedError,
 } from '../../../../libraries/errors/components/index';
 import { authUserRepository } from '../data-access/user.repository';
-const checkUserPassword = async (email:string, password:string):Promise<{isMatch:boolean,user:any}> => {
+import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
+const checkUserPassword = async (email:string, password:string):Promise<{isMatch:boolean,user:IUserDocument}> => {
   const user = await authUserRepository.findUser(email);
   if (!user) throw new NotFoundError('email not found');
   const isMatch:boolean = await bcryptjs.compare(password, user.password);

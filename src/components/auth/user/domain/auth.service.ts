@@ -4,17 +4,24 @@ import {
   generateResetTokenTemp,
   setupMailSender,
 } from '../../../../utils/mailer';
+import {
+  IUser,
+  IUserDocument,
+  IUserResponse,
+} from '../../../user/data-access/interfaces/user.interface';
+import { Response } from 'express';
+import { IloginData } from '../data-access/auth.interface';
 
-const authUser = async (reqBody, res) => {
-  const { email, password } :{email:string,password:string}= reqBody;
+const authUser = async (reqBody: IloginData, res:Response): Promise<IUserResponse> => {
+  const { email, password }: { email: string; password: string } = reqBody;
   const userResponse = await authUserUtils.checkUserPassword(email, password);
-  const token:string = generateToken(res, userResponse.user._id, 'user');
-  const userObj = {
+  const token: string = generateToken(res, userResponse.user._id, 'user');
+  const userObj: Partial<IUserDocument> = {
     _id: userResponse.user._id,
     name: userResponse.user.name,
     email: userResponse.user.email,
   };
-  const IsCharityVerified:boolean = authUserUtils.checkUserIsVerified(
+  const IsCharityVerified: boolean = authUserUtils.checkUserIsVerified(
     userResponse.user
   );
   if (IsCharityVerified) {
@@ -25,7 +32,7 @@ const authUser = async (reqBody, res) => {
     };
   } else {
     //not verified(not activated)
-    const token:string = await generateResetTokenTemp();
+    const token: string = await generateResetTokenTemp();
     userResponse.user.verificationCode = token;
     await userResponse.user.save();
     await setupMailSender(
@@ -43,7 +50,7 @@ const authUser = async (reqBody, res) => {
     };
   }
 };
-const registerUser = async (reqBody, res) => {
+const registerUser = async (reqBody: IUser, res) => {
   const newCreatedUser = await authUserUtils.createUser(reqBody);
   // generateToken(res, newCreatedUser.user._id, 'user');
   await setupMailSender(
