@@ -1,5 +1,21 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+const notificationReceiverSchema: Schema = new Schema(
+    {
+        receiverType: {
+            type: String,
+            required: true,
+            enum: ['Charity', 'User', 'Admin'],
+        },
+        receiverId: {
+            type: mongoose.Schema.Types.ObjectId,
+            refPath: 'receiver.receiverType',
+            required: true,
+        },
+    },
+    { _id: false }
+);
+
 const notificationSchema: Schema = new Schema({
     title: {
         type: String,
@@ -14,16 +30,8 @@ const notificationSchema: Schema = new Schema({
         default: false,
     },
     receiver: {
-        receiverType: {
-            type: String,
-            required: true,
-            enum: ['charity', 'User', 'Admin'],
-        },
-        receiverId:{
-            type: mongoose.Schema.Types.ObjectId,
-            refPath: 'receiver.receiverType',
-            required: true,
-        }
+        type: notificationReceiverSchema,
+        required: true,
     },
     date: {
         type: Date,
