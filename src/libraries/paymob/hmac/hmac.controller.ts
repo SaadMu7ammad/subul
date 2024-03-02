@@ -1,7 +1,7 @@
-import { BadRequestError } from '../../errors/components/index.js';
-import { hmacService } from './hmac.service.js';
-import * as configurationProvider from '../../configuration-provider/index.js';
-import { Idata } from './hmac.interface.js';
+import { BadRequestError } from '../../errors/components/index';
+import { hmacService } from './hmac.service';
+import * as configurationProvider from '../../configuration-provider/index';
+import { Idata } from './hmac.interface';
 import { RequestHandler } from 'express';
 const hmacSetting: RequestHandler= (req, res, next) => {
   // Extract HMAC from query parameter

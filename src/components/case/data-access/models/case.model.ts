@@ -1,8 +1,7 @@
 import mongoose from 'mongoose';
-import locationSchema  from './location.model.js';
-import { ICaseModel, ICaseSchema, ICaseDocument } from '../interfaces/case.interface.js';
+import locationSchema  from './location.model';
 
-const caseSchema:ICaseSchema = new mongoose.Schema(
+const caseSchema = new mongoose.Schema(
     {
         charity: {
             type: mongoose.Schema.Types.ObjectId,
@@ -130,5 +129,5 @@ const caseSchema:ICaseSchema = new mongoose.Schema(
 //   return this.charityName ? this.charityName.name : '';
 // });
 
-const Case:ICaseModel = mongoose.model<ICaseDocument,ICaseModel>('Cases', caseSchema);
+const Case = mongoose.model('Cases', caseSchema);
 export default Case;

@@ -1,6 +1,6 @@
-import { CustomAPIError } from './components/custom-api.js';
-import logger from '../../utils/logger.js';
-import * as configurationProvider from '../configuration-provider/index.js';
+import { CustomAPIError } from './components/custom-api';
+import logger from '../../utils/logger';
+import * as configurationProvider from '../configuration-provider/index';
 
 const NotFound = (req, res, next) => {
   logger.error('Not Found Error');

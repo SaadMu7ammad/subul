@@ -1,5 +1,4 @@
-import { body, validationResult } from 'express-validator';
-import { emailValidation, genderValidtion, governorateValidation, nameUserValidation, passwordValidation, phoneValidation } from './allUserValidation.js';
+import { emailValidation, genderValidtion, governorateValidation, nameUserValidation, passwordValidation, phoneValidation } from './allUserValidation';
 const registerUserValidation = [
   ...nameUserValidation,
   emailValidation,

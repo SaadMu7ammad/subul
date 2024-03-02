@@ -1,19 +1,18 @@
 import {
-  BadRequestError,
   NotFoundError,
-} from '../../../libraries/errors/components/index.js';
-import { userRepository } from '../data-access/user.repository.js';
+} from '../../../libraries/errors/components/index';
+import { userRepository } from '../data-access/user.repository';
 import {
   generateResetTokenTemp,
   setupMailSender,
-} from '../../../utils/mailer.js';
-import { Response, Request } from 'express';
+} from '../../../utils/mailer';
+import { Response } from 'express';
 import {
   IUserDocument,
   IUserResponse,
-} from '../data-access/interfaces/user.interface.js';
+} from '../data-access/interfaces/user.interface';
 const userRepositoryObj = new userRepository();
-const checkUserIsExist = async (email: string): Promise<IUserResponse> => {
+const checkUserIsExist = async (email: string): Promise<{user:IUserDocument}> => {
   //return user if it exists
   const userIsExist = await userRepositoryObj.findUser(email);
   if (!userIsExist) {

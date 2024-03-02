@@ -1,4 +1,4 @@
-import { adminService } from './admin.service.js';
+import { adminService } from './admin.service';
 
 const getAllPendingRequestsCharities = async (req, res, next) => {
   const charities = await adminService.getAllOrOnePendingRequestsCharities();

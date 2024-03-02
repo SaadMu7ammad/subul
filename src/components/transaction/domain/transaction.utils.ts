@@ -1,11 +1,11 @@
 import {
   BadRequestError,
   NotFoundError,
-} from '../../../libraries/errors/components/index.js';
-import { ICaseDocument } from '../../case/data-access/interfaces/case.interface.js';
-import { IUser } from '../../user/data-access/interfaces/user.interface.js';
-import { ITransaction } from '../data-access/interfaces/transaction.interface.js';
-import { TransactionRepository } from '../data-access/transaction.repository.js';
+} from '../../../libraries/errors/components/index';
+import { ICaseDocument } from '../../case/data-access/interfaces/case.interface';
+import {  IUserDocument } from '../../user/data-access/interfaces/user.interface';
+import { ITransaction } from '../data-access/interfaces/transaction.interface';
+import { TransactionRepository } from '../data-access/transaction.repository';
 
 const transactionRepository = new TransactionRepository();
 
@@ -112,7 +112,7 @@ const confirmSavingCase = async (cause) => {
 const confirmSavingUser = async (user) => {
   await user.save();
 };
-const getAllTransactionsPromised = async (user:IUser): Promise<(ITransaction|null)[]>  => {
+const getAllTransactionsPromised = async (user:IUserDocument): Promise<(ITransaction|null)[]>  => {
   const transactionPromises: Promise<ITransaction|null>[] = user.transactions.map(
     async (itemId, index) => {
       const myTransaction = await transactionRepository.findTransactionById(

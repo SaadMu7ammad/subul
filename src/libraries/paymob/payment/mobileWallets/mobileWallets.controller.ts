@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express';
-import { mobileWalletService } from './mobileWallets.service.js';
-import { AuthedRequest } from '../../../../components/auth/user/data-access/auth.interface.js';
+import { mobileWalletService } from './mobileWallets.service';
+import { AuthedRequest } from '../../../../components/auth/user/data-access/auth.interface';
 const paywithMobileWallet = async (
     req: AuthedRequest,
     res: Response,

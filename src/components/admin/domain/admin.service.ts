@@ -1,9 +1,11 @@
-import { adminRepository } from '../data-access/admin.repository.js';
-import { BadRequestError } from '../../../libraries/errors/components/index.js';
-import { setupMailSender } from '../../../utils/mailer.js';
-import { adminUtils } from './admin.utils.js';
-import { Number } from 'mongoose';
-const getAllOrOnePendingRequestsCharities = async (id:string|null=null) => {
+import { adminRepository } from '../data-access/admin.repository';
+import { BadRequestError } from '../../../libraries/errors/components/index';
+import { setupMailSender } from '../../../utils/mailer';
+import { adminUtils } from './admin.utils';
+import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
+const getAllOrOnePendingRequestsCharities = async (
+  id: string | null = null
+) => {
   const queryObject = {
     $and: [
       { isPending: true },
@@ -15,7 +17,7 @@ const getAllOrOnePendingRequestsCharities = async (id:string|null=null) => {
           { 'phoneVerification.isVerified': true },
         ],
       },
-      id ? { _id: id } : {},//to find by Id only one
+      id ? { _id: id } : {}, //to find by Id only one
     ],
   };
   const allPendingCharities = await adminRepository.findAllPendingCharities(
@@ -28,9 +30,9 @@ const getAllOrOnePendingRequestsCharities = async (id:string|null=null) => {
   return { allPendingCharities: allPendingCharities };
 };
 const confirmPaymentAccountRequestForConfirmedCharities = async (
-  charityId:string,
-  paymentMethod:string,
-  paymentAccountID:string
+  charityId: string,
+  paymentMethod: string,
+  paymentAccountID: string
 ) => {
   const queryObject = {
     $and: [
@@ -46,11 +48,9 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
       { _id: charityId },
     ],
   };
-  const charity = await adminUtils.getConfirmedCharities(
-    queryObject
-  );
+  const charity = await adminUtils.getConfirmedCharities(queryObject);
 
-  const idx:number = adminUtils.checkPaymentMethodAvailability(
+  const idx: number = adminUtils.checkPaymentMethodAvailability(
     charity,
     paymentMethod,
     paymentAccountID
@@ -71,9 +71,9 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
 };
 
 const rejectPaymentAccountRequestForConfirmedCharities = async (
-  charityId:string,
-  paymentMethod:string,
-  paymentAccountID:string
+  charityId: string,
+  paymentMethod: string,
+  paymentAccountID: string
 ) => {
   const queryObject = {
     $and: [
@@ -91,7 +91,7 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
   };
   const charity = await adminUtils.getConfirmedCharities(queryObject);
 
-  const idx:number = adminUtils.checkPaymentMethodAvailability(
+  const idx: number = adminUtils.checkPaymentMethodAvailability(
     charity,
     paymentMethod,
     paymentAccountID
@@ -109,7 +109,7 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
     message: 'Charity payment account has been rejected',
   };
 };
-const getPendingPaymentRequestsForConfirmedCharityById = async (id:string) => {
+const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
   const queryObject = {
     $and: [
       { isPending: false },
@@ -121,10 +121,10 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (id:string) => {
           { 'phoneVerification.isVerified': true },
         ],
       },
-      { _id: id }
+      { _id: id },
     ],
   };
-  const paymentRequests:any = await adminRepository.findConfirmedCharityById(
+  const paymentRequests: any = await adminRepository.findConfirmedCharityById(
     queryObject,
     'paymentMethods _id'
   );
@@ -147,12 +147,17 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (id:string) => {
 };
 const getAllRequestsPaymentMethodsForConfirmedCharities = async () => {
   const bankAccountRequests =
-    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity('bankAccount');
-  const fawryRequests = await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
-    'fawry'
-  );
+    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
+      'bankAccount'
+    );
+  const fawryRequests =
+    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
+      'fawry'
+    );
   const vodafoneCashRequests =
-    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity('vodafoneCash');
+    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
+      'vodafoneCash'
+    );
 
   if (!bankAccountRequests && !fawryRequests && !vodafoneCashRequests)
     throw new BadRequestError('No paymentRequests found');
@@ -164,27 +169,26 @@ const getAllRequestsPaymentMethodsForConfirmedCharities = async () => {
     },
   };
 };
-const confirmCharity = async (id:string) => {
+const confirmCharity = async (id: string) => {
   const charity = await getAllOrOnePendingRequestsCharities(id);
-  await adminUtils.confirmingCharity(charity.allPendingCharities[0]);
-
+  const pendingCharity = charity.allPendingCharities[0] as ICharityDocument;
+  await adminUtils.confirmingCharity(pendingCharity);
   await setupMailSender(
-    charity.allPendingCharities[0].email,
+    pendingCharity.email,
     'Charity has been confirmed successfully',
     `<h2>after reviewing the charity docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
   );
-
   return {
     charity: charity.allPendingCharities[0],
     message: 'Charity has been confirmed successfully',
   };
 };
-const rejectCharity = async (id:string) => {
+const rejectCharity = async (id: string) => {
   const charity = await getAllOrOnePendingRequestsCharities(id);
-  await adminUtils.rejectingCharity(charity.allPendingCharities[0]);
-
+  const pendingCharity = charity.allPendingCharities[0] as ICharityDocument;
+  await adminUtils.rejectingCharity(pendingCharity);
   await setupMailSender(
-    charity.allPendingCharities[0].email,
+    pendingCharity.email,
     'Charity has not been confirmed',
     `<h2>you must upload all the docs mentioned to auth the charity and always keep the quality of uploadings high and clear</h2>`
   );

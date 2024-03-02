@@ -1,4 +1,4 @@
-import { UnauthenticatedError } from "../../libraries/errors/components/index.js";
+import { UnauthenticatedError } from "../../libraries/errors/components/index";
 
 const isAdmin = (req, res, next) => {
   //   console.log(req.user);

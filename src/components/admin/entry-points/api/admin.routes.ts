@@ -1,9 +1,9 @@
 import express, { Application } from 'express';
 
-import { adminUseCase } from '../../domain/admin.use-case.js';
-import { auth } from '../../../auth/shared/index.js';
-import { isAdmin } from '../../index.js';
-import logger from '../../../../utils/logger.js';
+import { adminUseCase } from '../../domain/admin.use-case';
+import { auth } from '../../../auth/shared/index';
+import { isAdmin } from '../../index';
+import logger from '../../../../utils/logger';
 
 export default function defineRoutes(expressApp:Application) {
   const router = express.Router();

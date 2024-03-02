@@ -3,9 +3,9 @@ import {
   BadRequestError,
   NotFoundError,
   UnauthenticatedError,
-} from '../../../../libraries/errors/components/index.js';
-import { authCharityRepository } from '../data-access/charity.repository.js';
-import { deleteOldImgs } from '../../../../utils/deleteFile.js';
+} from '../../../../libraries/errors/components/index';
+import { authCharityRepository } from '../data-access/charity.repository';
+import { deleteOldImgs } from '../../../../utils/deleteFile';
 const checkCharityPassword = async (email:string, password:string) => {
   const charity = await authCharityRepository.findCharity(email);
   if (!charity) throw new NotFoundError('email not found');
@@ -24,14 +24,14 @@ const checkCharityIsVerified = (charity) => {
   }
   return false;
 };
-const checkIsEmailDuplicated = async (email:string) => {
-  const isDuplicatedEmail = await authCharityRepository.findCharity(email);
-  if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
-};
-const resetSentToken = async (charity) => {
-  charity.verificationCode = null;
-  await charity.save();
-};
+// const checkIsEmailDuplicated = async (email:string) => {
+//   const isDuplicatedEmail = await authCharityRepository.findCharity(email);
+//   if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
+// };
+// const resetSentToken = async (charity) => {
+//   charity.verificationCode = null;
+//   await charity.save();
+// };
 const setTokenToCharity = async (charity, token:string) => {
   charity.verificationCode = token;
   await charity.save();

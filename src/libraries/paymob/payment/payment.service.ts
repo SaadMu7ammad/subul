@@ -1,7 +1,7 @@
-import { IUser } from '../../../components/user/data-access/interfaces/user.interface.js';
-import * as configurationProvider from '../../configuration-provider/index.js';
-import { NotFoundError } from '../../errors/components/index.js';
-import { paymentUtils } from './payment.utils.js';
+import { IUser } from '../../../components/user/data-access/interfaces/user.interface';
+import * as configurationProvider from '../../configuration-provider/index';
+import { NotFoundError } from '../../errors/components/index';
+import { paymentUtils } from './payment.utils';
 const CreateAuthenticationRequest = async () => {
   try {
     const request = await fetch('https://accept.paymob.com/api/auth/tokens', {

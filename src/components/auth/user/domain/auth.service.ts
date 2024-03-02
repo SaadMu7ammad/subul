@@ -1,9 +1,9 @@
-import { authUserUtils } from './auth.utils.js';
-import generateToken from '../../../../utils/generateToken.js';
+import { authUserUtils } from './auth.utils';
+import generateToken from '../../../../utils/generateToken';
 import {
   generateResetTokenTemp,
   setupMailSender,
-} from '../../../../utils/mailer.js';
+} from '../../../../utils/mailer';
 
 const authUser = async (reqBody, res) => {
   const { email, password } :{email:string,password:string}= reqBody;

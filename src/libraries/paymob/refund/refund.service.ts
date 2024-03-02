@@ -1,11 +1,9 @@
-import { getTransactionByIdService } from '../admin/getTransactionById.service.js';
+import { getTransactionByIdService } from '../admin/getTransactionById.service';
 import {
   BadRequestError,
   NotFoundError,
-} from '../../errors/components/index.js';
-import Transaction from '../../../components/transaction/data-access/models/transaction.model';
-import { ITransaction } from '../../../components/transaction/data-access/interfaces/transaction.interface';
-import { TransactionRepository } from '../../../components/transaction/data-access/transaction.repository.js';
+} from '../../errors/components/index';
+import { TransactionRepository } from '../../../components/transaction/data-access/transaction.repository';
 const refund = async (transaction_id) => {
   const stepOneToken = await getTransactionByIdService.getTokenStepOne();
   if (!stepOneToken) throw new NotFoundError('no token provided');

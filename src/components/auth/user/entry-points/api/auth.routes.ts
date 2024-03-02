@@ -1,11 +1,11 @@
 import express, { Application } from 'express';
-import logger from '../../../../../utils/logger.js';
-import { authUseCase } from '../../domain/auth.use-case.js';
+import logger from '../../../../../utils/logger';
+import { authUseCase } from '../../domain/auth.use-case';
 import {
     loginUserValidation,
     registerUserValidation,
-} from '../../../../../libraries/validation/components/user/userAuthValidation.js';
-import { validate } from '../../../../../libraries/validation/index.js';
+} from '../../../../../libraries/validation/components/user/userAuthValidation';
+import { validate } from '../../../../../libraries/validation/index';
 
 export default function defineRoutes(expressApp:Application) {
     const router = express.Router();

@@ -3,8 +3,8 @@ import {
   BadRequestError,
   NotFoundError,
   UnauthenticatedError,
-} from '../../../../libraries/errors/components/index.js';
-import { authUserRepository } from '../data-access/user.repository.js';
+} from '../../../../libraries/errors/components/index';
+import { authUserRepository } from '../data-access/user.repository';
 const checkUserPassword = async (email:string, password:string):Promise<{isMatch:boolean,user:any}> => {
   const user = await authUserRepository.findUser(email);
   if (!user) throw new NotFoundError('email not found');

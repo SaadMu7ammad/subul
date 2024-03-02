@@ -1,4 +1,4 @@
-import Charity from '../../charity/data-access/models/charity.model.js';
+import Charity from '../../charity/data-access/models/charity.model';
 
 const findAllPendingCharities = async (queryObject, selection:string) => {
   const pendingCharities = await Charity.find(queryObject, selection).exec();

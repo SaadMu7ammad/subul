@@ -1,4 +1,4 @@
-import { authUserService } from './auth.service.js';
+import { authUserService } from './auth.service';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public

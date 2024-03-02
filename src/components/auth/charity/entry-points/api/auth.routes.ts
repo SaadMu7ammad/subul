@@ -1,17 +1,17 @@
-import { RequestHandler,Router,Application } from 'express';
-import logger from '../../../../../utils/logger.js';
+import { Router,Application } from 'express';
+import logger from '../../../../../utils/logger';
 
-import { validate } from '../../../../../libraries/validation/index.js';
+import { validate } from '../../../../../libraries/validation/index';
 import {
   resizeImg,
   imageAssertion,
-} from '../../../../../libraries/uploads/components/images/handlers.js';
+} from '../../../../../libraries/uploads/components/images/handlers';
 import {
   registerCharityValidation,
   loginCharityValidation,
-} from '../../../../../libraries/validation/components/charity/charityAuthValidation.js';
-import { authUseCase } from '../../domain/auth.use-case.js';
-import { deleteOldImgs } from '../../../../../utils/deleteFile.js';
+} from '../../../../../libraries/validation/components/charity/charityAuthValidation';
+import { authUseCase } from '../../domain/auth.use-case';
+import { deleteOldImgs } from '../../../../../utils/deleteFile';
 
 export default function defineRoutes(expressApp:Application) {
   const router = Router();

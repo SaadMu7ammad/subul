@@ -1,29 +1,29 @@
 import express, { Application } from 'express';
 
-import { auth, isConfirmed, isActivated } from '../../../auth/shared/index.js';
-import { charityUseCase } from '../../domain/charity.use-case.js';
-import logger from '../../../../utils/logger.js';
+import { auth, isConfirmed, isActivated } from '../../../auth/shared/index';
+import { charityUseCase } from '../../domain/charity.use-case';
+import logger from '../../../../utils/logger';
 import {
   changePasswordCharityValidation,
   confirmResetCharityValidation,
   requestResetEmailCharityValidation,
   tokenCharityValidation,
-} from '../../../../libraries/validation/components/charity/allCharityValidation.js';
+} from '../../../../libraries/validation/components/charity/allCharityValidation';
 import {
   editCharityProfileValidation,
   reqEditPaymentMethodsValidation,
-} from '../../../../libraries/validation/components/charity/editCharityProfileValidation.js';
-import { validate } from '../../../../libraries/validation/index.js';
+} from '../../../../libraries/validation/components/charity/editCharityProfileValidation';
+import { validate } from '../../../../libraries/validation/index';
 import {
   imageAssertion,
   resizeImg,
-} from '../../../../libraries/uploads/components/images/handlers.js';
+} from '../../../../libraries/uploads/components/images/handlers';
 import {
   resizeDoc,
   uploadDocs,
-} from '../../../../libraries/uploads/components/docs/images/handler.js';
-import { deleteCharityDocs,deleteOldImgs} from '../../../../utils/deleteFile.js';
-import { uploadDocsReq,resizeDocReq } from '../../../../libraries/uploads/components/docs/images/handler2.js';
+} from '../../../../libraries/uploads/components/docs/images/handler';
+import { deleteCharityDocs,deleteOldImgs} from '../../../../utils/deleteFile';
+import { uploadDocsReq,resizeDocReq } from '../../../../libraries/uploads/components/docs/images/handler2';
 
 export default function defineRoutes(expressApp:Application) {
   const router = express.Router();

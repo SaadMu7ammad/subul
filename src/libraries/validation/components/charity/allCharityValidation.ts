@@ -330,9 +330,9 @@ const phoneValidation = body('phone')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
 
-const _bankAccountValidation = bankAccountValidation.map(
-  (validator) => validator.optional() //.not().isEmpty()
-);
+// const _bankAccountValidation = bankAccountValidation.map(
+//   (validator) => validator.optional() //.not().isEmpty()
+// );
 // const paymentValidation = [
 //   ..._bankAccountValidation,
 //   vodafoneCashValidation.optional(),

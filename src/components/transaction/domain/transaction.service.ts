@@ -1,12 +1,11 @@
 import {
   BadRequestError,
   NotFoundError,
-} from '../../../libraries/errors/components/index.js';
-import { checkValueEquality } from '../../../utils/shared.js';
-import { TransactionRepository } from '../data-access/transaction.repository.js';
-import { transactionUtils } from './transaction.utils.js';
-import TransactionModel from '../data-access/models/transaction.model.js';
-import { ITransaction } from '../data-access/interfaces/transaction.interface.js';
+} from '../../../libraries/errors/components/index';
+import { checkValueEquality } from '../../../utils/shared';
+import { TransactionRepository } from '../data-access/transaction.repository';
+import { transactionUtils } from './transaction.utils';
+import { ITransaction } from '../data-access/interfaces/transaction.interface';
 const transactionRepository = new TransactionRepository();
 const preCreateTransaction = async (data, user) => {
   //must check the account for the charity is valid or not
@@ -14,7 +13,6 @@ const preCreateTransaction = async (data, user) => {
     charityId,
     caseId,
     amount,
-    mainTypePayment,
   }: {
     charityId: string;
     caseId: string;
@@ -120,13 +118,14 @@ const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
     };
   }
   //what if the payment happened but the transaction not stored in the db??i think must make a report or something like that to alert that to support
-  const transactionData = {
+  const transactionData :ITransaction= {
     case: caseIsExist._id,
     user: userIsExist._id,
     moneyPaid: +amount,
     paidAt: date,
     externalTransactionId: externalTransactionId,
     orderId: orderId,
+    paymentGateway:'Paymob',
     paymentInfo: paymentMethod,
     status,
     currency,

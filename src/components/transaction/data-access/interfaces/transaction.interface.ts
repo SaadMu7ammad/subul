@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
-import { ICase } from '../../../case/data-access/interfaces/case.interface';
-import { IUser } from '../../../user/data-access/interfaces/user.interface';
+import mongoose, { Document } from 'mongoose';
+import {  ICaseDocument } from '../../../case/data-access/interfaces/case.interface';
+import {  IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 
 export interface TransactionPaymentInfo {
   onlineCard: {
@@ -13,8 +13,8 @@ export interface TransactionPaymentInfo {
 }
 
 export interface ITransaction {
-  case?: ICase['_id'] | ICase;
-  user?: IUser['_id'] | IUser;
+  case?: ICaseDocument['_id'] ;
+  user?: IUserDocument['_id'] ;
   moneyPaid: number;
   paidAt?: Date;
   externalTransactionId: string;
@@ -23,10 +23,11 @@ export interface ITransaction {
   currency: string;
   paymentGateway: string;
   paymentInfo?: TransactionPaymentInfo;
-  _id: mongoose.Types.ObjectId;
+  // _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
 }
+export interface ITransactionDocument extends ITransaction, Document { }
 
 // export type TransactionPaymentInfoDocument =
 //   mongoose.Document<mongoose.Types.ObjectId> & {

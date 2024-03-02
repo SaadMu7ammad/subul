@@ -1,6 +1,5 @@
-import mongoose, { Model } from 'mongoose';
-import { ITransaction } from '../../../transaction/data-access/interfaces/transaction.interface';
-import UserModel from '../models/user.model';
+import  { Document } from 'mongoose';
+import {  ITransactionDocument } from '../../../transaction/data-access/interfaces/transaction.interface';
 export interface UserLocation {
   governorate:
     | 'Alexandria'
@@ -60,39 +59,12 @@ export interface IUser {
     verificationDate?: Date;
   };
   isEnabled: boolean;
-  transactions: (ITransaction['_id'] | ITransaction)[];
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
+  transactions: (ITransactionDocument['_id'])[];
+  // _id: mongoose.Types.ObjectId;
+  // createdAt: Date;
+  // updatedAt: Date;
 }
-export interface IUserDocument extends Document {
-  name: {
-    firstName: string;
-    lastName: string;
-  };
-  email: string;
-  password: string;
-  isAdmin: boolean;
-  pointsOnDonations: number;
-  totalDonationsAmount?: number;
-  locationUser: UserLocation;
-  gender: 'male' | 'female';
-  phone?: string;
-  verificationCode?: string;
-  emailVerification: {
-    isVerified?: boolean;
-    verificationDate?: Date;
-  };
-  phoneVerification: {
-    isVerified?: boolean;
-    verificationDate?: Date;
-  };
-  isEnabled: boolean;
-  transactions: (ITransaction['_id'] | ITransaction)[];
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+export interface IUserDocument extends IUser, Document{ }
 export interface IUserResponse {
   emailEdited?: boolean;
   user: IUserDocument;
@@ -102,10 +74,7 @@ export interface IUserResponse {
 //   emailEdited?: boolean;
 //   user: IUser;
 // }
-// export interface IUserDocument extends IUser, Document { }
-// export interface IUserDocument extends IUser, Document {}
-// export interface IUserResponseDocument extends IUserResponse, Document {}
-// export interface IUserModel extends Model<IUserDocument> {}
+
 
 export interface dataForResetEmail {
   email: string;

@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import logger from './logger.js';
-import Cloudinary from './cloudinary.js';
-import * as configurationProvider from '../libraries/configuration-provider/index.js';
+import logger from './logger';
+import Cloudinary from './cloudinary';
+import * as configurationProvider from '../libraries/configuration-provider/index';
 const deleteFile = (filePath:string) => {
   logger.warn(filePath);
   fs.unlink(filePath, (err) => {
@@ -39,7 +39,8 @@ const deleteOldImgs = (imgsFolder:string, imgsNames:string|string[]) => {
     configurationProvider.getValue('environment.nodeEnv') === 'production'
   ) {
     imgsNamesArray.forEach((imgName) => {
-      cloudinaryObj.deleteImg(imgsFolder, imgName?.split('.jpeg')[0]);
+      if(imgName?.split('.jpeg')[0])
+      cloudinaryObj.deleteImg(imgsFolder, imgName.split('.jpeg')[0] as string);
     });
   }
 
@@ -58,10 +59,12 @@ const deleteCharityDocs = (req, type:string) => {
             ['vodafoneCash', 'vodafoneCashDocs'],
         ].forEach((pm) => {
             let paymentMethod = pm[0];
-            let paymentDocs = pm[1];
+          let paymentDocs = pm[1];
+          if (paymentMethod && paymentDocs) {
             let paymentMethodObj = req.body.paymentMethods[paymentMethod];
             if (paymentMethodObj && paymentMethodObj[0][paymentDocs])
-                deleteOldImgs('charityDocs', paymentMethodObj[0][paymentDocs]);
+              deleteOldImgs('charityDocs', paymentMethodObj[0][paymentDocs]);
+          }
         });
     }
 };

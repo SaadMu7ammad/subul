@@ -1,18 +1,18 @@
 import express, { Application } from 'express';
 
-import { auth, isActivated } from '../../../auth/shared/index.js';
-import { isAdmin } from '../../../admin/index.js';
+import { auth, isActivated } from '../../../auth/shared/index';
+import { isAdmin } from '../../../admin/index';
 import {
   preCreateTransaction,
   updateCaseInfo,
-} from '../../domain/transaction.use-case.js';
+} from '../../domain/transaction.use-case';
 
-import { hmacSetting } from '../../../../libraries/paymob/hmac/hmac.controller.js';
-import { payWithOnlineCard } from '../../../../libraries/paymob/payment/onlineCards/onlineCards.controller.js';
-import { paywithMobileWallet } from '../../../../libraries/paymob/payment/mobileWallets/mobileWallets.controller.js';
-import { getTransactionById } from '../../../../libraries/paymob/admin/getTransactionById.controller.js';
-import { refund } from '../../../../libraries/paymob/refund/refund.controller.js';
-import logger from '../../../../utils/logger.js';
+import { hmacSetting } from '../../../../libraries/paymob/hmac/hmac.controller';
+import { payWithOnlineCard } from '../../../../libraries/paymob/payment/onlineCards/onlineCards.controller';
+import { paywithMobileWallet } from '../../../../libraries/paymob/payment/mobileWallets/mobileWallets.controller';
+import { getTransactionById } from '../../../../libraries/paymob/admin/getTransactionById.controller';
+import { refund } from '../../../../libraries/paymob/refund/refund.controller';
+import logger from '../../../../utils/logger';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();

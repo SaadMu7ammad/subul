@@ -1,6 +1,6 @@
-import { BadRequestError } from '../../../libraries/errors/components/index.js';
-import { deleteOldImgs } from '../../../utils/deleteFile.js';
-import { adminRepository } from '../data-access/admin.repository.js';
+import { BadRequestError } from '../../../libraries/errors/components/index';
+import { deleteOldImgs } from '../../../utils/deleteFile';
+import { adminRepository } from '../data-access/admin.repository';
 
 const getAllPendingPaymentMethodsRequestsForConfirmedCharity = async (
   paymentMethod

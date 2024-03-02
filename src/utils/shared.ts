@@ -1,4 +1,4 @@
-const checkValueEquality = (inputOne:any, inputTwo:any) => {
+const checkValueEquality = (inputOne:string, inputTwo:string) => {
   if (inputOne == inputTwo) {
     return true;
   }
