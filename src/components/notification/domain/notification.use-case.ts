@@ -1,4 +1,4 @@
-import { notificationService } from "./notification.service";
+import { notificationService } from "./notification.service.js";
 
 const getAllNotifications = async (req,res,next) => {
     const id = req.charity?._id || req.user?._id;

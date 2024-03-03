@@ -18,6 +18,7 @@ import authCharityRoutes from './components/auth/charity/entry-points/api/auth.r
 import charityRoutes from './components/charity/entry-points/api/charity.routes.js';
 import casesRoutes from './components/case/entry-points/api/case.routes.js';
 import adminRoutes from './components/admin/entry-points/api/admin.routes.js';
+import notificationRoutes from './components/notification/entry-points/api/notification.routes.js';
 
 dotenv.config();
 
@@ -49,6 +50,8 @@ charityRoutes(app);
 adminRoutes(app);
 userRoutes(app);
 casesRoutes(app);
+notificationRoutes(app);
+
 
 app.get('/', (req, res) => {
   res.send('Welcome To Subul API 👋');

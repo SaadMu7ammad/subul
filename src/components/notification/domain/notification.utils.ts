@@ -1,4 +1,4 @@
-import  {NotificationRepository}  from "../data-access/notification.repository";
+import  {NotificationRepository}  from "../data-access/notification.repository.js";
 const notificationRepository = new NotificationRepository();
 
 const getAllNotifications = async (receiverType:string,receiverId:string) => {

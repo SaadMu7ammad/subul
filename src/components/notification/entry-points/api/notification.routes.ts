@@ -1,7 +1,7 @@
 import express, { Application } from 'express';
-import logger from '../../../../utils/logger';
-import {auth,isActivated} from '../../../auth/shared/index';
-import {notificationUseCase} from '../../domain/notification.use-case';
+import logger from '../../../../utils/logger.js';
+import {auth,isActivated} from '../../../auth/shared/index.js';
+import {notificationUseCase} from '../../domain/notification.use-case.js';
 export default function defineRoutes(expressApp: Application) {
     const router = express.Router();
 
@@ -26,6 +26,5 @@ export default function defineRoutes(expressApp: Application) {
             }
         }
     );
-    expressApp.use('/api/charity/notifications', router);
-    expressApp.use('/api/user/notifications', router);
+    expressApp.use('/api/notifications', router);
 }
