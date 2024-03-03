@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import logger from '../../../../utils/logger.js';
 import {auth,isActivated} from '../../../auth/shared/index.js';
 import {notificationUseCase} from '../../domain/notification.use-case.js';
+
 export default function defineRoutes(expressApp: Application) {
     const router = express.Router();
 
