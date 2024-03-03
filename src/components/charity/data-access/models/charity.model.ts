@@ -1,5 +1,4 @@
-import mongoose,{Schema} from 'mongoose';
-import { ICharityDocument } from '../interfaces/charity.interface';
+import mongoose, { Schema } from 'mongoose';
 
 const locationSchema = new mongoose.Schema({
   governorate: {
@@ -256,9 +255,9 @@ const charitySchema = new Schema(
         required: true,
       },
     ],
-    location: {
+    charitylocation: {
       type: [locationSchema],
-      default: undefined,
+      // default: undefined,
       required: [true, 'At least one location is required.'],
     },
     // files: [{}],
@@ -475,6 +474,6 @@ const charitySchema = new Schema(
 //     this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
 //   }
 // });
-const Charity = mongoose.model<ICharityDocument>('Charity', charitySchema);
+const Charity = mongoose.model('Charity', charitySchema);
 
 export default Charity;

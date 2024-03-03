@@ -15,7 +15,7 @@ export interface DataForEditCharityProfile {
   };
   email: string;
   description: string;
-  location: ICharityLocation;
+  charitylocation: ICharityLocationDocument;
   locationId: string;
 }
 export interface DataForActivateCharityAccount {
@@ -31,24 +31,15 @@ export interface DataForChangeProfileImage {
   image: string;
 }
 export interface DataForRequestEditCharityPayments {
-  paymentMethods: ICharityPaymentMethod;
+  paymentMethods: ICharityPaymentMethodDocument;
   paymentId: string;
 }
 export interface DataForSendDocs extends ICharityDocs {}
 
-export interface CharityPaymentMethodBankAccount {
-  enable?: boolean;
-  accNumber?: string;
-  iban?: string;
-  swiftCode?: string;
-  bankDocs: string[];
-  // _id: mongoose.Types.ObjectId;
-}
-
 /**
  * Charity Docs [docs & paymentDocs]
  */
-export type ICharityDocs = {
+export interface ICharityDocs  {
   charityDocs: {
     docs1: string[] | mongoose.Types.Array<string>;
     docs2: string[] | mongoose.Types.Array<string>;
@@ -72,7 +63,14 @@ export type ICharityDocs = {
     };
   };
 };
-
+export interface CharityPaymentMethodBankAccount {
+  enable?: boolean;
+  accNumber?: string;
+  iban?: string;
+  swiftCode?: string;
+  bankDocs: string[];
+  // _id: mongoose.Types.ObjectId;
+}
 export interface CharityPaymentMethodFawry {
   enable?: boolean;
   number?: string;
@@ -80,14 +78,14 @@ export interface CharityPaymentMethodFawry {
 //   _id: mongoose.Types.ObjectId;
 }
 
-export type CharityPaymentMethodVodafoneCash = {
+export interface CharityPaymentMethodVodafoneCash {
   enable?: boolean;
   number?: string;
   vodafoneCashDocs: string[];
 //   _id: mongoose.Types.ObjectId;
 };
 
-export interface ICharityPaymentMethod extends Document {
+export interface ICharityPaymentMethodDocument extends Document {
   bankAccount: CharityPaymentMethodBankAccount[];
   fawry: CharityPaymentMethodFawry[];
   vodafoneCash: CharityPaymentMethodVodafoneCash[];
@@ -98,10 +96,10 @@ export interface ICharityDonorRequest {
   user: IUserDocument['_id'];
   requestTitle: string;
   requestMessage: string;
-  _id: mongoose.Types.ObjectId;
+  // _id: mongoose.Types.ObjectId;
 }
 
-export interface ICharityLocation extends Document{
+export interface ICharityLocationDocument extends Document{
   governorate:
     | 'Alexandria'
     | 'Assiut'
@@ -152,21 +150,21 @@ export interface ICharity {
   totalDonationsIncome?: number;
   verificationCode?: string | null;
   emailVerification: {
-    isVerified?: boolean;
-    verificationDate?: Date | number | null;
+    isVerified: boolean;
+    verificationDate: Date | number | null;
   };
   phoneVerification: {
-    isVerified?: boolean;
-    verificationDate?: Date | number | null;
+    isVerified: boolean;
+    verificationDate: Date | number | null;
   };
   isEnabled: boolean;
   isConfirmed: boolean;
   isPending: boolean;
-  paymentMethods?: ICharityPaymentMethod;
+  paymentMethods?: ICharityPaymentMethodDocument;
   rate?: number;
   donorRequests: ICharityDonorRequest[];
   currency: string[];
-  location: ICharityLocation[];
+  charitylocation: ICharityLocationDocument[];
   charityInfo: {
     registeredNumber: string;
     establishedDate: string;
@@ -182,82 +180,29 @@ export interface ICharity {
 //   updatedAt?: Date;
 }
 
-// export interface CharityPaymentMethodBankAccountDocument {
-//     enable?: boolean;
-//     accNumber?: string;
-//     iban?: string;
-//     swiftCode?: string;
-//     bankDocs: mongoose.Types.Array<string>;
-//     // _id: mongoose.Types.ObjectId;
-//   };
-
-// export interface CharityPaymentMethodFawryDocument {
-//   enable?: boolean;
-//   number?: string;
-//   fawryDocs: mongoose.Types.Array<string>;
-// //   _id: mongoose.Types.ObjectId;
-// };
-
-// export type CharityPaymentMethodVodafoneCashDocument =
-//   mongoose.Types.Subdocument & {
-//     enable?: boolean;
-//     number?: string;
-//     vodafoneCashDocs: mongoose.Types.Array<string>;
-//     // _id: mongoose.Types.ObjectId;
-//   };
-
-// export interface ICharityPaymentMethodDocument extends Document {
-//     bankAccount: mongoose.Types.DocumentArray<CharityPaymentMethodBankAccount>;
-//     fawry: mongoose.Types.DocumentArray<CharityPaymentMethodFawry>;
-//     vodafoneCash: mongoose.Types.DocumentArray<CharityPaymentMethodVodafoneCash>;
-//     // _id: mongoose.Types.ObjectId;
-// };
 export interface ICharityPaymentMethodDocument extends Document {
   bankAccount: CharityPaymentMethodBankAccount[];
   fawry:CharityPaymentMethodFawry[];
   vodafoneCash:CharityPaymentMethodVodafoneCash[];
 //   _id: mongoose.Types.ObjectId;
 }
-export type ICharityDonorRequestDocument = mongoose.Types.Subdocument & {
-  user: IUserDocument['_id'] | IUserDocument;
+export interface ICharityDonorRequestDocument  {
+  user: IUserDocument['_id'];
   requestTitle: string;
   requestMessage: string;
   _id: mongoose.Types.ObjectId;
 };
 
-// export type ICharityLocationDocument = mongoose.Types.Subdocument & {
-//     governorate:
-//         | 'Alexandria'
-//         | 'Assiut'
-//         | 'Aswan'
-//         | 'Beheira'
-//         | 'Bani Suef'
-//         | 'Cairo'
-//         | 'Daqahliya'
-//         | 'Damietta'
-//         | 'Fayyoum'
-//         | 'Gharbiya'
-//         | 'Giza'
-//         | 'Helwan'
-//         | 'Ismailia'
-//         | 'Kafr El Sheikh'
-//         | 'Luxor'
-//         | 'Marsa Matrouh'
-//         | 'Minya'
-//         | 'Monofiya'
-//         | 'New Valley'
-//         | 'North Sinai'
-//         | 'Port Said'
-//         | 'Qalioubiya'
-//         | 'Qena'
-//         | 'Red Sea'
-//         | 'Sharqiya'
-//         | 'Sohag'
-//         | 'South Sinai'
-//         | 'Suez'
-//         | 'Tanta';
-//     city?: string;
-//     street?: string;
-// };
-
 export interface ICharityDocument extends ICharity, Document {}
+
+export interface ICharityDocumentResponse {
+  emailEdited?: boolean,
+
+  charity: ICharityDocument,
+  message?:string
+}
+
+export interface IPaymentCharityDocumentResponse {
+  paymentMethods: ICharityPaymentMethodDocument,
+  message?:string
+}
