@@ -5,22 +5,35 @@ import {
   UnauthenticatedError,
 } from '../../../../libraries/errors/components/index.js';
 import { authUserRepository } from '../data-access/user.repository.js';
-const checkUserPassword = async (email:string, password:string):Promise<{isMatch:boolean,user:any}> => {
-  const user = await authUserRepository.findUser(email);
+import { IUser } from '../../../user/data-access/interfaces/user.interface.js';
+import { IUserDocument } from '../../../user/data-access/interfaces/user.interface.js';
+import { UserCheckResult } from '../data-access/auth.interface.js';
+import { RegisterData } from '../data-access/auth.interface.js';
+
+const checkUserPassword = async (
+  email: string,
+  password: string
+): Promise<UserCheckResult> => {
+  const user = (await authUserRepository.findUser(email)) as IUserDocument;
+
   if (!user) throw new NotFoundError('email not found');
-  const isMatch:boolean = await bcryptjs.compare(password, user.password);
+  const isMatch: boolean = await bcryptjs.compare(password, user.password);
   if (!isMatch) {
     throw new UnauthenticatedError('invalid password');
   }
   return { isMatch: true, user: user };
 };
-const checkUserIsVerified = (user) => {
-  if (user.emailVerification.isVerified) {
-    return true; //user verified already
+
+const checkUserIsVerified = (user: IUser): boolean => {
+  if (user.emailVerification && user.emailVerification.isVerified) {
+    return true; // User is verified already
   }
   return false;
 };
-const createUser = async (dataInputs):Promise<{user:any}> => {
+
+const createUser = async (
+  dataInputs: RegisterData
+): Promise<{ user: IUser }> => {
   const userExist = await authUserRepository.findUser(dataInputs.email);
   if (userExist) throw new BadRequestError('user is registered already');
   const user = await authUserRepository.createUser(dataInputs);

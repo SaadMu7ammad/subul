@@ -1,6 +1,7 @@
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, Document } from 'mongoose';
 import { ITransaction } from '../../../transaction/data-access/interfaces/transaction.interface';
 import UserModel from '../models/user.model';
+
 export interface UserLocation {
   governorate:
     | 'Alexandria'
@@ -35,8 +36,6 @@ export interface UserLocation {
   city?: string;
   street?: string;
 }
-
-
 export interface IUser {
   name: {
     firstName: string;
@@ -93,6 +92,7 @@ export interface IUserDocument extends Document {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
 export interface IUserResponse {
   emailEdited?: boolean;
   user: IUserDocument;

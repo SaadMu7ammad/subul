@@ -3,13 +3,18 @@ import * as crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import logger from './logger.js';
 import * as configurationProvider from '../libraries/configuration-provider/index.js';
+import { IUser } from '../components/user/data-access/interfaces/user.interface.js';
 
 const generateResetTokenTemp = async () => {
-  const token:string = crypto.randomBytes(32).toString('hex');
-  const hashedToken:string = await bcryptjs.hash(token, 10);
+  const token: string = crypto.randomBytes(32).toString('hex');
+  const hashedToken: string = await bcryptjs.hash(token, 10);
   return hashedToken;
 };
-const setupMailSender = async (receiverEmail:string, subject:string, html:string) => {
+const setupMailSender = async (
+  receiverEmail: string,
+  subject: string,
+  html: string
+) => {
   logger.info(`sending mail to ${receiverEmail}`);
   try {
     const transporter = nodemailer.createTransport({
