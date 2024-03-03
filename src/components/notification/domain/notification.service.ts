@@ -9,7 +9,17 @@ const getAllNotifications = async (receiverType:string,receiverId:string) => {
     };
 }
 
+const markNotificationAsRead = async (receiverType:string,receiverId:string,notificationId:string) => {
+    const notification = await notificationUtils.markNotificationAsRead(receiverType,receiverId,notificationId);
+
+    return {
+        message: "Notification Is Marked as Read Successfully",
+        notification: notification,
+    };
+}
+
 
 export const notificationService = {
     getAllNotifications,
+    markNotificationAsRead
 }; 

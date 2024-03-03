@@ -27,5 +27,28 @@ export default function defineRoutes(expressApp: Application) {
             }
         }
     );
+
+    
+    router.put(
+        '/:id',
+        auth,
+        isActivated,
+        async (req, res, next) => {
+            try {
+                logger.info(
+                    `Notification API was called to mark notification as read`
+                );
+                const markNotificationAsReadResponse = await notificationUseCase.markNotificationAsRead(
+                    req,
+                    res,
+                    next
+                );
+                return res.json(markNotificationAsReadResponse);
+            } catch (error) {
+                next(error);
+                return undefined;
+            }
+        }
+    );
     expressApp.use('/api/notifications', router);
 }
