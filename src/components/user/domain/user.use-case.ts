@@ -1,11 +1,15 @@
 import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
-import { IUserResponse } from '../data-access/interfaces/user.interface';
+import { IUser, IUserResponse } from '../data-access/interfaces/user.interface';
 import { userService } from './user.service';
 import { Request, Response, NextFunction } from 'express';
 //@desc   reset password
 //@route  POST /api/users/reset
 //@access public
-const resetUser = async (req: Request, res: Response, next: NextFunction) => {
+const resetUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<{ message: string }> => {
   const resetInputsData = req.body;
   const responseData = await userService.resetUser(resetInputsData);
   return {
@@ -19,7 +23,7 @@ const confirmReset = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<{ message: string }> => {
   const resetInputsData = req.body;
   const responseData = await userService.confirmReset(resetInputsData);
   return {
@@ -34,7 +38,7 @@ const changePassword = async (
   req: AuthedRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<{ message: string }> => {
   const changePasswordInputsData = req.body;
   const storedUser = req.user;
   const responseData = await userService.changePassword(
@@ -53,7 +57,7 @@ const activateAccount = async (
   req: AuthedRequest,
   res: Response,
   next: NextFunction
-) => {
+): Promise<{ message: string }> => {
   const activateAccountInputsData = req.body;
   const storedUser = req.user;
   const responseData = await userService.activateAccount(
@@ -68,7 +72,11 @@ const activateAccount = async (
 //@desc   logout user
 //@route  POST /api/users/logout
 //@access private
-const logoutUser = (req: Request, res: Response, next: NextFunction) => {
+const logoutUser = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): { message: string } => {
   const responseData = userService.logoutUser(res);
   return {
     message: responseData.message,
@@ -82,19 +90,17 @@ const editUserProfile = async (
   res: Response,
   next: NextFunction
 ): Promise<IUserResponse> => {
-  const userObj = {
+  const editUserProfileInputsData: Partial<IUser> = {
     //for TS
     name: {
       firstName: req.body?.name?.firstName,
       lastName: req.body?.name?.lastName,
     },
     email: req.body?.email,
-    location: req.body?.location?.governorate,
+    locationUser: req.body?.locationUser?.governorate,
     gender: req.body?.gender,
     phone: req.body?.phone,
   };
-  const editUserProfileInputsData = userObj;
-  // const editUserProfileInputsData: Partial<IUser> = req.body;
   const storedUser = req.user;
   const responseData = await userService.editUserProfile(
     editUserProfileInputsData,
@@ -120,7 +126,7 @@ const getUserProfileData = (
   req: AuthedRequest,
   res: Response,
   next: NextFunction
-) => {
+): IUserResponse => {
   const storedUser = req.user;
   const responseData = userService.getUserProfileData(storedUser);
   return {

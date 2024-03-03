@@ -110,11 +110,11 @@ const activateAccount = async (
     message: 'account has been activated successfully',
   };
 };
-const logoutUser = (res) => {
+const logoutUser = (res:Response):{message:string} => {
   userUtils.logout(res);
   return { message: 'logout' };
 };
-const getUserProfileData = (user: IUserDocument) => {
+const getUserProfileData = (user: IUserDocument):{user:IUserDocument} => {
   return { user: user };
 };
 const editUserProfile = async (
@@ -132,7 +132,7 @@ const editUserProfile = async (
   )
     throw new BadRequestError('cant edit that');
 
-  let { email = undefined } = { ...reqBody };
+  const { email = undefined } = { ...reqBody };
   if (email) {
     //if the edit for email
     // const alreadyRegisteredEmail = await User.findOne({ email });
@@ -143,11 +143,11 @@ const editUserProfile = async (
       email
     ); //email is the NewEmail
     const userObj: Partial<IUserDocument> = {
-      name: userWithEmailUpdated?.user?.name,
-      email: userWithEmailUpdated?.user?.email,
-      locationUser: userWithEmailUpdated?.user?.locationUser,
-      gender: userWithEmailUpdated?.user?.gender,
-      phone: userWithEmailUpdated?.user?.phone,
+      name: userWithEmailUpdated.user.name,
+      email: userWithEmailUpdated.user.email,
+      locationUser: userWithEmailUpdated.user.locationUser,
+      gender: userWithEmailUpdated.user.gender,
+      phone: userWithEmailUpdated.user.phone,
     };
     return {
       emailAlert: true,

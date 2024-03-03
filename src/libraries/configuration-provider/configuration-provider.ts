@@ -2,7 +2,7 @@ import convict from 'convict';
 
 let convictConfigurationProvider: convict.Config<any> | undefined;
 
-export function initializeAndValidate(schema) {
+export function initializeAndValidate(schema: string | convict.Schema<any>) {
     convictConfigurationProvider = convict(schema);
     convictConfigurationProvider.validate();
 }
