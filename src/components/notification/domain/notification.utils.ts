@@ -8,7 +8,7 @@ const getAllNotifications = async (receiverType:string,receiverId:string) => {
 }
 
 const markNotificationAsRead = async (receiverType:string,receiverId:string,notificationId:string) => {
-    const notification = await notificationRepository.getNotification(receiverType, receiverId, notificationId);
+    const notification = await notificationRepository.getNotificationById(receiverType, receiverId, notificationId);
     
     if(!notification)throw new NotFoundError("Notification Not Found");
 
@@ -19,7 +19,20 @@ const markNotificationAsRead = async (receiverType:string,receiverId:string,noti
     return notification;
 }
 
+const deleteNotification = async (receiverType:string,receiverId:string,notificationId:string) => {
+    const notification = await notificationRepository.getNotificationById(receiverType, receiverId, notificationId);
+    
+    if(!notification)throw new NotFoundError("Notification Not Found");
+
+    const deletedNotification = await notificationRepository.deleteNotificationById(receiverType, receiverId, notificationId);
+
+    if(!deletedNotification)throw new NotFoundError("Notification Not Found");
+
+    return notification;
+}
+
 export const notificationUtils = {
     getAllNotifications,
-    markNotificationAsRead
+    markNotificationAsRead,
+    deleteNotification,
 };

@@ -1,54 +1,55 @@
 import express, { Application } from 'express';
 import logger from '../../../../utils/logger.js';
-import {auth,isActivated} from '../../../auth/shared/index.js';
-import {notificationUseCase} from '../../domain/notification.use-case.js';
+import { auth, isActivated } from '../../../auth/shared/index.js';
+import { notificationUseCase } from '../../domain/notification.use-case.js';
 
 export default function defineRoutes(expressApp: Application) {
     const router = express.Router();
 
-    router.get(
-        '/',
-        auth,
-        isActivated,
-        async (req, res, next) => {
-            try {
-                logger.info(
-                    `Notification API was called to get all notifications`
-                );
-                const getAllNotificationsResponse = await notificationUseCase.getAllNotifications(
-                    req,
-                    res,
-                    next
-                );
-                return res.json(getAllNotificationsResponse);
-            } catch (error) {
-                next(error);
-                return undefined;
-            }
+    router.get('/', auth, isActivated, async (req, res, next) => {
+        try {
+            logger.info(`Notification API was called to get all notifications`);
+            const getAllNotificationsResponse =
+                await notificationUseCase.getAllNotifications(req, res, next);
+            return res.json(getAllNotificationsResponse);
+        } catch (error) {
+            next(error);
+            return undefined;
         }
-    );
+    });
 
-    
-    router.put(
-        '/:id',
-        auth,
-        isActivated,
-        async (req, res, next) => {
-            try {
-                logger.info(
-                    `Notification API was called to mark notification as read`
-                );
-                const markNotificationAsReadResponse = await notificationUseCase.markNotificationAsRead(
+    router.route('/:id').put(auth, isActivated, async (req, res, next) => {
+        try {
+            logger.info(
+                `Notification API was called to mark notification as read`
+            );
+            const markNotificationAsReadResponse =
+                await notificationUseCase.markNotificationAsRead(
                     req,
                     res,
                     next
                 );
-                return res.json(markNotificationAsReadResponse);
-            } catch (error) {
-                next(error);
-                return undefined;
-            }
+            return res.json(markNotificationAsReadResponse);
+        } catch (error) {
+            next(error);
+            return undefined;
         }
-    );
+    }).delete(auth, isActivated, async (req, res, next) => {
+        try {
+            logger.info(
+                `Notification API was called to delete notification`
+            );
+            const deleteNotificationResponse =
+                await notificationUseCase.deleteNotification(
+                    req,
+                    res,
+                    next
+                );
+            return res.json(deleteNotificationResponse);
+        } catch (error) {
+            next(error);
+            return undefined;
+        }
+    });
     expressApp.use('/api/notifications', router);
 }

@@ -18,8 +18,18 @@ const markNotificationAsRead = async (receiverType:string,receiverId:string,noti
     };
 }
 
+const deleteNotification = async (receiverType:string,receiverId:string,notificationId:string) => {
+    const notification = await notificationUtils.deleteNotification(receiverType,receiverId,notificationId);
+
+    return {
+        message: "Notification Is Deleted Successfully",
+        notification: notification,
+    };
+}
+
 
 export const notificationService = {
     getAllNotifications,
-    markNotificationAsRead
+    markNotificationAsRead,
+    deleteNotification,
 }; 

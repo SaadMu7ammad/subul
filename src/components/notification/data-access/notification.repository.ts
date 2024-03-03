@@ -1,4 +1,7 @@
-import { Notification, NotificationDocument } from './interfaces/notification.interface.js';
+import {
+    Notification,
+    NotificationDocument,
+} from './interfaces/notification.interface.js';
 import NotificationModel from './models/notification.model.js';
 
 export class NotificationRepository {
@@ -15,12 +18,26 @@ export class NotificationRepository {
         return notification;
     }
 
-    async getNotification(
+    async getNotificationById(
         receiverType: string,
         receiverId: string,
         notificationId: string
     ) {
-        const notification : NotificationDocument | null = await NotificationModel.findOne({
+        const notification: NotificationDocument | null =
+            await NotificationModel.findOne({
+                _id: notificationId,
+                'receiver.receiverType': receiverType,
+                'receiver.receiverId': receiverId,
+            });
+        return notification;
+    }
+
+    async deleteNotificationById(
+        receiverType: string,
+        receiverId: string,
+        notificationId: string
+    ) {
+        const notification = await NotificationModel.findOneAndDelete({
             _id: notificationId,
             'receiver.receiverType': receiverType,
             'receiver.receiverId': receiverId,

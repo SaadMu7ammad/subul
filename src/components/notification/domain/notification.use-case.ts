@@ -26,7 +26,22 @@ const markNotificationAsRead = async (req,res,next) => {
         notification: responseData.notification,
     };
 }
+
+const deleteNotification = async (req,res,next) => {
+    const receiverId:mongoose.Types.ObjectId = req.charity?._id || req.user?._id;
+    const receiverType = req.charity ? "Charity" : "User";
+
+    const notificationId = req.params.id;
+
+    const responseData = await notificationService.deleteNotification(receiverType,receiverId.toString(),notificationId);
+
+    return {
+        message: responseData.message,
+        notification: responseData.notification,
+    };
+}
 export const notificationUseCase = {
     getAllNotifications,
-    markNotificationAsRead
+    markNotificationAsRead,
+    deleteNotification,
 };
