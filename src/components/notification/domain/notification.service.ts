@@ -4,7 +4,7 @@ const getAllNotifications = async (receiverType:string,receiverId:string) => {
     const notifications = await notificationUtils.getAllNotifications(receiverType,receiverId);
 
     return {
-        message: "All Notifications Fetch Successfully",
+        message: "All Notifications Fetched Successfully",
         notifications: notifications,
     };
 }

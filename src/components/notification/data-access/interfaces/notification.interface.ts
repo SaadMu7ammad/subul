@@ -19,7 +19,7 @@ import { ICharity } from "../../../charity/data-access/interfaces/charity.interf
  */
 export type NotificationReceiver = {
   receiverType: "Charity" | "User" ;
-  receiverId:(IUser["_id"] | IUser | ICharity["_id"] | ICharity)[]; 
+  receiverId:IUser["_id"] | IUser | ICharity["_id"] | ICharity; 
 };
 
 /**
@@ -35,9 +35,9 @@ export type Notification = {
   message: string;
   read?: boolean;
   receiver: NotificationReceiver;
-  createdAt: Date;
-  maxAge: number;
-  _id: mongoose.Types.ObjectId;
+  createdAt: Date|number;
+  maxAge?: number;
+  // _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -116,7 +116,7 @@ export type NotificationSchema = mongoose.Schema<
 export type NotificationReceiverDocument =
   mongoose.Document<mongoose.Types.ObjectId> & {
     receiverType: "Charity" | "User" ;
-    receiverId:(IUser["_id"] | IUser | ICharity["_id"] | ICharity)[]; 
+    receiverId:IUser["_id"] | IUser | ICharity["_id"] | ICharity; 
   };
 
 /**
@@ -136,7 +136,7 @@ export type NotificationDocument = mongoose.Document<
     message: string;
     read?: boolean;
     receiver: NotificationReceiverDocument;
-    createdAt: Date;
+    createdAt: Date|number;
     _id: mongoose.Types.ObjectId;
   };
 
