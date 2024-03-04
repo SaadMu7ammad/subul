@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
-import { OnlineCardService } from './onlineCards.service.js';
-import { AuthedRequest } from '../../../../components/auth/user/data-access/auth.interface.js';
-import { IPaymentInfoData } from '../payment.interface.js';
+import { NextFunction,  Response } from 'express';
+import { OnlineCardService } from './onlineCards.service';
+import { AuthedRequest } from '../../../../components/auth/user/data-access/auth.interface';
+import { IPaymentInfoData } from '../payment.interface';
 const payWithOnlineCard = async (
     req: AuthedRequest,
     res: Response,

@@ -2,15 +2,15 @@ import express, { Application } from 'express';
 import {
     imageAssertion,
     resizeImg,
-} from '../../../../libraries/uploads/components/images/handlers.js';
-import { postCaseValidation } from '../../../../libraries/validation/components/case/postCaseValidation.js';
-import { editCaseValidation } from '../../../../libraries/validation/components/case/editCaseValidation.js';
-import { validate } from '../../../../libraries/validation/index.js';
-import { deleteOldImgs } from '../../../../utils/deleteFile.js';
-import { auth, isConfirmed } from '../../../auth/shared/index.js';
-import { caseUseCase } from '../../domain/case.use-case.js';
-import logger from '../../../../utils/logger.js';
-import { getAllCasesValidation } from '../../../../libraries/validation/components/case/getAllCasesValidation.js';
+} from '../../../../libraries/uploads/components/images/handlers';
+import { postCaseValidation } from '../../../../libraries/validation/components/case/postCaseValidation';
+import { editCaseValidation } from '../../../../libraries/validation/components/case/editCaseValidation';
+import { validate } from '../../../../libraries/validation/index';
+import { deleteOldImgs } from '../../../../utils/deleteFile';
+import { auth, isConfirmed } from '../../../auth/shared/index';
+import { caseUseCase } from '../../domain/case.use-case';
+import logger from '../../../../utils/logger';
+import { getAllCasesValidation } from '../../../../libraries/validation/components/case/getAllCasesValidation';
 
 export default function defineRoutes(expressApp:Application) {
     const router = express.Router();

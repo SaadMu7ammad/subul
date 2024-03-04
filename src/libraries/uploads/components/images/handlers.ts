@@ -1,8 +1,8 @@
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
-import { BadRequestError } from '../../../errors/components/index.js';
-import { getImageConfiguration, saveImg } from '../index.js';
+import { BadRequestError } from '../../../errors/components/index';
+import { getImageConfiguration, saveImg } from '../index';
 
 const multerStorage = multer.memoryStorage();
 

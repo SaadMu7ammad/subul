@@ -1,6 +1,6 @@
-import { ICaseDocument, ICase, SortObj } from './interfaces/case.interface.js';
-import Case from './models/case.model.js';
-import { CaseDao } from './interfaces/case.dao.js';
+import { ICaseDocument, ICase } from './interfaces/case.interface';
+import Case from './models/case.model';
+import { CaseDao } from './interfaces/case.dao';
 
 export class CaseRepository implements CaseDao {
     createCase = async (caseData:ICase): Promise<ICaseDocument> => {

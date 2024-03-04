@@ -1,4 +1,4 @@
-import { param, query } from 'express-validator';
+import {  query } from 'express-validator';
 
 const getAllCasesValidation = [
     query('sort')

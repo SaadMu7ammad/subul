@@ -1,18 +1,14 @@
-import { body } from 'express-validator';
 import {
-  bankAccountValidation,
   currencyValidation,
   descriptionValidation,
   emailValidation,
-  fawryValidation,
   governorateValidation,
   nameValidation,
   passwordValidation,
-  vodafoneCashValidation,
   contactValidation,
   charityInfoValidation,
   phoneValidation,
-} from './allCharityValidation.js';
+} from './allCharityValidation';
 
 const registerCharityValidation = [
   emailValidation,

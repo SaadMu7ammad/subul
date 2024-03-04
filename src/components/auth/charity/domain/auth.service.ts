@@ -1,9 +1,9 @@
-import generateToken from '../../../../utils/generateToken.js';
+import generateToken from '../../../../utils/generateToken';
 import {
   generateResetTokenTemp,
   setupMailSender,
-} from '../../../../utils/mailer.js';
-import { authCharityUtils } from './auth.utils.js';
+} from '../../../../utils/mailer';
+import { authCharityUtils } from './auth.utils';
 
 const authCharity = async (reqBody, res) => {
   const { email, password } = reqBody;

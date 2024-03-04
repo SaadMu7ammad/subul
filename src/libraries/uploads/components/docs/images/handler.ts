@@ -1,8 +1,8 @@
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
-import { saveImg } from '../../index.js';
-import { BadRequestError } from '../../../../errors/components/index.js';
+import { saveImg } from '../../index';
+import { BadRequestError } from '../../../../errors/components/index';
 //memoryStorage
 const multerFilterOnlyImgs = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -30,7 +30,7 @@ const uploadDocs = upload.fields([
 async function processDocs(docsKey, ref, req) {
   return Promise.all(
     ref.map(async (obj, indx:number) => {
-      const ex = obj.mimetype.split('/')[1];
+      // const ex = obj.mimetype.split('/')[1];
       const uniquePrefix:string = uuidv4();
       const fileName:string = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
       //   req.body.docsSent.push(fileName);

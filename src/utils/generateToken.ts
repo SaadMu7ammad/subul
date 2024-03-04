@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import * as configurationProvider from '../libraries/configuration-provider/index.js'
+import * as configurationProvider from '../libraries/configuration-provider/index'
 const generateToken = (res, id, payloadType:string) => {
     let payload:object|{charityId:string}|{userId:string}={};
     if(payloadType === 'user'){

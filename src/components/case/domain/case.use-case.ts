@@ -1,5 +1,5 @@
-import { ICase, ICaseDocument, GetAllCasesQueryParams } from '../data-access/interfaces/case.interface.js';
-import { caseService } from './case.service.js';
+import { ICase, ICaseDocument, GetAllCasesQueryParams } from '../data-access/interfaces/case.interface';
+import { caseService } from './case.service';
 
 const addCase = async (req, res, next) => {
     const caseData:ICase = req.body;

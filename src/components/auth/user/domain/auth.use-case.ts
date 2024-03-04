@@ -1,4 +1,4 @@
-import { authUserService } from './auth.service.js';
+import { authUserService } from './auth.service';
 import express, { Request, Response, NextFunction } from 'express';
 import { IUser } from '../../../user/data-access/interfaces/user.interface.js';
 import { AuthResponseData } from '../data-access/auth.interface.js';

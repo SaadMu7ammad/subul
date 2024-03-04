@@ -1,7 +1,7 @@
-import { createPayment } from '../payment.service.js';
-import * as configurationProvider from '../../../configuration-provider/index.js';
-import { IPaymentInfoData } from '../payment.interface.js';
-import { IUser } from '../../../../components/user/data-access/interfaces/user.interface.js';
+import { createPayment } from '../payment.service';
+import * as configurationProvider from '../../../configuration-provider/index';
+import { IPaymentInfoData } from '../payment.interface';
+import { IUser } from '../../../../components/user/data-access/interfaces/user.interface';
 const payWithOnlineCard = async (reqBody:IPaymentInfoData, user:IUser) => {
   const { amount, charityId, caseId, caseTitle }:{amount:number, charityId:string, caseId:string, caseTitle:string} = reqBody;
   const { orderId, tokenThirdStep } = await createPayment(

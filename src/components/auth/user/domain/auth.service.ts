@@ -1,39 +1,36 @@
 import { Response } from 'express';
-import { authUserUtils } from './auth.utils.js';
-import generateToken from '../../../../utils/generateToken.js';
+import { authUserUtils } from './auth.utils';
+import generateToken from '../../../../utils/generateToken';
 import {
   generateResetTokenTemp,
   setupMailSender,
-} from '../../../../utils/mailer.js';
-import { IUser } from '../../../user/data-access/interfaces/user.interface.js';
-import { UserCheckResult } from '../data-access/auth.interface.js';
-import { AuthResponseData } from '../data-access/auth.interface.js';
-import { AuthData } from '../data-access/auth.interface.js';
-import { RegisterData } from '../data-access/auth.interface.js';
-import { UserResponse } from '../data-access/auth.interface.js';
-import { BadRequestError } from '../../../../libraries/errors/components/index.js';
+} from '../../../../utils/mailer';
+import {
+  IUser,
+  IUserDocument,
+  IUserResponse,
+} from '../../../user/data-access/interfaces/user.interface';
+import { Response } from 'express';
+import { IloginData } from '../data-access/auth.interface';
 
 const authUser = async (
-  reqBody: AuthData,
+  reqBody: IloginData,
   res: Response
-): Promise<AuthResponseData> => {
-  // const { email, password }: { email: string; password: string } = reqBody;
-  const { email, password } = reqBody;
+): Promise<IUserResponse> => {
+  const { email, password }: { email: string; password: string } = reqBody;
+  // if (!email || !password) { 👁️👁️👁️
+  //   // return res.status(400).json({ error: 'Email and password are required' });
+  //   throw new BadRequestError('Email and password are required');
+  // }
+  const userResponse = await authUserUtils.checkUserPassword(email, password);
 
-  if (!email || !password) {
-    // return res.status(400).json({ error: 'Email and password are required' });
-    throw new BadRequestError('Email and password are required');
-  }
-
-  // All user & bool value👇
-  const userResponse: UserCheckResult = await authUserUtils.checkUserPassword(
-    email,
-    password
-  );
-
-  if (!userResponse.user.email || !userResponse.user.name) {
-    throw new BadRequestError('User registration fields cannot be empty');
-  }
+  // const userResponse: UserCheckResult = await authUserUtils.checkUserPassword( 👁️👁️👁️
+  //   email,
+  //   password
+  // );
+  // if (!userResponse.user.email || !userResponse.user.name) {👁️👁️👁️
+  //   throw new BadRequestError('User registration fields cannot be empty');
+  // }
 
   const token: string = generateToken(res, userResponse.user._id, 'user');
 
@@ -73,12 +70,11 @@ const authUser = async (
     };
   }
 };
-
 const registerUser = async (
   reqBody: RegisterData,
   _res: Response
 ): Promise<{ user: UserResponse }> => {
-  console.log('reqBody', reqBody);
+  // console.log('reqBody', reqBody);
 
   const newCreatedUser = await authUserUtils.createUser(reqBody);
   // generateToken(res, newCreatedUser.user._id, 'user');

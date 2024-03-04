@@ -3,19 +3,14 @@ import {
   BadRequestError,
   NotFoundError,
   UnauthenticatedError,
-} from '../../../../libraries/errors/components/index.js';
-import { authUserRepository } from '../data-access/user.repository.js';
-import { IUser } from '../../../user/data-access/interfaces/user.interface.js';
-import { IUserDocument } from '../../../user/data-access/interfaces/user.interface.js';
-import { UserCheckResult } from '../data-access/auth.interface.js';
-import { RegisterData } from '../data-access/auth.interface.js';
-
+} from '../../../../libraries/errors/components/index';
+import { authUserRepository } from '../data-access/user.repository';
+import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 const checkUserPassword = async (
   email: string,
   password: string
 ): Promise<UserCheckResult> => {
   const user = (await authUserRepository.findUser(email)) as IUserDocument;
-
   if (!user) throw new NotFoundError('email not found');
   const isMatch: boolean = await bcryptjs.compare(password, user.password);
   if (!isMatch) {

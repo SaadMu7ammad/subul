@@ -1,4 +1,4 @@
-import { caseUtils } from './case.utils.js';
+import { caseUtils } from './case.utils';
 import {
     ICase,
     ICaseDocument,
@@ -6,7 +6,7 @@ import {
     GetAllCasesQueryParams,
     PaginationObj,
     SortObj,
-} from '../data-access/interfaces/case.interface.js';
+} from '../data-access/interfaces/case.interface';
 const addCase = async (caseData: ICase, image: string, charity) => {
     const newCase: ICaseDocument = await caseUtils.createCase({
         ...caseData,

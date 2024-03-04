@@ -3,31 +3,31 @@ import * as path from 'path';
 import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import connectDB from './config/db.js';
-import logger from './utils/logger.js';
+import connectDB from './config/db';
+import logger from './utils/logger';
 //Configuration ⚙️
-import * as configurationProvider from './libraries/configuration-provider/index.js';
-import configurationSchema from './config/config.js';
+import * as configurationProvider from './libraries/configuration-provider/index';
+import configurationSchema from './config/config';
 //Errors ⛔️
-import { NotFound, errorHandler } from './libraries/errors/index.js';
+import { NotFound, errorHandler } from './libraries/errors/index';
 //Routes 🛤️
-import transactionRoutes from './components/transaction/entry-points/api/transaction.routes.js';
-import userRoutes from './components/user/entry-points/api/user.routes.js';
-import authUserRoutes from './components/auth/user/entry-points/api/auth.routes.js';
-import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes.js';
-import charityRoutes from './components/charity/entry-points/api/charity.routes.js';
-import casesRoutes from './components/case/entry-points/api/case.routes.js';
-import adminRoutes from './components/admin/entry-points/api/admin.routes.js';
+import transactionRoutes from './components/transaction/entry-points/api/transaction.routes';
+import userRoutes from './components/user/entry-points/api/user.routes';
+import authUserRoutes from './components/auth/user/entry-points/api/auth.routes';
+import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes';
+import charityRoutes from './components/charity/entry-points/api/charity.routes';
+import casesRoutes from './components/case/entry-points/api/case.routes';
+import adminRoutes from './components/admin/entry-points/api/admin.routes';
 
 dotenv.config();
 
 configurationProvider.initializeAndValidate(configurationSchema);
 
-const __dirname = path.resolve();
-const port:number = configurationProvider.getValue('environment.port');
-const host:string = configurationProvider.getValue('environment.host');
+// const __dirname = path.resolve();
+const port: number = configurationProvider.getValue('environment.port');
+const host: string = configurationProvider.getValue('environment.host');
 
-const app:Application = express();
+const app: Application = express();
 app.use(
   cors({
     origin: 'https://charity-proj.netlify.app',
@@ -56,10 +56,13 @@ app.get('/', (req, res) => {
 
 app.use(NotFound);
 app.use(errorHandler);
-await connectDB();
-const server = app.listen(port, () => {
-  logger.info(`server is listenting http://${host}:${port}`);
-});
+const server = async () => {
+  await connectDB();
+  app.listen(port, () => {
+    logger.info(`server is listenting http://${host}:${port}`);
+  });
+}
+server();
 //handling errors outside express
 // process.on('unhandledRejection', (err) => {
 //   console.log(`unhandledRejection Errors + ${err.name} | ${err.message}`);

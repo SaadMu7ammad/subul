@@ -1,6 +1,6 @@
-import { NotFoundError } from '../../../libraries/errors/components/not-found.js';
-import { deleteOldImgs } from '../../../utils/deleteFile.js';
-import { CaseRepository } from '../data-access/case.repository.js';
+import { NotFoundError } from '../../../libraries/errors/components/not-found';
+import { deleteOldImgs } from '../../../utils/deleteFile';
+import { CaseRepository } from '../data-access/case.repository';
 import {
     FilterObj,
     GetAllCasesQueryParams,
@@ -8,7 +8,7 @@ import {
     ICase,
     PaginationObj,
     ICaseDocument
-} from '../data-access/interfaces/case.interface.js';
+} from '../data-access/interfaces/case.interface';
 
 const caseRepository = new CaseRepository();
 

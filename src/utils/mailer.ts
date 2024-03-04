@@ -1,8 +1,8 @@
 import bcryptjs from 'bcryptjs';
 import * as crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import logger from './logger.js';
-import * as configurationProvider from '../libraries/configuration-provider/index.js';
+import logger from './logger';
+import * as configurationProvider from '../libraries/configuration-provider/index';
 import { IUser } from '../components/user/data-access/interfaces/user.interface.js';
 
 const generateResetTokenTemp = async () => {

@@ -9,7 +9,7 @@ import {
     genderValidtion,
     helpedNumbersValidation,
     targetDonationAmountValidation,
-} from './allCaseValidation.js';
+} from './allCaseValidation';
 const postCaseValidation = [
     titleValidation,
     descriptionValidation,

@@ -1,5 +1,5 @@
-import { NotFoundError } from '../../errors/components/index.js';
-import * as configurationProvider from '../../configuration-provider/index.js';
+import { NotFoundError } from '../../errors/components/index';
+import * as configurationProvider from '../../configuration-provider/index';
 const getTokenStepOne = async () => {
   const request = await fetch('https://accept.paymob.com/api/auth/tokens', {
     method: 'post',

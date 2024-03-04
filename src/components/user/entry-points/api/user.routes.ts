@@ -1,16 +1,16 @@
-import express, { Router, Application } from 'express';
-import { userUseCase } from '../../domain/user.use-case.js';
-import { validate } from '../../../../libraries/validation/index.js';
-import { auth, isActivated } from '../../../auth/shared/index.js';
-import { editUserProfileValidation } from '../../../../libraries/validation/components/user/editUserProfileValidation.js';
+import express, {  Application } from 'express';
+import { userUseCase } from '../../domain/user.use-case';
+import { validate } from '../../../../libraries/validation/index';
+import { auth, isActivated } from '../../../auth/shared/index';
+import { editUserProfileValidation } from '../../../../libraries/validation/components/user/editUserProfileValidation';
 import {
   changePasswordUserValidation,
   confirmResetUserValidation,
   requestResetEmailUserValidation,
   tokenUserValidation,
-} from '../../../../libraries/validation/components/user/allUserValidation.js';
-import { getAllTransactions } from '../../../transaction/domain/transaction.use-case.js';
-import logger from '../../../../utils/logger.js';
+} from '../../../../libraries/validation/components/user/allUserValidation';
+import { getAllTransactions } from '../../../transaction/domain/transaction.use-case';
+import logger from '../../../../utils/logger';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
