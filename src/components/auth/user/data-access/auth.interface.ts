@@ -1,6 +1,8 @@
+import mongoose from 'mongoose';
 import { Request } from 'express';
 import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 import { ICharityDocument } from '../../../charity/data-access/interfaces/charity.interface';
+import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
 export interface AuthedRequest extends Request {
   user?: IUserDocument;
   charity?: ICharityDocument;
@@ -9,8 +11,10 @@ export interface IloginData {
   email: string;
   password: string;
 }
-
-import mongoose from 'mongoose';
+// export interface AuthData {
+//   email: string;
+//   password: string;
+// }
 export interface AuthedRequest extends Request {
   user?: IUserDocument;
   charity?: ICharityDocument;
@@ -20,15 +24,11 @@ export interface AuthResponseData {
   emailAlert: boolean;
   token?: string;
 }
-export interface UserCheckResult {
+export interface IUserCheckResult {
   user: IUserDocument;
   isMatch: boolean;
 }
-export interface AuthData {
-  email: string;
-  password: string;
-}
-export interface RegisterData {
+export interface IRegisterData {
   email: string;
   name: {
     firstName: string;
@@ -39,7 +39,7 @@ export interface RegisterData {
   gender: 'male' | 'female';
   locationUser: UserLocation;
 }
-export interface UserResponse {
+export interface IAuthUserResponse {
   _id: mongoose.Types.ObjectId;
   name: {
     firstName: string;

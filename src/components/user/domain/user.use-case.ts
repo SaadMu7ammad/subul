@@ -1,5 +1,9 @@
 import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
-import { IUser, IUserResponse } from '../data-access/interfaces/user.interface';
+import {
+  IUser,
+  IUserDocument,
+  IUserResponse,
+} from '../data-access/interfaces/user.interface';
 import { userService } from './user.service';
 import { Request, Response, NextFunction } from 'express';
 //@desc   reset password
@@ -43,7 +47,7 @@ const changePassword = async (
   const storedUser = req.user;
   const responseData = await userService.changePassword(
     changePasswordInputsData,
-    storedUser
+    storedUser || ({} as IUserDocument) // Ensure storedUser is defined or provide a default empty object
   );
   return {
     message: responseData.message,
@@ -62,7 +66,7 @@ const activateAccount = async (
   const storedUser = req.user;
   const responseData = await userService.activateAccount(
     activateAccountInputsData,
-    storedUser,
+    storedUser || ({} as IUserDocument),
     res
   );
   return {
@@ -104,7 +108,7 @@ const editUserProfile = async (
   const storedUser = req.user;
   const responseData = await userService.editUserProfile(
     editUserProfileInputsData,
-    storedUser
+    storedUser || ({} as IUserDocument)
   );
   if (responseData.emailAlert) {
     return {
@@ -128,7 +132,7 @@ const getUserProfileData = (
   next: NextFunction
 ): IUserResponse => {
   const storedUser = req.user;
-  const responseData = userService.getUserProfileData(storedUser);
+  const responseData = userService.getUserProfileData(storedUser!);
   return {
     user: responseData.user,
     message: 'User Profile Fetched Successfully',

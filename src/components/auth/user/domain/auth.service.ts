@@ -5,13 +5,13 @@ import {
   generateResetTokenTemp,
   setupMailSender,
 } from '../../../../utils/mailer';
+import { IUserResponse } from '../../../user/data-access/interfaces/user.interface';
 import {
-  IUser,
-  IUserDocument,
-  IUserResponse,
-} from '../../../user/data-access/interfaces/user.interface';
-import { Response } from 'express';
-import { IloginData } from '../data-access/auth.interface';
+  IAuthUserResponse,
+  IRegisterData,
+  IloginData,
+} from '../data-access/auth.interface';
+import { BadRequestError } from '../../../../libraries/errors/components';
 
 const authUser = async (
   reqBody: IloginData,
@@ -34,7 +34,7 @@ const authUser = async (
 
   const token: string = generateToken(res, userResponse.user._id, 'user');
 
-  const userObj: UserResponse = {
+  const userObj: IAuthUserResponse = {
     _id: userResponse.user._id,
     name: userResponse.user.name,
     email: userResponse.user.email,
@@ -70,10 +70,11 @@ const authUser = async (
     };
   }
 };
+
 const registerUser = async (
-  reqBody: RegisterData,
+  reqBody: IRegisterData,
   _res: Response
-): Promise<{ user: UserResponse }> => {
+): Promise<{ user: IAuthUserResponse }> => {
   // console.log('reqBody', reqBody);
 
   const newCreatedUser = await authUserUtils.createUser(reqBody);
@@ -89,7 +90,8 @@ const registerUser = async (
     `hi ${firstName + ' ' + lastName} ` +
       ' we are happy that you joined our community ... keep spreading goodness with us'
   );
-  const userObj: UserResponse = {
+
+  const userObj: IAuthUserResponse = {
     _id: newCreatedUser.user._id,
     name: newCreatedUser.user.name,
     email: newCreatedUser.user.email,

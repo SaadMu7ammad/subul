@@ -37,7 +37,8 @@ const resetUser = async (reqBody: dataForResetEmail) => {
 };
 const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
   let updatedUser = await userUtils.checkUserIsExist(reqBody.email);
-  if (!updatedUser.user.verificationCode) throw new NotFoundError('code not exist');
+  if (!updatedUser.user.verificationCode)
+    throw new NotFoundError('code not exist');
   const isEqual = checkValueEquality(
     updatedUser.user.verificationCode,
     reqBody.token
@@ -89,7 +90,8 @@ const activateAccount = async (
   if (storedUser.emailVerification.isVerified) {
     return { message: 'account already is activated' };
   }
-  if(!storedUser.verificationCode)throw new NotFoundError('verificationCode not found')
+  if (!storedUser.verificationCode)
+    throw new NotFoundError('verificationCode not found');
   const isMatch = checkValueEquality(
     storedUser.verificationCode,
     reqBody.token
@@ -110,11 +112,11 @@ const activateAccount = async (
     message: 'account has been activated successfully',
   };
 };
-const logoutUser = (res:Response):{message:string} => {
+const logoutUser = (res: Response): { message: string } => {
   userUtils.logout(res);
   return { message: 'logout' };
 };
-const getUserProfileData = (user: IUserDocument):{user:IUserDocument} => {
+const getUserProfileData = (user: IUserDocument): { user: IUserDocument } => {
   return { user: user };
 };
 const editUserProfile = async (
@@ -165,7 +167,7 @@ const editUserProfile = async (
   };
   return {
     emailAlert: false,
-    user:userObj,
+    user: userObj,
   };
 };
 export const userService = {

@@ -1,10 +1,10 @@
 import { authUserService } from './auth.service';
-import express, { Request, Response, NextFunction } from 'express';
-import { IUser } from '../../../user/data-access/interfaces/user.interface.js';
-import { AuthResponseData } from '../data-access/auth.interface.js';
-import { AuthedRequest } from '../data-access/auth.interface.js';
-import { AuthData } from '../data-access/auth.interface.js';
-import { UserResponse } from '../data-access/auth.interface.js';
+import { Response, NextFunction } from 'express';
+import { IUser } from '../../../user/data-access/interfaces/user.interface';
+import { AuthResponseData } from '../data-access/auth.interface';
+import { AuthedRequest } from '../data-access/auth.interface';
+import { IloginData } from '../data-access/auth.interface';
+import { IAuthUserResponse } from '../data-access/auth.interface';
 
 //@desc   submit login page
 //@route  POST /api/users/auth
@@ -24,7 +24,7 @@ const authUser = async (
   //   email: req.body.email,
   //   password: req.body.password,
   // };
-  const data: AuthData = {
+  const data: IloginData = {
     email: req.body.email,
     password: req.body.password,
   };
@@ -60,14 +60,14 @@ const registerUser = async (
   req: AuthedRequest,
   res: Response,
   _next: NextFunction
-): Promise<{ user: UserResponse }> => {
+): Promise<{ user: IAuthUserResponse }> => {
   const registerInputsData = req.body;
 
   const responseData = await authUserService.registerUser(
     registerInputsData,
     res
   );
-  const userResponsed: UserResponse = {
+  const userResponsed: IAuthUserResponse = {
     ...responseData.user,
   };
   // console.log('userResponsed', userResponsed);

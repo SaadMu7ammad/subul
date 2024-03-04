@@ -5,11 +5,15 @@ import {
   UnauthenticatedError,
 } from '../../../../libraries/errors/components/index';
 import { authUserRepository } from '../data-access/user.repository';
-import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
+import {
+  IUser,
+  IUserDocument,
+} from '../../../user/data-access/interfaces/user.interface';
+import { IRegisterData, IUserCheckResult } from '../data-access/auth.interface';
 const checkUserPassword = async (
   email: string,
   password: string
-): Promise<UserCheckResult> => {
+): Promise<IUserCheckResult> => {
   const user = (await authUserRepository.findUser(email)) as IUserDocument;
   if (!user) throw new NotFoundError('email not found');
   const isMatch: boolean = await bcryptjs.compare(password, user.password);
@@ -27,7 +31,7 @@ const checkUserIsVerified = (user: IUser): boolean => {
 };
 
 const createUser = async (
-  dataInputs: RegisterData
+  dataInputs: IRegisterData
 ): Promise<{ user: IUser }> => {
   const userExist = await authUserRepository.findUser(dataInputs.email);
   if (userExist) throw new BadRequestError('user is registered already');

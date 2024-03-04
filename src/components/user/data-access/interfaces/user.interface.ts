@@ -1,4 +1,4 @@
-import { Document, Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { ITransactionDocument } from '../../../transaction/data-access/interfaces/transaction.interface';
 
 export interface UserLocation {
@@ -59,11 +59,14 @@ export interface IUser {
   };
   isEnabled: boolean;
   transactions: ITransactionDocument['_id'][];
-  // _id: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   // createdAt: Date;
   // updatedAt: Date;
 }
-export interface IUserDocument extends IUser, Document {}
+
+export interface IUserDocument extends IUser, Document {
+  _id: mongoose.Types.ObjectId;
+}
 
 export interface IUserResponse {
   // emailEdited?: boolean;

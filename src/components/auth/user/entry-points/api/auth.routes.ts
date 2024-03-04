@@ -6,9 +6,9 @@ import {
   registerUserValidation,
 } from '../../../../../libraries/validation/components/user/userAuthValidation';
 import { validate } from '../../../../../libraries/validation/index';
-import { IUser } from '../../../../user/data-access/interfaces/user.interface.js';
-import { AuthedRequest } from '../../data-access/auth.interface.js';
-import { UserResponse } from '../../data-access/auth.interface.js';
+// import { IUser } from '../../../../user/data-access/interfaces/user.interface.js';
+// import { AuthedRequest } from '../../data-access/auth.interface.js';
+import { IAuthUserResponse } from '../../data-access/auth.interface';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -22,7 +22,7 @@ export default function defineRoutes(expressApp: Application) {
         logger.info(`Auth API was called to register User`);
         // const authResponse = await authUseCase.registerUser(req, res, next);
         const response = await authUseCase.registerUser(req, res, next);
-        const authResponse: UserResponse = response.user; // Extract user property as authResponse expects instead of { user }
+        const authResponse: IAuthUserResponse = response.user; // Extract user property as authResponse expects instead of { user }
         return res.json(authResponse);
       } catch (error) {
         next(error);

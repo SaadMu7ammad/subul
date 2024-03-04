@@ -61,7 +61,7 @@ const server = async () => {
   app.listen(port, () => {
     logger.info(`server is listenting http://${host}:${port}`);
   });
-}
+};
 server();
 //handling errors outside express
 // process.on('unhandledRejection', (err) => {
