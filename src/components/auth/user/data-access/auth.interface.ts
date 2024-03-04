@@ -5,6 +5,16 @@ export interface AuthedRequest extends Request {
   user?: IUserDocument;
   charity?: ICharityDocument;
 }
+export interface IloginData {
+  email: string;
+  password: string;
+}
+
+import mongoose from 'mongoose';
+export interface AuthedRequest extends Request {
+  user?: IUserDocument;
+  charity?: ICharityDocument;
+}
 export interface AuthResponseData {
   user: Partial<IUserDocument>;
   emailAlert: boolean;
@@ -36,8 +46,4 @@ export interface UserResponse {
     lastName: string;
   };
   email: string;
-}
-export interface IloginData {
-  email: string;
-  password: string;
 }
