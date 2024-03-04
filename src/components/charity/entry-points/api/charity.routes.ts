@@ -22,10 +22,13 @@ import {
   resizeDoc,
   uploadDocs,
 } from '../../../../libraries/uploads/components/docs/images/handler';
-import { deleteCharityDocs,deleteOldImgs} from '../../../../utils/deleteFile';
-import { uploadDocsReq,resizeDocReq } from '../../../../libraries/uploads/components/docs/images/handler2';
+import { deleteCharityDocs, deleteOldImgs } from '../../../../utils/deleteFile';
+import {
+  uploadDocsReq,
+  resizeDocReq,
+} from '../../../../libraries/uploads/components/docs/images/handler2';
 
-export default function defineRoutes(expressApp:Application) {
+export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
   router.post(
     '/activate',
@@ -145,27 +148,27 @@ export default function defineRoutes(expressApp:Application) {
       }
     }
   );
-    router.put(
-      '/edit-profileImg',
-      auth,
-      isActivated,
-      isConfirmed,
-      imageAssertion,
-      resizeImg,
-      async (req, res, next) => {
-        try {
-          logger.info(`Charity API was called to Edit Profile Img`);
-          const changeProfileImageResponse =
-            await charityUseCase.changeProfileImage(req, res, next);
-          return res.json(changeProfileImageResponse);
-        } catch (error) {
-          next(error);
-          return undefined;
-        }
+  router.put(
+    '/edit-profileImg',
+    auth,
+    isActivated,
+    isConfirmed,
+    imageAssertion,
+    resizeImg,
+    async (req, res, next) => {
+      try {
+        logger.info(`Charity API was called to Edit Profile Img`);
+        const changeProfileImageResponse =
+          await charityUseCase.changeProfileImage(req, res, next);
+        return res.json(changeProfileImageResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
       }
-    );
+    }
+  );
 
-  router.post( 
+  router.post(
     '/request-edit-payment',
     auth,
     isActivated,
@@ -174,19 +177,20 @@ export default function defineRoutes(expressApp:Application) {
     reqEditPaymentMethodsValidation,
     validate,
     resizeDocReq,
-    async(req,res,next)=>{
-      try{
+    async (req, res, next) => {
+      try {
         logger.info(`Charity API was called to Request Edit Payments`);
-        const editCharityPaymentResponse = await charityUseCase.requestEditCharityPayments(req,res,next);
+        const editCharityPaymentResponse =
+          await charityUseCase.requestEditCharityPayments(req, res, next);
         return res.json(editCharityPaymentResponse);
-      }catch(error){
-        deleteCharityDocs(req,'payment');
+      } catch (error) {
+        deleteCharityDocs(req, 'payment');
         next(error);
         return undefined;
       }
     }
   );
-  
+
   router.post(
     '/send-docs',
     auth,

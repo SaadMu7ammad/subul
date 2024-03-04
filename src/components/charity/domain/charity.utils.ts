@@ -9,9 +9,8 @@ import { deleteOldImgs } from '../../../utils/deleteFile';
 import {
   ICharityDocs,
   ICharityDocument,
-  ICharityPaymentMethod,
   ICharityPaymentMethodDocument,
-  ICharityLocation,
+  ICharityLocationDocument,
 } from '../data-access/interfaces/charity.interface';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (
@@ -103,12 +102,12 @@ const changeCharityPasswordWithMailAlert = async (
 const editCharityProfileAddress = async (
   charity: ICharityDocument,
   id: string,
-  updatedLocation: ICharityLocation
+  updatedLocation: ICharityLocationDocument
 ): Promise<{ charity: ICharityDocument }> => {
   //TODO: Should we use Partial<CharityLocationDocument>?
-  for (let i = 0; i < charity.location.length; i++) {
-      if (charity.location[i]) {
-        const location = charity.location[i] as ICharityLocation
+  for (let i = 0; i < charity.charitylocation.length; i++) {
+    if (charity.charitylocation[i]) {
+      const location = charity.charitylocation[i] as ICharityLocationDocument;
       const isMatch: boolean = checkValueEquality(location._id, id);
       if (isMatch) {
         // location = updatedLocation;//make a new id
@@ -126,9 +125,9 @@ const editCharityProfileAddress = async (
 // };
 const addCharityProfileAddress = async (
   charity: ICharityDocument,
-  updatedLocation: ICharityLocation
+  updatedLocation: ICharityLocationDocument
 ): Promise<{ charity: ICharityDocument }> => {
-  charity.location.push(updatedLocation);
+  charity.charitylocation.push(updatedLocation);
   await charity.save();
   return { charity: charity };
 };
@@ -239,7 +238,7 @@ const addPaymentAccounts = async (
 };
 
 const getChangedPaymentMethod = (
-  reqPaymentMethodsObj: ICharityPaymentMethod
+  reqPaymentMethodsObj: ICharityPaymentMethodDocument
 ): string => {
   let changedPaymentMethod: string = '';
 
@@ -256,7 +255,7 @@ const getPaymentMethodIdx = (
   paymentId: string
 ): number => {
   const idx: number = charityPaymentMethodsObj[changedPaymentMethod].findIndex(
-    (paymentMethods: ICharityPaymentMethod) =>
+    (paymentMethods: ICharityPaymentMethodDocument) =>
       paymentMethods._id.toString() === paymentId
   );
 
@@ -265,9 +264,10 @@ const getPaymentMethodIdx = (
 
 const makeTempPaymentObj = (
   selector: string,
-  reqPaymentMethodsObj: ICharityPaymentMethod
-): ICharityPaymentMethod => {
-  const temp: ICharityPaymentMethod = {} as ICharityPaymentMethod;
+  reqPaymentMethodsObj: ICharityPaymentMethodDocument
+): ICharityPaymentMethodDocument => {
+  const temp: ICharityPaymentMethodDocument =
+    {} as ICharityPaymentMethodDocument;
 
   const methodMap = {
     bankAccount: {
@@ -300,7 +300,7 @@ const makeTempPaymentObj = (
 
 const swapPaymentInfo = (
   charityPaymentMethodsObj: ICharityPaymentMethodDocument,
-  temp: ICharityPaymentMethod,
+  temp: ICharityPaymentMethodDocument,
   selector: string,
   idx: number
 ): void => {
@@ -320,7 +320,7 @@ const swapPaymentInfo = (
 
 const addNewPayment = (
   charityPaymentMethodsObj: ICharityPaymentMethodDocument,
-  temp: ICharityPaymentMethod,
+  temp: ICharityPaymentMethodDocument,
   selector: string
 ): void => {
   charityPaymentMethodsObj[selector].push(temp);

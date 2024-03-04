@@ -3,13 +3,14 @@ import {
   NotFoundError,
 } from '../../../libraries/errors/components/index';
 import { ICaseDocument } from '../../case/data-access/interfaces/case.interface';
+import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
 import {  IUserDocument } from '../../user/data-access/interfaces/user.interface';
-import { ITransaction } from '../data-access/interfaces/transaction.interface';
+import { IDataPreCreateTransaction, ITransaction, ITransactionDocument } from '../data-access/interfaces/transaction.interface';
 import { TransactionRepository } from '../data-access/transaction.repository';
 
 const transactionRepository = new TransactionRepository();
 
-const checkPreCreateTransaction = (data) => {
+const checkPreCreateTransaction = (data:IDataPreCreateTransaction) => {
   const {
     charityId,
     caseId,
@@ -34,7 +35,7 @@ const checkPreCreateTransaction = (data) => {
     throw new NotFoundError('no payment method has been chosen');
   }
 };
-const checkCharityIsValidToDonate = (charity) => {
+const checkCharityIsValidToDonate = (charity:ICharityDocument) => {
   if (
     charity.isConfirmed === false ||
     charity.isPending === true ||
@@ -53,14 +54,14 @@ const checkCharityIsValidToDonate = (charity) => {
     );
   }
 };
-const checkCaseIsValidToDonate = (cause) => {
+const checkCaseIsValidToDonate = (cause:ICaseDocument) => {
   if (cause.finished === true || cause.freezed === true) {
     throw new BadRequestError(
       'this case is finished...choose case not completed'
     );
   }
 };
-const donationAmountAssertion = (cause, amount: number) => {
+const donationAmountAssertion = (cause: ICaseDocument, amount: number) => {
   const currentAmount: number = +cause.currentDonationAmount + +amount;
   if (
     +cause.targetDonationAmount < currentAmount &&
@@ -73,11 +74,11 @@ const donationAmountAssertion = (cause, amount: number) => {
   }
   return true;
 };
-const updateTransactionAfterRefund = async (transaction) => {
+const updateTransactionAfterRefund = async (transaction:ITransactionDocument) => {
   transaction.status = 'refunded';
   await transaction.save();
 };
-const updateCaseAfterRefund = async (cause, amount: number) => {
+const updateCaseAfterRefund = async (cause:ICaseDocument, amount: number) => {
   if (cause.finished) cause.finished = false; //re open the case again
   if (cause.currentDonationAmount >= amount)
     cause.currentDonationAmount -= amount;
@@ -135,9 +136,9 @@ const getAllTransactionsPromised = async (user:IUserDocument): Promise<(ITransac
   return allTransactionsPromised;
 };
 const refundUtility = async (
-  transaction: ITransaction,
+  transaction: ITransactionDocument,
   amount: number
-): Promise<ITransaction> => {
+): Promise<ITransactionDocument> => {
   const caseId: string|undefined = transaction?.case?.toString(); //get the id of the case
   if (!caseId) throw new NotFoundError('case id not found');
 
