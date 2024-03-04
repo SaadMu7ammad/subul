@@ -17,7 +17,7 @@ export type FilterQueryParams = Pick<
   'mainType' | 'subType' | 'nestedSubType'
 >;
 export type FilterObj = FilterQueryParams & { charity: string };
-export type SortObj = { [key: string]: number };
+export type SortObj = { [key: string]: 1|-1};
 export type PaginationObj = { page: number; limit: number };
 
 export interface ICaseLocation {

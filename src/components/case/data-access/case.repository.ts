@@ -2,6 +2,7 @@ import {
   ICaseDocument,
   ICase,
   FilterObj,
+  SortObj,
 } from './interfaces/case.interface';
 import CaseModel from './models/case.model';
 import { CaseDao } from './interfaces/case.dao';
@@ -13,7 +14,7 @@ export class CaseRepository implements CaseDao {
   };
 
   getAllCases = async (
-    sortObj,//it need fix or a discussion XXXXXXX
+    sortObj:SortObj,//it need fix or a discussion XXXXXXX
     filterObj: FilterObj,
     page: number,
     limit: number
