@@ -1,6 +1,6 @@
 import {
-    Notification,
-    NotificationDocument,
+    INotification,
+    INotificationDocument,
 } from './interfaces/notification.interface.js';
 import NotificationModel from './models/notification.model.js';
 
@@ -13,8 +13,9 @@ export class NotificationRepository {
         return notifications;
     }
 
-    async createNotification(notificationData: Notification) {
-        const notification = NotificationModel.create(notificationData);
+    async createNotification(notificationData: INotification) {
+        const notification= new NotificationModel(notificationData);
+        await notification.save();
         return notification;
     }
 
@@ -23,7 +24,7 @@ export class NotificationRepository {
         receiverId: string,
         notificationId: string
     ) {
-        const notification: NotificationDocument | null =
+        const notification: INotificationDocument | null =
             await NotificationModel.findOne({
                 _id: notificationId,
                 'receiver.receiverType': receiverType,

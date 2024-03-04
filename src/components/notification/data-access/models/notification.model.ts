@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { INotificationModel, INotificationSchema,INotificationDocument } from '../interfaces/notification.interface';
 
 const notificationReceiverSchema: Schema = new Schema(
     {
@@ -16,7 +17,7 @@ const notificationReceiverSchema: Schema = new Schema(
     { _id: false }
 );
 
-const notificationSchema: Schema = new Schema({
+const notificationSchema: INotificationSchema = new Schema({
     title: {
         type: String,
         required: true,
@@ -43,5 +44,5 @@ const notificationSchema: Schema = new Schema({
     }
 });
 
-const NotificationModel =  mongoose.model('Notification', notificationSchema);
+const NotificationModel : INotificationModel =  mongoose.model<INotificationDocument,INotificationModel>('Notification', notificationSchema);
 export default NotificationModel;

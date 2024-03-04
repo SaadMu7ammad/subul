@@ -17,7 +17,7 @@ import { ICharity } from "../../../charity/data-access/interfaces/charity.interf
  * const notificationObject = notification.toObject();
  * ```
  */
-export type NotificationReceiver = {
+export type INotificationReceiver = {
   receiverType: "Charity" | "User" ;
   receiverId:IUser["_id"] | IUser | ICharity["_id"] | ICharity; 
 };
@@ -30,14 +30,14 @@ export type NotificationReceiver = {
  * const notificationObject = notification.toObject();
  * ```
  */
-export type Notification = {
+export type INotification = {
   title: string;
   message: string;
   read?: boolean;
-  receiver: NotificationReceiver;
+  receiver: INotificationReceiver;
   createdAt: Date|number;
   maxAge?: number;
-  // _id: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -60,7 +60,7 @@ export type NotificationObject = Notification;
  */
 export type NotificationQuery = mongoose.Query<
   any,
-  NotificationDocument,
+  INotificationDocument,
   NotificationQueries
 > &
   NotificationQueries;
@@ -84,8 +84,8 @@ export type NotificationStatics = {};
  * const Notification = mongoose.model<NotificationDocument, NotificationModel>("Notification", NotificationSchema);
  * ```
  */
-export type NotificationModel = mongoose.Model<
-  NotificationDocument,
+export type INotificationModel = mongoose.Model<
+  INotificationDocument,
   NotificationQueries
 > &
   NotificationStatics;
@@ -98,9 +98,9 @@ export type NotificationModel = mongoose.Model<
  * const NotificationSchema: NotificationSchema = new mongoose.Schema({ ... })
  * ```
  */
-export type NotificationSchema = mongoose.Schema<
-  NotificationDocument,
-  NotificationModel,
+export type INotificationSchema = mongoose.Schema<
+  INotificationDocument,
+  INotificationModel,
   NotificationMethods,
   NotificationQueries
 >;
@@ -113,7 +113,7 @@ export type NotificationSchema = mongoose.Schema<
  * const Notification = mongoose.model<NotificationDocument, NotificationModel>("Notification", NotificationSchema);
  * ```
  */
-export type NotificationReceiverDocument =
+export type INotificationReceiverDocument =
   mongoose.Document<mongoose.Types.ObjectId> & {
     receiverType: "Charity" | "User" ;
     receiverId:IUser["_id"] | IUser | ICharity["_id"] | ICharity; 
@@ -127,7 +127,7 @@ export type NotificationReceiverDocument =
  * const Notification = mongoose.model<NotificationDocument, NotificationModel>("Notification", NotificationSchema);
  * ```
  */
-export type NotificationDocument = mongoose.Document<
+export type INotificationDocument = mongoose.Document<
   mongoose.Types.ObjectId,
   NotificationQueries
 > &
@@ -135,8 +135,9 @@ export type NotificationDocument = mongoose.Document<
     title: string;
     message: string;
     read?: boolean;
-    receiver: NotificationReceiverDocument;
+    receiver: INotificationReceiverDocument;
     createdAt: Date|number;
+    maxAge?: number;
     _id: mongoose.Types.ObjectId;
   };
 
