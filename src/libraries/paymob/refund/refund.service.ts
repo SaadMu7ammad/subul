@@ -4,7 +4,7 @@ import {
   NotFoundError,
 } from '../../errors/components/index';
 import { TransactionRepository } from '../../../components/transaction/data-access/transaction.repository';
-const refund = async (transaction_id) => {
+const refund = async (transaction_id:string) => {
   const stepOneToken = await getTransactionByIdService.getTokenStepOne();
   if (!stepOneToken) throw new NotFoundError('no token provided');
   const data = await getTransactionByIdService.getTransactionInfo(

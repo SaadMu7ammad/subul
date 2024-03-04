@@ -12,6 +12,7 @@ export type GetAllCasesQueryParams = {
   subType?: string;
   nestedSubType?: string;
 };
+
 export type FilterQueryParams = Pick<
   GetAllCasesQueryParams,
   'mainType' | 'subType' | 'nestedSubType'

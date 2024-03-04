@@ -100,17 +100,17 @@ const updateCaseAfterDonation = (cause: ICaseDocument, amount: number) => {
   return cause;
 };
 const addTransactionIdToUserTransactionIds = async (
-  user,
+  user:IUserDocument,
   newTransactionId: string
 ) => {
   user.transactions.push(newTransactionId);
   await user.save();
   return user;
 };
-const confirmSavingCase = async (cause) => {
+const confirmSavingCase = async (cause:ICaseDocument) => {
   await cause.save();
 };
-const confirmSavingUser = async (user) => {
+const confirmSavingUser = async (user:IUserDocument) => {
   await user.save();
 };
 const getAllTransactionsPromised = async (user:IUserDocument): Promise<(ITransaction|null)[]>  => {

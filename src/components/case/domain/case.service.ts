@@ -81,7 +81,7 @@ const deleteCase = async (
 
 const editCase = async (
   charity: ICharityDocument,
-  caseData: ICase & { image: string },
+  caseData: ICase & { coverImage: string; image: string[] },
   caseId: string
 ): Promise<ICaseDocumentResponse> => {
   caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);

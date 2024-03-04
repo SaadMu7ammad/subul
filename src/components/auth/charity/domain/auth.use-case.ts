@@ -1,8 +1,10 @@
+import { RequestHandler } from 'express';
+
 import { authCharityService } from './auth.service';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
-const registerCharity = async (req, res, next) => {
+const registerCharity: RequestHandler = async (req, res, next) => {
   const data = {
     email: req.body.email,
     password: req.body.password,
@@ -27,7 +29,7 @@ const registerCharity = async (req, res, next) => {
   };
 };
 
-const authCharity = async (req, res, next) => {
+const authCharity :RequestHandler= async (req, res, next) => {
   const data = {
     email: req.body.email,
     password: req.body.password,

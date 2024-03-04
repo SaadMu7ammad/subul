@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import generateToken from '../../../../utils/generateToken';
 import {
   generateResetTokenTemp,
@@ -5,8 +6,8 @@ import {
 } from '../../../../utils/mailer';
 import { authCharityUtils } from './auth.utils';
 
-const authCharity = async (reqBody, res) => {
-  const { email, password } = reqBody;
+const authCharity = async (reqBody: { email: string; password: string; }, res: Response<any, Record<string, any>>) => {
+  const { email, password }: { email: string; password: string; } = reqBody;
   const charityResponse = await authCharityUtils.checkCharityPassword(
     email,
     password
@@ -48,7 +49,7 @@ const authCharity = async (reqBody, res) => {
     };
   }
 };
-const registerCharity = async (reqBody, res) => {
+const registerCharity = async (reqBody: any, res: any) => {
   const newCreatedCharity = await authCharityUtils.createCharity(reqBody);
   // generateToken(res, newCreatedCharity.charity._id, 'charity');
   await setupMailSender(

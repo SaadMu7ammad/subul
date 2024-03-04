@@ -1,87 +1,139 @@
-import { adminService } from './admin.service';
+// import { NextFunction, Response } from 'express';
 
-const getAllPendingRequestsCharities = async (req, res, next) => {
-  const charities = await adminService.getAllOrOnePendingRequestsCharities();
-  return { allPendingCharities: charities.allPendingCharities };
-};
+// import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
+// import { adminService } from './admin.service';
+// import { NotFoundError } from '../../../libraries/errors/components';
 
-const getPendingRequestCharityById = async (req, res, next) => {
-  const { id }:{id:string} = req.params;
-  const pendingRequestCharityById =
-    await adminService.getAllOrOnePendingRequestsCharities(id);
-  return { pendingCharity: pendingRequestCharityById.allPendingCharities };
-};
+// const getAllPendingRequestsCharities = async (
+//   req: AuthedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const charities = await adminService.getAllOrOnePendingRequestsCharities();
+//   return { allPendingCharities: charities.allPendingCharities };
+// };
 
-const getPendingPaymentRequestsForConfirmedCharityById = async (req, res, next) => {
-  const { id } :{id:string}= req.params;
-  const paymentRequests = await adminService.getPendingPaymentRequestsForConfirmedCharityById(
-    id
-  );
-  return { CharityPaymentsRequest: paymentRequests.paymentRequestsAccounts };
-};
+// const getPendingRequestCharityById = async (
+//   req: AuthedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { id } = req.params;
+//   if (!id) throw new NotFoundError('no id found to make a rejection');
 
-const getAllRequestsPaymentMethodsForConfirmedCharities = async (req, res, next) => {
-  const allPaymentAccounts = await adminService.getAllRequestsPaymentMethodsForConfirmedCharities();
-  return { allPendingRequestedPaymentAccounts: allPaymentAccounts.allPaymentAccounts };
-};
+//   const pendingRequestCharityById =
+//     await adminService.getAllOrOnePendingRequestsCharities(id);
+//   return { pendingCharity: pendingRequestCharityById.allPendingCharities };
+// };
 
-const confirmCharity = async (req, res, next) => {
-  const { id }:{id:string} = req.params;
-  const confirmedCharity = await adminService.confirmCharity(id);
+// const getPendingPaymentRequestsForConfirmedCharityById = async (
+//   req: AuthedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { id } = req.params;
+//   if (!id) throw new NotFoundError('no id found to make a rejection');
 
-  return {
-    message: confirmedCharity.message,
-    charity: confirmedCharity.charity,
-  };
-};
+//   const paymentRequests =
+//     await adminService.getPendingPaymentRequestsForConfirmedCharityById(id);
+//   return { CharityPaymentsRequest: paymentRequests.paymentRequestsAccounts };
+// };
 
-const rejectCharity = async (req, res, next) => {
-  const { id }:{id:string} = req.params;
-  const rejectedCharity = await adminService.rejectCharity(id);
+// const getAllRequestsPaymentMethodsForConfirmedCharities = async (
+//   req: AuthedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const allPaymentAccounts =
+//     await adminService.getAllRequestsPaymentMethodsForConfirmedCharities();
+//   return {
+//     allPendingRequestedPaymentAccounts: allPaymentAccounts.allPaymentAccounts,
+//   };
+// };
 
-  return {
-    message: rejectedCharity.message,
-    charity: rejectedCharity.charity,
-  };
-};
+// const confirmCharity = async (
+//   req: AuthedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { id } = req.params;
+//   if (!id) throw new NotFoundError('no id found to make a rejection');
 
-const confirmPaymentAccountRequestForConfirmedCharities = async (req, res, next) => {
-  const { id }:{id:string} = req.params; //charityId
-  const { paymentMethod, paymentAccountID } = req.body;
+//   const confirmedCharity = await adminService.confirmCharity(id);
 
-  const confirmedPaymentAccount =
-    await adminService.confirmPaymentAccountRequestForConfirmedCharities(
-      id,
-      paymentMethod,
-      paymentAccountID
-    );
+//   return {
+//     message: confirmedCharity.message,
+//     charity: confirmedCharity.charity,
+//   };
+// };
 
-  return {
-    charity: confirmedPaymentAccount.charity,
-    message: confirmedPaymentAccount.message,
-  };
-};
-const rejectPaymentAccountRequestForConfirmedCharities = async (req, res, next) => {
-  const { id }:{id:string} = req.params; //charityId
-  const { paymentMethod, paymentAccountID }:{paymentMethod:string, paymentAccountID:string} = req.body;
-  const rejectedPaymentAccount = await adminService.rejectPaymentAccountRequestForConfirmedCharities(
-    id,
-    paymentMethod,
-    paymentAccountID
-  );
+// const rejectCharity = async (
+//   req: AuthedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { id } = req.params;
+//   if (!id) throw new NotFoundError('no id found to make a rejection');
 
-  return {
-    charity: rejectedPaymentAccount.charity,
-    message: rejectedPaymentAccount.message,
-  };
-};
-export const adminUseCase = {
-  getAllPendingRequestsCharities,
-  getPendingRequestCharityById,
-  confirmCharity,
-  rejectCharity,
-  getAllRequestsPaymentMethodsForConfirmedCharities,
-  getPendingPaymentRequestsForConfirmedCharityById,
-  confirmPaymentAccountRequestForConfirmedCharities,
-  rejectPaymentAccountRequestForConfirmedCharities,
-};
+//   const rejectedCharity = await adminService.rejectCharity(id);
+
+//   return {
+//     message: rejectedCharity.message,
+//     charity: rejectedCharity.charity,
+//   };
+// };
+
+// const confirmPaymentAccountRequestForConfirmedCharities = async (
+//   req: AuthedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { id } = req.params; //charityId
+//   const { paymentMethod, paymentAccountID } = req.body;
+//   if (!id) throw new NotFoundError('no id found to make a rejection');
+
+//   const confirmedPaymentAccount =
+//     await adminService.confirmPaymentAccountRequestForConfirmedCharities(
+//       id,
+//       paymentMethod,
+//       paymentAccountID
+//     );
+
+//   return {
+//     charity: confirmedPaymentAccount.charity,
+//     message: confirmedPaymentAccount.message,
+//   };
+// };
+// const rejectPaymentAccountRequestForConfirmedCharities = async (
+//   req: AuthedRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   const { id } = req.params; //charityId
+//   const {
+//     paymentMethod,
+//     paymentAccountID,
+//   }: { paymentMethod: string; paymentAccountID: string } = req.body;
+//   if (!id) throw new NotFoundError('no id found to make a rejection');
+//   const rejectedPaymentAccount =
+//     await adminService.rejectPaymentAccountRequestForConfirmedCharities(
+//       id,
+//       paymentMethod,
+//       paymentAccountID
+//     );
+
+//   return {
+//     charity: rejectedPaymentAccount.charity,
+//     message: rejectedPaymentAccount.message,
+//   };
+// };
+// export const adminUseCase = {
+//   getAllPendingRequestsCharities,
+//   getPendingRequestCharityById,
+//   confirmCharity,
+//   rejectCharity,
+//   getAllRequestsPaymentMethodsForConfirmedCharities,
+//   getPendingPaymentRequestsForConfirmedCharityById,
+//   confirmPaymentAccountRequestForConfirmedCharities,
+//   rejectPaymentAccountRequestForConfirmedCharities,
+// };

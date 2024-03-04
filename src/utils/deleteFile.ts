@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import logger from './logger';
 import Cloudinary from './cloudinary';
+import { Request } from 'express';
 import * as configurationProvider from '../libraries/configuration-provider/index';
 const deleteFile = (filePath:string) => {
   logger.warn(filePath);
@@ -47,7 +48,7 @@ const deleteOldImgs = (imgsFolder:string, imgsNames:string|string[]) => {
   imgsNamesArray.length = 0;
 };
 
-const deleteCharityDocs = (req, type:string) => {
+const deleteCharityDocs = (req:Request, type:string) => {
     if (type === 'charityDocs' || type === 'all') {
         for(let i = 1 ; i<=4;++i){
           deleteOldImgs('charityDocs', req?.body?.charityDocs[`docs${i}`]);

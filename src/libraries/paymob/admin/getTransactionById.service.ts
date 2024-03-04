@@ -13,7 +13,7 @@ const getTokenStepOne = async () => {
   console.log('get token first to refund');
   return response.token;
 };
-const getTransactionInfo = async (authToken, transaction_id) => {
+const getTransactionInfo = async (authToken:string, transaction_id:string) => {
   const request = await fetch(
     `https://accept.paymob.com/api/acceptance/transactions/${transaction_id}`,
     {

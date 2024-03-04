@@ -1,15 +1,15 @@
 import Charity from '../../charity/data-access/models/charity.model';
 
-const findAllPendingCharities = async (queryObject, selection:string) => {
+const findAllPendingCharities = async (queryObject:any, selection:string) => {
   const pendingCharities = await Charity.find(queryObject, selection).exec();
   // .select('name email charityDocs paymentMethods')
   return pendingCharities;
 };
-const findCharitiesByQueryWithOptionalId = async (queryObject, selection:string) => {
+const findCharitiesByQueryWithOptionalId = async (queryObject:any, selection:string) => {
   const pendingCharities = await Charity.find(queryObject, selection).exec();
   return pendingCharities;
 };
-const findConfirmedCharityById = async (queryObject, selection:string) => {
+const findConfirmedCharityById = async (queryObject:any, selection:string) => {
   const charity = await Charity.findOne(queryObject, selection).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
   return charity;
 };

@@ -1,6 +1,7 @@
+import { Response } from 'express';
 import jwt from 'jsonwebtoken'
 import * as configurationProvider from '../libraries/configuration-provider/index'
-const generateToken = (res, id, payloadType:string) => {
+const generateToken = (res:Response, id:string, payloadType:string) => {
     let payload:object|{charityId:string}|{userId:string}={};
     if(payloadType === 'user'){
         payload = {userId:id};

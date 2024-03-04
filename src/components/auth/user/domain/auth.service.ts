@@ -50,7 +50,7 @@ const authUser = async (reqBody: IloginData, res:Response): Promise<IUserRespons
     };
   }
 };
-const registerUser = async (reqBody: IUser, res) => {
+const registerUser = async (reqBody: IUser, res:Response) => {
   const newCreatedUser = await authUserUtils.createUser(reqBody);
   // generateToken(res, newCreatedUser.user._id, 'user');
   await setupMailSender(

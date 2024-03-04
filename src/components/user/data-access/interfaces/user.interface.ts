@@ -49,14 +49,14 @@ export interface IUser {
   locationUser: UserLocation;
   gender: 'male' | 'female';
   phone?: string;
-  verificationCode?: string;
+  verificationCode?: string|null;
   emailVerification: {
     isVerified?: boolean;
-    verificationDate?: Date;
+    verificationDate?: Date|number;
   };
   phoneVerification: {
     isVerified?: boolean;
-    verificationDate?: Date;
+    verificationDate?: Date|number;
   };
   isEnabled: boolean;
   transactions: (ITransactionDocument['_id'])[];

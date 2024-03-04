@@ -1,3 +1,6 @@
+import { NextFunction,  Response } from 'express';
+
+import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
 import {
   ICase,
   ICaseDocument,
@@ -6,8 +9,13 @@ import {
   ICasesDocumentResponse,
 } from '../data-access/interfaces/case.interface';
 import { caseService } from './case.service';
+import { NotFoundError } from '../../../libraries/errors/components';
 
-const addCase = async (req, res, next): Promise<ICaseDocumentResponse> => {
+const addCase = async (
+  req: AuthedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<ICaseDocumentResponse> => {
   const caseData: ICase = req.body;
   const caseImage: string = req.body.image[0];
   const charity = req.charity;
@@ -20,7 +28,11 @@ const addCase = async (req, res, next): Promise<ICaseDocumentResponse> => {
   };
 };
 
-const getAllCases = async (req, res, next): Promise<ICasesDocumentResponse> => {
+const getAllCases = async (
+  req: AuthedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<ICasesDocumentResponse> => {
   const queryParams: GetAllCasesQueryParams = req.query;
   const charityId: string = req.charity._id;
 
@@ -32,9 +44,14 @@ const getAllCases = async (req, res, next): Promise<ICasesDocumentResponse> => {
   };
 };
 
-const getCaseById = async (req, res, next): Promise<ICaseDocumentResponse> => {
+const getCaseById = async (
+  req: AuthedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<ICaseDocumentResponse> => {
   const charityCases: ICaseDocument[] = req.charity.cases;
-  const caseId: string = req.params.caseId;
+  const caseId: string | undefined = req.params.caseId;
+  if (!caseId) throw new NotFoundError('no id exist for the case');
 
   const responseData = await caseService.getCaseById(charityCases, caseId);
 
@@ -44,10 +61,15 @@ const getCaseById = async (req, res, next): Promise<ICaseDocumentResponse> => {
   };
 };
 
-const deleteCase = async (req, res, next): Promise<ICaseDocumentResponse> => {
+const deleteCase = async (
+  req: AuthedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<ICaseDocumentResponse> => {
   const charity = req.charity;
 
-  const caseId: string = req.params.caseId;
+  const caseId: string | undefined = req.params.caseId;
+  if (!caseId) throw new NotFoundError('no id exist for the case');
 
   const responseData = await caseService.deleteCase(charity, caseId);
 
@@ -57,12 +79,16 @@ const deleteCase = async (req, res, next): Promise<ICaseDocumentResponse> => {
   };
 };
 
-const editCase = async (req, res, next): Promise<ICaseDocumentResponse> => {
+const editCase = async (
+  req: AuthedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<ICaseDocumentResponse> => {
   const charity = req.charity;
 
-  const caseId: string = req.params.caseId;
-
-  const caseData: ICase & { image: string } = req.body;
+  const caseId: string | undefined = req.params.caseId;
+  if (!caseId) throw new NotFoundError('no id exist for the case');
+  const caseData: ICase & { coverImage: string; image: string[] } = req.body;
 
   const responseData = await caseService.editCase(charity, caseData, caseId);
 

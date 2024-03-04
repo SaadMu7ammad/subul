@@ -1,4 +1,4 @@
-import express, { Application } from 'express';
+import express, { Application,NextFunction,Request,Response } from 'express';
 
 import { auth, isActivated } from '../../../auth/shared/index';
 import { isAdmin } from '../../../admin/index';
@@ -13,6 +13,7 @@ import { paywithMobileWallet } from '../../../../libraries/paymob/payment/mobile
 import { getTransactionById } from '../../../../libraries/paymob/admin/getTransactionById.controller';
 import { refund } from '../../../../libraries/paymob/refund/refund.controller';
 import logger from '../../../../utils/logger';
+import { AuthedRequest } from '../../../auth/user/data-access/auth.interface';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -23,8 +24,9 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     preCreateTransaction,
-    async (req, res, next) => {
+    async (_req:Request, res:Response, next:NextFunction) => {
       try {
+        const req=_req as AuthedRequest
         logger.info(`transaction API was called to pay With OnlineCard`);
         const payWithOnlineCardResponse = await payWithOnlineCard(
           req,
@@ -43,8 +45,9 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     preCreateTransaction,
-    async (req, res, next) => {
+    async (_req:Request, res:Response, next:NextFunction) => {
       try {
+        const req=_req as AuthedRequest
         logger.info(`transaction API was called to pay With MobileWallet`);
         const payWithMobileWalletResponse = await paywithMobileWallet(
           req,
@@ -93,8 +96,10 @@ export default function defineRoutes(expressApp: Application) {
     '/admin/paymob/getTransactionById/:id',
     auth,
     isAdmin,
-    async (req, res, next) => {
+    async (_req:Request, res:Response, next:NextFunction) => {
       try {
+        const req=_req as AuthedRequest
+
         logger.info(`transaction API was called to getTransactionById`);
         const getTransactionByIdResponse = await getTransactionById(
           req,
@@ -113,8 +118,9 @@ export default function defineRoutes(expressApp: Application) {
     '/admin/paymob/refund/:id',
     auth,
     isAdmin,
-    async (req, res, next) => {
+    async (_req:Request, res:Response, next:NextFunction) => {
       try {
+        const req=_req as AuthedRequest
         logger.info(`transaction API was called to refund`);
         const refundResponse = await refund(req, res, next);
         return res.json(refundResponse);

@@ -164,7 +164,7 @@ const updateCaseInfo = async (
   return newTransaction;
 };
 const getAllTransactions = async (
-  user
+  user:IUserDocument
 ): Promise<{ allTransactions: (ITransaction | null)[] }> => {
   const allTransactionsPromised =
     await transactionUtils.getAllTransactionsPromised(user);

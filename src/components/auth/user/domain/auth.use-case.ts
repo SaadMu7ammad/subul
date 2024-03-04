@@ -1,9 +1,11 @@
+import { RequestHandler } from 'express';
+
 import { authUserService } from './auth.service';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
-const authUser = async (req, res, next) => {
-  const data :{email:string,password:string}= {
+const authUser: RequestHandler = async (req, res, next) => {
+  const data: { email: string; password: string } = {
     email: req.body.email,
     password: req.body.password,
   };
@@ -27,7 +29,7 @@ const authUser = async (req, res, next) => {
 //@desc   submit register page
 //@route  POST /api/users/
 //@access public
-const registerUser = async (req, res, next) => {
+const registerUser: RequestHandler = async (req, res, next) => {
   const registerInputsData = req.body;
   const responseData = await authUserService.registerUser(
     registerInputsData,

@@ -11,6 +11,7 @@ import {
   IUserDocument,
   IUserResponse,
 } from '../data-access/interfaces/user.interface';
+import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
 const userRepositoryObj = new userRepository();
 const checkUserIsExist = async (email: string): Promise<{user:IUserDocument}> => {
   //return user if it exists
@@ -28,7 +29,7 @@ const logout = (res: Response): void => {
     expires: new Date(0),
   });
 };
-const getUser = (req): Partial<IUserResponse> => {
+const getUser = (req:AuthedRequest): Partial<IUserResponse> => {
   return { user: req.user };
 };
 const checkIsEmailDuplicated = async (email: string): Promise<boolean> => {
@@ -58,13 +59,13 @@ const changeUserEmailWithMailAlert = async (
   await UserBeforeUpdate.save();
   return { user: UserBeforeUpdate };
 };
-const verifyUserAccount = async (user) => {
+const verifyUserAccount = async (user:IUserDocument) => {
   user.verificationCode = null;
   user.emailVerification.isVerified = true;
   user.emailVerification.verificationDate = Date.now();
   user = await user.save();
 };
-const resetSentToken = async (user) => {
+const resetSentToken = async (user:IUserDocument) => {
   user.verificationCode = null;
   user = await user.save();
 };

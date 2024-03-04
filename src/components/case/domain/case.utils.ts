@@ -1,152 +1,174 @@
 import { NotFoundError } from '../../../libraries/errors/components/not-found';
 import { deleteOldImgs } from '../../../utils/deleteFile';
+import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
 import { CaseRepository } from '../data-access/case.repository';
 import {
-    FilterObj,
-    GetAllCasesQueryParams,
-    SortObj,
-    ICase,
-    PaginationObj,
-    ICaseDocument
+  FilterObj,
+  GetAllCasesQueryParams,
+  SortObj,
+  ICase,
+  PaginationObj,
+  ICaseDocument,
 } from '../data-access/interfaces/case.interface';
 
 const caseRepository = new CaseRepository();
 
 const createCase = async (caseData: ICase) => {
-    return await caseRepository.createCase(caseData);
+  return await caseRepository.createCase(caseData);
 };
 
-const getSortObj = (sortQueryParams: string|undefined): SortObj => {
-    const sortBy: string = sortQueryParams || 'upVotes';
+const getSortObj = (sortQueryParams: string | undefined): SortObj => {
+  const sortBy: string = sortQueryParams || 'upVotes';
 
-    const sortArray: string[] = sortBy.split(',');
+  const sortArray: string[] = sortBy.split(',');
 
-    const sortObj: SortObj = {};
-    sortArray.forEach(function (sort) {
-        if (sort[0] === '-') {
-            sortObj[sort.substring(1)] = -1;
-        } else {
-            sortObj[sort] = 1;
-        }
-    });
+  const sortObj: SortObj = {};
+  sortArray.forEach(function (sort) {
+    if (sort[0] === '-') {
+      sortObj[sort.substring(1)] = -1;
+    } else {
+      sortObj[sort] = 1;
+    }
+  });
 
-    return sortObj;
+  return sortObj;
 };
 
 const getFilterObj = (
-    charityId: string,
-    queryParams:GetAllCasesQueryParams 
+  charityId: string,
+  queryParams: GetAllCasesQueryParams
 ): FilterObj => {
-    const filterObject: FilterObj = { charity: charityId };
-
-    const filterQueryParameters: string[] = [
-        'mainType',
-        'subType',
-        'nestedSubType',
-    ];
-
-    for (const param of filterQueryParameters) {
-        if (queryParams[param]) {
-            filterObject[param] = queryParams[param];
-        }
+  const filterObject: FilterObj = { charity: charityId };
+  //each element of the array should be a key of the GetAllCasesQueryParams type.
+  const filterQueryParameters: (keyof GetAllCasesQueryParams)[] = [
+    'mainType',
+    'subType',
+    'nestedSubType',
+  ];
+  // filterQueryParameters[0]='mainType'//just for remove the code temp
+  for (const param of filterQueryParameters) {
+    if (queryParams[param]) {
+      filterObject[param as keyof FilterObj] = queryParams[param] as string;
     }
+  }
 
-    return filterObject;
+  return filterObject;
 };
 
 const getCasesPagination = (
-    queryParams:GetAllCasesQueryParams 
+  queryParams: GetAllCasesQueryParams
 ): PaginationObj => {
-    const limit = queryParams?.limit ? +queryParams.limit : 10;
+  const limit = queryParams?.limit ? +queryParams.limit : 10;
 
-    const page = queryParams?.page ? +queryParams.page: 1;
+  const page = queryParams?.page ? +queryParams.page : 1;
 
-    return { limit, page };
+  return { limit, page };
 };
 
-const getAllCases = async (sortObj: SortObj, filterObj: FilterObj, page: number, limit: number) => {
-    const cases: ICaseDocument[]|null = await caseRepository.getAllCases(
-        sortObj,
-        filterObj,
-        page,
-        limit
-    );
+const getAllCases = async (
+  sortObj: SortObj,
+  filterObj: FilterObj,
+  page: number,
+  limit: number
+) => {
+  const cases: ICaseDocument[] | null = await caseRepository.getAllCases(
+    sortObj,
+    filterObj,
+    page,
+    limit
+  );
 
-    return cases;
+  return cases;
 };
 
 const getCaseByIdFromDB = async (caseId: string): Promise<ICaseDocument> => {
-    const _case: ICaseDocument | null = await caseRepository.getCaseById(caseId);
+  const _case: ICaseDocument | null = await caseRepository.getCaseById(caseId);
 
-    if (!_case) throw new NotFoundError('No Such Case With this Id!');
+  if (!_case) throw new NotFoundError('No Such Case With this Id!');
 
-    return _case;
+  return _case;
 };
 
-const checkIfCaseBelongsToCharity = (charityCasesArray, caseId: string): number => {
-    const idx: number = charityCasesArray.findIndex(function (id) {
-        return id.toString() === caseId;
-    });
+const checkIfCaseBelongsToCharity = (
+  charityCasesArray: ICaseDocument['_id'][],
+  caseId: string
+): number => {
+  const idx: number = charityCasesArray.findIndex(function (id) {
+    return id.toString() === caseId;
+  });
 
-    if (idx === -1) {
-        throw new NotFoundError('No Such Case With this Id!');
-    }
+  if (idx === -1) {
+    throw new NotFoundError('No Such Case With this Id!');
+  }
 
-    return idx;
+  return idx;
 };
 
 const deleteCaseFromDB = async (id: string) => {
-    const deletedCase: ICaseDocument|null = await caseRepository.deleteCaseById(id);
+  const deletedCase: ICaseDocument | null = await caseRepository.deleteCaseById(
+    id
+  );
 
-    if (!deletedCase) {
-        throw new NotFoundError('No Such Case With this Id!');
-    }
+  if (!deletedCase) {
+    throw new NotFoundError('No Such Case With this Id!');
+  }
 
-    deleteOldImgs('caseCoverImages', deletedCase.coverImage);
+  deleteOldImgs('caseCoverImages', deletedCase.coverImage);
 
-    return deletedCase;
+  return deletedCase;
 };
 
-const deleteCaseFromCharityCasesArray = async (charity, idx: number) => {
-    const caseIdsArray: string[] = charity.cases;
+const deleteCaseFromCharityCasesArray = async (
+  charity: ICharityDocument,
+  idx: number
+) => {
+  const caseIdsArray: string[] = charity.cases;
 
-    caseIdsArray.splice(idx, 1);
+  caseIdsArray.splice(idx, 1);
 
-    charity.cases = caseIdsArray;
+  charity.cases = caseIdsArray;
 
-    await charity.save();
+  await charity.save();
 };
 
 const editCase = async (caseData: ICase, caseId: string) => {
-    const updatedCase: ICaseDocument|null = await caseRepository.editCase(caseData, caseId);
+  const updatedCase: ICaseDocument | null = await caseRepository.editCase(
+    caseData,
+    caseId
+  );
 
-    if(!updatedCase) throw new NotFoundError('No Such Case With this Id!');
+  if (!updatedCase) throw new NotFoundError('No Such Case With this Id!');
 
-    return updatedCase;
+  return updatedCase;
 };
 
-const replaceCaseImg = async (caseData, caseId: string) => {
-    caseData.coverImage = caseData.image[0];
+const replaceCaseImg = async (
+  caseData: { coverImage: string; image: string[] },
+  caseId: string
+) => {
+  if (caseData.image[0]) caseData.coverImage = caseData.image[0];
 
-    const caseObject: ICaseDocument|null = await caseRepository.getCaseById(caseId);
+  const caseObject: ICaseDocument | null = await caseRepository.getCaseById(
+    caseId
+  );
 
-    if (!caseObject) throw new NotFoundError('No Such Case With this Id!');
+  if (!caseObject) throw new NotFoundError('No Such Case With this Id!');
 
-    let oldCoverImage: string = caseObject.coverImage;
+  let oldCoverImage: string = caseObject.coverImage;
 
-    return deleteOldImgs.bind(this, 'caseCoverImages', oldCoverImage);
+  return deleteOldImgs.bind(this, 'caseCoverImages', oldCoverImage);
 };
 
 export const caseUtils = {
-    createCase,
-    getSortObj,
-    getFilterObj,
-    getCasesPagination,
-    getAllCases,
-    getCaseByIdFromDB,
-    checkIfCaseBelongsToCharity,
-    deleteCaseFromCharityCasesArray,
-    deleteCaseFromDB,
-    editCase,
-    replaceCaseImg,
+  createCase,
+  getSortObj,
+  getFilterObj,
+  getCasesPagination,
+  getAllCases,
+  getCaseByIdFromDB,
+  checkIfCaseBelongsToCharity,
+  deleteCaseFromCharityCasesArray,
+  deleteCaseFromDB,
+  editCase,
+  replaceCaseImg,
 };

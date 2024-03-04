@@ -1,4 +1,4 @@
-import express, {  Application } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import { userUseCase } from '../../domain/user.use-case';
 import { validate } from '../../../../libraries/validation/index';
 import { auth, isActivated } from '../../../auth/shared/index';
@@ -11,6 +11,7 @@ import {
 } from '../../../../libraries/validation/components/user/allUserValidation';
 import { getAllTransactions } from '../../../transaction/domain/transaction.use-case';
 import logger from '../../../../utils/logger';
+import { AuthedRequest } from '../../../auth/user/data-access/auth.interface';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -31,8 +32,10 @@ export default function defineRoutes(expressApp: Application) {
     '/reset',
     requestResetEmailUserValidation,
     validate,
-    async (req, res, next) => {
+    async (_req: Request, res: Response, next: NextFunction) => {
       try {
+        const req = _req as AuthedRequest;
+
         logger.info(`User API was called to reset User`);
         const resetResponse = await userUseCase.resetUser(req, res, next);
         return res.json(resetResponse);
@@ -47,8 +50,10 @@ export default function defineRoutes(expressApp: Application) {
     '/reset/confirm',
     confirmResetUserValidation,
     validate,
-    async (req, res, next) => {
+    async (_req: Request, res: Response, next: NextFunction) => {
       try {
+        const req = _req as AuthedRequest;
+
         logger.info(`User API was called to confirm Reset`);
         const confirmResetResponse = await userUseCase.confirmReset(
           req,
@@ -69,8 +74,10 @@ export default function defineRoutes(expressApp: Application) {
     validate,
     auth,
     isActivated,
-    async (req, res, next) => {
+    async (_req: Request, res: Response, next: NextFunction) => {
       try {
+        const req = _req as AuthedRequest;
+
         logger.info(`User API was called to change Password`);
         const changePasswordResponse = await userUseCase.changePassword(
           req,
@@ -90,8 +97,10 @@ export default function defineRoutes(expressApp: Application) {
     tokenUserValidation,
     validate,
     auth,
-    async (req, res, next) => {
+    async (_req: Request, res: Response, next: NextFunction) => {
       try {
+        const req = _req as AuthedRequest;
+
         logger.info(`User API was called to activate user Account`);
         const activateAccountResponse = await userUseCase.activateAccount(
           req,
@@ -106,20 +115,26 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  router.get('/profile', auth, (req, res, next) => {
-    try {
-      logger.info(`User API was called to get user profile`);
-      const getUserProfileDataResponse = userUseCase.getUserProfileData(
-        req,
-        res,
-        next
-      );
-      return res.json(getUserProfileDataResponse);
-    } catch (error) {
-      next(error);
-      return undefined;
+  router.get(
+    '/profile',
+    auth,
+    (_req: Request, res: Response, next: NextFunction) => {
+      try {
+        const req = _req as AuthedRequest;
+
+        logger.info(`User API was called to get user profile`);
+        const getUserProfileDataResponse = userUseCase.getUserProfileData(
+          req,
+          res,
+          next
+        );
+        return res.json(getUserProfileDataResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
     }
-  });
+  );
 
   router.put(
     '/profile/edit',
@@ -127,8 +142,10 @@ export default function defineRoutes(expressApp: Application) {
     validate,
     auth,
     isActivated,
-    async (req, res, next) => {
+    async (_req: Request, res: Response, next: NextFunction) => {
       try {
+        const req = _req as AuthedRequest;
+
         logger.info(`User API was called to edit user profile`);
         const editUserProfileResponse = await userUseCase.editUserProfile(
           req,
@@ -143,20 +160,27 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  router.get('/myTransactions', auth, isActivated, async (req, res, next) => {
-    try {
-      logger.info(`User API was called to get user transactions`);
-      const getAllTransactionsResponse = await getAllTransactions(
-        req,
-        res,
-        next
-      );
-      return res.json(getAllTransactionsResponse);
-    } catch (error) {
-      next(error);
-      return undefined;
+  router.get(
+    '/myTransactions',
+    auth,
+    isActivated,
+    async (_req: Request, res: Response, next: NextFunction) => {
+      try {
+        const req = _req as AuthedRequest;
+
+        logger.info(`User API was called to get user transactions`);
+        const getAllTransactionsResponse = await getAllTransactions(
+          req,
+          res,
+          next
+        );
+        return res.json(getAllTransactionsResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
     }
-  });
+  );
 
   expressApp.use('/api/users', router);
 }

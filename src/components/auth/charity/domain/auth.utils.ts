@@ -6,6 +6,7 @@ import {
 } from '../../../../libraries/errors/components/index';
 import { authCharityRepository } from '../data-access/charity.repository';
 import { deleteOldImgs } from '../../../../utils/deleteFile';
+import { ICharityDocument } from '../../../charity/data-access/interfaces/charity.interface';
 const checkCharityPassword = async (email:string, password:string) => {
   const charity = await authCharityRepository.findCharity(email);
   if (!charity) throw new NotFoundError('email not found');
@@ -15,7 +16,7 @@ const checkCharityPassword = async (email:string, password:string) => {
   }
   return { isMatch: true, charity: charity };
 };
-const checkCharityIsVerified = (charity) => {
+const checkCharityIsVerified = (charity:ICharityDocument) => {
   if (
     charity.emailVerification.isVerified ||
     charity.phoneVerification.isVerified
@@ -32,11 +33,11 @@ const checkCharityIsVerified = (charity) => {
 //   charity.verificationCode = null;
 //   await charity.save();
 // };
-const setTokenToCharity = async (charity, token:string) => {
+const setTokenToCharity = async (charity:ICharityDocument, token:string) => {
   charity.verificationCode = token;
   await charity.save();
 };
-const createCharity = async (dataInputs) => {
+const createCharity = async (dataInputs:any) => {
   const charityExist = await authCharityRepository.findCharity(
     dataInputs.email
   );

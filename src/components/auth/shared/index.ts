@@ -8,9 +8,12 @@ import { AuthedRequest } from '../user/data-access/auth.interface';
 import { Decoded } from './interface';
 import { IUserDocument } from '../../user/data-access/interfaces/user.interface';
 import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
+import { NextFunction, Request, Response } from 'express';
 
-const auth = async (req: AuthedRequest, res, next) => {
+const auth = async (_req: Request, res:Response, next:NextFunction) => {
   try {
+        const req = _req as AuthedRequest;
+
     if (req.headers && req.headers.cookie) {
       // throw new customError.UnauthenticatedError('no token found');
       const authHeader = req.headers.cookie;
@@ -51,7 +54,9 @@ const auth = async (req: AuthedRequest, res, next) => {
     next(err);
   }
 };
-const isConfirmed = (req, res, next) => {
+const isConfirmed = (_req: Request, res: Response, next: NextFunction) => {
+  const req = _req as AuthedRequest;
+
   //for the sending docs to the admin website for Charity Only
   if (req.user) {
     throw new UnauthenticatedError('Users Are Not Allowed To Do This Action!');
@@ -64,7 +69,9 @@ const isConfirmed = (req, res, next) => {
     );
   }
 };
-const isActivated = (req, res, next) => {
+const isActivated = (_req: Request, res: Response, next: NextFunction) => {
+  const req = _req as AuthedRequest;
+
   //for both charity and user
   if (
     (req.charity &&

@@ -1,4 +1,4 @@
-import { IUser } from '../../../components/user/data-access/interfaces/user.interface';
+import { IUser, IUserDocument } from '../../../components/user/data-access/interfaces/user.interface';
 import * as configurationProvider from '../../configuration-provider/index';
 import { NotFoundError } from '../../errors/components/index';
 import { paymentUtils } from './payment.utils';
@@ -56,7 +56,7 @@ const generatePaymentKey = async (
   order_id:string,
   user:IUser,
   amount:number,
-  integration_id
+  integration_id:string
 ) => {
   try {
     let request = await fetch(
@@ -96,12 +96,12 @@ const generatePaymentKey = async (
   }
 };
 const createPayment = async (
-  user:IUser,
+  user:IUserDocument,
   amount:number,
   charityId:string,
   caseId:string,
   caseTitle:string,
-  integration_id
+  integration_id:string
 ) => {
   paymentUtils.checkBeforeCreateLinkForPayment(
     user,

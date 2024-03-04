@@ -3,10 +3,16 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { BadRequestError } from '../../../errors/components/index';
 import { getImageConfiguration, saveImg } from '../index';
+import { NextFunction, Response,Request } from 'express';
 
 const multerStorage = multer.memoryStorage();
+// type MulterFileFilter = (req: Request, file: Express.Multer.File, cb: (error: Error | null, acceptFile?: boolean) => void) => void;
 
-const multerFilterOnlyImgs = (req, file, cb) => {
+const multerFilterOnlyImgs = (
+  req:Request,
+  file:Express.Multer.File,
+  cb:(error: Error | null, acceptFile?: boolean) => void
+): void => {
   if (file.mimetype.startsWith('image')) {
     //accepts imgs only
     cb(null, true);
@@ -22,12 +28,16 @@ const upload = multer({
 
 const imageAssertion = upload.single('image');
 
-const resizeImg = async (req, res, next) => {
+const resizeImg = async (
+  req:Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
-    
-    let {destinationFolder, suffix} = getImageConfiguration(req.path);
-    
+
+    let { destinationFolder, suffix } = getImageConfiguration(req.path);
+
     const uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
     const fileName = uniqueSuffix + '.jpeg';
     // storeImgsTempOnReq(req, fileName);
@@ -47,7 +57,7 @@ const resizeImg = async (req, res, next) => {
   }
 };
 
-const addImgsToReqBody = (req, fileName:string) => {
+const addImgsToReqBody = (req: Request, fileName: string) => {
   req.body.image = []; //container for deleting imgs
   req.body.image.push(fileName);
 };

@@ -1,9 +1,20 @@
+import { NextFunction, Request, Response } from 'express';
 import { BadRequestError } from '../../../libraries/errors/components/index';
-import { IDataUpdateCaseInfo, ITransaction } from '../data-access/interfaces/transaction.interface';
+import {
+  IDataUpdateCaseInfo,
+  ITransaction,
+} from '../data-access/interfaces/transaction.interface';
 
 import { transactionService } from './transaction.service';
-const preCreateTransaction = async (req, res, next) => {
+import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
+const preCreateTransaction = async (
+  _req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
   try {
+    const req = _req as AuthedRequest;
+
     const data = req.body;
     const storedUser = req.user;
     const transaction: boolean = await transactionService.preCreateTransaction(
@@ -20,18 +31,30 @@ const preCreateTransaction = async (req, res, next) => {
     next(err);
   }
 };
-const getAllTransactions = async (req, res, next) => {
-  const myTransactions: { allTransactions: (ITransaction|null)[] } =
+const getAllTransactions = async (
+  _req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
+  const req = _req as AuthedRequest;
+
+  const myTransactions: { allTransactions: (ITransaction | null)[] } =
     await transactionService.getAllTransactions(req.user);
   if (!myTransactions) {
     throw new BadRequestError('no transactions found');
   }
   return { status: 'success', data: myTransactions };
 };
-const updateCaseInfo = async (req, res, next) => {
+const updateCaseInfo = async (
+  _req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
   try {
+    const req = _req as AuthedRequest;
+
     //ensure that transaction is not pending
-    const data:IDataUpdateCaseInfo = {
+    const data: IDataUpdateCaseInfo = {
       user: {
         ...req.body.obj.order.shipping_data,
       },
