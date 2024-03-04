@@ -17,7 +17,7 @@ export class NotificationRepository {
     }
 
     async createNotification(notificationData: INotification) {
-        checkIfReceiverExists(
+        await checkIfReceiverExists(
             notificationData.receiver.receiverType,
             notificationData.receiver.receiverId.toString()
         );

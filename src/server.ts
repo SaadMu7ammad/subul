@@ -19,6 +19,8 @@ import charityRoutes from './components/charity/entry-points/api/charity.routes.
 import casesRoutes from './components/case/entry-points/api/case.routes.js';
 import adminRoutes from './components/admin/entry-points/api/admin.routes.js';
 import notificationRoutes from './components/notification/entry-points/api/notification.routes.js';
+import { sendNotification } from './utils/sendNotification.js';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -60,6 +62,7 @@ app.get('/', (req, res) => {
 app.use(NotFound);
 app.use(errorHandler);
 await connectDB();
+await sendNotification('Charity', new mongoose.Types.ObjectId('61b9e0a6d1a0f2d0c5a0b0b0'), 'test', 'test');
 const server = app.listen(port, () => {
   logger.info(`server is listenting http://${host}:${port}`);
 });
