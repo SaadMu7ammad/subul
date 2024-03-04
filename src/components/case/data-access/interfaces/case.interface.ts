@@ -67,7 +67,7 @@ export interface ICase {
     | 'Campains'
     | 'UsedProperties';
   coverImage: string;
-  location: ICaseLocation[];
+  caseLocation: ICaseLocation[];
   subType:
     | 'Aqeeqa'
     | 'BloodDonation'
@@ -82,27 +82,34 @@ export interface ICase {
     | 'General Support'
     | 'Adahy'
     | 'usedBefore';
-  nestedSubType?:
+  nestedSubType:
     | 'Wasla'
     | 'Hafr Beer'
     | 'Burns'
     | 'Operations & AssistiveDevices'
     | 'Mini Projects'
     | 'General Support';
-  gender?: 'male' | 'female' | 'none';
-  finished?: boolean;
-  upVotes?: number;
-  views?: number;
-  dateFinished?: Date | number;
-  donationNumbers?: number;
+  gender: 'male' | 'female' | 'none';
+  finished: boolean;
+  upVotes: number;
+  views: number;
+  dateFinished?: Date | number|null;
+  donationNumbers: number;
   helpedNumbers: number;
-  freezed?: boolean;
+  freezed: boolean;
   targetDonationAmount: number;
-  currentDonationAmount?: number;
-  // _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
+  currentDonationAmount: number;
 }
 
 export interface ICaseLocationDocument extends ICaseLocation, Document {}
 export interface ICaseDocument extends ICase, Document {}
+
+
+export interface ICaseDocumentResponse{
+  case: ICaseDocument,
+  message?:string
+}
+export interface ICasesDocumentResponse{
+  cases: ICaseDocument[],
+  message?:string
+}

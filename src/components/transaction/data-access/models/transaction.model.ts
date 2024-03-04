@@ -2,6 +2,12 @@ import mongoose, { Document, Schema } from 'mongoose';
 import { ITransaction } from '../interfaces/transaction.interface';
 
 const paymentMethodSchema = new Schema({
+  onlineCard: {
+    lastFourDigits: String,
+  },
+  mobileWallet: {
+    number: String,
+  },
   // name: {
   //   type: String,
   //   required: true,
@@ -11,18 +17,12 @@ const paymentMethodSchema = new Schema({
   //   // iban: String,
   //   // swiftCode: String,
   // },
-  onlineCard: {
-    lastFourDigits: String,
-  },
   // fawry: {
   //   number: String,
   // },
   // vodafoneCash: {
   //   number: String,
   // },
-  mobileWallet: {
-    number: String,
-  },
 });
 
 const transactionSchema: Schema<ITransaction & Document> = new Schema(
@@ -69,10 +69,7 @@ const transactionSchema: Schema<ITransaction & Document> = new Schema(
   },
   { timestamps: true }
 );
-const TransactionModel = mongoose.model<ITransaction>(
-  'Transaction',
-  transactionSchema
-);
+const TransactionModel = mongoose.model('Transaction', transactionSchema);
 
 // const Transaction: TransactionModel = mongoose.model<
 //     TransactionDocument,

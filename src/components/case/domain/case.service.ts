@@ -1,85 +1,109 @@
 import { caseUtils } from './case.utils';
 import {
-    ICase,
-    ICaseDocument,
-    FilterObj,
-    GetAllCasesQueryParams,
-    PaginationObj,
-    SortObj,
+  ICase,
+  ICaseDocument,
+  FilterObj,
+  GetAllCasesQueryParams,
+  PaginationObj,
+  SortObj,
+  ICaseDocumentResponse,
+  ICasesDocumentResponse,
 } from '../data-access/interfaces/case.interface';
-const addCase = async (caseData: ICase, image: string, charity) => {
-    const newCase: ICaseDocument = await caseUtils.createCase({
-        ...caseData,
-        coverImage: image,
-        charity: charity._id,
-    });
+import {
+  BadRequestError,
+  NotFoundError,
+} from '../../../libraries/errors/components';
+import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
+const addCase = async (
+  caseData: ICase,
+  image: string,
+  charity: ICharityDocument
+): Promise<ICaseDocumentResponse> => {
+  const newCase = await caseUtils.createCase({
+    ...caseData,
+    coverImage: image,
+    charity: charity._id,
+  });
+  if (!newCase) throw new BadRequestError('case not created... try again');
+  charity.cases.push(newCase._id);
 
-    charity.cases.push(newCase._id);
+  await charity.save();
 
-    await charity.save();
-
-    return { case: newCase };
+  return { case: newCase };
 };
 
-const getAllCases = async (charityId: string, queryParams:GetAllCasesQueryParams) => {
-    const sortObj: SortObj = caseUtils.getSortObj(queryParams.sort);
+const getAllCases = async (
+  charityId: string,
+  queryParams: GetAllCasesQueryParams
+): Promise<ICasesDocumentResponse> => {
+  const sortObj: SortObj = caseUtils.getSortObj(queryParams.sort);
 
-    const filterObj: FilterObj = caseUtils.getFilterObj(charityId, queryParams);
+  const filterObj: FilterObj = caseUtils.getFilterObj(charityId, queryParams);
 
-    const { page, limit }: PaginationObj =
-        caseUtils.getCasesPagination(queryParams);
+  const { page, limit }: PaginationObj =
+    caseUtils.getCasesPagination(queryParams);
 
-    const cases = await caseUtils.getAllCases(sortObj, filterObj, page, limit);
-
-    return { cases };
+  const cases = await caseUtils.getAllCases(sortObj, filterObj, page, limit);
+  if (!cases) throw new NotFoundError('no cases found');
+  return { cases: cases };
 };
 
-const getCaseById = async (charityCases:ICaseDocument[], caseId: string) => {
-    caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
+const getCaseById = async (
+  charityCases: ICaseDocument[],
+  caseId: string
+): Promise<ICaseDocumentResponse> => {
+  caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
 
-    const _case: ICaseDocument = await caseUtils.getCaseByIdFromDB(caseId);
+  const _case: ICaseDocument = await caseUtils.getCaseByIdFromDB(caseId);
 
-    return {
-        case: _case,
-    };
+  return {
+    case: _case,
+  };
 };
 
-const deleteCase = async (charity, caseId: string) => {
-    const idx: number = caseUtils.checkIfCaseBelongsToCharity(
-        charity.cases,
-        caseId
-    );
+const deleteCase = async (
+  charity: ICharityDocument,
+  caseId: string
+): Promise<ICaseDocumentResponse> => {
+  const idx: number = caseUtils.checkIfCaseBelongsToCharity(
+    charity.cases,
+    caseId
+  );
 
-    const deletedCase: ICaseDocument = await caseUtils.deleteCaseFromDB(caseId);
+  const deletedCase: ICaseDocument = await caseUtils.deleteCaseFromDB(caseId);
 
-    await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
+  await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
 
-    return {
-        deletedCase,
-    };
+  return {
+    case: deletedCase,
+  };
 };
 
-const editCase = async (charity, caseData: ICase & { image: string }, caseId: string) => {
-    caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
+const editCase = async (
+  charity: ICharityDocument,
+  caseData: ICase & { image: string },
+  caseId: string
+): Promise<ICaseDocumentResponse> => {
+  caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
-    let deleteOldImg: (() => void) | null = null;
-    if (caseData.image) {
-        deleteOldImg = await caseUtils.replaceCaseImg(caseData, caseId);
-    }
+  let deleteOldImg: (() => void) | null = null;
+  if (caseData.image) {
+    deleteOldImg = await caseUtils.replaceCaseImg(caseData, caseId);
+  }
 
-    let updatedCase: ICaseDocument = await caseUtils.editCase(caseData, caseId);
+  let updatedCase: ICaseDocument = await caseUtils.editCase(caseData, caseId);
 
-    if (deleteOldImg) deleteOldImg();
+  if (deleteOldImg) deleteOldImg();
 
-    return {
-        case: updatedCase,
-    };
+  return {
+    case: updatedCase,
+  };
 };
 
 export const caseService = {
-    addCase,
-    getAllCases,
-    getCaseById,
-    deleteCase,
-    editCase,
+  addCase,
+  getAllCases,
+  getCaseById,
+  deleteCase,
+  editCase,
 };

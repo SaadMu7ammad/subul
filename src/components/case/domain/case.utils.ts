@@ -65,7 +65,7 @@ const getCasesPagination = (
 };
 
 const getAllCases = async (sortObj: SortObj, filterObj: FilterObj, page: number, limit: number) => {
-    const cases: ICaseDocument[] = await caseRepository.getAllCases(
+    const cases: ICaseDocument[]|null = await caseRepository.getAllCases(
         sortObj,
         filterObj,
         page,
