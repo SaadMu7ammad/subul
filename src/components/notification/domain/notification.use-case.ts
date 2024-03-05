@@ -4,8 +4,9 @@ import { notificationService } from "./notification.service.js";
 const getAllNotifications = async (req,res,next) => {
     const receiverId:mongoose.Types.ObjectId = req.charity?._id || req.user?._id;
     const receiverType : "Charity" | "User"  = req.charity ? "Charity" : "User";
+    const queryParams:{[key:string]:any} = req.query;
 
-    const responseData = await notificationService.getAllNotifications(receiverType,receiverId.toString());
+    const responseData = await notificationService.getAllNotifications(receiverType,receiverId.toString(),queryParams);
 
     return {
         message: responseData.message,

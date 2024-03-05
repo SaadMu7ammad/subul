@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import {
     INotification,
     INotificationDocument,
@@ -5,11 +6,19 @@ import {
 import NotificationModel from './models/notification.model.js';
 
 export class NotificationRepository {
-    async getAllNotifications(receiverType: string, receiverId: string) {
-        const notifications = await NotificationModel.find({
-            'receiver.receiverType': receiverType,
-            'receiver.receiverId': receiverId,
-        });
+    async getAllNotifications(receiverType: string, receiverId: string,sortObj,paginationObj) {
+        const notifications  = await NotificationModel.aggregate([
+            {
+                $match:{'receiver.receiverType': receiverType,
+                        'receiver.receiverId':new mongoose.Types.ObjectId(receiverId),
+                    }
+            },
+            {
+                $sort:sortObj ,
+            },
+        ])
+            .skip((paginationObj.page - 1) * paginationObj.limit)
+            .limit(paginationObj.limit)
         return notifications;
     }
 
