@@ -3,9 +3,11 @@ import {notificationUtils} from './notification.utils.js';
 const getAllNotifications = async (receiverType:string,receiverId:string,queryParams) => {
     const sortObj = notificationUtils.getSortObj(queryParams.sort);
 
+    const filterObj = notificationUtils.getFilterObj(receiverType,receiverId,queryParams);
+
     const paginationObj = notificationUtils.getPaginationObj(queryParams);
 
-    const notifications = await notificationUtils.getAllNotifications(receiverType,receiverId,sortObj,paginationObj);
+    const notifications = await notificationUtils.getAllNotifications(filterObj,sortObj,paginationObj);
 
     return {
         message: "All Notifications Fetched Successfully",

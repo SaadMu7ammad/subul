@@ -9,12 +9,10 @@ import {
 import NotificationModel from './models/notification.model.js';
 
 export class NotificationRepository {
-    async getAllNotifications(receiverType: string, receiverId: string,sortObj,paginationObj) {
+    async getAllNotifications(filterObj,sortObj,paginationObj) {
         const notifications  = await NotificationModel.aggregate([
             {
-                $match:{'receiver.receiverType': receiverType,
-                        'receiver.receiverId':new mongoose.Types.ObjectId(receiverId),
-                    }
+                $match:filterObj
             },
             {
                 $sort:sortObj ,
