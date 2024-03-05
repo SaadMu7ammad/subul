@@ -47,20 +47,20 @@ export interface ICharityDocs  {
     docs4: string[] | mongoose.Types.Array<string>;
   };
   paymentMethods: {
-    bankAccount: {
+    bankAccount: [{
       accNumber?: string;
       iban?: string;
       swiftCode?: string;
       bankDocs: string[];
-    };
-    fawry: {
+    }];
+    fawry: [{
       number?: string;
       fawryDocs: string[];
-    };
-    vodafoneCash: {
+    }];
+    vodafoneCash: [{
       number?: string;
       vodafoneCashDocs: string[];
-    };
+    }];
   };
 };
 export interface CharityPaymentMethodBankAccount {
