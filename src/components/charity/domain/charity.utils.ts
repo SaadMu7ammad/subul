@@ -105,9 +105,9 @@
 //   updatedLocation: ICharityLocationDocument
 // ): Promise<{ charity: ICharityDocument }> => {
 //   //TODO: Should we use Partial<CharityLocationDocument>?
-//   for (let i = 0; i < charity.charitylocation.length; i++) {
-//     if (charity.charitylocation[i]) {
-//       const location = charity.charitylocation[i] as ICharityLocationDocument;
+//   for (let i = 0; i < charity.charityLocation.length; i++) {
+//     if (charity.charityLocation[i]) {
+//       const location = charity.charityLocation[i] as ICharityLocationDocument;
 //       const isMatch: boolean = checkValueEquality(location._id, id);
 //       if (isMatch) {
 //         // location = updatedLocation;//make a new id
@@ -127,7 +127,7 @@
 //   charity: ICharityDocument,
 //   updatedLocation: ICharityLocationDocument
 // ): Promise<{ charity: ICharityDocument }> => {
-//   charity.charitylocation.push(updatedLocation);
+//   charity.charityLocation.push(updatedLocation);
 //   await charity.save();
 //   return { charity: charity };
 // };

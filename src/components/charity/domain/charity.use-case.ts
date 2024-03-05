@@ -115,7 +115,7 @@
 //   const data: DataForEditCharityProfile = {
 //     name: req.body.name,
 //     email: req.body.email,
-//     charitylocation: req.body.location,
+//     charityLocation: req.body.location,
 //     locationId: req.body.locationId,
 //     contactInfo: req.body.contactInfo,
 //     description: req.body.description,

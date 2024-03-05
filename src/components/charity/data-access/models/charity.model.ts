@@ -255,7 +255,7 @@ const charitySchema = new Schema(
         required: true,
       },
     ],
-    charitylocation: {
+    charityLocation: {
       type: [locationSchema],
       // default: undefined,
       required: [true, 'At least one location is required.'],

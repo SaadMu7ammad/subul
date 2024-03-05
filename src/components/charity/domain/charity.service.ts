@@ -121,14 +121,14 @@
 //   charity: ICharityDocument
 // ): Promise<ICharityDocumentResponse> => {
 //   if (!reqBody) throw new BadRequestError('no data sent');
-//   const { email, charitylocation, locationId }: DataForEditCharityProfile =
+//   const { email, charityLocation, locationId }: DataForEditCharityProfile =
 //     reqBody;
 //   let storedCharity: ICharityDocument = charity;
 //   if (
 //     //put restriction on the edit elements
 //     !reqBody.name &&
 //     !reqBody.email &&
-//     !reqBody.charitylocation &&
+//     !reqBody.charityLocation &&
 //     !reqBody.description &&
 //     !reqBody.contactInfo
 //   )
@@ -149,21 +149,21 @@
 //       message: 'email has been sent to your gmail',
 //     };
 //   }
-//   if (charitylocation) {
+//   if (charityLocation) {
 //     //edit
 //     if (locationId) {
 //       const updatedCharity: { charity: ICharityDocument } =
 //         await charityUtils.editCharityProfileAddress(
 //           storedCharity,
 //           locationId,
-//           charitylocation
+//           charityLocation
 //         );
 //       storedCharity = updatedCharity.charity;
 //     } else {
 //       const updatedCharity: { charity: ICharityDocument } =
 //         await charityUtils.addCharityProfileAddress(
 //           storedCharity,
-//           charitylocation
+//           charityLocation
 //         );
 //       storedCharity = updatedCharity.charity;
 //     }

@@ -15,7 +15,7 @@ export interface DataForEditCharityProfile {
   };
   email: string;
   description: string;
-  charitylocation: ICharityLocationDocument;
+  charityLocation: ICharityLocationDocument;
   locationId: string;
 }
 export interface DataForActivateCharityAccount {
@@ -164,7 +164,7 @@ export interface ICharity {
   rate?: number;
   donorRequests: ICharityDonorRequest[];
   currency: string[];
-  charitylocation: ICharityLocationDocument[];
+  charityLocation: ICharityLocationDocument[];
   charityInfo: {
     registeredNumber: string;
     establishedDate: string;
