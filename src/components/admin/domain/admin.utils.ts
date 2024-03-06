@@ -28,7 +28,8 @@
 //   await charity.save();
 // };
 
-// const rejectingCharity = async (charity:ICharityDocument) => {
+// // const rejectingCharity = async (charity: ICharityDocument) => {
+// const rejectingCharity = async (charity: any) => {
 //   charity.isPending = false;
 //   charity.isConfirmed = false;
 
@@ -44,7 +45,7 @@
 //   ]);
 
 //   for (let [method, docs] of paymentMethods) {
-//     charity.paymentMethods[method]?.forEach((acc) => {
+//     charity.paymentMethods[method]?.forEach((acc: any) => {
 //       deleteOldImgs('charityDocs', acc[docs]);
 //     });
 //     charity.paymentMethods[method] = [];
@@ -54,7 +55,7 @@
 // };
 
 // const checkPaymentMethodAvailability = (
-//   charity:ICharityDocument,
+//   charity: ICharityDocument,
 //   paymentMethod: string,
 //   paymentAccountID: string
 // ) => {
@@ -66,70 +67,73 @@
 //     throw new BadRequestError('Invalid Payment Method type');
 //   }
 
-//   const idx: number = charity.paymentMethods[paymentMethod].findIndex(
-//     (item) => item._id == paymentAccountID
-//   );
+//   console.log();
+//   // const idx: number = charity.paymentMethods[paymentMethod].findIndex(
+//   //   (item) => item._id == paymentAccountID
+//   // );
 
-//   if (idx === -1) throw new BadRequestError('not found Payment Method account');
+// //   if (idx === -1) throw new BadRequestError('not found Payment Method account');
 
-//   return idx;
-// };
-// const getConfirmedCharities = async (queryObject: any) :Promise<ICharityDocument>=> {
-//   const charities = await adminRepository.findCharitiesByQueryWithOptionalId(
-//     queryObject,
-//     'name email paymentMethods'
-//   );
-//   if (!charities[0]) throw new BadRequestError('charity not found');
-//   return charities[0];
-// };
+// //   return idx;
+// // };
+// // const getConfirmedCharities = async (
+// //   queryObject: any
+// // ): Promise<ICharityDocument> => {
+// //   const charities = await adminRepository.findCharitiesByQueryWithOptionalId(
+// //     queryObject,
+// //     'name email paymentMethods'
+// //   );
+// //   if (!charities[0]) throw new BadRequestError('charity not found');
+// //   return charities[0];
+// // };
 
-// const confirmingPaymentAccount = async (
-//   charity: ICharityDocument,
-//   paymentMethod: string,
-//   idx: number
-// ) => {
-//   if (charity.paymentMethods[paymentMethod][idx].enable === false) {
-//     charity.paymentMethods[paymentMethod][idx].enable = true;
-//   } else {
-//     throw new BadRequestError('Already this payment account is enabled');
-//   }
-//   await charity.save();
-// };
-// const rejectingPaymentAccount = async (
-//   charity: ICharityDocument,
-//   paymentMethod: string,
-//   idx: number
-// ) => {
-//   if (charity.paymentMethods[paymentMethod][idx].enable === true)
-//     throw new BadRequestError('Already this payment account is enabled');
+// // const confirmingPaymentAccount = async (
+// //   charity: ICharityDocument,
+// //   paymentMethod: string,
+// //   idx: number
+// // ) => {
+// //   if (charity.paymentMethods[paymentMethod][idx].enable === false) {
+// //     charity.paymentMethods[paymentMethod][idx].enable = true;
+// //   } else {
+// //     throw new BadRequestError('Already this payment account is enabled');
+// //   }
+// //   await charity.save();
+// // };
+// // const rejectingPaymentAccount = async (
+// //   charity: ICharityDocument,
+// //   paymentMethod: string,
+// //   idx: number
+// // ) => {
+// //   if (charity.paymentMethods[paymentMethod][idx].enable === true)
+// //     throw new BadRequestError('Already this payment account is enabled');
 
-//   let urlOldImage: string | null = null;
+// //   let urlOldImage: string | null = null;
 
-//   if (paymentMethod === 'bankAccount') {
-//     urlOldImage = charity.paymentMethods[paymentMethod][idx].bankDocs;
-//   } else if (paymentMethod === 'vodafoneCash') {
-//     urlOldImage = charity.paymentMethods[paymentMethod][idx].vodafoneCashDocs;
-//   } else if (paymentMethod === 'fawry') {
-//     urlOldImage = charity.paymentMethods[paymentMethod][idx].fawryDocs;
-//   }
+// //   if (paymentMethod === 'bankAccount') {
+// //     urlOldImage = charity.paymentMethods[paymentMethod][idx].bankDocs;
+// //   } else if (paymentMethod === 'vodafoneCash') {
+// //     urlOldImage = charity.paymentMethods[paymentMethod][idx].vodafoneCashDocs;
+// //   } else if (paymentMethod === 'fawry') {
+// //     urlOldImage = charity.paymentMethods[paymentMethod][idx].fawryDocs;
+// //   }
 
-//   charity.paymentMethods[paymentMethod].splice(idx, 1); //delete the account
-//   // url: 'http://localhost:5000/charityDocs/bankDocs-name.jpeg';
-//   // const url = path.join('./uploads/charityDocs', charity.paymentMethods[paymentMethod][idx].fawryDocs[0])
-//   if (urlOldImage) {
-//     deleteOldImgs('charityDocs', urlOldImage);
-//   } else {
-//     throw new BadRequestError('No docs found for that account');
-//   }
+// //   charity.paymentMethods[paymentMethod].splice(idx, 1); //delete the account
+// //   // url: 'http://localhost:5000/charityDocs/bankDocs-name.jpeg';
+// //   // const url = path.join('./uploads/charityDocs', charity.paymentMethods[paymentMethod][idx].fawryDocs[0])
+// //   if (urlOldImage) {
+// //     deleteOldImgs('charityDocs', urlOldImage);
+// //   } else {
+// //     throw new BadRequestError('No docs found for that account');
+// //   }
 
-//   await charity.save();
-// };
-// export const adminUtils = {
-//   getAllPendingPaymentMethodsRequestsForConfirmedCharity,
-//   confirmingCharity,
-//   rejectingCharity,
-//   checkPaymentMethodAvailability,
-//   getConfirmedCharities,
-//   confirmingPaymentAccount,
-//   rejectingPaymentAccount,
-// };
+// //   await charity.save();
+// // };
+export const adminUtils = {
+  //   getAllPendingPaymentMethodsRequestsForConfirmedCharity,
+  //   confirmingCharity,
+  //   rejectingCharity,
+  //   checkPaymentMethodAvailability,
+  //   // getConfirmedCharities,
+  //   // confirmingPaymentAccount,
+  //   // rejectingPaymentAccount,
+};

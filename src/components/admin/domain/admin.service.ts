@@ -1,34 +1,64 @@
-// import { adminRepository } from '../data-access/admin.repository';
-// import { BadRequestError } from '../../../libraries/errors/components/index';
+import { adminRepository } from '../data-access/admin.repository';
+import { BadRequestError } from '../../../libraries/errors/components/index';
 // import { setupMailSender } from '../../../utils/mailer';
 // import { adminUtils } from './admin.utils';
-// import { CharityPaymentMethodBankAccount, CharityPaymentMethodFawry, CharityPaymentMethodVodafoneCash, ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
-// const getAllOrOnePendingRequestsCharities = async (
-//   id: string | null = null
-// ) => {
-//   const queryObject:any = {
-//     $and: [
-//       { isPending: true },
-//       { isEnabled: true },
-//       { isConfirmed: false },
-//       {
-//         $or: [
-//           { 'emailVerification.isVerified': true },
-//           { 'phoneVerification.isVerified': true },
-//         ],
-//       },
-//       id ? { _id: id } : {}, //to find by Id only one
-//     ],
-//   };
-//   const allPendingCharities = await adminRepository.findAllPendingCharities(
-//     queryObject,
-//     'name email charityDocs paymentMethods'
-//   );
+// import {
+//   //   CharityPaymentMethodBankAccount,
+//   //   CharityPaymentMethodFawry,
+//   //   CharityPaymentMethodVodafoneCash,
+//   // ICharityDocument,
+//   QueryObject,
+// } from '../../charity/data-access/interfaces/charity.interface';
 
-//   if (id && !allPendingCharities[0])
-//     throw new BadRequestError('charity not found');
-//   return { allPendingCharities: allPendingCharities };
-// };
+type QueryObject = {
+  $and: {
+    isPending?: boolean;
+    isEnabled?: boolean;
+    isConfirmed?: boolean;
+    $or?: { [key: string]: boolean }[];
+    _id?: string; // Include _id as an optional field
+  }[];
+};
+const getAllOrOnePendingRequestsCharities = async (
+  id: string | null = null
+) => {
+  const queryObject: QueryObject = {
+    $and: [
+      { isPending: true },
+      { isEnabled: true },
+      { isConfirmed: false },
+      {
+        $or: [
+          { 'emailVerification.isVerified': true },
+          { 'phoneVerification.isVerified': true },
+        ],
+      },
+      ...(id ? [{ _id: id }] : []),
+      // id ? { _id: id } : {}, // to find by Id only one
+      // id ? { _id: id } : new mongoose.Types.ObjectId(),
+      // { _id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId() },
+    ],
+  };
+  // console.log('queryObject', queryObject);
+  // {
+  //   '$and': [
+  //     { isPending: true },
+  //     { isEnabled: true },
+  //     { isConfirmed: false },
+  //     { '$or': [Array] },
+  //     {}
+  //   ]
+  // }
+  const allPendingCharities = await adminRepository.findAllPendingCharities(
+    queryObject,
+    'name email charityDocs paymentMethods'
+  );
+
+  if (id && !allPendingCharities[0])
+    throw new BadRequestError('charity not found');
+  return { allPendingCharities: allPendingCharities };
+};
+
 // const confirmPaymentAccountRequestForConfirmedCharities = async (
 //   charityId: string,
 //   paymentMethod: string,
@@ -132,15 +162,15 @@
 //   if (!paymentRequests) throw new BadRequestError('charity not found');
 
 //   let bankAccount = paymentRequests.paymentMethods.bankAccount.filter(
-//     (acc:CharityPaymentMethodBankAccount) => acc.enable === false
+//     (acc: CharityPaymentMethodBankAccount) => acc.enable === false
 //   );
 
 //   let fawry = paymentRequests.paymentMethods.fawry.filter(
-//     (acc:CharityPaymentMethodFawry) => acc.enable === false
+//     (acc: CharityPaymentMethodFawry) => acc.enable === false
 //   );
 
 //   let vodafoneCash = paymentRequests.paymentMethods.vodafoneCash.filter(
-//     (acc:CharityPaymentMethodVodafoneCash) => acc.enable === false
+//     (acc: CharityPaymentMethodVodafoneCash) => acc.enable === false
 //   );
 
 //   return { paymentRequestsAccounts: { bankAccount, fawry, vodafoneCash } };
@@ -197,12 +227,12 @@
 //     message: 'Charity has not been confirmed',
 //   };
 // };
-// export const adminService = {
-//   getAllOrOnePendingRequestsCharities,
-//   confirmCharity,
-//   rejectCharity,
-//   rejectPaymentAccountRequestForConfirmedCharities,
-//   confirmPaymentAccountRequestForConfirmedCharities,
-//   getAllRequestsPaymentMethodsForConfirmedCharities,
-//   getPendingPaymentRequestsForConfirmedCharityById,
-// };
+export const adminService = {
+  getAllOrOnePendingRequestsCharities,
+  //   confirmCharity,
+  //   rejectCharity,
+  //   rejectPaymentAccountRequestForConfirmedCharities,
+  //   confirmPaymentAccountRequestForConfirmedCharities,
+  //   getAllRequestsPaymentMethodsForConfirmedCharities,
+  //   getPendingPaymentRequestsForConfirmedCharityById,
+};

@@ -1,17 +1,17 @@
-// import { NextFunction, Response } from 'express';
+import { NextFunction, Response } from 'express';
 
-// import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
-// import { adminService } from './admin.service';
+import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
+import { adminService } from './admin.service';
 // import { NotFoundError } from '../../../libraries/errors/components';
 
-// const getAllPendingRequestsCharities = async (
-//   req: AuthedRequest,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const charities = await adminService.getAllOrOnePendingRequestsCharities();
-//   return { allPendingCharities: charities.allPendingCharities };
-// };
+const getAllPendingRequestsCharities = async (
+  req: AuthedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  const charities = await adminService.getAllOrOnePendingRequestsCharities();
+  return { allPendingCharities: charities.allPendingCharities };
+};
 
 // const getPendingRequestCharityById = async (
 //   req: AuthedRequest,
@@ -127,13 +127,13 @@
 //     message: rejectedPaymentAccount.message,
 //   };
 // };
-// export const adminUseCase = {
-//   getAllPendingRequestsCharities,
-//   getPendingRequestCharityById,
-//   confirmCharity,
-//   rejectCharity,
-//   getAllRequestsPaymentMethodsForConfirmedCharities,
-//   getPendingPaymentRequestsForConfirmedCharityById,
-//   confirmPaymentAccountRequestForConfirmedCharities,
-//   rejectPaymentAccountRequestForConfirmedCharities,
-// };
+export const adminUseCase = {
+  getAllPendingRequestsCharities,
+  //   getPendingRequestCharityById,
+  //   confirmCharity,
+  //   rejectCharity,
+  //   getAllRequestsPaymentMethodsForConfirmedCharities,
+  //   getPendingPaymentRequestsForConfirmedCharityById,
+  //   confirmPaymentAccountRequestForConfirmedCharities,
+  //   rejectPaymentAccountRequestForConfirmedCharities,
+};
