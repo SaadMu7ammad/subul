@@ -185,7 +185,7 @@ const addPaymentAccounts = async (
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;
         const { accNumber, iban, swiftCode } = bankAccount[0];
-        const _bankDocs = bankAccount.bankDocs[0];
+        const _bankDocs = bankAccount[0].bankDocs[0];
         if (accNumber && iban && swiftCode && _bankDocs) {
             const temp: {
                 accNumber: any;
@@ -206,7 +206,7 @@ const addPaymentAccounts = async (
     if (type === 'fawry') {
         const { fawry } = accountObj.paymentMethods;
         const { number } = fawry[0];
-        const _fawryDocs = fawry.fawryDocs[0];
+        const _fawryDocs = fawry[0].fawryDocs[0];
         if (number && _fawryDocs) {
             const temp: {
                 number: any;
@@ -223,7 +223,7 @@ const addPaymentAccounts = async (
     if (type === 'vodafoneCash') {
         const { vodafoneCash } = accountObj.paymentMethods;
         const { number } = vodafoneCash[0];
-        const _vodafoneCashDocs = vodafoneCash.vodafoneCashDocs[0];
+        const _vodafoneCashDocs = vodafoneCash[0].vodafoneCashDocs[0];
 
         if (number && _vodafoneCashDocs) {
             const temp: {
@@ -247,19 +247,19 @@ const getChangedPaymentMethod = (
     let changedPaymentMethod: string = '';
 
     ['bankAccount', 'fawry', 'vodafoneCash'].forEach((pm) => {
-        if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
+        if (reqPaymentMethodsObj[pm as keyof ICharityPaymentMethodDocument]) changedPaymentMethod = pm;
     });
 
     return changedPaymentMethod;
 };
 
 const getPaymentMethodIdx = (
-    charityPaymentMethodsObj,
+    charityPaymentMethodsObj:ICharityPaymentMethodDocument,
     changedPaymentMethod: string,
     paymentId: string
 ): number => {
     const idx: number = charityPaymentMethodsObj[
-        changedPaymentMethod
+        changedPaymentMethod as keyof ICharityPaymentMethodDocument
     ].findIndex(
         (paymentMethods: ICharityPaymentMethodDocument) =>
             paymentMethods._id.toString() === paymentId
@@ -291,14 +291,14 @@ const makeTempPaymentObj = (
     };
 
     if (methodMap.hasOwnProperty(selector)) {
-        const { fields, docsField } = methodMap[selector];
-        const methodData = reqPaymentMethodsObj[selector][0];
+        const { fields, docsField } = methodMap[selector as 'bankAccount' | 'fawry' | 'vodafoneCash'];
+        const methodData = reqPaymentMethodsObj[selector as 'bankAccount' | 'fawry' | 'vodafoneCash'][0];
 
         fields.forEach((field: string) => {
-            temp[field] = methodData[field];
+            temp[field  as keyof ICharityPaymentMethodDocument] = methodData[field as keyof ICharityPaymentMethodDocument ];
         });
 
-        temp[docsField] = methodData[docsField][0];
+        temp[docsField  as keyof ICharityPaymentMethodDocument] = methodData[docsField as keyof ICharityPaymentMethodDocument][0];
     }
 
     return temp;
@@ -314,14 +314,14 @@ const swapPaymentInfo = (
         if (key.endsWith('docs')) {
             deleteOldImgs(
                 'charityDocs',
-                charityPaymentMethodsObj[selector][idx][key]
+                charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key]
             );
 
-            charityPaymentMethodsObj[selector][idx][key] = [temp[key]];
-        } else charityPaymentMethodsObj[selector][idx][key] = temp[key];
+            charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key] = [temp[key as keyof ICharityPaymentMethodDocument]];
+        } else charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key] = temp[key as keyof ICharityPaymentMethodDocument];
     }
 
-    charityPaymentMethodsObj[selector][idx].enable = false;
+    charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx].enable = false;
 };
 
 const addNewPayment = (
@@ -329,7 +329,7 @@ const addNewPayment = (
     temp: ICharityPaymentMethodDocument,
     selector: string
 ): void => {
-    charityPaymentMethodsObj[selector].push(temp);
+    charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument].push(temp);
 };
 
 export const charityUtils = {
