@@ -1,5 +1,6 @@
 import { adminRepository } from '../data-access/admin.repository';
 import { BadRequestError } from '../../../libraries/errors/components/index';
+import mongoose from 'mongoose';
 // import { setupMailSender } from '../../../utils/mailer';
 // import { adminUtils } from './admin.utils';
 // import {
@@ -7,18 +8,18 @@ import { BadRequestError } from '../../../libraries/errors/components/index';
 //   //   CharityPaymentMethodFawry,
 //   //   CharityPaymentMethodVodafoneCash,
 //   // ICharityDocument,
-//   QueryObject,
 // } from '../../charity/data-access/interfaces/charity.interface';
 
-type QueryObject = {
+export type QueryObject = {
   $and: {
     isPending?: boolean;
     isEnabled?: boolean;
     isConfirmed?: boolean;
     $or?: { [key: string]: boolean }[];
-    _id?: string; // Include _id as an optional field
+    _id?: mongoose.Types.ObjectId;
   }[];
 };
+
 const getAllOrOnePendingRequestsCharities = async (
   id: string | null = null
 ) => {
@@ -33,22 +34,10 @@ const getAllOrOnePendingRequestsCharities = async (
           { 'phoneVerification.isVerified': true },
         ],
       },
-      ...(id ? [{ _id: id }] : []),
       // id ? { _id: id } : {}, // to find by Id only one
-      // id ? { _id: id } : new mongoose.Types.ObjectId(),
-      // { _id: id ? new mongoose.Types.ObjectId(id) : new mongoose.Types.ObjectId() },
+      id ? { _id: new mongoose.Types.ObjectId(id) } : {},
     ],
   };
-  // console.log('queryObject', queryObject);
-  // {
-  //   '$and': [
-  //     { isPending: true },
-  //     { isEnabled: true },
-  //     { isConfirmed: false },
-  //     { '$or': [Array] },
-  //     {}
-  //   ]
-  // }
   const allPendingCharities = await adminRepository.findAllPendingCharities(
     queryObject,
     'name email charityDocs paymentMethods'

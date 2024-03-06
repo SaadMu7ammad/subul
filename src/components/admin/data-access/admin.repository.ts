@@ -1,7 +1,8 @@
 import Charity from '../../charity/data-access/models/charity.model';
+import { QueryObject } from '../domain/admin.service';
 
 const findAllPendingCharities = async (
-  queryObject: Record<string, any>,
+  queryObject: QueryObject,
   selection: string
 ) => {
   const pendingCharities = await Charity.find(queryObject, selection).exec();
