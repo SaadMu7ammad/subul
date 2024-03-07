@@ -11,6 +11,9 @@ import {
     ICharityDocument,
     ICharityPaymentMethodDocument,
     ICharityLocationDocument,
+    ICharityPaymentMethod,
+    PaymentMethodNames,
+    RequestPaymentMethodsObject
 } from '../data-access/interfaces/charity.interface';
 import { Response } from 'express';
 import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
@@ -269,15 +272,14 @@ const getPaymentMethodIdx = (
 };
 
 const makeTempPaymentObj = (
-    selector: string,
-    reqPaymentMethodsObj: ICharityPaymentMethodDocument
-): ICharityPaymentMethodDocument => {
-    const temp: ICharityPaymentMethodDocument =
-        {} as ICharityPaymentMethodDocument;
+    selector: PaymentMethodNames,
+    reqPaymentMethodsObj: RequestPaymentMethodsObject
+): ICharityPaymentMethod => {
+    const temp: ICharityPaymentMethod |{} | Partial<ICharityPaymentMethod>= {};
 
     const methodMap = {
         bankAccount: {
-            fields: ['accNumber', 'iban', 'swiftCode'], // ??
+            fields: ['accNumber', 'iban', 'swiftCode'], 
             docsField: 'bankDocs',
         },
         fawry: {
@@ -289,19 +291,31 @@ const makeTempPaymentObj = (
             docsField: 'vodafoneCashDocs',
         },
     };
+    type FD = {
+        fields: ['accNumber', 'iban', 'swiftCode'] | ['number'];
+        docsField: 'bankDocs' | 'fawryDocs' | 'vodafoneCashDocs';
+    };
 
     if (methodMap.hasOwnProperty(selector)) {
-        const { fields, docsField } = methodMap[selector as 'bankAccount' | 'fawry' | 'vodafoneCash'];
-        const methodData = reqPaymentMethodsObj[selector as 'bankAccount' | 'fawry' | 'vodafoneCash'][0];
+        const { fields, docsField }: FD = methodMap[selector] as FD;
 
-        fields.forEach((field: string) => {
-            temp[field  as keyof ICharityPaymentMethodDocument] = methodData[field as keyof ICharityPaymentMethodDocument ];
-        });
+        const methodData: ICharityPaymentMethod = reqPaymentMethodsObj[
+            selector
+        ]![0] as ICharityPaymentMethod;
+        fields.forEach(
+            (field) => {
+                temp[field] as Partial<ICharityPaymentMethod> =
+                    methodData[
+                        field as 'accNumber' | 'iban' | 'swiftCode' | 'number'
+                    ];
+            }
+        );
 
-        temp[docsField  as keyof ICharityPaymentMethodDocument] = methodData[docsField as keyof ICharityPaymentMethodDocument][0];
+        temp[docsField as 'bankDocs' | 'fawryDocs' | 'vodafoneCashDocs'] =
+            methodData[docsField as keyof ICharityPaymentMethodDocument][0];
     }
 
-    return temp;
+    return temp as ICharityPaymentMethod;
 };
 
 const swapPaymentInfo = (

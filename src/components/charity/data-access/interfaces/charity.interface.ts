@@ -206,3 +206,11 @@ export interface IPaymentCharityDocumentResponse {
   paymentMethods: ICharityPaymentMethodDocument,
   message?:string
 }
+
+export type ICharityPaymentMethod = CharityPaymentMethodBankAccount | CharityPaymentMethodFawry | CharityPaymentMethodVodafoneCash;
+export interface RequestPaymentMethodsObject{
+  bankAccount?: Omit<CharityPaymentMethodBankAccount,'enable'>[];
+  fawry?: Omit<CharityPaymentMethodFawry,'enable'>[];
+  vodafoneCash?:Omit<CharityPaymentMethodVodafoneCash,'enable'>[];
+}
+export type PaymentMethodNames = 'bankAccount' | 'fawry' | 'vodafoneCash';
