@@ -21,6 +21,7 @@ import {
     DataForSendDocs,
     ICharityDocumentResponse,
     IPaymentCharityDocumentResponse,
+    PaymentMethodNames,
 } from '../data-access/interfaces/charity.interface';
 import { Response } from 'express';
 
@@ -237,7 +238,7 @@ const requestEditCharityPayments = async (
     let charityPaymentMethodsObj: ICharityPaymentMethodDocument =
         charityObj.paymentMethods;
 
-    let changedPaymentMethod: string =
+    let changedPaymentMethod: PaymentMethodNames=
         charityUtils.getChangedPaymentMethod(reqPaymentMethodsObj);
 
     const idx: number = charityUtils.getPaymentMethodIdx(

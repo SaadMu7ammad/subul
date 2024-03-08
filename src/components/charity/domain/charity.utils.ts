@@ -13,7 +13,8 @@ import {
     ICharityLocationDocument,
     ICharityPaymentMethod,
     PaymentMethodNames,
-    RequestPaymentMethodsObject
+    RequestPaymentMethodsObject,
+    TypeWithAtLeastOneProperty
 } from '../data-access/interfaces/charity.interface';
 import { Response } from 'express';
 import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
@@ -246,11 +247,11 @@ const addPaymentAccounts = async (
 
 const getChangedPaymentMethod = (
     reqPaymentMethodsObj: ICharityPaymentMethodDocument
-): string => {
-    let changedPaymentMethod: string = '';
-
-    ['bankAccount', 'fawry', 'vodafoneCash'].forEach((pm) => {
-        if (reqPaymentMethodsObj[pm as keyof ICharityPaymentMethodDocument]) changedPaymentMethod = pm;
+): PaymentMethodNames=> {
+    let changedPaymentMethod:PaymentMethodNames='bankAccount';//it will be overwritten by the value in the request , so don't worry;
+    let paymentMethods:PaymentMethodNames[] = ['bankAccount', 'fawry', 'vodafoneCash'];
+    paymentMethods.forEach((pm:PaymentMethodNames) => {
+        if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
     });
 
     return changedPaymentMethod;
@@ -273,7 +274,7 @@ const getPaymentMethodIdx = (
 
 const makeTempPaymentObj = (
     selector: PaymentMethodNames,
-    reqPaymentMethodsObj: RequestPaymentMethodsObject
+    reqPaymentMethodsObj: TypeWithAtLeastOneProperty<RequestPaymentMethodsObject>
 ): ICharityPaymentMethod => {
     const temp: ICharityPaymentMethod |{} | Partial<ICharityPaymentMethod>= {};
 
