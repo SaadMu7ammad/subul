@@ -22,7 +22,7 @@ import {
     ICharityDocumentResponse,
     IPaymentCharityDocumentResponse,
     PaymentMethodNames,
-    ICharityPaymentMethod
+    ICharityPaymentMethod,
 } from '../data-access/interfaces/charity.interface';
 import { Response } from 'express';
 
@@ -239,7 +239,7 @@ const requestEditCharityPayments = async (
     let charityPaymentMethodsObj: ICharityPaymentMethodDocument =
         charityObj.paymentMethods;
 
-    let changedPaymentMethod: PaymentMethodNames=
+    let changedPaymentMethod: PaymentMethodNames =
         charityUtils.getChangedPaymentMethod(reqPaymentMethodsObj);
 
     const idx: number = charityUtils.getPaymentMethodIdx(
@@ -248,7 +248,7 @@ const requestEditCharityPayments = async (
         paymentId
     );
 
-    const temp: ICharityPaymentMethod= charityUtils.makeTempPaymentObj(
+    const temp: ICharityPaymentMethod = charityUtils.makeTempPaymentObj(
         changedPaymentMethod,
         reqPaymentMethodsObj
     ); //👋
@@ -272,15 +272,11 @@ const requestEditCharityPayments = async (
 
     // const len: number =   charityObj.paymentMethods[changedPaymentMethod].length - 1;
     const len: number =
-        charityObj.paymentMethods[
-            changedPaymentMethod as keyof ICharityPaymentMethodDocument
-        ].length - 1;
+        charityObj.paymentMethods[changedPaymentMethod].length - 1;
 
-    return {
-        paymentMethods:
-            charityObj.paymentMethods[
-                changedPaymentMethod as keyof ICharityPaymentMethodDocument
-            ][len],
+        return {
+        //@ts-expect-error
+        paymentMethods: charityObj.paymentMethods[changedPaymentMethod][len]!,
         message: 'Payment Method Has been Added Successfully!',
     };
 };
