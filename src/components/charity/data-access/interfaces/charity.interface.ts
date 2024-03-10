@@ -2,33 +2,29 @@ import mongoose, { Document } from 'mongoose';
 import { ICaseDocument } from '../../../case/data-access/interfaces/case.interface';
 import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 
-// export interface QueryObject {
-//   $and: (
-//     | {
-//         isPending: boolean;
-//       }
-//     | {
-//         isEnabled: boolean;
-//       }
-//     | {
-//         isConfirmed: boolean;
-//       }
-//     | {
-//         $or: (
-//           | {
-//               'emailVerification.isVerified': boolean;
-//             }
-//           | {
-//               'phoneVerification.isVerified': boolean;
-//             }
-//         )[];
-//       }
-//     | {
-//         _id: mongoose.Types.ObjectId; // Assuming _id is of type string
-//         // _id: string; // Assuming _id is of type string
-//       }
-//   )[];
-// }
+export interface AllPendingRequestsPaymentMethods {
+  allPendingRequestedPaymentAccounts: CharitiesAccounts;
+}
+export interface AllPaymentAccounts {
+  allPaymentAccounts: CharitiesAccounts;
+}
+
+export interface CharitiesAccounts {
+  bankAccountRequests: CharitiesAccountsByAggregation[];
+  fawryRequests: CharitiesAccountsByAggregation[];
+  vodafoneCashRequests: CharitiesAccountsByAggregation[];
+}
+export interface CharitiesAccountsByAggregation {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  paymentMethods: ICharityPaymentMethodDocument; //👈 _id is commented may cuz an issue
+}
+
+// DataForRequestEditCharityPayments
+export interface DataForPaymentRequestsForConfirmedCharity {
+  _id?: mongoose.Types.ObjectId;
+  paymentMethods: ICharityPaymentMethodDocument;
+}
 export interface DataForConfirmResetPassword {
   token: string;
   password: string;
@@ -68,29 +64,63 @@ export interface DataForSendDocs extends ICharityDocs {}
  * Charity Docs [docs & paymentDocs]
  */
 export interface ICharityDocs {
-  charityDocs: {
+  charityDocs?: {
     docs1: string[] | mongoose.Types.Array<string>;
     docs2: string[] | mongoose.Types.Array<string>;
     docs3: string[] | mongoose.Types.Array<string>;
     docs4: string[] | mongoose.Types.Array<string>;
   };
-  paymentMethods: {
+  paymentMethods?: {
     bankAccount: {
+      enable?: boolean;
       accNumber?: string;
       iban?: string;
       swiftCode?: string;
       bankDocs: string[];
-    };
+    }[];
     fawry: {
+      enable?: boolean;
       number?: string;
       fawryDocs: string[];
-    };
+    }[];
     vodafoneCash: {
+      enable?: boolean;
       number?: string;
       vodafoneCashDocs: string[];
-    };
+    }[];
   };
 }
+export interface PendingCharities extends ICharityDocs, Document {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  isPending?: boolean;
+  isConfirmed?: boolean;
+}
+export interface ConfirmedCharities extends PendingCharities {}
+export interface ConfirmPendingCharity {
+  charity: PendingCharities | undefined;
+  message: string;
+}
+export interface AllPendingRequestsCharitiesResponse {
+  allPendingCharities: PendingCharities[];
+}
+export interface PendingRequestCharityResponse {
+  pendingCharity: PendingCharities[];
+}
+// export interface PendingCharities extends Document {
+//   charityDocs: {
+//     docs1: string[] | mongoose.Types.Array<string>;
+//     docs2: string[] | mongoose.Types.Array<string>;
+//     docs3: string[] | mongoose.Types.Array<string>;
+//     docs4: string[] | mongoose.Types.Array<string>;
+//   };
+//   paymentMethods: ICharityPaymentMethodDocument;
+//   _id: mongoose.Types.ObjectId;
+//   name: string;
+//   email: string;
+// }
+
 export interface CharityPaymentMethodBankAccount {
   enable?: boolean;
   accNumber?: string;
@@ -112,12 +142,11 @@ export interface CharityPaymentMethodVodafoneCash {
   vodafoneCashDocs: string[];
   //   _id: mongoose.Types.ObjectId;
 }
-
 export interface ICharityPaymentMethodDocument extends Document {
   bankAccount: CharityPaymentMethodBankAccount[];
   fawry: CharityPaymentMethodFawry[];
   vodafoneCash: CharityPaymentMethodVodafoneCash[];
-  //   _id: mongoose.Types.ObjectId;
+  // _id: mongoose.Types.ObjectId;
 }
 
 export interface ICharityDonorRequest {
@@ -225,7 +254,6 @@ export interface ICharityDocument extends ICharity, Document {}
 
 export interface ICharityDocumentResponse {
   emailEdited?: boolean;
-
   charity: ICharityDocument;
   message?: string;
 }
