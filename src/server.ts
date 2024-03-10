@@ -15,7 +15,7 @@ import transactionRoutes from './components/transaction/entry-points/api/transac
 import userRoutes from './components/user/entry-points/api/user.routes';
 import authUserRoutes from './components/auth/user/entry-points/api/auth.routes';
 import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes';
-// import charityRoutes from './components/charity/entry-points/api/charity.routes';
+import charityRoutes from './components/charity/entry-points/api/charity.routes';
 import casesRoutes from './components/case/entry-points/api/case.routes';
 // import adminRoutes from './components/admin/entry-points/api/admin.routes';
 
@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, `uploads`)));
 transactionRoutes(app);
 authUserRoutes(app);
 authCharityRoutes(app);
-// charityRoutes(app);
+charityRoutes(app);
 // adminRoutes(app);
 userRoutes(app);
 casesRoutes(app);

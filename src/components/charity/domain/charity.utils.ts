@@ -14,7 +14,7 @@ import {
     ICharityPaymentMethod,
     PaymentMethodNames,
     RequestPaymentMethodsObject,
-    TypeWithAtLeastOneProperty
+    TypeWithAtLeastOneProperty,
 } from '../data-access/interfaces/charity.interface';
 import { Response } from 'express';
 import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
@@ -113,9 +113,7 @@ const editCharityProfileAddress = async (
     //TODO: Should we use Partial<CharityLocationDocument>?
     for (let i = 0; i < charity.charityLocation.length; i++) {
         if (charity.charityLocation[i]) {
-            const location = charity.charityLocation[
-                i
-            ]! ;
+            const location = charity.charityLocation[i]!;
             const isMatch: boolean = checkValueEquality(location._id, id);
             if (isMatch) {
                 // location = updatedLocation;//make a new id
@@ -170,7 +168,7 @@ const addDocs = async (
     await makeCharityIsPending(charity); // update and save changes
     console.log(charity.paymentMethods);
     return {
-        paymentMethods: charity.paymentMethods! ,
+        paymentMethods: charity.paymentMethods!,
     }; //Compiler Can't infer that paymentMethods are set to the charity , paymentMethods are not Possibly undefined any more 👍️
 };
 const makeCharityIsPending = async (
@@ -189,7 +187,8 @@ const addPaymentAccounts = async (
     if (type === 'bankAccount') {
         const { bankAccount } = accountObj.paymentMethods;
         const { accNumber, iban, swiftCode } = bankAccount[0];
-        const _bankDocs = bankAccount[0].bankDocs[0];
+        //@ts-expect-error
+        const _bankDocs = bankAccount.bankDocs[0];
         if (accNumber && iban && swiftCode && _bankDocs) {
             const temp: {
                 accNumber: any;
@@ -210,7 +209,8 @@ const addPaymentAccounts = async (
     if (type === 'fawry') {
         const { fawry } = accountObj.paymentMethods;
         const { number } = fawry[0];
-        const _fawryDocs = fawry[0].fawryDocs[0];
+        //@ts-expect-error
+        const _fawryDocs = fawry.fawryDocs[0];
         if (number && _fawryDocs) {
             const temp: {
                 number: any;
@@ -227,7 +227,8 @@ const addPaymentAccounts = async (
     if (type === 'vodafoneCash') {
         const { vodafoneCash } = accountObj.paymentMethods;
         const { number } = vodafoneCash[0];
-        const _vodafoneCashDocs = vodafoneCash[0].vodafoneCashDocs[0];
+        //@ts-expect-error
+        const _vodafoneCashDocs = vodafoneCash.vodafoneCashDocs[0];
 
         if (number && _vodafoneCashDocs) {
             const temp: {
@@ -247,10 +248,14 @@ const addPaymentAccounts = async (
 
 const getChangedPaymentMethod = (
     reqPaymentMethodsObj: ICharityPaymentMethodDocument
-): PaymentMethodNames=> {
-    let changedPaymentMethod:PaymentMethodNames='bankAccount';//it will be overwritten by the value in the request , so don't worry;
-    let paymentMethods:PaymentMethodNames[] = ['bankAccount', 'fawry', 'vodafoneCash'];
-    paymentMethods.forEach((pm:PaymentMethodNames) => {
+): PaymentMethodNames => {
+    let changedPaymentMethod: PaymentMethodNames = 'bankAccount'; //it will be overwritten by the value in the request , so don't worry;
+    let paymentMethods: PaymentMethodNames[] = [
+        'bankAccount',
+        'fawry',
+        'vodafoneCash',
+    ];
+    paymentMethods.forEach((pm: PaymentMethodNames) => {
         if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
     });
 
@@ -258,16 +263,13 @@ const getChangedPaymentMethod = (
 };
 
 const getPaymentMethodIdx = (
-    charityPaymentMethodsObj:ICharityPaymentMethodDocument,
+    charityPaymentMethodsObj: ICharityPaymentMethodDocument,
     changedPaymentMethod: PaymentMethodNames,
     paymentId: string
 ): number => {
     const idx: number = charityPaymentMethodsObj[
-        changedPaymentMethod 
-    ].findIndex(
-        (paymentMethod) =>
-            paymentMethod._id.toString() === paymentId
-    );
+        changedPaymentMethod
+    ].findIndex((paymentMethod) => paymentMethod._id.toString() === paymentId);
 
     return idx;
 };
@@ -276,22 +278,24 @@ const makeTempPaymentObj = (
     selector: PaymentMethodNames,
     reqPaymentMethodsObj: TypeWithAtLeastOneProperty<RequestPaymentMethodsObject>
 ): ICharityPaymentMethod => {
-    const temp: ICharityPaymentMethod= <ICharityPaymentMethod>{};
+    const temp: ICharityPaymentMethod = <ICharityPaymentMethod>{};
 
-    const methodMap:{bankAccount: {
-            fields: ['accNumber', 'iban', 'swiftCode'], 
-            docsField: 'bankDocs',
-        },
-        fawry: {
-            fields: ['number'],
-            docsField: 'fawryDocs',
-        },
-        vodafoneCash: {
-            fields: ['number'],
-            docsField: 'vodafoneCashDocs',
-        },} = {
+    const methodMap: {
         bankAccount: {
-            fields: ['accNumber', 'iban', 'swiftCode'], 
+            fields: ['accNumber', 'iban', 'swiftCode'];
+            docsField: 'bankDocs';
+        };
+        fawry: {
+            fields: ['number'];
+            docsField: 'fawryDocs';
+        };
+        vodafoneCash: {
+            fields: ['number'];
+            docsField: 'vodafoneCashDocs';
+        };
+    } = {
+        bankAccount: {
+            fields: ['accNumber', 'iban', 'swiftCode'],
             docsField: 'bankDocs',
         },
         fawry: {
@@ -311,16 +315,18 @@ const makeTempPaymentObj = (
     if (methodMap.hasOwnProperty(selector)) {
         const { fields, docsField }: FD = methodMap[selector];
 
-        const methodData:RequestPaymentMethodsObject['fawry'][0]|RequestPaymentMethodsObject['bankAccount'][0]|RequestPaymentMethodsObject['vodafoneCash'][0]= reqPaymentMethodsObj[
-            selector
-        ][0]!;
+        const methodData:
+            | RequestPaymentMethodsObject['fawry'][0]
+            | RequestPaymentMethodsObject['bankAccount'][0]
+            | RequestPaymentMethodsObject['vodafoneCash'][0] =
+            reqPaymentMethodsObj[selector][0]!;
         fields.forEach(
-            (field:"number" | "accNumber" | "iban" | "swiftCode") => {
+            (field: 'number' | 'accNumber' | 'iban' | 'swiftCode') => {
                 //@ts-expect-error
                 temp[field] = methodData[field];
             }
         );
-                //@ts-expect-error
+        //@ts-expect-error
         temp[docsField] = methodData[docsField];
     }
 
@@ -337,14 +343,23 @@ const swapPaymentInfo = (
         if (key.endsWith('docs')) {
             deleteOldImgs(
                 'charityDocs',
-                charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key]
+                charityPaymentMethodsObj[
+                    selector as keyof ICharityPaymentMethodDocument
+                ][idx][key]
             );
 
-            charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key] = [temp[key as keyof ICharityPaymentMethod]];
-        } else charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key] = temp[key as keyof ICharityPaymentMethod];
+            charityPaymentMethodsObj[
+                selector as keyof ICharityPaymentMethodDocument
+            ][idx][key] = [temp[key as keyof ICharityPaymentMethod]];
+        } else
+            charityPaymentMethodsObj[
+                selector as keyof ICharityPaymentMethodDocument
+            ][idx][key] = temp[key as keyof ICharityPaymentMethod];
     }
 
-    charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx].enable = false;
+    charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][
+        idx
+    ].enable = false;
 };
 
 const addNewPayment = (
@@ -352,7 +367,9 @@ const addNewPayment = (
     temp: ICharityPaymentMethod,
     selector: string
 ): void => {
-    charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument].push(temp);
+    charityPaymentMethodsObj[
+        selector as keyof ICharityPaymentMethodDocument
+    ].push(temp);
 };
 
 export const charityUtils = {

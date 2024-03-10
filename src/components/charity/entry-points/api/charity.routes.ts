@@ -184,6 +184,7 @@ export default function defineRoutes(expressApp: Application) {
         uploadDocsReq,
         reqEditPaymentMethodsValidation,
         validate,
+        //@ts-expect-error
         resizeDocReq,
         async (_req: Request, res: Response, next: NextFunction) => {
             const req = _req as AuthedRequest;
@@ -210,6 +211,7 @@ export default function defineRoutes(expressApp: Application) {
         uploadDocs,
         reqEditPaymentMethodsValidation,
         validate,
+        //@ts-expect-error
         resizeDoc,
         async (_req: Request, res: Response, next: NextFunction) => {
             const req = _req as AuthedRequest;
