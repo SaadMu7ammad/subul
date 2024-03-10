@@ -1,9 +1,11 @@
-import multer,{Multer,StorageEngine} from 'multer';
+import multer,{Multer,StorageEngine,FileFilterCallback} from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { BadRequestError } from '../../../../errors/components/bad-request';
 import { saveImg } from '../../index';
-const multerFilter = (req, file, cb) => {
+import { NextFunction, Request, Response } from 'express';
+import { AuthedRequest } from '../../../../../components/auth/user/data-access/auth.interface';
+const multerFilter = (req:Request, file:Express.Multer.File, cb:FileFilterCallback) => {
     if (file.mimetype.startsWith('image')) {
         //accepts imgs only
         cb(null, true);
@@ -11,7 +13,7 @@ const multerFilter = (req, file, cb) => {
         cb(new BadRequestError('invalid type,Only images allowed'));
     }
 };
-async function processDocs(docsKey:string, ref, req) {
+async function processDocs(docsKey:string, ref:Express.Multer.File[], req:AuthedRequest) {
     return Promise.all(
         ref.map(async (obj, indx) => {
             // const ex = obj.mimetype.split('/')[1];
@@ -53,7 +55,8 @@ async function processDocs(docsKey:string, ref, req) {
         })
     );
 }
-const resizeDocReq = async (req, res, next) => {
+const resizeDocReq = async (req:AuthedRequest & { files: {[fieldname:string]:Express.Multer.File[]}; }
+, res:Response, next:NextFunction) => {
     try {
         if (req.body.paymentMethods && req.body.paymentMethods.bankAccount) {
             req.body.paymentMethods.bankAccount[0].bankDocs = [];
