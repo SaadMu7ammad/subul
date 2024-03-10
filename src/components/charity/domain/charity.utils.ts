@@ -115,7 +115,7 @@ const editCharityProfileAddress = async (
         if (charity.charityLocation[i]) {
             const location = charity.charityLocation[
                 i
-            ] as ICharityLocationDocument;
+            ]! ;
             const isMatch: boolean = checkValueEquality(location._id, id);
             if (isMatch) {
                 // location = updatedLocation;//make a new id
@@ -170,7 +170,7 @@ const addDocs = async (
     await makeCharityIsPending(charity); // update and save changes
     console.log(charity.paymentMethods);
     return {
-        paymentMethods: charity.paymentMethods as ICharityPaymentMethodDocument,
+        paymentMethods: charity.paymentMethods! ,
     }; //Compiler Can't infer that paymentMethods are set to the charity , paymentMethods are not Possibly undefined any more 👍️
 };
 const makeCharityIsPending = async (
@@ -259,14 +259,14 @@ const getChangedPaymentMethod = (
 
 const getPaymentMethodIdx = (
     charityPaymentMethodsObj:ICharityPaymentMethodDocument,
-    changedPaymentMethod: string,
+    changedPaymentMethod: PaymentMethodNames,
     paymentId: string
 ): number => {
     const idx: number = charityPaymentMethodsObj[
-        changedPaymentMethod as keyof ICharityPaymentMethodDocument
+        changedPaymentMethod 
     ].findIndex(
-        (paymentMethods: ICharityPaymentMethodDocument) =>
-            paymentMethods._id.toString() === paymentId
+        (paymentMethod) =>
+            paymentMethod._id.toString() === paymentId
     );
 
     return idx;
@@ -330,7 +330,7 @@ const makeTempPaymentObj = (
 const swapPaymentInfo = (
     charityPaymentMethodsObj: ICharityPaymentMethodDocument,
     temp: ICharityPaymentMethod,
-    selector: string,
+    selector: PaymentMethodNames,
     idx: number
 ): void => {
     for (let key in temp) {
