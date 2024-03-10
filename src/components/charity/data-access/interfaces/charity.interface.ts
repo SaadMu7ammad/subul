@@ -15,7 +15,7 @@ export interface DataForEditCharityProfile {
   };
   email: string;
   description: string;
-  charitylocation: ICharityLocationDocument;
+  charityLocation: ICharityLocationDocument;
   locationId: string;
 }
 export interface DataForActivateCharityAccount {
@@ -47,20 +47,20 @@ export interface ICharityDocs  {
     docs4: string[] | mongoose.Types.Array<string>;
   };
   paymentMethods: {
-    bankAccount: {
+    bankAccount: [{
       accNumber?: string;
       iban?: string;
       swiftCode?: string;
       bankDocs: string[];
-    };
-    fawry: {
+    }];
+    fawry: [{
       number?: string;
       fawryDocs: string[];
-    };
-    vodafoneCash: {
+    }];
+    vodafoneCash: [{
       number?: string;
       vodafoneCashDocs: string[];
-    };
+    }];
   };
 };
 export interface CharityPaymentMethodBankAccount {
@@ -86,10 +86,10 @@ export interface CharityPaymentMethodVodafoneCash {
 };
 
 export interface ICharityPaymentMethodDocument extends Document {
-  bankAccount: CharityPaymentMethodBankAccount[];
-  fawry: CharityPaymentMethodFawry[];
-  vodafoneCash: CharityPaymentMethodVodafoneCash[];
-  //   _id: mongoose.Types.ObjectId;
+  bankAccount: mongoose.Types.DocumentArray<CharityPaymentMethodBankAccountDocument>;
+  fawry: mongoose.Types.DocumentArray<CharityPaymentMethodFawryDocument>;
+  vodafoneCash: mongoose.Types.DocumentArray<CharityPaymentMethodVodafoneCashDocument>;
+    _id: mongoose.Types.ObjectId;
 }
 
 export interface ICharityDonorRequest {
@@ -164,7 +164,7 @@ export interface ICharity {
   rate?: number;
   donorRequests: ICharityDonorRequest[];
   currency: string[];
-  charitylocation: ICharityLocationDocument[];
+  charityLocation: ICharityLocationDocument[];
   charityInfo: {
     registeredNumber: string;
     establishedDate: string;
@@ -180,12 +180,6 @@ export interface ICharity {
 //   updatedAt?: Date;
 }
 
-export interface ICharityPaymentMethodDocument extends Document {
-  bankAccount: CharityPaymentMethodBankAccount[];
-  fawry:CharityPaymentMethodFawry[];
-  vodafoneCash:CharityPaymentMethodVodafoneCash[];
-//   _id: mongoose.Types.ObjectId;
-}
 export interface ICharityDonorRequestDocument  {
   user: IUserDocument['_id'];
   requestTitle: string;
@@ -206,3 +200,37 @@ export interface IPaymentCharityDocumentResponse {
   paymentMethods: ICharityPaymentMethodDocument,
   message?:string
 }
+
+export type ICharityPaymentMethod = CharityPaymentMethodBankAccount | CharityPaymentMethodFawry | CharityPaymentMethodVodafoneCash;
+export interface RequestPaymentMethodsObject{
+  bankAccount: Omit<CharityPaymentMethodBankAccount,'enable'>[];
+  fawry: Omit<CharityPaymentMethodFawry,'enable'>[];
+  vodafoneCash:Omit<CharityPaymentMethodVodafoneCash,'enable'>[];
+}
+export type PaymentMethodNames = 'bankAccount' | 'fawry' | 'vodafoneCash';
+
+export type TypeWithAtLeastOneProperty<T> = {
+  [K in keyof T]: T[K];
+};
+
+export interface CharityPaymentMethodBankAccountDocument {
+  enable?: boolean;
+  accNumber?: string;
+  iban?: string;
+  swiftCode?: string;
+  bankDocs: string[];
+  _id: mongoose.Types.ObjectId;
+}
+export interface CharityPaymentMethodFawryDocument {
+  enable?: boolean;
+  number?: string;
+  fawryDocs: string[];
+  _id: mongoose.Types.ObjectId;
+}
+
+export interface CharityPaymentMethodVodafoneCashDocument{
+  enable?: boolean;
+  number?: string;
+  vodafoneCashDocs: string[];
+  _id: mongoose.Types.ObjectId;
+};
