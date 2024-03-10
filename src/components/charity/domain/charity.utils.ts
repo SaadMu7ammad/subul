@@ -276,9 +276,20 @@ const makeTempPaymentObj = (
     selector: PaymentMethodNames,
     reqPaymentMethodsObj: TypeWithAtLeastOneProperty<RequestPaymentMethodsObject>
 ): ICharityPaymentMethod => {
-    const temp: ICharityPaymentMethod |{} | Partial<ICharityPaymentMethod>= {};
+    const temp: ICharityPaymentMethod= <ICharityPaymentMethod>{};
 
-    const methodMap = {
+    const methodMap:{bankAccount: {
+            fields: ['accNumber', 'iban', 'swiftCode'], 
+            docsField: 'bankDocs',
+        },
+        fawry: {
+            fields: ['number'],
+            docsField: 'fawryDocs',
+        },
+        vodafoneCash: {
+            fields: ['number'],
+            docsField: 'vodafoneCashDocs',
+        },} = {
         bankAccount: {
             fields: ['accNumber', 'iban', 'swiftCode'], 
             docsField: 'bankDocs',
@@ -298,22 +309,19 @@ const makeTempPaymentObj = (
     };
 
     if (methodMap.hasOwnProperty(selector)) {
-        const { fields, docsField }: FD = methodMap[selector] as FD;
+        const { fields, docsField }: FD = methodMap[selector];
 
-        const methodData: ICharityPaymentMethod = reqPaymentMethodsObj[
+        const methodData:RequestPaymentMethodsObject['fawry'][0]|RequestPaymentMethodsObject['bankAccount'][0]|RequestPaymentMethodsObject['vodafoneCash'][0]= reqPaymentMethodsObj[
             selector
-        ]![0] as ICharityPaymentMethod;
+        ][0]!;
         fields.forEach(
-            (field) => {
-                temp[field] as Partial<ICharityPaymentMethod> =
-                    methodData[
-                        field as 'accNumber' | 'iban' | 'swiftCode' | 'number'
-                    ];
+            (field:"number" | "accNumber" | "iban" | "swiftCode") => {
+                //@ts-expect-error
+                temp[field] = methodData[field];
             }
         );
-
-        temp[docsField as 'bankDocs' | 'fawryDocs' | 'vodafoneCashDocs'] =
-            methodData[docsField as keyof ICharityPaymentMethodDocument][0];
+                //@ts-expect-error
+        temp[docsField] = methodData[docsField];
     }
 
     return temp as ICharityPaymentMethod;
@@ -321,7 +329,7 @@ const makeTempPaymentObj = (
 
 const swapPaymentInfo = (
     charityPaymentMethodsObj: ICharityPaymentMethodDocument,
-    temp: ICharityPaymentMethodDocument,
+    temp: ICharityPaymentMethod,
     selector: string,
     idx: number
 ): void => {
@@ -332,8 +340,8 @@ const swapPaymentInfo = (
                 charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key]
             );
 
-            charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key] = [temp[key as keyof ICharityPaymentMethodDocument]];
-        } else charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key] = temp[key as keyof ICharityPaymentMethodDocument];
+            charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key] = [temp[key as keyof ICharityPaymentMethod]];
+        } else charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx][key] = temp[key as keyof ICharityPaymentMethod];
     }
 
     charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][idx].enable = false;
@@ -341,7 +349,7 @@ const swapPaymentInfo = (
 
 const addNewPayment = (
     charityPaymentMethodsObj: ICharityPaymentMethodDocument,
-    temp: ICharityPaymentMethodDocument,
+    temp: ICharityPaymentMethod,
     selector: string
 ): void => {
     charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument].push(temp);

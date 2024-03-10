@@ -22,6 +22,7 @@ import {
     ICharityDocumentResponse,
     IPaymentCharityDocumentResponse,
     PaymentMethodNames,
+    ICharityPaymentMethod
 } from '../data-access/interfaces/charity.interface';
 import { Response } from 'express';
 
@@ -247,7 +248,7 @@ const requestEditCharityPayments = async (
         paymentId
     );
 
-    const temp: ICharityPaymentMethodDocument = charityUtils.makeTempPaymentObj(
+    const temp: ICharityPaymentMethod= charityUtils.makeTempPaymentObj(
         changedPaymentMethod,
         reqPaymentMethodsObj
     ); //👋
