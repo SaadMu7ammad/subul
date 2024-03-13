@@ -117,7 +117,7 @@ const checkPaymentMethodAvailability = (
 
   const idx: number = charity.paymentMethods[paymentMethod].findIndex(
     (item: Partial<ICharityPaymentMethodDocument>) =>
-      item._id == paymentAccountID
+      item._id?.toString() === paymentAccountID
   );
   if (idx === -1) throw new BadRequestError('not found Payment Method account');
 

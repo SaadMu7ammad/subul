@@ -1,4 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
+import bcrypt from 'bcryptjs';
+import * as configurationProvider from '../../../../libraries/configuration-provider/index';
 
 const locationSchema = new mongoose.Schema({
   governorate: {
@@ -255,7 +257,7 @@ const charitySchema = new Schema(
         required: true,
       },
     ],
-    charitylocation: {
+    charityLocation: {
       type: [locationSchema],
       // default: undefined,
       required: [true, 'At least one location is required.'],
@@ -284,16 +286,16 @@ const charitySchema = new Schema(
   { timestamps: true }
 );
 
-// charitySchema.pre('save', async function (next) {
-//     if (!this.isModified('password')) {
-//         //to not change password every time we edit the user data
-//         next();
-//     }
-//     const salt = await bcrypt.genSalt(
-//         configurationProvider.getValue('hashing.salt')
-//     );
-//     this.password = await bcrypt.hash(this.password, salt);
-// });
+charitySchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
+        //to not change password every time we edit the user data
+        next();
+    }
+    const salt = await bcrypt.genSalt(
+        configurationProvider.getValue('hashing.salt')
+    );
+    this.password = await bcrypt.hash(this.password, salt);
+});
 // const editImgUrl = (doc) => {
 //   if (doc.image) {
 //     const urlImg = `http://${configurationProvider.getValue(

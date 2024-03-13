@@ -30,4 +30,7 @@ const updateNestedProperties = (target:any, updateObject:any) => {//target store
     }
   }
 };
-export { checkValueEquality, updateNestedProperties };
+function getValueByKey(obj: any, key: string): any {
+                return obj[key];
+            }
+export { checkValueEquality, updateNestedProperties ,getValueByKey};
