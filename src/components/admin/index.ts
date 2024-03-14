@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from "express";
-import { UnauthenticatedError } from "../../libraries/errors/components/index";
-import { AuthedRequest } from "../auth/user/data-access/auth.interface";
+import { NextFunction, Request, Response } from 'express';
+import { UnauthenticatedError } from '../../libraries/errors/components/index';
+import { AuthedRequest } from '../auth/user/data-access/auth.interface';
 
-const isAdmin = (_req:Request, res:Response, next:NextFunction) => {
+const isAdmin = (_req: Request, res: Response, next: NextFunction) => {
   const req = _req as AuthedRequest;
-  //   console.log(req.user);
+
   if (!req.charity) {
     //no isAdmin attribure in req.charity to prevent error of undefined isAdmin
     if (req.user.isAdmin && req.user) {
