@@ -1,10 +1,11 @@
-import multer from "multer";
+import { Request } from "express"; import { BadRequestError } from "../../../../errors/components";
+import multer, { FileFilterCallback } from "multer";
 import { v4 as uuidv4 } from 'uuid';
-const multerFilter = (req, file, cb) => {
+const multerFilter = (req:Request, file:Express.Multer.File, cb:FileFilterCallback) => {
     if (file.mimetype.split("/")[1] === "pdf") {
       cb(null, true);
     } else {
-      cb(new Error("Not a PDF File!!"), false);
+      cb(new BadRequestError('invalid type,Only PDFallowed')); 
     }
   };
 const storage = multer.diskStorage({

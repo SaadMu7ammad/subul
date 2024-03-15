@@ -5,7 +5,7 @@ import {  IUserDocument } from '../../../user/data-access/interfaces/user.interf
 export interface TransactionDataStore {
     findCaseById(id: string): Promise<ICaseDocument | null>;
     findCharityById(id: string): Promise<ICharityDocument | null>;
-    findTransactionByQuery(queryObj): Promise<ITransactionDocument | null>;
+    findTransactionByQuery(queryObj:any): Promise<ITransactionDocument | null>;
     findTransactionById(id: string): Promise<ITransactionDocument | null>;
     findUserByEmail(email: string):Promise<IUserDocument | null>;
     createTransaction(
