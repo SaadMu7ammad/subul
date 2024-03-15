@@ -12,6 +12,7 @@ import {
 } from '../../../utils/shared';
 import {
   IUserDocument,
+  IUserModifed,
   IUserResponse,
   dataForActivateAccount,
   dataForChangePassword,
@@ -118,7 +119,7 @@ const getUserProfileData = (user: IUserDocument):{user:IUserDocument} => {
   return { user: user };
 };
 const editUserProfile = async (
-  reqBody: Partial<IUserDocument>,
+  reqBody: IUserModifed,
   user: IUserDocument
 ): Promise<IUserResponse> => {
   if (!reqBody) throw new BadRequestError('no data sent');
