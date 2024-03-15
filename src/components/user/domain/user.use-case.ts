@@ -1,5 +1,5 @@
 import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
-import { IUser, IUserResponse } from '../data-access/interfaces/user.interface';
+import {  IUserModifed, IUserResponse, dataForActivateAccount, dataForChangePassword, dataForConfirmResetEmail, dataForResetEmail } from '../data-access/interfaces/user.interface';
 import { userService } from './user.service';
 import { Request, Response, NextFunction } from 'express';
 //@desc   reset password
@@ -10,7 +10,7 @@ const resetUser = async (
   res: Response,
   next: NextFunction
 ): Promise<{ message: string }> => {
-  const resetInputsData = req.body;
+  const resetInputsData: dataForResetEmail = req.body;
   const responseData = await userService.resetUser(resetInputsData);
   return {
     message: responseData.message,
@@ -24,7 +24,7 @@ const confirmReset = async (
   res: Response,
   next: NextFunction
 ): Promise<{ message: string }> => {
-  const resetInputsData = req.body;
+  const resetInputsData:dataForConfirmResetEmail = req.body;
   const responseData = await userService.confirmReset(resetInputsData);
   return {
     message: responseData.message,
@@ -39,7 +39,7 @@ const changePassword = async (
   res: Response,
   next: NextFunction
 ): Promise<{ message: string }> => {
-  const changePasswordInputsData = req.body;
+  const changePasswordInputsData:dataForChangePassword = req.body;
   const storedUser = req.user;
   const responseData = await userService.changePassword(
     changePasswordInputsData,
@@ -58,7 +58,7 @@ const activateAccount = async (
   res: Response,
   next: NextFunction
 ): Promise<{ message: string }> => {
-  const activateAccountInputsData = req.body;
+  const activateAccountInputsData:dataForActivateAccount = req.body;
   const storedUser = req.user;
   const responseData = await userService.activateAccount(
     activateAccountInputsData,
@@ -90,7 +90,7 @@ const editUserProfile = async (
   res: Response,
   next: NextFunction
 ): Promise<IUserResponse> => {
-  const editUserProfileInputsData: Partial<IUser> = {
+  const editUserProfileInputsData: IUserModifed = {
     //for TS
     name: {
       firstName: req.body?.name?.firstName,
