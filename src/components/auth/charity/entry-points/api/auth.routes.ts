@@ -8,7 +8,7 @@ import {
 } from '../../../../../libraries/uploads/components/images/handlers';
 import {
   registerCharityValidation,
-  loginCharityValidation,
+  // loginCharityValidation,
 } from '../../../../../libraries/validation/components/charity/charityAuthValidation';
 import { authUseCase } from '../../domain/auth.use-case';
 import { deleteOldImgs } from '../../../../../utils/deleteFile';
@@ -27,11 +27,12 @@ export default function defineRoutes(expressApp: Application) {
       const req = _req as AuthedRequest;
       try {
         logger.info(`Auth API was called to Register charity`);
-        const registerCharityResponse = await authUseCase.registerCharity(
+        const registerCharityResponse = authUseCase.registerCharity(
           req,
           res,
           next
         );
+
         return res.json(registerCharityResponse);
       } catch (error) {
         deleteOldImgs('charityLogos', req.body.image);
@@ -40,26 +41,27 @@ export default function defineRoutes(expressApp: Application) {
       }
     }
   );
-  router.post(
-    '/auth',
-    loginCharityValidation,
-    validate,
-    async (_req: Request, res: Response, next: NextFunction) => {
-      try {
-        const req = _req as AuthedRequest;
 
-        logger.info(`Auth API was called to Auth charity`);
-        const authCharityResponse = await authUseCase.authCharity(
-          req,
-          res,
-          next
-        );
-        return res.json(authCharityResponse);
-      } catch (error) {
-        next(error);
-        return undefined;
-      }
-    }
-  );
+  //   router.post(
+  //     '/auth',
+  //     loginCharityValidation,
+  //     validate,
+  //     async (_req: Request, res: Response, next: NextFunction) => {
+  //       try {
+  //         const req = _req as AuthedRequest;
+
+  //         logger.info(`Auth API was called to Auth charity`);
+  //         const authCharityResponse = await authUseCase.authCharity(
+  //           req,
+  //           res,
+  //           next
+  //         );
+  //         return res.json(authCharityResponse);
+  //       } catch (error) {
+  //         next(error);
+  //         return undefined;
+  //       }
+  //     }
+  //   );
   expressApp.use('/api/charities', router);
 }
