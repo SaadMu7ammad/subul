@@ -3,8 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
 import { saveImg } from '../../index';
 import { BadRequestError } from '../../../../errors/components/index';
-import { NextFunction, Request, Response} from 'express';
-import { AuthedRequest } from '../../../../../components/auth/user/data-access/auth.interface';
+import { NextFunction, Request, Response } from 'express';
 //memoryStorage
 const multerFilterOnlyImgs = (
     req: Request,
@@ -36,13 +35,14 @@ const uploadDocs = upload.fields([
 async function processDocs(
     docsKey: string,
     ref: Express.Multer.File[],
-    req: AuthedRequest
+    req: Request,
+    res: Response
 ) {
     return Promise.all(
         ref.map(async (obj, indx: number) => {
             // const ex = obj.mimetype.split('/')[1];
             const uniquePrefix: string = uuidv4();
-            const fileName: string = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
+            const fileName: string = `${docsKey}-${res.locals.charity.name}--${res.locals.charity._id}--${indx}${uniquePrefix}.jpeg`;
             //   req.body.docsSent.push(fileName);
 
             const sharpPromise = sharp(obj.buffer)
@@ -84,7 +84,18 @@ async function processDocs(
 }
 
 const resizeDoc = async (
-    req: AuthedRequest & { files: {[fieldname:string]:Express.Multer.File[]}; },
+    req: Request & {
+        files:
+        {
+            charityDocs: {
+                docs1: Express.Multer.File[];
+                docs2: Express.Multer.File[];
+                docs3: Express.Multer.File[];
+                docs4: Express.Multer.File[];
+            };
+        }
+
+    },
     res: Response,
     next: NextFunction
 ) => {
@@ -106,44 +117,49 @@ const resizeDoc = async (
         if (!req.files) {
             throw new BadRequestError('docs are required');
         }
-        if (
-            //if not upload docs 👇️ Needs some work. This means that you must upload the 4th doc if you wanna add any payment @saad please 😿😿😿
-            !req.files['charityDocs[docs1]'] ||
-            !req.files['charityDocs[docs2]'] ||
-            !req.files['charityDocs[docs3]'] ||
-            (!req.files['charityDocs[docs4]'] &&
-                (!req.files['paymentMethods.bankAccount[0][bankDocs]'] ||
-                    !req.files['paymentMethods.fawry[0][fawryDocs]'] ||
-                    !req.files[
-                        'paymentMethods.vodafoneCash[0][vodafoneCashDocs]'
-                    ]))
-        ) {
-            throw new BadRequestError('docs are required');
+        if (!req.files || req.files.length === 0) {
+            throw new BadRequestError('Docs are required');
         }
-        await processDocs('docs1', req.files['charityDocs[docs1]'], req);
-        await processDocs('docs2', req.files['charityDocs[docs2]'], req);
-        await processDocs('docs3', req.files['charityDocs[docs3]'], req);
-        await processDocs('docs4', req.files['charityDocs[docs4]']!, req);
-        if (req.files['paymentMethods.bankAccount[0][bankDocs]'])
-            await processDocs(
-                'bankDocs',
-                req.files['paymentMethods.bankAccount[0][bankDocs]'],
-                req
-            );
 
-        if (req.files['paymentMethods.fawry[0][fawryDocs]'])
-            await processDocs(
-                'fawryDocs',
-                req.files['paymentMethods.fawry[0][fawryDocs]'],
-                req
-            );
+        // if (
+        //     //if not upload docs 👇️ Needs some work. This means that you must upload the 4th doc if you wanna add any payment @saad please 😿😿😿
+        //     !req.files['charityDocs[docs1]'] ||
+        //     !req.files['charityDocs[docs2]'] ||
+        //     !req.files['charityDocs[docs3]'] ||
+        //     !req.files['charityDocs[docs4]'] ||
+        //     (!req.files['charityDocs[docs4]'] &&
+        //         (!req.files['paymentMethods.bankAccount[0][bankDocs]'] ||
+        //             !req.files['paymentMethods.fawry[0][fawryDocs]'] ||
+        //             !req.files[
+        //             'paymentMethods.vodafoneCash[0][vodafoneCashDocs]'
+        //             ]))
+        // ) {
+        //     throw new BadRequestError('docs are required');
+        // }
+        await processDocs('docs1', req.files.charityDocs.docs1, req, res);
+        await processDocs('docs2', req.files.charityDocs.docs2, req, res);
+        await processDocs('docs3', req.files.charityDocs.docs3, req, res);
+        await processDocs('docs4', req.files.charityDocs.docs4, req, res);
+        // if (req.files ['paymentMethods.bankAccount[0][bankDocs]'])
+        //     await processDocs(
+        //         'bankDocs',
+        //         req.files ['paymentMethods.bankAccount[0][bankDocs]'],
+        //         req, res
+        //     );
 
-        if (req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'])
-            await processDocs(
-                'vodafoneCashDocs',
-                req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'],
-                req
-            );
+        // if (req.files ['paymentMethods.fawry[0][fawryDocs]'])
+        //     await processDocs(
+        //         'fawryDocs',
+        //         req.files ['paymentMethods.fawry[0][fawryDocs]'],
+        //         req, res
+        //     );
+
+        // if (req.files ['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'])
+        //     await processDocs(
+        //         'vodafoneCashDocs',
+        //         req.files ['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'],
+        //         req, res
+        //     );
 
         next();
     } catch (error) {

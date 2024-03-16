@@ -1,9 +1,8 @@
-import { NextFunction,  Response } from 'express';
+import { NextFunction,  Request,  Response } from 'express';
 import { OnlineCardService } from './onlineCards.service';
-import { AuthedRequest } from '../../../../components/auth/user/data-access/auth.interface';
 import { IPaymentInfoData } from '../payment.interface';
 const payWithOnlineCard = async (
-    req: AuthedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
@@ -18,7 +17,7 @@ const payWithOnlineCard = async (
         caseId: string;
         caseTitle: string;
     } = req.body;
-    const storedUser = req.user;
+    const storedUser =  res.locals.user;
     const data: IPaymentInfoData = {
         amount,
         charityId,

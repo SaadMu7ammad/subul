@@ -1,6 +1,5 @@
-import { NextFunction, Response } from 'express';
+import { NextFunction, Response,Request } from 'express';
 
-import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
 import { adminService } from './admin.service';
 import { NotFoundError } from '../../../libraries/errors/components';
 import {
@@ -13,7 +12,7 @@ import {
 } from '../../charity/data-access/interfaces/charity.interface';
 
 const getAllPendingRequestsCharities = async (
-  _req: AuthedRequest,
+  _req: Request,
   _res: Response,
   _next: NextFunction
 ): Promise<AllPendingRequestsCharitiesResponse> => {
@@ -23,7 +22,7 @@ const getAllPendingRequestsCharities = async (
 };
 
 const getPendingRequestCharityById = async (
-  req: AuthedRequest,
+  req: Request,
   _res: Response,
   _next: NextFunction
 ): Promise<PendingRequestCharityResponse> => {
@@ -37,7 +36,7 @@ const getPendingRequestCharityById = async (
 };
 
 const getPendingPaymentRequestsForConfirmedCharityById = async (
-  req: AuthedRequest,
+  req: Request,
   _res: Response,
   _next: NextFunction
 ) => {
@@ -55,7 +54,7 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (
 };
 
 const getAllRequestsPaymentMethodsForConfirmedCharities = async (
-  _req: AuthedRequest,
+  _req: Request,
   _res: Response,
   _next: NextFunction
 ): Promise<AllPendingRequestsPaymentMethods> => {
@@ -67,7 +66,7 @@ const getAllRequestsPaymentMethodsForConfirmedCharities = async (
 };
 
 const confirmCharity = async (
-  req: AuthedRequest,
+  req: Request,
   _res: Response,
   _next: NextFunction
 ): Promise<ConfirmPendingCharity> => {
@@ -86,7 +85,7 @@ const confirmCharity = async (
 };
 
 const rejectCharity = async (
-  req: AuthedRequest,
+  req: Request,
   _res: Response,
   _next: NextFunction
 ) => {
@@ -105,7 +104,7 @@ const rejectCharity = async (
 };
 
 const confirmPaymentAccountRequestForConfirmedCharities = async (
-  req: AuthedRequest,
+  req: Request,
   _res: Response,
   _next: NextFunction
 ) => {
@@ -136,7 +135,7 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
 };
 
 const rejectPaymentAccountRequestForConfirmedCharities = async (
-  req: AuthedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {

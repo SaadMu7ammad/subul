@@ -1,5 +1,4 @@
-import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
-import { IUser, IUserResponse } from '../data-access/interfaces/user.interface';
+import {  IUserModifed, IUserResponse, dataForActivateAccount, dataForChangePassword, dataForConfirmResetEmail, dataForResetEmail } from '../data-access/interfaces/user.interface';
 import { userService } from './user.service';
 import { Request, Response, NextFunction } from 'express';
 //@desc   reset password
@@ -10,7 +9,7 @@ const resetUser = async (
   res: Response,
   next: NextFunction
 ): Promise<{ message: string }> => {
-  const resetInputsData = req.body;
+  const resetInputsData: dataForResetEmail = req.body;
   const responseData = await userService.resetUser(resetInputsData);
   return {
     message: responseData.message,
@@ -24,7 +23,7 @@ const confirmReset = async (
   res: Response,
   next: NextFunction
 ): Promise<{ message: string }> => {
-  const resetInputsData = req.body;
+  const resetInputsData:dataForConfirmResetEmail = req.body;
   const responseData = await userService.confirmReset(resetInputsData);
   return {
     message: responseData.message,
@@ -35,12 +34,12 @@ const confirmReset = async (
 //@route  POST /api/users/changepassword
 //@access private
 const changePassword = async (
-  req: AuthedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<{ message: string }> => {
-  const changePasswordInputsData = req.body;
-  const storedUser = req.user;
+  const changePasswordInputsData:dataForChangePassword = req.body;
+  const storedUser = res.locals.user;
   const responseData = await userService.changePassword(
     changePasswordInputsData,
     storedUser
@@ -54,12 +53,12 @@ const changePassword = async (
 //@route  POST /api/users/activate
 //@access private
 const activateAccount = async (
-  req: AuthedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<{ message: string }> => {
-  const activateAccountInputsData = req.body;
-  const storedUser = req.user;
+  const activateAccountInputsData:dataForActivateAccount = req.body;
+  const storedUser = res.locals.user;
   const responseData = await userService.activateAccount(
     activateAccountInputsData,
     storedUser,
@@ -86,11 +85,11 @@ const logoutUser = (
 //@route  POST /api/users/profile/edit
 //@access private
 const editUserProfile = async (
-  req: AuthedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<IUserResponse> => {
-  const editUserProfileInputsData: Partial<IUser> = {
+  const editUserProfileInputsData: IUserModifed = {
     //for TS
     name: {
       firstName: req.body?.name?.firstName,
@@ -101,7 +100,7 @@ const editUserProfile = async (
     gender: req.body?.gender,
     phone: req.body?.phone,
   };
-  const storedUser = req.user;
+  const storedUser = res.locals.user;
   const responseData = await userService.editUserProfile(
     editUserProfileInputsData,
     storedUser
@@ -123,11 +122,11 @@ const editUserProfile = async (
 //@route  GET /api/users/profile
 //@access private
 const getUserProfileData = (
-  req: AuthedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): IUserResponse => {
-  const storedUser = req.user;
+  const storedUser = res.locals.user;
   const responseData = userService.getUserProfileData(storedUser);
   return {
     user: responseData.user,

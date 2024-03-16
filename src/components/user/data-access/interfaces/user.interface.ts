@@ -1,42 +1,42 @@
-import  { Document } from 'mongoose';
-import {  ITransactionDocument } from '../../../transaction/data-access/interfaces/transaction.interface';
-export interface UserLocation {
+import { Document } from 'mongoose';
+import { ITransactionDocument } from '../../../transaction/data-access/interfaces/transaction.interface';
+export type UserLocation = {
   governorate:
-    | 'Alexandria'
-    | 'Assiut'
-    | 'Aswan'
-    | 'Beheira'
-    | 'Bani Suef'
-    | 'Cairo'
-    | 'Daqahliya'
-    | 'Damietta'
-    | 'Fayyoum'
-    | 'Gharbiya'
-    | 'Giza'
-    | 'Helwan'
-    | 'Ismailia'
-    | 'Kafr El Sheikh'
-    | 'Luxor'
-    | 'Marsa Matrouh'
-    | 'Minya'
-    | 'Monofiya'
-    | 'New Valley'
-    | 'North Sinai'
-    | 'Port Said'
-    | 'Qalioubiya'
-    | 'Qena'
-    | 'Red Sea'
-    | 'Sharqiya'
-    | 'Sohag'
-    | 'South Sinai'
-    | 'Suez'
-    | 'Tanta';
+  | 'Alexandria'
+  | 'Assiut'
+  | 'Aswan'
+  | 'Beheira'
+  | 'Bani Suef'
+  | 'Cairo'
+  | 'Daqahliya'
+  | 'Damietta'
+  | 'Fayyoum'
+  | 'Gharbiya'
+  | 'Giza'
+  | 'Helwan'
+  | 'Ismailia'
+  | 'Kafr El Sheikh'
+  | 'Luxor'
+  | 'Marsa Matrouh'
+  | 'Minya'
+  | 'Monofiya'
+  | 'New Valley'
+  | 'North Sinai'
+  | 'Port Said'
+  | 'Qalioubiya'
+  | 'Qena'
+  | 'Red Sea'
+  | 'Sharqiya'
+  | 'Sohag'
+  | 'South Sinai'
+  | 'Suez'
+  | 'Tanta';
   city?: string;
   street?: string;
 }
 
 
-export interface IUser {
+export type IUser = {
   name: {
     firstName: string;
     lastName: string;
@@ -49,14 +49,14 @@ export interface IUser {
   locationUser: UserLocation;
   gender: 'male' | 'female';
   phone?: string;
-  verificationCode?: string|null;
+  verificationCode?: string | null;
   emailVerification: {
     isVerified?: boolean;
-    verificationDate?: Date|number;
+    verificationDate?: Date | number;
   };
   phoneVerification: {
     isVerified?: boolean;
-    verificationDate?: Date|number;
+    verificationDate?: Date | number;
   };
   isEnabled: boolean;
   transactions: (ITransactionDocument['_id'])[];
@@ -64,26 +64,36 @@ export interface IUser {
   // createdAt: Date;
   // updatedAt: Date;
 }
-export interface IUserDocument extends IUser, Document{ }
-export interface IUserResponse {
+export type IUserModifed = {
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  email: string;
+  locationUser: UserLocation;
+  gender: 'male' | 'female';
+  phone: string;
+}
+export type IUserDocument = IUser & Document
+export type IUserResponse = {
   // emailEdited?: boolean;
   emailAlert?: boolean;
   user: Partial<IUserDocument>;
   message?: string;
-  token?:string
+  token?: string
 }
 
-export interface dataForResetEmail {
+export type dataForResetEmail = {
   email: string;
 }
-export interface dataForChangePassword {
+export type dataForChangePassword = {
   password: string;
 }
-export interface dataForConfirmResetEmail {
+export type dataForConfirmResetEmail = {
   email: string;
   token: string;
   password: string;
 }
-export interface dataForActivateAccount {
+export type dataForActivateAccount = {
   token: string;
 }

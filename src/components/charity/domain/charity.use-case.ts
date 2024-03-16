@@ -14,14 +14,13 @@ import {
     ICharityDocumentResponse,
     IPaymentCharityDocumentResponse,
 } from '../data-access/interfaces/charity.interface';
-import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
 
 const activateCharityAccount = async (
-    req: AuthedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<{ message: string }> => {
-    let storedCharity: ICharityDocument = req.charity;
+    let storedCharity: ICharityDocument = res.locals.charity
 
     const { token }: DataForActivateCharityAccount = req.body;
 
@@ -79,13 +78,13 @@ const confirmResetPassword: RequestHandler = async (
 };
 
 const changePassword = async (
-    req: AuthedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<{ message: string }> => {
     const data: DataForChangePassword = { password: req.body.password };
 
-    const storedCharity: ICharityDocument = req.charity;
+    const storedCharity: ICharityDocument = res.locals.charity
 
     const changePasswordResponse = await charityService.changePassword(
         data,
@@ -95,11 +94,11 @@ const changePassword = async (
     return { message: changePasswordResponse.message };
 };
 const showCharityProfile = (
-    req: AuthedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ): ICharityDocumentResponse => {
-    const storedCharity: ICharityDocument = req.charity;
+    const storedCharity: ICharityDocument = res.locals.charity
 
     const responseData = charityService.getCharityProfileData(storedCharity);
 
@@ -108,7 +107,7 @@ const showCharityProfile = (
     };
 };
 const editCharityProfile = async (
-    req: AuthedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<ICharityDocumentResponse> => {
@@ -121,7 +120,7 @@ const editCharityProfile = async (
         description: req.body.description,
     };
 
-    const storedCharity: ICharityDocument = req.charity;
+    const storedCharity: ICharityDocument = res.locals.charity
 
     const responseData = await charityService.editCharityProfile(
         data,
@@ -134,14 +133,14 @@ const editCharityProfile = async (
     };
 };
 const changeProfileImage = async (
-    req: AuthedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<{ image: string; message: string }> => {
     const data: DataForChangeProfileImage = {
         image: req.body.image[0],
     };
-    const storedCharity: ICharityDocument = req.charity;
+    const storedCharity: ICharityDocument = res.locals.charity
     const responseData = await charityService.changeProfileImage(
         data,
         storedCharity
@@ -150,7 +149,7 @@ const changeProfileImage = async (
 };
 
 const requestEditCharityPayments = async (
-    req: AuthedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<IPaymentCharityDocumentResponse> => {
@@ -159,7 +158,7 @@ const requestEditCharityPayments = async (
         paymentId: req.body.payment_id,
     };
     const responseData = await charityService.requestEditCharityPayments(
-        req.charity,
+        res.locals.charity,
         data.paymentId,
         data.paymentMethods
     );
@@ -178,7 +177,7 @@ const logout: RequestHandler = (req, res, next): { message: string } => {
 };
 
 const sendDocs = async (
-    req: AuthedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ): Promise<IPaymentCharityDocumentResponse> => {
@@ -195,7 +194,7 @@ const sendDocs = async (
             vodafoneCash: req.body.paymentMethods['vodafoneCash'],
         },
     };
-    const storedCharity: ICharityDocument = req.charity;
+    const storedCharity: ICharityDocument = res.locals.charity
     const responseData = await charityService.sendDocs(data, storedCharity);
     return {
         paymentMethods: responseData.paymentMethods,
