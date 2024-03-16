@@ -4,7 +4,6 @@ import sharp from 'sharp';
 import { BadRequestError } from '../../../../errors/components/bad-request';
 import { saveImg } from '../../index';
 import { NextFunction, Request, Response } from 'express';
-import { AuthedRequest } from '../../../../../components/auth/user/data-access/auth.interface';
 const multerFilter = (req:Request, file:Express.Multer.File, cb:FileFilterCallback) => {
     if (file.mimetype.startsWith('image')) {
         //accepts imgs only
@@ -13,12 +12,12 @@ const multerFilter = (req:Request, file:Express.Multer.File, cb:FileFilterCallba
         cb(new BadRequestError('invalid type,Only images allowed'));
     }
 };
-async function processDocs(docsKey:string, ref:Express.Multer.File[], req:AuthedRequest) {
+async function processDocs(docsKey:string, ref:Express.Multer.File[], req:Request,res:Response) {
     return Promise.all(
         ref.map(async (obj, indx) => {
             // const ex = obj.mimetype.split('/')[1];
             const uniquePrefix = uuidv4();
-            const fileName = `${docsKey}-${req.charity.name}--${req.charity._id}--${indx}${uniquePrefix}.jpeg`;
+            const fileName = `${docsKey}-${res.locals.charity.name}--${res.locals.charity._id}--${indx}${uniquePrefix}.jpeg`;
 
             const sharpPromise = sharp(obj.buffer)
                 .resize(320, 240)
@@ -55,7 +54,7 @@ async function processDocs(docsKey:string, ref:Express.Multer.File[], req:Authed
         })
     );
 }
-const resizeDocReq = async (req:AuthedRequest & { files: {[fieldname:string]:Express.Multer.File[]}; }
+const resizeDocReq = async (req:Request & { files: {[fieldname:string]:Express.Multer.File[]}; }
 , res:Response, next:NextFunction) => {
     try {
         if (req.body.paymentMethods && req.body.paymentMethods.bankAccount) {
@@ -84,21 +83,21 @@ const resizeDocReq = async (req:AuthedRequest & { files: {[fieldname:string]:Exp
             await processDocs(
                 'bankDocs',
                 req.files['paymentMethods.bankAccount[0][bankDocs]'],
-                req
+                req,res
             );
 
         if (req.files['paymentMethods.fawry[0][fawryDocs]'])
             await processDocs(
                 'fawryDocs',
                 req.files['paymentMethods.fawry[0][fawryDocs]'],
-                req
+                req,res
             );
 
         if (req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'])
             await processDocs(
                 'vodafoneCashDocs',
                 req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'],
-                req
+                req,res
             );
 
         next();

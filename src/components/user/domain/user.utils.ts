@@ -11,7 +11,6 @@ import {
   IUserDocument,
   IUserResponse,
 } from '../data-access/interfaces/user.interface';
-import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
 const userRepositoryObj = new userRepository();
 const checkUserIsExist = async (email: string): Promise<{user:IUserDocument}> => {
   //return user if it exists
@@ -29,8 +28,8 @@ const logout = (res: Response): void => {
     expires: new Date(0),
   });
 };
-const getUser = (req:AuthedRequest): Partial<IUserResponse> => {
-  return { user: req.user };
+const getUser = (res:Response): Partial<IUserResponse> => {
+  return { user: res.locals.user };
 };
 const checkIsEmailDuplicated = async (email: string): Promise<boolean> => {
   const isDuplicatedEmail = await userRepositoryObj.findUser(email);

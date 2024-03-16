@@ -12,7 +12,6 @@ import { auth, isConfirmed } from '../../../auth/shared/index';
 import { caseUseCase } from '../../domain/case.use-case';
 import logger from '../../../../utils/logger';
 import { getAllCasesValidation } from '../../../../libraries/validation/components/case/getAllCasesValidation';
-import { AuthedRequest } from '../../../auth/user/data-access/auth.interface';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -25,8 +24,7 @@ export default function defineRoutes(expressApp: Application) {
     postCaseValidation,
     validate,
     resizeImg,
-    async (_req: Request, res: Response, next: NextFunction) => {
-      const req = _req as AuthedRequest;
+    async (req: Request, res: Response, next: NextFunction) => {
 
       try {
         logger.info(`Case API was called to Add Case`);
@@ -46,8 +44,7 @@ export default function defineRoutes(expressApp: Application) {
     isConfirmed,
     getAllCasesValidation,
     validate,
-    async (_req: Request, res: Response, next: NextFunction) => {
-      const req = _req as AuthedRequest;
+    async (req: Request, res: Response, next: NextFunction) => {
 
       try {
         logger.info(`Case API was called to Get All Cases`);
@@ -69,8 +66,7 @@ export default function defineRoutes(expressApp: Application) {
     .get(
       auth,
       isConfirmed,
-      async (_req: Request, res: Response, next: NextFunction) => {
-        const req = _req as AuthedRequest;
+      async (req: Request, res: Response, next: NextFunction) => {
 
         try {
           logger.info(`Case API was called to Get Case By Id`);
@@ -89,8 +85,7 @@ export default function defineRoutes(expressApp: Application) {
     .delete(
       auth,
       isConfirmed,
-      async (_req: Request, res: Response, next: NextFunction) => {
-        const req = _req as AuthedRequest;
+      async (req: Request, res: Response, next: NextFunction) => {
 
         try {
           logger.info(`Case API was called to Delete Case By Id`);
@@ -113,8 +108,7 @@ export default function defineRoutes(expressApp: Application) {
       editCaseValidation,
       validate,
       resizeImg,
-      async (_req: Request, res: Response, next: NextFunction) => {
-        const req = _req as AuthedRequest;
+      async (req: Request, res: Response, next: NextFunction) => {
 
         try {
           logger.info(`Case API was called to Edit Case`);

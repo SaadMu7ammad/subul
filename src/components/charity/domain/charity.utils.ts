@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import {
   BadRequestError,
   NotFoundError,
@@ -16,8 +17,6 @@ import {
   RequestPaymentMethodsObject,
   TypeWithAtLeastOneProperty,
 } from '../data-access/interfaces/charity.interface';
-import { Response } from 'express';
-import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (
   email: string
@@ -38,8 +37,8 @@ const logout = (res: Response): void => {
     expires: new Date(0),
   });
 };
-const getCharity = (req: AuthedRequest): { charity: ICharityDocument } => {
-  return { charity: req.charity };
+const getCharity = (res: Response): { charity: ICharityDocument } => {
+  return { charity: res.locals.charity };
 };
 const checkIsEmailDuplicated = async (email: string): Promise<void> => {
   const isDuplicatedEmail: ICharityDocument | null =

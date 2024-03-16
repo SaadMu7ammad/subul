@@ -12,7 +12,6 @@ import {
 } from '../../../../../libraries/validation/components/charity/charityAuthValidation';
 import { authUseCase } from '../../domain/auth.use-case';
 import { deleteOldImgs } from '../../../../../utils/deleteFile';
-import { AuthedRequest } from '../../../user/data-access/auth.interface';
 
 export default function defineRoutes(expressApp: Application) {
   const router = Router();
@@ -23,8 +22,7 @@ export default function defineRoutes(expressApp: Application) {
     registerCharityValidation,
     validate,
     resizeImg,
-    async (_req: Request, res: Response, next: NextFunction) => {
-      const req = _req as AuthedRequest;
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Auth API was called to Register charity`);
         const registerCharityResponse = await authUseCase.registerCharity(
@@ -44,9 +42,8 @@ export default function defineRoutes(expressApp: Application) {
     '/auth',
     loginCharityValidation,
     validate,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
 
         logger.info(`Auth API was called to Auth charity`);
         const authCharityResponse = await authUseCase.authCharity(
