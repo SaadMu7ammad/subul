@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 
-import { authUserService } from './auth.service';
+import { UserObject, authUserService } from './auth.service';
+import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -29,15 +30,35 @@ const authUser: RequestHandler = async (req, res, next) => {
 //@desc   submit register page
 //@route  POST /api/users/
 //@access public
-const registerUser: RequestHandler = async (req, res, next) => {
-  const registerInputsData = req.body;
+
+export interface RegisterUSerInputData {
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  email: string;
+  locationUser: UserLocation;
+  gender: 'male' | 'female';
+  phone: string;
+  password: string;
+}
+
+const registerUser: RequestHandler = async (
+  req,
+  res,
+  _next
+): Promise<{ user: UserObject }> => {
+  const registerInputsData: RegisterUSerInputData = req.body;
+
   const responseData = await authUserService.registerUser(
     registerInputsData,
     res
   );
-  const userResponsed = {
+
+  const userResponsed: UserObject = {
     ...responseData.user,
   };
+
   return { user: userResponsed };
 };
 export const authUseCase = {

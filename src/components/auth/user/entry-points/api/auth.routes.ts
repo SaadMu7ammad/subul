@@ -1,4 +1,4 @@
-import express, { Application,NextFunction, Request, Response} from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import logger from '../../../../../utils/logger';
 import { authUseCase } from '../../domain/auth.use-case';
 import {
@@ -16,7 +16,6 @@ export default function defineRoutes(expressApp: Application) {
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-
         logger.info(`Auth API was called to register User`);
         const authResponse = await authUseCase.registerUser(req, res, next);
         return res.json(authResponse);
@@ -33,7 +32,6 @@ export default function defineRoutes(expressApp: Application) {
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-
         logger.info(`Auth API was called to auth User`);
         const authResponse = await authUseCase.authUser(req, res, next);
         return res.json(authResponse);

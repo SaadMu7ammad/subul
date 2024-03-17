@@ -5,10 +5,8 @@ import {
   UnauthenticatedError,
 } from '../../../../libraries/errors/components/index';
 import { authUserRepository } from '../data-access/user.repository';
-import {
-  IUser,
-  IUserDocument,
-} from '../../../user/data-access/interfaces/user.interface';
+import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
+import { RegisterUSerInputData } from './auth.use-case';
 const checkUserPassword = async (
   email: string,
   password: string
@@ -28,7 +26,7 @@ const checkUserIsVerified = (user: IUserDocument): boolean => {
   return false;
 };
 const createUser = async (
-  dataInputs: IUser
+  dataInputs: RegisterUSerInputData
 ): Promise<{ user: IUserDocument }> => {
   const userExist = await authUserRepository.findUser(dataInputs.email);
   if (userExist) throw new BadRequestError('user is registered already');

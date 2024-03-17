@@ -5,14 +5,18 @@ import {
   setupMailSender,
 } from '../../../../utils/mailer';
 import {
-  IUser,
   IUserDocument,
   IUserResponse,
 } from '../../../user/data-access/interfaces/user.interface';
 import { Response } from 'express';
 import { IloginData } from '../data-access/auth.interface';
+import { RegisterUSerInputData } from './auth.use-case';
+import mongoose from 'mongoose';
 
-const authUser = async (reqBody: IloginData, res:Response): Promise<IUserResponse> => {
+const authUser = async (
+  reqBody: IloginData,
+  res: Response
+): Promise<IUserResponse> => {
   const { email, password }: { email: string; password: string } = reqBody;
   const userResponse = await authUserUtils.checkUserPassword(email, password);
   const token: string = generateToken(res, userResponse.user._id, 'user');
@@ -50,7 +54,21 @@ const authUser = async (reqBody: IloginData, res:Response): Promise<IUserRespons
     };
   }
 };
-const registerUser = async (reqBody: IUser, res:Response) => {
+
+export interface UserObject {
+  _id: mongoose.Types.ObjectId;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  email: string;
+}
+const registerUser = async (
+  reqBody: RegisterUSerInputData,
+  _res: Response
+): Promise<{
+  user: UserObject;
+}> => {
   const newCreatedUser = await authUserUtils.createUser(reqBody);
   // generateToken(res, newCreatedUser.user._id, 'user');
   await setupMailSender(
@@ -63,7 +81,7 @@ const registerUser = async (reqBody: IUser, res:Response) => {
     } ` +
       ' we are happy that you joined our community ... keep spreading goodness with us'
   );
-  const userObj = {
+  const userObj: UserObject = {
     _id: newCreatedUser.user._id,
     name: newCreatedUser.user.name,
     email: newCreatedUser.user.email,
