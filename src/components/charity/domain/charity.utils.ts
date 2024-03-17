@@ -309,7 +309,7 @@ const makeTempPaymentObj = (
     },
   };
   type FD = {
-    fields: ['accNumber', 'iban', 'swiftCode'] | ['number'];
+    fields:readonly ['accNumber', 'iban', 'swiftCode'] | ['number'];
     docsField: 'bankDocs' | 'fawryDocs' | 'vodafoneCashDocs';
   };
 
