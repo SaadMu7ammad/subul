@@ -4,31 +4,36 @@ import {
   generateResetTokenTemp,
   setupMailSender,
 } from '../../../../utils/mailer';
-import {
-  IUserDocument,
-  IUserResponse,
-} from '../../../user/data-access/interfaces/user.interface';
+// import { IUserResponse } from '../../../user/data-access/interfaces/user.interface';
 import { Response } from 'express';
 import { IloginData } from '../data-access/auth.interface';
 import { RegisterUSerInputData } from './auth.use-case';
 import mongoose from 'mongoose';
 
+type UserResponseBasedOnUserVerification = {
+  user: UserObject;
+  emailAlert: boolean;
+  token?: string;
+};
+
 const authUser = async (
   reqBody: IloginData,
   res: Response
-): Promise<IUserResponse> => {
+): Promise<UserResponseBasedOnUserVerification> => {
   const { email, password }: { email: string; password: string } = reqBody;
+
   const userResponse = await authUserUtils.checkUserPassword(email, password);
+
   const token: string = generateToken(res, userResponse.user._id, 'user');
-  const userObj: Partial<IUserDocument> = {
+  const userObj: UserObject = {
     _id: userResponse.user._id,
     name: userResponse.user.name,
     email: userResponse.user.email,
   };
-  const IsCharityVerified: boolean = authUserUtils.checkUserIsVerified(
+  const IsUserVerified: boolean = authUserUtils.checkUserIsVerified(
     userResponse.user
   );
-  if (IsCharityVerified) {
+  if (IsUserVerified) {
     return {
       user: userObj,
       emailAlert: false,

@@ -5,15 +5,30 @@ import { UserLocation } from '../../../user/data-access/interfaces/user.interfac
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
-const authUser: RequestHandler = async (req, res, next) => {
-  const data: { email: string; password: string } = {
-    email: req.body.email,
-    password: req.body.password,
-  };
+
+type UserResponseBasedOnEmailAlert = {
+  user: UserObject;
+  msg?: string;
+  token?: string; // must be optional cuz it comes from responseData as optional
+};
+
+const authUser: RequestHandler = async (
+  req,
+  res,
+  _next
+): Promise<UserResponseBasedOnEmailAlert> => {
+  const { email, password }: { email: string; password: string } = req.body;
+  const data = { email, password };
+  // const data: { email: string; password: string } = {
+  //   email: req.body.email,
+  //   password: req.body.password,
+  // };
   const responseData = await authUserService.authUser(data, res);
-  const userResponsed = {
+
+  const userResponsed: UserObject = {
     ...responseData.user,
   };
+
   if (responseData.emailAlert) {
     return {
       user: userResponsed,
@@ -31,7 +46,7 @@ const authUser: RequestHandler = async (req, res, next) => {
 //@route  POST /api/users/
 //@access public
 
-export interface RegisterUSerInputData {
+export type RegisterUSerInputData = {
   name: {
     firstName: string;
     lastName: string;
@@ -41,7 +56,7 @@ export interface RegisterUSerInputData {
   gender: 'male' | 'female';
   phone: string;
   password: string;
-}
+};
 
 const registerUser: RequestHandler = async (
   req,

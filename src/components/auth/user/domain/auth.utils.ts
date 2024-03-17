@@ -7,6 +7,7 @@ import {
 import { authUserRepository } from '../data-access/user.repository';
 import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 import { RegisterUSerInputData } from './auth.use-case';
+
 const checkUserPassword = async (
   email: string,
   password: string
@@ -17,14 +18,16 @@ const checkUserPassword = async (
   if (!isMatch) {
     throw new UnauthenticatedError('invalid password');
   }
-  return { isMatch: true, user: user };
+  return { isMatch, user: user };
 };
+
 const checkUserIsVerified = (user: IUserDocument): boolean => {
   if (user.emailVerification.isVerified) {
     return true; //user verified already
   }
   return false;
 };
+
 const createUser = async (
   dataInputs: RegisterUSerInputData
 ): Promise<{ user: IUserDocument }> => {
