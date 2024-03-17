@@ -1,59 +1,77 @@
 // import { Response } from 'express';
-// import generateToken from '../../../../utils/generateToken';
+import generateToken from '../../../../utils/generateToken';
 import {
-  // generateResetTokenTemp,
+  generateResetTokenTemp,
   setupMailSender,
 } from '../../../../utils/mailer';
 import { authCharityUtils } from './auth.utils';
 import { CharityData } from './auth.use-case';
 import mongoose from 'mongoose';
+import { Response } from 'express';
 
-// const authCharity = async (
-//   reqBody: { email: string; password: string },
-//   res: Response<any, Record<string, any>>
-// ) => {
-//   const { email, password }: { email: string; password: string } = reqBody;
-//   const charityResponse = await authCharityUtils.checkCharityPassword(
-//     email,
-//     password
-//   );
-//   const token = generateToken(res, charityResponse.charity._id, 'charity');
-//   const charityObj = {
-//     _id: charityResponse.charity._id,
-//     name: charityResponse.charity.name,
-//     email: charityResponse.charity.email,
-//     isEnabled: charityResponse.charity.email,
-//     isConfirmed: charityResponse.charity.isConfirmed,
-//     isPending: charityResponse.charity.isPending,
-//   };
-//   const isCharityVerified = authCharityUtils.checkCharityIsVerified(
-//     charityResponse.charity
-//   );
-//   if (isCharityVerified) {
-//     //if verified no need to send token via email
-//     return {
-//       charity: charityObj,
-//       emailAlert: false,
-//       token: token,
-//     };
-//   } else {
-//     //not verified(not activated)
-//     const token = await generateResetTokenTemp();
-//     await authCharityUtils.setTokenToCharity(charityResponse.charity, token);
-//     await setupMailSender(
-//       charityResponse.charity.email,
-//       'login alert',
-//       `hi ${charityResponse.charity.name} it seems that your account still not verified or activated please go to that link to activate the account ` +
-//         `<h3>(www.activate.com)</h3>` +
-//         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-//     );
-//     return {
-//       charity: charityObj,
-//       emailAlert: true,
-//       token: token,
-//     };
-//   }
-// };
+export interface AuthCharity {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  isEnabled: string;
+  isConfirmed: boolean;
+  isPending: boolean;
+}
+interface AuthCharityResponse {
+  charity: AuthCharity;
+  emailAlert: boolean;
+  token: string;
+}
+
+const authCharity = async (
+  reqBody: { email: string; password: string },
+  res: Response<any, Record<string, any>>
+): Promise<AuthCharityResponse> => {
+  const { email, password }: { email: string; password: string } = reqBody;
+
+  const charityResponse = await authCharityUtils.checkCharityPassword(
+    email,
+    password
+  );
+
+  const token = generateToken(res, charityResponse.charity._id, 'charity');
+
+  const charityObj: AuthCharity = {
+    _id: charityResponse.charity._id,
+    name: charityResponse.charity.name,
+    email: charityResponse.charity.email,
+    isEnabled: charityResponse.charity.email,
+    isConfirmed: charityResponse.charity.isConfirmed,
+    isPending: charityResponse.charity.isPending,
+  };
+  const isCharityVerified = authCharityUtils.checkCharityIsVerified(
+    charityResponse.charity
+  );
+  if (isCharityVerified) {
+    //if verified no need to send token via email
+    return {
+      charity: charityObj,
+      emailAlert: false,
+      token: token,
+    };
+  } else {
+    //not verified(not activated)
+    const token = await generateResetTokenTemp();
+    await authCharityUtils.setTokenToCharity(charityResponse.charity, token);
+    await setupMailSender(
+      charityResponse.charity.email,
+      'login alert',
+      `hi ${charityResponse.charity.name} it seems that your account still not verified or activated please go to that link to activate the account ` +
+        `<h3>(www.activate.com)</h3>` +
+        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+    );
+    return {
+      charity: charityObj,
+      emailAlert: true,
+      token: token,
+    };
+  }
+};
 export interface CharityObject {
   _id: mongoose.Types.ObjectId;
   name: string;
@@ -84,6 +102,6 @@ const registerCharity = async (
 };
 
 export const authCharityService = {
-  // authCharity,
+  authCharity,
   registerCharity,
 };

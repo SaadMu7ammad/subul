@@ -1,8 +1,8 @@
-// import bcryptjs from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 import {
   BadRequestError,
-  // NotFoundError,
-  // UnauthenticatedError,
+  NotFoundError,
+  UnauthenticatedError,
 } from '../../../../libraries/errors/components/index';
 import { authCharityRepository } from '../data-access/charity.repository';
 import { deleteOldImgs } from '../../../../utils/deleteFile';
@@ -10,36 +10,43 @@ import { deleteOldImgs } from '../../../../utils/deleteFile';
 import { CharityData } from './auth.use-case';
 import { ICharityDocument } from '../../../charity/data-access/interfaces/charity.interface';
 
-// const checkCharityPassword = async (email: string, password: string) => {
-//   const charity = await authCharityRepository.findCharity(email);
-//   if (!charity) throw new NotFoundError('email not found');
-//   const isMatch = await bcryptjs.compare(password, charity.password);
-//   if (!isMatch) {
-//     throw new UnauthenticatedError('invalid password');
-//   }
-//   return { isMatch: true, charity: charity };
+const checkCharityPassword = async (
+  email: string,
+  password: string
+): Promise<{
+  isMatch: boolean;
+  charity: ICharityDocument;
+}> => {
+  const charity = await authCharityRepository.findCharity(email);
+  if (!charity) throw new NotFoundError('email not found');
+  const isMatch = await bcryptjs.compare(password, charity.password);
+  if (!isMatch) {
+    throw new UnauthenticatedError('invalid password');
+  }
+  return { isMatch: true, charity: charity };
+};
+
+const checkCharityIsVerified = (charity: ICharityDocument) => {
+  if (
+    charity.emailVerification.isVerified ||
+    charity.phoneVerification.isVerified
+  ) {
+    return true; //charity verified already
+  }
+  return false;
+};
+// const checkIsEmailDuplicated = async (email:string) => {
+//   const isDuplicatedEmail = await authCharityRepository.findCharity(email);
+//   if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 // };
-// const checkCharityIsVerified = (charity: ICharityDocument) => {
-//   if (
-//     charity.emailVerification.isVerified ||
-//     charity.phoneVerification.isVerified
-//   ) {
-//     return true; //charity verified already
-//   }
-//   return false;
-// };
-// // const checkIsEmailDuplicated = async (email:string) => {
-// //   const isDuplicatedEmail = await authCharityRepository.findCharity(email);
-// //   if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
-// // };
-// // const resetSentToken = async (charity) => {
-// //   charity.verificationCode = null;
-// //   await charity.save();
-// // };
-// const setTokenToCharity = async (charity: ICharityDocument, token: string) => {
-//   charity.verificationCode = token;
+// const resetSentToken = async (charity) => {
+//   charity.verificationCode = null;
 //   await charity.save();
 // };
+const setTokenToCharity = async (charity: ICharityDocument, token: string) => {
+  charity.verificationCode = token;
+  await charity.save();
+};
 
 const createCharity = async (
   dataInputs: CharityData
@@ -63,8 +70,8 @@ const createCharity = async (
 };
 
 export const authCharityUtils = {
-  // checkCharityPassword,
-  // checkCharityIsVerified,
+  checkCharityPassword,
+  checkCharityIsVerified,
   createCharity,
-  // setTokenToCharity,
+  setTokenToCharity,
 };

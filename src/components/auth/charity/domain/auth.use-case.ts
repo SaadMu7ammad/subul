@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 
-import { CharityObject, authCharityService } from './auth.service';
+import { AuthCharity, CharityObject, authCharityService } from './auth.service';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -20,10 +20,10 @@ export interface CharityData {
 
 const registerCharity: RequestHandler = async (
   req,
-  res,
+  _res,
   _next
 ): Promise<{ charity: CharityObject }> => {
-  // const data: CharityData = req.body as CharityData;
+  // // const data: CharityData = req.body as CharityData;
   const {
     email,
     password,
@@ -75,45 +75,60 @@ const registerCharity: RequestHandler = async (
     },
   };
 };
+export interface AuthCharityReturnedObject {
+  charity: AuthCharity;
+  message: string;
+  token: string;
+}
 
-// const authCharity: RequestHandler = async (req, res, next) => {
-//   const data = {
-//     email: req.body.email,
-//     password: req.body.password,
-//   };
-//   const responseData = await authCharityService.authCharity(data, res);
-//   const charityResponsed = {
-//     ...responseData.charity,
-//   };
-//   //first stage check if it verified or not
-//   if (responseData.emailAlert) {
-//     //token sent to ur email
-//     return {
-//       charity: charityResponsed,
-//       message:
-//         'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
-//       token: responseData.token,
-//     };
-//   }
-//   const returnedObj = {
-//     charity: charityResponsed,
-//     message: '',
-//     token: responseData.token,
-//   };
-//   //second stage
-//   //isPending = true and isConfirmed= false
-//   if (!charityResponsed.isConfirmed && charityResponsed.isPending) {
-//     returnedObj.message = 'charity docs will be reviewed';
-//   } //isPending = false and isConfirmed= false
-//   else if (!charityResponsed.isConfirmed && !charityResponsed.isPending) {
-//     returnedObj.message = 'you must upload docs to auth the charity';
-//     //isPending = false and isConfirmed= true
-//   } else if (charityResponsed.isConfirmed && !charityResponsed.isPending) {
-//     returnedObj.message = 'you are ready';
-//   }
-//   return returnedObj;
-// };
+const authCharity: RequestHandler = async (req, res, _next) => {
+  // Better to use different type for data here, not partial<CharityData>
+  const { email, password }: { email: string; password: string } = req.body;
+  const data = {
+    email,
+    password,
+  };
+  // const data = {
+  //   email: req.body.email,
+  //   password: req.body.password,
+  // };
+
+  const responseData = await authCharityService.authCharity(data, res);
+
+  const charityResponsed: AuthCharity = {
+    ...responseData.charity,
+  };
+
+  //first stage check if it verified or not
+  if (responseData.emailAlert) {
+    //token sent to ur email
+    return {
+      charity: charityResponsed,
+      message:
+        'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
+      token: responseData.token,
+    };
+  }
+  const returnedObj: AuthCharityReturnedObject = {
+    charity: charityResponsed,
+    message: '',
+    token: responseData.token,
+  };
+  //second stage
+  //isPending = true and isConfirmed= false
+  if (!charityResponsed.isConfirmed && charityResponsed.isPending) {
+    returnedObj.message = 'charity docs will be reviewed';
+  } //isPending = false and isConfirmed= false
+  else if (!charityResponsed.isConfirmed && !charityResponsed.isPending) {
+    returnedObj.message = 'you must upload docs to auth the charity';
+    //isPending = false and isConfirmed= true
+  } else if (charityResponsed.isConfirmed && !charityResponsed.isPending) {
+    returnedObj.message = 'you are ready';
+  }
+  return returnedObj;
+};
+
 export const authUseCase = {
   registerCharity,
-  // authCharity,
+  authCharity,
 };

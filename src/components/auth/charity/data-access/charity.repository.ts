@@ -20,7 +20,8 @@ const findCharity = async (email: string): Promise<ICharityDocument | null> => {
 const createCharity = async (
   dataInputs: CharityData
 ): Promise<ICharityDocument> => {
-  const charity = (await Charity.create(dataInputs)) as ICharityDocument; // must be `as` cuz of incompatibility issues with ICharityDocument & Charity.create.
+  // @ts-expect-error
+  const charity: ICharityDocument = await Charity.create(dataInputs); // must be `as` cuz of incompatibility issues with ICharityDocument & Charity.create.
   return charity;
 };
 
