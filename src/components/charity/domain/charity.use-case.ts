@@ -46,7 +46,7 @@ const requestResetPassword: RequestHandler = async (
         await charityService.requestResetPassword(data);
 
     return {
-        message: requestResetPasswordResponse.message as string,
+        message: requestResetPasswordResponse.message 
     };
 };
 
@@ -166,7 +166,7 @@ const sendDocs = async (
     req: Request,
     res: Response,
     next: NextFunction
-): Promise<IPaymentCharityDocumentResponse> => {
+) => {
     const data: DataForSendDocs = {
         charityDocs: {
             docs1: req.body.charityDocs.docs1,
