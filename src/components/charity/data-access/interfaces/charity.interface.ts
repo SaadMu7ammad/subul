@@ -53,33 +53,6 @@ export interface ICharity {
  */
 export interface ICharityDocument extends ICharity, Document {}
 
-export interface CharityPaymentMethodBankAccount {
-    enable?: boolean;
-    accNumber?: string;
-    iban?: string;
-    swiftCode?: string;
-    bankDocs: string[];
-    // _id: mongoose.Types.ObjectId;
-}
-export interface CharityPaymentMethodFawry {
-    enable?: boolean;
-    number?: string;
-    fawryDocs: string[];
-    //   _id: mongoose.Types.ObjectId;
-}
-
-export interface CharityPaymentMethodVodafoneCash {
-    enable?: boolean;
-    number?: string;
-    vodafoneCashDocs: string[];
-    //   _id: mongoose.Types.ObjectId;
-}
-export interface ICharityPaymentMethodDocument extends Document {
-    bankAccount: mongoose.Types.DocumentArray<CharityPaymentMethodBankAccountDocument>;
-    fawry: mongoose.Types.DocumentArray<CharityPaymentMethodFawryDocument>;
-    vodafoneCash: mongoose.Types.DocumentArray<CharityPaymentMethodVodafoneCashDocument>;
-    _id: mongoose.Types.ObjectId;
-}
 
 export interface AllPendingRequestsPaymentMethods {
     allPendingRequestedPaymentAccounts: CharitiesAccounts;
@@ -100,8 +73,7 @@ export interface CharitiesAccountsByAggregation {
 }
 
 // DataForRequestEditCharityPayments
-export interface DataForPaymentRequestsForConfirmedCharity {
-    _id?: mongoose.Types.ObjectId;
+export interface DataForPaymentRequestsForConfirme    _id?: mongoose.Types.ObjectId;
     paymentMethods: ICharityPaymentMethodDocument;
 }
 export interface DataForConfirmResetPassword {
@@ -269,14 +241,6 @@ export interface ICharityLocationDocument extends Document {
     //   _id: mongoose.Types.ObjectId;
 }
 
-
-
-// export interface ICharityPaymentMethodDocument extends Document {
-//   bankAccount: CharityPaymentMethodBankAccount[];
-//   fawry: CharityPaymentMethodFawry[];
-//   vodafoneCash: CharityPaymentMethodVodafoneCash[];
-//   //   _id: mongoose.Types.ObjectId;
-// }
 export interface ICharityDonorRequestDocument {
     user: IUserDocument['_id'];
     requestTitle: string;
@@ -313,25 +277,3 @@ export type PaymentMethodNames = 'bankAccount' | 'fawry' | 'vodafoneCash';
 export type TypeWithAtLeastOneProperty<T> = {
     [K in keyof T]: T[K];
 };
-
-export interface CharityPaymentMethodBankAccountDocument extends Document{
-    enable?: boolean;
-    accNumber?: string;
-    iban?: string;
-    swiftCode?: string;
-    bankDocs: string[];
-    _id: mongoose.Types.ObjectId;
-}
-export interface CharityPaymentMethodFawryDocument extends Document{
-    enable?: boolean;
-    number?: string;
-    fawryDocs: string[];
-    _id: mongoose.Types.ObjectId;
-}
-
-export interface CharityPaymentMethodVodafoneCashDocument {
-    enable?: boolean;
-    number?: string;
-    vodafoneCashDocs: string[];
-    _id: mongoose.Types.ObjectId;
-}
