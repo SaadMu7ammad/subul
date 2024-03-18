@@ -3,9 +3,6 @@ import { ICaseDocument } from '../../../case/data-access/interfaces/case.interfa
 import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 import {
     ICharityPaymentMethodDocument,
-    CharityPaymentMethodBankAccount,
-    CharityPaymentMethodFawry,
-    CharityPaymentMethodVodafoneCash,
     CharityPaymentMethodBankAccountDocument,
     CharityPaymentMethodFawryDocument,
     CharityPaymentMethodVodafoneCashDocument,
@@ -272,12 +269,7 @@ export interface IPaymentCharityDocumentResponse {
     message?: string;
 }
 
-export interface RequestPaymentMethodsObject {
-    bankAccount: Omit<CharityPaymentMethodBankAccount, 'enable'>[];
-    fawry: Omit<CharityPaymentMethodFawry, 'enable'>[];
-    vodafoneCash: Omit<CharityPaymentMethodVodafoneCash, 'enable'>[];
-}
-export type PaymentMethodNames = 'bankAccount' | 'fawry' | 'vodafoneCash';
+
 
 export type TypeWithAtLeastOneProperty<T> = {
     [K in keyof T]: T[K];

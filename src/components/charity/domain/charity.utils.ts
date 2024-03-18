@@ -16,7 +16,7 @@ import {
   PaymentMethodNames,
   RequestPaymentMethodsObject,
   TypeWithAtLeastOneProperty,
-} from '../data-access/interfaces/charity.interface';
+} from '../data-access/interfaces/';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (
   email: string
