@@ -1,6 +1,6 @@
 import CharityModel from './models/charity.model';
-import { CharityDao } from './interfaces/charity.dao';
-import { ICharityDocument } from './interfaces/charity.interface';
+import { CharityDao, ICharityDocument  } from './interfaces/';
+
 export class CharityRepository implements CharityDao {
   async findCharity(email: string): Promise<ICharityDocument | null> {
     const charity = (await CharityModel.findOne({

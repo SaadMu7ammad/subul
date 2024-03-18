@@ -9,7 +9,7 @@ import {
   AllPendingRequestsPaymentMethods,
   ConfirmPendingCharity,
   PendingRequestCharityResponse,
-} from '../../../charity/data-access/interfaces/charity.interface';
+} from '../../../charity/data-access/interfaces/';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();

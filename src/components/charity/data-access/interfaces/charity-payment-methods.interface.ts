@@ -31,6 +31,7 @@ export type ICharityPaymentMethod =
     | CharityPaymentMethodBankAccount
     | CharityPaymentMethodFawry
     | CharityPaymentMethodVodafoneCash;
+
 export interface RequestPaymentMethodsObject {
     bankAccount: Omit<CharityPaymentMethodBankAccount, 'enable'>[];
     fawry: Omit<CharityPaymentMethodFawry, 'enable'>[];
@@ -45,6 +46,7 @@ export interface CharityPaymentMethodBankAccountDocument extends Document{
     bankDocs: string[];
     _id: mongoose.Types.ObjectId;
 }
+
 export interface CharityPaymentMethodFawryDocument extends Document{
     enable?: boolean;
     number?: string;

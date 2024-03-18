@@ -60,64 +60,9 @@ export interface ICharity {
  */
 export interface ICharityDocument extends ICharity, Document {}
 
-export interface AllPendingRequestsPaymentMethods {
-    allPendingRequestedPaymentAccounts: CharitiesAccounts;
-}
-export interface AllPaymentAccounts {
-    allPaymentAccounts: CharitiesAccounts;
-}
-
-export interface CharitiesAccounts {
-    bankAccountRequests: CharitiesAccountsByAggregation[];
-    fawryRequests: CharitiesAccountsByAggregation[];
-    vodafoneCashRequests: CharitiesAccountsByAggregation[];
-}
-export interface CharitiesAccountsByAggregation {
-    _id: mongoose.Types.ObjectId;
-    name: string;
-    paymentMethods: ICharityPaymentMethodDocument; //👈 _id is commented may cuz an issue
-}
 
 // DataForRequestEditCharityPayments
 
-export interface DataForPaymentRequestsForConfirmedCharity {
-    _id?: mongoose.Types.ObjectId;
-    paymentMethods: ICharityPaymentMethodDocument;
-}
-
-export interface DataForConfirmResetPassword {
-    token: string;
-    password: string;
-    email: string;
-}
-export interface DataForEditCharityProfile {
-    name: string;
-    contactInfo: {
-        email: string;
-        phone: number;
-        websiteUrl: string;
-    };
-    email: string;
-    description: string;
-    charityLocation: ICharityLocationDocument;
-    locationId: string;
-}
-export interface DataForActivateCharityAccount {
-    token: string;
-}
-export interface DataForRequestResetPassword {
-    email: string;
-}
-export interface DataForChangePassword {
-    password: string;
-}
-export interface DataForChangeProfileImage {
-    image: string;
-}
-export interface DataForRequestEditCharityPayments {
-    paymentMethods: ICharityPaymentMethodDocument;
-    paymentId: string;
-}
 // RENAME IT LATER (DOCUMENT NAME ABOUT DB)👇
 export interface ICharityDocsDocument extends Document {
     charityDocs?: {
@@ -147,7 +92,6 @@ export interface ICharityDocsDocument extends Document {
     };
 }
 
-export interface DataForSendDocs extends ICharityDocs {}
 
 export interface ICharityDocs {
     charityDocs: {
@@ -184,25 +128,6 @@ export interface ICharityDocs {
             }
         ];
     };
-}
-export interface PendingCharities extends ICharityDocsDocument {
-    _id: mongoose.Types.ObjectId;
-    name: string;
-    email: string;
-    isPending?: boolean;
-    isConfirmed?: boolean;
-}
-export interface ConfirmedCharities extends PendingCharities {}
-
-export interface ConfirmPendingCharity {
-    charity: PendingCharities | undefined;
-    message: string;
-}
-export interface AllPendingRequestsCharitiesResponse {
-    allPendingCharities: PendingCharities[];
-}
-export interface PendingRequestCharityResponse {
-    pendingCharity: PendingCharities[];
 }
 
 export interface ICharityDonorRequest {
@@ -268,8 +193,6 @@ export interface IPaymentCharityDocumentResponse {
         | CharityPaymentMethodBankAccountDocument;
     message?: string;
 }
-
-
 
 export type TypeWithAtLeastOneProperty<T> = {
     [K in keyof T]: T[K];
