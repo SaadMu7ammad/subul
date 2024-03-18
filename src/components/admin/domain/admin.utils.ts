@@ -12,7 +12,7 @@ import {
   ICharityDocs,
   ICharityPaymentMethodDocument,
   PendingCharities,
-} from '../../charity/data-access/interfaces/charity.interface';
+} from '../../charity/data-access/interfaces/';
 import { adminRepository } from '../data-access/admin.repository';
 import { QueryObject } from './admin.service';
 
