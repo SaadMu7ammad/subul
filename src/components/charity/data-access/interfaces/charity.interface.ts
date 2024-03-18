@@ -1,6 +1,16 @@
 import mongoose, { Document } from 'mongoose';
 import { ICaseDocument } from '../../../case/data-access/interfaces/case.interface';
 import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
+import {
+    ICharityPaymentMethodDocument,
+    CharityPaymentMethodBankAccount,
+    CharityPaymentMethodFawry,
+    CharityPaymentMethodVodafoneCash,
+    CharityPaymentMethodBankAccountDocument,
+    CharityPaymentMethodFawryDocument,
+    CharityPaymentMethodVodafoneCashDocument,
+} from './charity-payment-methods.interface';
+
 /**
  * Plain Charity Interface
  */
@@ -53,7 +63,6 @@ export interface ICharity {
  */
 export interface ICharityDocument extends ICharity, Document {}
 
-
 export interface AllPendingRequestsPaymentMethods {
     allPendingRequestedPaymentAccounts: CharitiesAccounts;
 }
@@ -73,9 +82,12 @@ export interface CharitiesAccountsByAggregation {
 }
 
 // DataForRequestEditCharityPayments
-export interface DataForPaymentRequestsForConfirme    _id?: mongoose.Types.ObjectId;
+
+export interface DataForPaymentRequestsForConfirmedCharity {
+    _id?: mongoose.Types.ObjectId;
     paymentMethods: ICharityPaymentMethodDocument;
 }
+
 export interface DataForConfirmResetPassword {
     token: string;
     password: string;
@@ -196,8 +208,6 @@ export interface PendingRequestCharityResponse {
     pendingCharity: PendingCharities[];
 }
 
-
-
 export interface ICharityDonorRequest {
     user: IUserDocument['_id'];
     requestTitle: string;
@@ -248,7 +258,6 @@ export interface ICharityDonorRequestDocument {
     _id: mongoose.Types.ObjectId;
 }
 
-
 export interface ICharityDocumentResponse {
     editedEmail?: boolean;
     charity: ICharityDocument;
@@ -259,14 +268,10 @@ export interface IPaymentCharityDocumentResponse {
     paymentMethods:
         | CharityPaymentMethodVodafoneCashDocument
         | CharityPaymentMethodFawryDocument
-        |CharityPaymentMethodBankAccountDocument;
+        | CharityPaymentMethodBankAccountDocument;
     message?: string;
 }
 
-export type ICharityPaymentMethod =
-    | CharityPaymentMethodBankAccount
-    | CharityPaymentMethodFawry
-    | CharityPaymentMethodVodafoneCash;
 export interface RequestPaymentMethodsObject {
     bankAccount: Omit<CharityPaymentMethodBankAccount, 'enable'>[];
     fawry: Omit<CharityPaymentMethodFawry, 'enable'>[];
