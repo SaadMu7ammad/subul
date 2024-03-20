@@ -87,7 +87,34 @@ export interface ICharityDocsDocument extends Document {
   };
 }
 
-export interface DataForSendDocs extends ICharityDocs {}
+export interface IDataForSendDocs {
+
+  charityDocs: {
+    docs1: string[]
+    docs2: string[]
+    docs3: string[]
+    docs4: string[]
+  };
+  paymentMethods: {
+    bankAccount?: {
+      enable: boolean;
+      accNumber: string;
+      iban: string;
+      swiftCode: string;
+      bankDocs: string[];
+    };
+    fawry?: {
+      enable: boolean;
+      number: string;
+      fawryDocs: string[];
+    };
+    vodafoneCash?: {
+      enable: boolean;
+      number: string;
+      vodafoneCashDocs: string[];
+    };
+  };
+}
 
 /**
  * Charity Docs [docs & paymentDocs]
@@ -256,35 +283,35 @@ export interface ICharityDonorRequest {
 
 export interface ICharityLocationDocument extends Document {
   governorate:
-    | 'Alexandria'
-    | 'Assiut'
-    | 'Aswan'
-    | 'Beheira'
-    | 'Bani Suef'
-    | 'Cairo'
-    | 'Daqahliya'
-    | 'Damietta'
-    | 'Fayyoum'
-    | 'Gharbiya'
-    | 'Giza'
-    | 'Helwan'
-    | 'Ismailia'
-    | 'Kafr El Sheikh'
-    | 'Luxor'
-    | 'Marsa Matrouh'
-    | 'Minya'
-    | 'Monofiya'
-    | 'New Valley'
-    | 'North Sinai'
-    | 'Port Said'
-    | 'Qalioubiya'
-    | 'Qena'
-    | 'Red Sea'
-    | 'Sharqiya'
-    | 'Sohag'
-    | 'South Sinai'
-    | 'Suez'
-    | 'Tanta';
+  | 'Alexandria'
+  | 'Assiut'
+  | 'Aswan'
+  | 'Beheira'
+  | 'Bani Suef'
+  | 'Cairo'
+  | 'Daqahliya'
+  | 'Damietta'
+  | 'Fayyoum'
+  | 'Gharbiya'
+  | 'Giza'
+  | 'Helwan'
+  | 'Ismailia'
+  | 'Kafr El Sheikh'
+  | 'Luxor'
+  | 'Marsa Matrouh'
+  | 'Minya'
+  | 'Monofiya'
+  | 'New Valley'
+  | 'North Sinai'
+  | 'Port Said'
+  | 'Qalioubiya'
+  | 'Qena'
+  | 'Red Sea'
+  | 'Sharqiya'
+  | 'Sohag'
+  | 'South Sinai'
+  | 'Suez'
+  | 'Tanta';
   city?: string;
   street?: string;
   //   _id: mongoose.Types.ObjectId;

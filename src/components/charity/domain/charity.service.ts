@@ -18,11 +18,11 @@ import {
     DataForConfirmResetPassword,
     DataForChangePassword,
     DataForChangeProfileImage,
-    DataForSendDocs,
     ICharityDocumentResponse,
     IPaymentCharityDocumentResponse,
     PaymentMethodNames,
     ICharityPaymentMethod,
+    IDataForSendDocs,
 } from '../data-access/interfaces/charity.interface';
 import { Response } from 'express';
 
@@ -194,9 +194,10 @@ const changeProfileImage = async (
     return { image: updatedImg.image, message: 'image changed successfully' };
 };
 const sendDocs = async (
-    reqBody: DataForSendDocs,
+    reqBody: IDataForSendDocs,
     charity: ICharityDocument
 ): Promise<IPaymentCharityDocumentResponse> => {
+    console.log({...reqBody});
     if (
         (charity.emailVerification.isVerified ||
             charity.phoneVerification.isVerified) &&
@@ -210,7 +211,7 @@ const sendDocs = async (
             paymentMethods: addCharityPaymentsResponse.paymentMethods,
             message: 'sent successfully',
         };
-    } else if (
+    } else if ( 
         !charity.emailVerification.isVerified &&
         !charity.phoneVerification.isVerified
     ) {

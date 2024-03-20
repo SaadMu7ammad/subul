@@ -10,9 +10,9 @@ import {
     DataForChangePassword,
     DataForChangeProfileImage,
     DataForRequestEditCharityPayments,
-    DataForSendDocs,
     ICharityDocumentResponse,
     IPaymentCharityDocumentResponse,
+    IDataForSendDocs,
 } from '../data-access/interfaces/charity.interface';
 
 const activateCharityAccount = async (
@@ -181,19 +181,7 @@ const sendDocs = async (
     res: Response,
     next: NextFunction
 ): Promise<IPaymentCharityDocumentResponse> => {
-    const data: DataForSendDocs = {
-        charityDocs: {
-            docs1: req.body.charityDocs.docs1,
-            docs2: req.body.charityDocs.docs2,
-            docs3: req.body.charityDocs.docs3,
-            docs4: req.body.charityDocs.docs4,
-        },
-        paymentMethods: {
-            bankAccount: req.body.paymentMethods['bankAccount'],
-            fawry: req.body.paymentMethods['fawry'],
-            vodafoneCash: req.body.paymentMethods['vodafoneCash'],
-        },
-    };
+    const data: IDataForSendDocs = req.body
     const storedCharity: ICharityDocument = res.locals.charity
     const responseData = await charityService.sendDocs(data, storedCharity);
     return {
