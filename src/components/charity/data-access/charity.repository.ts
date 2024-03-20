@@ -1,27 +1,29 @@
-import CharityModel from './models/charity.model';
-import { CharityDao, ICharityDocument  } from './interfaces/';
+import CharityModel, { ICharity } from './models/charity.model';
+import { CharityDao } from './interfaces/';
+import { HydratedDocument } from 'mongoose';
 
 export class CharityRepository implements CharityDao {
-  async findCharity(email: string): Promise<ICharityDocument | null> {
-    const charity = (await CharityModel.findOne({
-      email: email,
-    })) as ICharityDocument | null;
+  async findCharity(email: string): Promise<ICharity | null> {
+    const charity: HydratedDocument<ICharity> | null =
+      await CharityModel.findOne({
+        email: email,
+      });
     return charity;
   }
 
-  async findCharityById(id: string): Promise<ICharityDocument | null> {
-    const charity = (await CharityModel.findOne({
-      id: id,
-    })) as ICharityDocument | null;
+  async findCharityById(id: string): Promise<ICharity | null> {
+    const charity: HydratedDocument<ICharity> | null =
+      await CharityModel.findOne({
+        id: id,
+      });
     return charity;
   }
 
-  async createCharity(
-    dataInputs: ICharityDocument
-  ): Promise<ICharityDocument | null> {
-    const charity = (await CharityModel.create(
+  async createCharity(dataInputs: ICharity): Promise<ICharity | null> {
+    const charity: HydratedDocument<ICharity> = await CharityModel.create(
       dataInputs
-    )) as ICharityDocument | null;
+    );
+    charity.save();
     return charity;
   }
 }

@@ -10,8 +10,8 @@ import {
 import { charityUtils } from './charity.utils';
 import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import {
-    ICharityDocument,
-    ICharityPaymentMethodDocument,
+    ICharity,
+    ICharityPaymentMethod,
     DataForEditCharityProfile,
     DataForActivateCharityAccount,
     DataForRequestResetPassword,
@@ -19,9 +19,7 @@ import {
     DataForChangePassword,
     DataForChangeProfileImage,
     DataForSendDocs,
-    ICharityDocumentResponse,
-    IPaymentCharityDocumentResponse,
-} from '../data-access/interfaces/charity.interface';
+} from '../data-access/interfaces';
 import { Response } from 'express';
 
 const requestResetPassword = async (
@@ -68,7 +66,7 @@ const confirmResetPassword = async (
 };
 const changePassword = async (
     reqBody: DataForChangePassword,
-    charity: ICharityDocument
+    charity: ICharity
 ): Promise<{ message: string }> => {
     await charityUtils.changeCharityPasswordWithMailAlert(
         charity,
@@ -78,11 +76,11 @@ const changePassword = async (
 };
 const activateAccount = async (
     reqBody: DataForActivateCharityAccount,
-    charity: ICharityDocument,
+    charity: ICharity,
     res: Response
 ): Promise<{ message: string }> => {
     let storedCharity = charity;
-    if (storedCharity.emailVerification.isVerified) {
+    if (storedCharity.emailVerification && storedCharity.emailVerification.isVerified) {
         return { message: 'account already is activated' };
     }
     if (!storedCharity.verificationCode)
@@ -114,14 +112,14 @@ const logoutCharity = (res: Response): { message: string } => {
     return { message: 'logout' };
 };
 const getCharityProfileData = (
-    charity: ICharityDocument
-): ICharityDocumentResponse => {
+    charity: ICharity
+) => {
     return { charity: charity };
 };
 const editCharityProfile = async (
     reqBody: DataForEditCharityProfile,
-    charity: ICharityDocument
-): Promise<ICharityDocumentResponse> => {
+    charity: ICharity
+) => {
     if (!reqBody) throw new BadRequestError('no data sent');
     const { email, charityLocation, locationId } =
         reqBody;
@@ -181,7 +179,7 @@ const editCharityProfile = async (
 };
 const changeProfileImage = async (
     reqBody: DataForChangeProfileImage,
-    charity: ICharityDocument
+    charity: ICharity
 ): Promise<{ image: string; message: string }> => {
     const oldImg = charity.image;
     const newImg = reqBody.image;
@@ -191,11 +189,11 @@ const changeProfileImage = async (
 };
 const sendDocs = async (
     reqBody: DataForSendDocs,
-    charity: ICharityDocument
+    charity: ICharity
 )=> {
     if (
-        (charity.emailVerification.isVerified ||
-            charity.phoneVerification.isVerified) &&
+        ((charity.emailVerification && charity.emailVerification.isVerified) ||
+            (charity.phoneVerification && charity.phoneVerification.isVerified)) &&
         !charity.isConfirmed &&
         !charity.isPending
     ) {
@@ -204,9 +202,8 @@ const sendDocs = async (
             paymentMethods: addCharityPaymentsResponse.paymentMethods,
             message: 'sent successfully',
         };
-    } else if (
-        !charity.emailVerification.isVerified &&
-        !charity.phoneVerification.isVerified
+    } else if ((charity.emailVerification && !charity.emailVerification.isVerified) &&
+            (charity.phoneVerification && !charity.phoneVerification.isVerified)
     ) {
         throw new UnauthenticatedError('you must verify your account again');
     } else if (charity.isConfirmed) {
@@ -219,10 +216,10 @@ const sendDocs = async (
 };
 
 const requestEditCharityPayments = async (
-    charityObj: ICharityDocument,
+    charityObj: ICharity,
     paymentId: string,
-    reqPaymentMethodsObj: ICharityPaymentMethodDocument
-): Promise<IPaymentCharityDocumentResponse> => {
+    reqPaymentMethodsObj: ICharityPaymentMethod
+)=> {
     if (!reqPaymentMethodsObj) {
         throw new BadRequestError('Incomplete Data!');
     }

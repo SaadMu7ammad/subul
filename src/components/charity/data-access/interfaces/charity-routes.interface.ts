@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
-import { ICharityLocationDocument,ICharityPaymentMethodDocument ,ICharityDocs} from './';
+import { ICharityLocationDocument,ICharityPaymentMethod,ICharityDocs} from './';
+
 export interface DataForPaymentRequestsForConfirmedCharity {
     _id?: mongoose.Types.ObjectId;
-    paymentMethods: ICharityPaymentMethodDocument;
+    paymentMethods: ICharityPaymentMethod;
 }
 
 export interface DataForConfirmResetPassword {
@@ -35,7 +36,7 @@ export interface DataForChangeProfileImage {
     image: string;
 }
 export interface DataForRequestEditCharityPayments {
-    paymentMethods: ICharityPaymentMethodDocument;
+    paymentMethods: ICharityPaymentMethod;
     paymentId: string;
 }
 

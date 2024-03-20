@@ -1,6 +1,6 @@
-import { ICharityDocument } from './charity.interface';
+import { ICharity } from '../models/charity.model';
 export interface CharityDao {
-    findCharity: (email: string) => Promise<ICharityDocument | null>;
-    createCharity: (dataInputs: ICharityDocument) => Promise<ICharityDocument|null>;//shouldn't be Partial<ICharityDocument>?
-    findCharityById: (id: string) => Promise<ICharityDocument | null>;
+    findCharity: (email: string) => Promise<ICharity | null>;
+    createCharity: (dataInputs: ICharity) => Promise<ICharity|null>;//shouldn't be Partial<ICharity>?
+    findCharityById: (id: string) => Promise<ICharity | null>;
 }

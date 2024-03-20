@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ICharityPaymentMethodDocument ,ICharityDocsDocument} from './';
+import { ICharityPaymentMethod,ICharityDocsDocument} from './';
 export interface AllPendingRequestsPaymentMethods {
     allPendingRequestedPaymentAccounts: CharitiesAccounts;
 }
@@ -15,7 +15,7 @@ export interface CharitiesAccounts {
 export interface CharitiesAccountsByAggregation {
     _id: mongoose.Types.ObjectId;
     name: string;
-    paymentMethods: ICharityPaymentMethodDocument; //👈 _id is commented may cuz an issue
+    paymentMethods: ICharityPaymentMethod; //👈 _id is commented may cuz an issue
 }
 
 export interface PendingCharities extends ICharityDocsDocument {
