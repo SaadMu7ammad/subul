@@ -1,56 +1,10 @@
-import mongoose, { Schema } from 'mongoose';
+// import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, InferSchemaType } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index';
-const locationSchema = new mongoose.Schema(
-  {
-    governorate: {
-      type: String,
-      enum: [
-        'Alexandria',
-        'Assiut',
-        'Aswan',
-        'Beheira',
-        'Bani Suef',
-        'Cairo',
-        'Daqahliya',
-        'Damietta',
-        'Fayyoum',
-        'Gharbiya',
-        'Giza',
-        'Helwan',
-        'Ismailia',
-        'Kafr El Sheikh',
-        'Luxor',
-        'Marsa Matrouh',
-        'Minya',
-        'Monofiya',
-        'New Valley',
-        'North Sinai',
-        'Port Said',
-        'Qalioubiya',
-        'Qena',
-        'Red Sea',
-        'Sharqiya',
-        'Sohag',
-        'South Sinai',
-        'Suez',
-        'Tanta',
-      ],
-      required: true,
-    },
-    city: {
-      type: String,
-      required: false,
-    },
-    street: {
-      type: String,
-      required: false,
-    },
-  },
-  { _id: false }
-);
+import locationSchema from './location.model';
 
-const userSchema= new Schema(
+const userSchema = new Schema(
   {
     name: {
       firstName: {
@@ -74,24 +28,21 @@ const userSchema= new Schema(
     isAdmin: {
       type: Boolean,
       default: false,
-      required: true,
     },
     pointsOnDonations: {
       type: Number,
       default: 0,
-      required: true,
     },
     totalDonationsAmount: {
       type: Number,
       default: 0,
-      required: false,
     },
     locationUser: {
       type: locationSchema, // Use locationSchema here
       required: true,
     }, // profileImage: {
     //     type: String,
-    //     required: false,
+    //
     // },
     gender: {
       type: String,
@@ -100,11 +51,9 @@ const userSchema= new Schema(
     },
     phone: {
       type: String,
-      required: false,
     },
     verificationCode: {
       type: String,
-      required: false,
       default: null,
     },
     emailVerification: {
@@ -130,7 +79,6 @@ const userSchema= new Schema(
     isEnabled: {
       type: Boolean,
       default: true,
-      required: true,
     },
     transactions: [
       { type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' },
@@ -138,6 +86,7 @@ const userSchema= new Schema(
   },
   { timestamps: true }
 );
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     //to not change password every time we edit the user data
