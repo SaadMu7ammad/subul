@@ -10,15 +10,18 @@ import {
 import { charityUtils } from './charity.utils';
 import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import {
-  ICharity,
-  ICharityPaymentMethod,
-  DataForEditCharityProfile,
-  DataForActivateCharityAccount,
-  DataForRequestResetPassword,
-  DataForConfirmResetPassword,
-  DataForChangePassword,
-  DataForChangeProfileImage,
-  DataForSendDocs,
+    ICharity,
+    ICharityPaymentMethod,
+    DataForEditCharityProfile,
+    DataForActivateCharityAccount,
+    DataForRequestResetPassword,
+    DataForConfirmResetPassword,
+    DataForChangePassword,
+    DataForChangeProfileImage,
+    IDataForSendDocs,
+    ICharityDocumentResponse,
+    IPaymentCharityDocumentResponse,
+    PaymentMethodNames,
 } from '../data-access/interfaces';
 import { Response } from 'express';
 
@@ -180,35 +183,36 @@ const changeProfileImage = async (
   ).image;
   return { image: updatedImg, message: 'image changed successfully' };
 };
-const sendDocs = async (reqBody: DataForSendDocs, charity: ICharity) => {
-  if (
-    ((charity.emailVerification && charity.emailVerification.isVerified) ||
-      (charity.phoneVerification && charity.phoneVerification.isVerified)) &&
-    !charity.isConfirmed &&
-    !charity.isPending
-  ) {
-    const addCharityPaymentsResponse = await charityUtils.addDocs(
-      reqBody,
-      charity
-    );
-    return {
-      paymentMethods: addCharityPaymentsResponse.paymentMethods,
-      message: 'sent successfully',
-    };
-  } else if (
-    charity.emailVerification &&
-    !charity.emailVerification.isVerified &&
-    charity.phoneVerification &&
-    !charity.phoneVerification.isVerified
-  ) {
-    throw new UnauthenticatedError('you must verify your account again');
-  } else if (charity.isConfirmed) {
-    throw new BadRequestError('Charity is Confirmed already!');
-  } else if (charity.isPending) {
-    throw new BadRequestError('soon response... still reviewing docs');
-  } else {
-    throw new BadRequestError('error occurred, try again later');
-  }
+const sendDocs = async (
+    reqBody: IDataForSendDocs,
+    charity: ICharity
+)  => {
+    console.log({...reqBody});
+    if (
+        (charity.emailVerification.isVerified ||
+            charity.phoneVerification.isVerified) &&
+        !charity.isConfirmed &&
+        !charity.isPending
+    ) {
+        const addCharityPaymentsResponse: {
+            paymentMethods: ICharityPaymentMethodDocument;
+        } = await charityUtils.addDocs(reqBody, charity);
+        return {
+            paymentMethods: addCharityPaymentsResponse.paymentMethods,
+            message: 'sent successfully',
+        };
+    } else if ( 
+        !charity.emailVerification.isVerified &&
+        !charity.phoneVerification.isVerified
+    ) {
+        throw new UnauthenticatedError('you must verify your account again');
+    } else if (charity.isConfirmed) {
+        throw new BadRequestError('Charity is Confirmed already!');
+    } else if (charity.isPending) {
+        throw new BadRequestError('soon response... still reviewing docs');
+    } else {
+        throw new BadRequestError('error occurred, try again later');
+    }
 };
 
 const requestEditCharityPayments = async (

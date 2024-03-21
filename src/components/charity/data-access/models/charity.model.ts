@@ -1,6 +1,7 @@
-import mongoose, { InferSchemaType, Schema,HydratedDocument } from 'mongoose';
+import mongoose, { InferSchemaType, Schema, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index';
+import { ICharity } from '../interfaces/';
 
 const locationSchema = new mongoose.Schema({
   governorate: {
@@ -70,7 +71,7 @@ const paymentMethodSchema = new Schema({
       },
       bankDocs: {
         type: [String], // Define it as an array of strings
-        required: true, 
+        required: true,
       },
     },
   ],
@@ -121,7 +122,7 @@ const charitySchema = new Schema(
     image: {
       type: String,
       required: true, // Ensure it's required
-    }, 
+    },
     email: {
       type: String,
       required: true,
@@ -135,22 +136,22 @@ const charitySchema = new Schema(
       type: String,
       required: true,
     },
-    contactInfo:{
+    contactInfo: {
       type: {
-      email: {
-        type: String,
-        required: true,
+        email: {
+          type: String,
+          required: true,
+        },
+        phone: {
+          type: Number,
+          required: true,
+        },
+        websiteUrl: {
+          type: String,
+          required: true,
+        },
       },
-      phone: {
-        type: Number,
-        required: true,
-      },
-      websiteUrl: {
-        type: String,
-        required: true,
-      },
-    },
-      required: true
+      required: true,
     },
     description: {
       type: String,
@@ -259,17 +260,19 @@ const charitySchema = new Schema(
 );
 
 charitySchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        //to not change password every time we edit the user data
-        next();
-    }
-    const salt = await bcrypt.genSalt(
-        configurationProvider.getValue('hashing.salt')
-    );
-    this.password = await bcrypt.hash(this.password, salt);
+  if (!this.isModified('password')) {
+    //to not change password every time we edit the user data
+    next();
+  }
+  const salt = await bcrypt.genSalt(
+    configurationProvider.getValue('hashing.salt')
+  );
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-export type ICharity = HydratedDocument<InferSchemaType<typeof charitySchema>> ;
+declare module '../interfaces/charity.interface' {
+  export type ICharity = HydratedDocument<InferSchemaType<typeof charitySchema>>;
+}
 
 const Charity = mongoose.model<ICharity>('Charity', charitySchema);
 

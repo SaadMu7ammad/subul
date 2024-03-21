@@ -2,16 +2,18 @@ import { NextFunction, Request, RequestHandler, Response } from 'express';
 
 import { charityService } from './charity.service';
 import {
-  DataForActivateCharityAccount,
-  ICharity,
-  DataForConfirmResetPassword,
-  DataForEditCharityProfile,
-  DataForRequestResetPassword,
-  DataForChangePassword,
-  DataForChangeProfileImage,
-  DataForRequestEditCharityPayments,
-  DataForSendDocs,
-} from '../data-access/interfaces';
+    DataForActivateCharityAccount,
+    ICharity,
+    DataForConfirmResetPassword,
+    DataForEditCharityProfile,
+    DataForRequestResetPassword,
+    DataForChangePassword,
+    DataForChangeProfileImage,
+    DataForRequestEditCharityPayments,
+    IDataForSendDocs,
+    ICharityDocumentResponse,
+    IPaymentCharityDocumentResponse,
+} from '../data-access/interfaces/';
 
 const activateCharityAccount = async (
   req: Request,
@@ -164,26 +166,18 @@ const logout: RequestHandler = (req, res, next): { message: string } => {
   };
 };
 
-const sendDocs = async (req: Request, res: Response, next: NextFunction) => {
-  const data: DataForSendDocs = {
-    charityDocs: {
-      docs1: req.body.charityDocs.docs1,
-      docs2: req.body.charityDocs.docs2,
-      docs3: req.body.charityDocs.docs3,
-      docs4: req.body.charityDocs.docs4,
-    },
-    paymentMethods: {
-      bankAccount: req.body.paymentMethods['bankAccount'],
-      fawry: req.body.paymentMethods['fawry'],
-      vodafoneCash: req.body.paymentMethods['vodafoneCash'],
-    },
-  };
-  const storedCharity: ICharity = res.locals.charity;
-  const responseData = await charityService.sendDocs(data, storedCharity);
-  return {
-    paymentMethods: responseData.paymentMethods,
-    message: responseData.message,
-  };
+const sendDocs = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<IPaymentCharityDocumentResponse> => {
+    const data: IDataForSendDocs = req.body
+    const storedCharity: ICharity= res.locals.charity
+    const responseData = await charityService.sendDocs(data, storedCharity);
+    return {
+        paymentMethods: responseData.paymentMethods,
+        message: responseData.message,
+    };
 };
 export const charityUseCase = {
   activateCharityAccount,

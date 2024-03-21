@@ -4,10 +4,7 @@ import User from '../../user/data-access/models/user.model';
 import Charity from '../../charity/data-access/models/charity.model';
 import { UnauthenticatedError } from '../../../libraries/errors/components/index';
 import * as configurationProvider from '../../../libraries/configuration-provider/index';
-// import { AuthedRequest } from '../user/data-access/auth.interface';
 import { Decoded } from './interface';
-import { IUserDocument } from '../../user/data-access/interfaces/user.interface';
-import { ICharity} from '../../charity/data-access/interfaces';
 import {  NextFunction, Request, Response } from 'express';
 // import * as core from "express-serve-static-core";
 
@@ -34,18 +31,18 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
         // check first the user or chariy exists in the db
         const IsUserExist = await User.findById(decoded.userId).select(
           '-password'
-        ) as IUserDocument | null;
+        )
         if (!IsUserExist)
           throw new UnauthenticatedError('Authentication invalid');
         res.locals.user = IsUserExist;
       } else if (decoded.charityId) {
         const IsCharityExist = await Charity.findById(decoded.charityId).select(
           '-password'
-        ) as ICharity | null;
+        );
         if (!IsCharityExist)
           throw new UnauthenticatedError('Authentication invalid');
 
-          res.locals.charity = IsCharityExist;
+        res.locals.charity = IsCharityExist;
       }
       next();
     } else {

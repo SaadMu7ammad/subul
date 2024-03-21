@@ -8,12 +8,13 @@ import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import { checkValueEquality } from '../../../utils/shared';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import {
-  ICharity,
   ICharityDocs,
-  ICharityLocationDocument,
+  ICharity,
   ICharityPaymentMethod,
+  ICharityLocationDocument,
   PaymentMethodNames,
   RequestPaymentMethodsObject,
+  IDataForSendDocs
 } from '../data-access/interfaces/';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (
@@ -60,8 +61,8 @@ const changeCharityEmailWithMailAlert = async (
     CharityBeforeUpdate.email,
     'email changed alert',
     `hi ${CharityBeforeUpdate.name}email has been changed You must Re activate account ` +
-      `<h3>(www.activate.com)</h3>` +
-      `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+    `<h3>(www.activate.com)</h3>` +
+    `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
   );
   await CharityBeforeUpdate.save();
   return { charity: CharityBeforeUpdate };
@@ -102,7 +103,7 @@ const changeCharityPasswordWithMailAlert = async (
     charity.email,
     'password changed alert',
     `hi ${charity.name} <h3>contact us if you did not changed the password</h3>` +
-      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+    `<h3>go to link(www.dummy.com) to freeze your account</h3>`
   );
 };
 const editCharityProfileAddress = async (
@@ -150,21 +151,21 @@ const replaceProfileImage = async (
   return { image: charity.image };
 };
 const addDocs = async (
-  reqBody: ICharityDocs,
+  reqBody: IDataForSendDocs,
   charity: ICharity
-): Promise<{ paymentMethods: ICharity['paymentMethods'] }> => {
+)=> {
   charity.charityDocs = { ...reqBody.charityDocs }; //assign the doc
 
-  if (!reqBody.paymentMethods) {
+  if (!reqBody || !reqBody.paymentMethods) {
     throw new BadRequestError(
       'must send one of payment gateways information..'
     );
   }
-  if (reqBody.paymentMethods.bankAccount)
+  if (reqBody.paymentMethods.bankAccount && reqBody.paymentMethods.bankAccount?.bankDocs.length > 0)
     await addPaymentAccounts(reqBody, charity, 'bankAccount');
-  if (reqBody.paymentMethods.fawry)
+  if (reqBody.paymentMethods.fawry && reqBody.paymentMethods.fawry.fawryDocs.length > 0)
     await addPaymentAccounts(reqBody, charity, 'fawry');
-  if (reqBody.paymentMethods.vodafoneCash)
+  if (reqBody.paymentMethods.vodafoneCash && reqBody.paymentMethods.vodafoneCash.vodafoneCashDocs.length > 0)
     await addPaymentAccounts(reqBody, charity, 'vodafoneCash');
   await makeCharityIsPending(charity); // update and save changes
   console.log(charity.paymentMethods);
@@ -177,24 +178,30 @@ const makeCharityIsPending = async (charity: ICharity): Promise<void> => {
   await charity.save();
 };
 const addPaymentAccounts = async (
-  accountObj: ICharityDocs,
+  accountObj: IDataForSendDocs,
   charity: ICharity,
   type: string
 ): Promise<void> => {
   if (charity.paymentMethods === undefined)
-    charity.paymentMethods = {} as ICharity['paymentMethods'];
+    charity.paymentMethods = {} as ICharityPaymentMethod;
+  // console.log({ ...req.body.paymentMethods.fawry[0] });
   if (type === 'bankAccount') {
     const { bankAccount } = accountObj.paymentMethods;
-    const { accNumber, iban, swiftCode } = bankAccount[0];
+    if (!bankAccount || bankAccount.bankDocs.length === 0) throw new BadRequestError('no account provided');
+    const { accNumber, iban, swiftCode } = bankAccount;
 
-    // @ts-expect-error
-    const _bankDocs = bankAccount.bankDocs[0];
-    if (accNumber && iban && swiftCode && _bankDocs) {
-      const temp = {
+    const _bankDocs = [...bankAccount.bankDocs];
+    if (accNumber != '' && iban != '' && swiftCode != '' && _bankDocs) {
+      const temp: {
+        accNumber: string;
+        iban: string;
+        swiftCode: string;
+        bankDocs: string[]; // Ensure bankDocs is an array of strings
+      } = {
         accNumber,
         iban,
         swiftCode,
-        bankDocs: [_bankDocs],
+        bankDocs: _bankDocs,
       };
       //@ts-expect-error
       charity.paymentMethods!['bankAccount'].push(temp);
@@ -204,16 +211,16 @@ const addPaymentAccounts = async (
   }
   if (type === 'fawry') {
     const { fawry } = accountObj.paymentMethods;
-    const { number } = fawry[0];
-    // @ts-expect-error
-    const _fawryDocs = fawry.fawryDocs[0];
-    if (number && _fawryDocs) {
+    if (!fawry || fawry.fawryDocs.length === 0) throw new BadRequestError('no account provided');
+    const { number } = fawry
+    const _fawryDocs = [...fawry.fawryDocs];
+    if (number != '' && _fawryDocs) {
       const temp: {
-        number: any;
+        number: string;
         fawryDocs: string[]; // Ensure fawryDocs is an array of strings
       } = {
         number: number,
-        fawryDocs: [_fawryDocs], // An array of strings
+        fawryDocs: _fawryDocs, // An array of strings
       };
       //@ts-expect-error
       charity.paymentMethods['fawry'].push(temp);
@@ -223,17 +230,17 @@ const addPaymentAccounts = async (
   }
   if (type === 'vodafoneCash') {
     const { vodafoneCash } = accountObj.paymentMethods;
-    const { number } = vodafoneCash[0];
-    // @ts-expect-error
-    const _vodafoneCashDocs = vodafoneCash.vodafoneCashDocs[0];
+    if (!vodafoneCash || vodafoneCash.vodafoneCashDocs.length === 0) throw new BadRequestError('no account provided');
+    const { number } = vodafoneCash;
+    const _vodafoneCashDocs = [...vodafoneCash.vodafoneCashDocs];
 
-    if (number && _vodafoneCashDocs) {
+    if (number != '' && _vodafoneCashDocs) {
       const temp: {
-        number: any;
+        number: string;
         vodafoneCashDocs: string[]; // Ensure vodafoneCashDocs is an array of strings
       } = {
         number: number,
-        vodafoneCashDocs: [_vodafoneCashDocs], // An array of strings
+        vodafoneCashDocs: _vodafoneCashDocs, // An array of strings
       };
       //@ts-expect-error
       charity.paymentMethods['vodafoneCash'].push(temp);
@@ -341,9 +348,9 @@ const swapPaymentInfo = (
     if (key.endsWith('docs')) {
       deleteOldImgs(
         'charityDocs',
-        charityPaymentMethodsObj![selector as keyof ICharity['paymentMethods']][
-          idx
-        ][key]
+        charityPaymentMethodsObj[
+        selector as keyof ICharityPaymentMethodDocument
+        ][idx][key]
       );
 
       //@ts-expect-error
