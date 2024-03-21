@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import User from '../../user/data-access/models/user.model';
 import Charity from '../../charity/data-access/models/charity.model';
