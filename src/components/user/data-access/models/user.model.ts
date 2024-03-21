@@ -7,14 +7,17 @@ import locationSchema from './location.model';
 const userSchema = new Schema(
   {
     name: {
-      firstName: {
-        type: String,
-        required: true,
+      type: {
+        firstName: {
+          type: String,
+          required: true,
+        },
+        lastName: {
+          type: String,
+          required: true,
+        },
       },
-      lastName: {
-        type: String,
-        required: true,
-      },
+      required: true,
     },
     email: {
       type: String,
@@ -55,6 +58,7 @@ const userSchema = new Schema(
     verificationCode: {
       type: String,
       default: null,
+      // default: '',
     },
     emailVerification: {
       isVerified: {
@@ -112,6 +116,8 @@ userSchema.pre('save', async function (next) {
 //     }
 
 // });
+export type User = InferSchemaType<typeof userSchema>;
 
+// `UserModel` will have `name: string`, etc..
 const UserModel = mongoose.model('Users', userSchema);
 export default UserModel;

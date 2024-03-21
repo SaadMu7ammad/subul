@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType } from 'mongoose';
 
 const locationSchema = new mongoose.Schema(
   {
@@ -46,5 +46,7 @@ const locationSchema = new mongoose.Schema(
   },
   { _id: false }
 );
+
+export type locationSchema = InferSchemaType<typeof locationSchema>;
 
 export default locationSchema;
