@@ -1,4 +1,4 @@
-import mongoose, { Document, HydratedDocument } from 'mongoose';
+import mongoose, { Document} from 'mongoose';
 import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 import {
   CharityPaymentMethodBankAccount,
@@ -7,7 +7,10 @@ import {
 } from './charity-payment-methods.interface';
 import { ICharity } from '../models/charity.model';
 
-export type ICharityPaymentMethod = Exclude<ICharity['paymentMethods'],undefined>;  
+export type ICharityPaymentMethod = Exclude<
+  ICharity['paymentMethods'],
+  undefined
+>;
 
 // RENAME IT LATER (DOCUMENT NAME ABOUT DB)👇
 export interface ICharityDocsDocument extends Document {
@@ -127,7 +130,7 @@ export interface ICharityDonorRequestDocument {
 
 export interface ICharityDocumentResponse {
   editedEmail?: boolean;
-  charity: HydratedDocument<ICharity>;
+  charity: ICharity;
   message?: string;
 }
 

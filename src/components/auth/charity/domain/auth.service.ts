@@ -12,7 +12,7 @@ const authCharity = async (reqBody: { email: string; password: string; }, res: R
     email,
     password
   );
-  const token = generateToken(res, charityResponse.charity._id, 'charity');
+  const token = generateToken(res, charityResponse.charity._id.toString(), 'charity');
   const charityObj = {
     _id: charityResponse.charity._id,
     name: charityResponse.charity.name,

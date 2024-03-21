@@ -13,11 +13,11 @@ import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components';
-import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
+import { ICharity } from '../../charity/data-access/interfaces/';
 const addCase = async (
   caseData: ICase,
   image: string,
-  charity: ICharityDocument
+  charity: ICharity
 ): Promise<ICaseDocumentResponse> => {
   const newCase = await caseUtils.createCase({
     ...caseData,
@@ -62,7 +62,7 @@ const getCaseById = async (
 };
 
 const deleteCase = async (
-  charity: ICharityDocument,
+  charity: ICharity,
   caseId: string
 ): Promise<ICaseDocumentResponse> => {
   const idx: number = caseUtils.checkIfCaseBelongsToCharity(
@@ -80,7 +80,7 @@ const deleteCase = async (
 };
 
 const editCase = async (
-  charity: ICharityDocument,
+  charity: ICharity,
   caseData: ICase & { coverImage: string; image: string[] },
   caseId: string
 ): Promise<ICaseDocumentResponse> => {

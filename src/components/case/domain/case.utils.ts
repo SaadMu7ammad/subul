@@ -1,6 +1,6 @@
 import { NotFoundError } from '../../../libraries/errors/components/not-found';
 import { deleteOldImgs } from '../../../utils/deleteFile';
-import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
+import { ICharity } from '../../charity/data-access/interfaces/';
 import { CaseRepository } from '../data-access/case.repository';
 import {
   FilterObj,
@@ -119,10 +119,10 @@ const deleteCaseFromDB = async (id: string) => {
 };
 
 const deleteCaseFromCharityCasesArray = async (
-  charity: ICharityDocument,
+  charity: ICharity,
   idx: number
 ) => {
-  const caseIdsArray: string[] = charity.cases;
+  const caseIdsArray = charity.cases;
 
   caseIdsArray.splice(idx, 1);
 

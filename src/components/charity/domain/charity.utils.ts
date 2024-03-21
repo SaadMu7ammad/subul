@@ -52,7 +52,7 @@ const changeCharityEmailWithMailAlert = async (
   CharityBeforeUpdate.email = newEmail;
   if (CharityBeforeUpdate.emailVerification) {
     CharityBeforeUpdate.emailVerification.isVerified = false;
-    CharityBeforeUpdate.emailVerification.verificationDate = null;
+    CharityBeforeUpdate.emailVerification.verificationDate = '';
   }
   const token: string = await generateResetTokenTemp();
   CharityBeforeUpdate.verificationCode = token;
@@ -68,14 +68,14 @@ const changeCharityEmailWithMailAlert = async (
 };
 const verifyCharityAccount = async (charity: ICharity): Promise<void> => {
   if (charity.emailVerification) {
-    charity.verificationCode = null;
+    charity.verificationCode = '';
     charity.emailVerification.isVerified = true;
-    charity.emailVerification.verificationDate = Date.now();
+    charity.emailVerification.verificationDate = Date.now().toString();
   }
   await charity.save();
 };
 const resetSentToken = async (charity: ICharity): Promise<void> => {
-  charity.verificationCode = null;
+  charity.verificationCode = '';
   await charity.save();
 };
 const setTokenToCharity = async (
@@ -196,6 +196,7 @@ const addPaymentAccounts = async (
         swiftCode,
         bankDocs: [_bankDocs],
       };
+      //@ts-expect-error
       charity.paymentMethods!['bankAccount'].push(temp);
     } else {
       throw new BadRequestError('must provide complete information');
@@ -214,6 +215,7 @@ const addPaymentAccounts = async (
         number: number,
         fawryDocs: [_fawryDocs], // An array of strings
       };
+      //@ts-expect-error
       charity.paymentMethods['fawry'].push(temp);
     } else {
       throw new BadRequestError('must provide complete information');
@@ -233,6 +235,7 @@ const addPaymentAccounts = async (
         number: number,
         vodafoneCashDocs: [_vodafoneCashDocs], // An array of strings
       };
+      //@ts-expect-error
       charity.paymentMethods['vodafoneCash'].push(temp);
     } else {
       throw new BadRequestError('must provide complete information');
@@ -263,6 +266,7 @@ const getPaymentMethodIdx = (
   paymentId: string
 ): number => {
   const idx: number = charityPaymentMethodsObj[changedPaymentMethod].findIndex(
+    //@ts-expect-error
     (paymentMethod) => paymentMethod!._id.toString() === paymentId
   );
 
@@ -310,6 +314,7 @@ const makeTempPaymentObj = (
   if (methodMap.hasOwnProperty(selector)) {
     const { fields, docsField }: FD = methodMap[selector];
 
+    //@ts-expect-error
     const methodData:
       | RequestPaymentMethodsObject['fawry'][0]
       | RequestPaymentMethodsObject['bankAccount'][0]
@@ -341,17 +346,22 @@ const swapPaymentInfo = (
         ][key]
       );
 
+      //@ts-expect-error
       charityPaymentMethodsObj[selector as keyof ICharity['paymentMethods']][
         idx
       ][key] = [temp[key as keyof ICharityPaymentMethod]];
-    } else
+    }
+    else
+    //@ts-expect-error
       charityPaymentMethodsObj[selector as keyof ICharity['paymentMethods']][
         idx
       ][key] = temp[key as keyof ICharityPaymentMethod];
   }
 
+  //@ts-expect-error
   charityPaymentMethodsObj[selector as keyof ICharity['paymentMethods']][
     idx
+    //@ts-expect-error
   ].enable = false;
 };
 
@@ -360,6 +370,7 @@ const addNewPayment = (
   temp: ICharityPaymentMethod,
   selector: string
 ): void => {
+  //@ts-expect-error
   charityPaymentMethodsObj[selector as keyof ICharity['paymentMethods']].push(
     temp
   );

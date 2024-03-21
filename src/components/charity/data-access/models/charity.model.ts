@@ -1,4 +1,4 @@
-import mongoose, { InferSchemaType, Schema } from 'mongoose';
+import mongoose, { InferSchemaType, Schema,HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index';
 
@@ -58,16 +58,19 @@ const paymentMethodSchema = new Schema({
       },
       accNumber: {
         type: String,
+        required: true,
       },
       iban: {
         type: String,
+        required: true,
       },
       swiftCode: {
         type: String,
+        required: true,
       },
       bankDocs: {
         type: [String], // Define it as an array of strings
-        // required: true, // The entire array is required
+        required: true, 
       },
     },
   ],
@@ -79,10 +82,12 @@ const paymentMethodSchema = new Schema({
       },
       number: {
         type: String,
+        required: true,
       },
 
       fawryDocs: {
         type: [String],
+        required: true,
       },
     },
   ],
@@ -94,10 +99,12 @@ const paymentMethodSchema = new Schema({
       },
       number: {
         type: String,
+        required: true,
       },
 
       vodafoneCashDocs: {
         type: [String],
+        required: true,
       },
     },
   ],
@@ -164,8 +171,8 @@ const charitySchema = new Schema(
         default: false,
       },
       verificationDate: {
-        type: Date,
-        default: null,
+        type: String,
+        default: '',
       },
     },
     phoneVerification: {
@@ -174,8 +181,8 @@ const charitySchema = new Schema(
         default: false,
       },
       verificationDate: {
-        type: Date,
-        default: null,
+        type: String,
+        default: '',
       },
     },
     isEnabled: {
@@ -198,7 +205,6 @@ const charitySchema = new Schema(
     },
     paymentMethods: {
       type: paymentMethodSchema,
-      // required: true,
     },
     rate: {
       type: Number,
@@ -263,10 +269,8 @@ charitySchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-export type ICharity = InferSchemaType<typeof charitySchema> &  {save(): Promise<ICharity>};
+export type ICharity = HydratedDocument<InferSchemaType<typeof charitySchema>> ;
 
 const Charity = mongoose.model<ICharity>('Charity', charitySchema);
-
-// type ape = Omit<ICharity,'paymentMethod'> & ;
 
 export default Charity;

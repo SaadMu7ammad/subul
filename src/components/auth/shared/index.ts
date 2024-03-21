@@ -7,7 +7,7 @@ import * as configurationProvider from '../../../libraries/configuration-provide
 // import { AuthedRequest } from '../user/data-access/auth.interface';
 import { Decoded } from './interface';
 import { IUserDocument } from '../../user/data-access/interfaces/user.interface';
-import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
+import { ICharity} from '../../charity/data-access/interfaces';
 import {  NextFunction, Request, Response } from 'express';
 // import * as core from "express-serve-static-core";
 
@@ -41,7 +41,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       } else if (decoded.charityId) {
         const IsCharityExist = await Charity.findById(decoded.charityId).select(
           '-password'
-        ) as ICharityDocument | null;
+        ) as ICharity | null;
         if (!IsCharityExist)
           throw new UnauthenticatedError('Authentication invalid');
 

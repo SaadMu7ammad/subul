@@ -3,7 +3,7 @@ import {
   NotFoundError,
 } from '../../../libraries/errors/components/index';
 import { ICaseDocument } from '../../case/data-access/interfaces/case.interface';
-import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
+import { ICharity} from '../../charity/data-access/interfaces/';
 import {  IUserDocument } from '../../user/data-access/interfaces/user.interface';
 import { IDataPreCreateTransaction, ITransaction, ITransactionDocument } from '../data-access/interfaces/transaction.interface';
 import { TransactionRepository } from '../data-access/transaction.repository';
@@ -35,7 +35,7 @@ const checkPreCreateTransaction = (data:IDataPreCreateTransaction) => {
     throw new NotFoundError('no payment method has been chosen');
   }
 };
-const checkCharityIsValidToDonate = (charity:ICharityDocument) => {
+const checkCharityIsValidToDonate = (charity:ICharity) => {
   if (
     charity.isConfirmed === false ||
     charity.isPending === true ||
@@ -46,8 +46,8 @@ const checkCharityIsValidToDonate = (charity:ICharityDocument) => {
     );
   }
   if (
-    charity.emailVerification.isVerified === false &&
-    charity.phoneVerification.isVerified === false
+    charity.emailVerification && charity.emailVerification.isVerified === false &&
+    charity.phoneVerification && charity.phoneVerification.isVerified === false
   ) {
     throw new BadRequestError(
       'charity is not verified..must verify the account by email or phone number'

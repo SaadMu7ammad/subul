@@ -1,7 +1,5 @@
 import { Document } from 'mongoose';
-import {
-  ICharityDocument,
-} from '../../../charity/data-access/interfaces/charity.interface';
+import { ICharity } from '../../../charity/data-access/interfaces/charity.interface';
 
 export type GetAllCasesQueryParams = {
   page?: number;
@@ -18,7 +16,7 @@ export type FilterQueryParams = Pick<
   'mainType' | 'subType' | 'nestedSubType'
 >;
 export type FilterObj = FilterQueryParams & { charity: string };
-export type SortObj = { [key: string]: 1|-1};
+export type SortObj = { [key: string]: 1 | -1 };
 export type PaginationObj = { page: number; limit: number };
 
 export interface ICaseLocation {
@@ -56,7 +54,7 @@ export interface ICaseLocation {
 }
 
 export interface ICase {
-  charity: ICharityDocument['_id'] ;
+  charity: ICharity['_id'];
   title: string;
   description: string;
   mainType:
@@ -94,7 +92,7 @@ export interface ICase {
   finished: boolean;
   upVotes: number;
   views: number;
-  dateFinished?: Date | number|null;
+  dateFinished?: Date | number | null;
   donationNumbers: number;
   helpedNumbers: number;
   freezed: boolean;
@@ -105,12 +103,11 @@ export interface ICase {
 export interface ICaseLocationDocument extends ICaseLocation, Document {}
 export interface ICaseDocument extends ICase, Document {}
 
-
-export interface ICaseDocumentResponse{
-  case: ICaseDocument,
-  message?:string
+export interface ICaseDocumentResponse {
+  case: ICaseDocument;
+  message?: string;
 }
-export interface ICasesDocumentResponse{
-  cases: ICaseDocument[],
-  message?:string
+export interface ICasesDocumentResponse {
+  cases: ICaseDocument[];
+  message?: string;
 }
