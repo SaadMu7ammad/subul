@@ -1,10 +1,11 @@
+import { HydratedDocument } from 'mongoose';
 import { userDataStore } from './interfaces/user.dao';
 // import { IUser, IUserDocument } from './interfaces/user.interface';
 import UserModel, { User } from './models/user.model';
 
 export class userRepository implements userDataStore {
-  async findUser(email: string): Promise<User | null> {
-    const user: User | null = await UserModel.findOne({
+  async findUser(email: string): Promise<HydratedDocument<User> | null> {
+    const user: HydratedDocument<User> | null = await UserModel.findOne({
       email: email,
     });
     return user;

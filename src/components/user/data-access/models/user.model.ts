@@ -42,7 +42,7 @@ const userSchema = new Schema(
     },
     locationUser: {
       type: locationSchema, // Use locationSchema here
-      required: true,
+      // required: true,  👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️
     }, // profileImage: {
     //     type: String,
     //
@@ -68,6 +68,8 @@ const userSchema = new Schema(
       verificationDate: {
         type: Date,
         default: null,
+        // type: String,
+        // default: '',
       },
     },
     phoneVerification: {
@@ -78,6 +80,8 @@ const userSchema = new Schema(
       verificationDate: {
         type: Date,
         default: null,
+        // type: String,
+        // default: '',
       },
     },
     isEnabled: {
