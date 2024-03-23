@@ -11,17 +11,14 @@ import { charityUtils } from './charity.utils';
 import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import {
     ICharity,
-    ICharityPaymentMethod,
+    ICharityPaymentMethods,
     DataForEditCharityProfile,
     DataForActivateCharityAccount,
     DataForRequestResetPassword,
     DataForConfirmResetPassword,
     DataForChangePassword,
     DataForChangeProfileImage,
-    IDataForSendDocs,
-    ICharityDocumentResponse,
-    IPaymentCharityDocumentResponse,
-    PaymentMethodNames,
+    ICharityDocs
 } from '../data-access/interfaces';
 import { Response } from 'express';
 
@@ -184,26 +181,26 @@ const changeProfileImage = async (
   return { image: updatedImg, message: 'image changed successfully' };
 };
 const sendDocs = async (
-    reqBody: IDataForSendDocs,
+    reqBody: ICharityDocs,
     charity: ICharity
 )  => {
     console.log({...reqBody});
     if (
-        (charity.emailVerification.isVerified ||
-            charity.phoneVerification.isVerified) &&
+        (charity.emailVerification&&charity.emailVerification.isVerified ||
+            charity.phoneVerification&&charity.phoneVerification.isVerified) &&
         !charity.isConfirmed &&
         !charity.isPending
     ) {
         const addCharityPaymentsResponse: {
-            paymentMethods: ICharityPaymentMethodDocument;
+            paymentMethods: ICharityPaymentMethods;
         } = await charityUtils.addDocs(reqBody, charity);
         return {
             paymentMethods: addCharityPaymentsResponse.paymentMethods,
             message: 'sent successfully',
         };
     } else if ( 
-        !charity.emailVerification.isVerified &&
-        !charity.phoneVerification.isVerified
+        charity.emailVerification&&!charity.emailVerification.isVerified &&
+        charity.phoneVerification&&!charity.phoneVerification.isVerified
     ) {
         throw new UnauthenticatedError('you must verify your account again');
     } else if (charity.isConfirmed) {
@@ -218,7 +215,7 @@ const sendDocs = async (
 const requestEditCharityPayments = async (
   charityObj: ICharity,
   paymentId: string,
-  reqPaymentMethodsObj: ICharityPaymentMethod
+  reqPaymentMethodsObj: ICharityPaymentMethods
 ) => {
   if (!reqPaymentMethodsObj) {
     throw new BadRequestError('Incomplete Data!');

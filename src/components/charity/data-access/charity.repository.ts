@@ -1,5 +1,5 @@
-import CharityModel, { ICharity } from './models/charity.model';
-import { CharityDao } from './interfaces/';
+import CharityModel from './models/charity.model';
+import { CharityDao ,ICharity } from './interfaces/';
 
 export class CharityRepository implements CharityDao {
   async findCharity(email: string): Promise<ICharity | null> {

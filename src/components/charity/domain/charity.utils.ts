@@ -8,13 +8,13 @@ import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import { checkValueEquality } from '../../../utils/shared';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import {
-  ICharityDocs,
   ICharity,
   ICharityPaymentMethod,
-  ICharityLocationDocument,
+  ICharityPaymentMethods,
+  ICharityLocation,
   PaymentMethodNames,
   RequestPaymentMethodsObject,
-  IDataForSendDocs
+  ICharityDocs
 } from '../data-access/interfaces/';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (
@@ -109,7 +109,7 @@ const changeCharityPasswordWithMailAlert = async (
 const editCharityProfileAddress = async (
   charity: ICharity,
   id: string,
-  updatedLocation: ICharityLocationDocument
+  updatedLocation: ICharityLocation
 ): Promise<{ charity: ICharity }> => {
   //TODO: Should we use Partial<CharityLocationDocument>?
   for (let i = 0; i < charity.charityLocation.length; i++) {
@@ -132,7 +132,7 @@ const editCharityProfileAddress = async (
 // };
 const addCharityProfileAddress = async (
   charity: ICharity,
-  updatedLocation: ICharityLocationDocument
+  updatedLocation: ICharityLocation
 ): Promise<{ charity: ICharity }> => {
   charity.charityLocation.push(updatedLocation);
   await charity.save();
@@ -151,7 +151,7 @@ const replaceProfileImage = async (
   return { image: charity.image };
 };
 const addDocs = async (
-  reqBody: IDataForSendDocs,
+  reqBody: ICharityDocs,
   charity: ICharity
 )=> {
   charity.charityDocs = { ...reqBody.charityDocs }; //assign the doc
@@ -178,12 +178,12 @@ const makeCharityIsPending = async (charity: ICharity): Promise<void> => {
   await charity.save();
 };
 const addPaymentAccounts = async (
-  accountObj: IDataForSendDocs,
+  accountObj: ICharityDocs,
   charity: ICharity,
   type: string
 ): Promise<void> => {
   if (charity.paymentMethods === undefined)
-    charity.paymentMethods = {} as ICharityPaymentMethod;
+    charity.paymentMethods = {} as ICharityPaymentMethods;
   // console.log({ ...req.body.paymentMethods.fawry[0] });
   if (type === 'bankAccount') {
     const { bankAccount } = accountObj.paymentMethods;
@@ -204,7 +204,7 @@ const addPaymentAccounts = async (
         bankDocs: _bankDocs,
       };
       //@ts-expect-error
-      charity.paymentMethods!['bankAccount'].push(temp);
+      charity.paymentMethods['bankAccount'].push(temp);
     } else {
       throw new BadRequestError('must provide complete information');
     }
@@ -268,7 +268,7 @@ const getChangedPaymentMethod = (
 };
 
 const getPaymentMethodIdx = (
-  charityPaymentMethodsObj: ICharityPaymentMethod,
+  charityPaymentMethodsObj: ICharityPaymentMethods,
   changedPaymentMethod: PaymentMethodNames,
   paymentId: string
 ): number => {
@@ -282,7 +282,7 @@ const getPaymentMethodIdx = (
 
 const makeTempPaymentObj = (
   selector: PaymentMethodNames,
-  reqPaymentMethodsObj: ICharityPaymentMethod
+  reqPaymentMethodsObj: ICharityPaymentMethods
 ): ICharityPaymentMethod => {
   const temp: ICharityPaymentMethod = <ICharityPaymentMethod>{};
 
@@ -321,7 +321,6 @@ const makeTempPaymentObj = (
   if (methodMap.hasOwnProperty(selector)) {
     const { fields, docsField }: FD = methodMap[selector];
 
-    //@ts-expect-error
     const methodData:
       | RequestPaymentMethodsObject['fawry'][0]
       | RequestPaymentMethodsObject['bankAccount'][0]
@@ -348,8 +347,9 @@ const swapPaymentInfo = (
     if (key.endsWith('docs')) {
       deleteOldImgs(
         'charityDocs',
+        // @ts-expect-error
         charityPaymentMethodsObj[
-        selector as keyof ICharityPaymentMethodDocument
+        selector 
         ][idx][key]
       );
 

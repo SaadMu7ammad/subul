@@ -164,7 +164,7 @@ const charitySchema = new Schema(
     verificationCode: {
       type: String,
       required: false,
-      default: null,
+      default: '',
     },
     emailVerification: {
       isVerified: {
