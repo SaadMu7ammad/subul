@@ -1,22 +1,22 @@
 import { userUtils } from './user.utils';
 import { Response } from 'express';
 import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
-// import {
-//   BadRequestError,
-//   NotFoundError,
-//   UnauthenticatedError,
-// } from '../../../libraries/errors/components/index';
-// import {
-//   checkValueEquality,
-//   updateNestedProperties,
-// } from '../../../utils/shared';
+import {
+  //   BadRequestError,
+  NotFoundError,
+  UnauthenticatedError,
+} from '../../../libraries/errors/components/index';
+import {
+  checkValueEquality,
+  // updateNestedProperties,
+} from '../../../utils/shared';
 import {
   //   IUserDocument,
   //   IUserModifed,
   //   IUserResponse,
   //   dataForActivateAccount,
   //   dataForChangePassword,
-  //   dataForConfirmResetEmail,
+  dataForConfirmResetEmail,
   dataForResetEmail,
 } from '../data-access/interfaces/user.interface';
 import { User } from '../data-access/models/user.model';
@@ -41,34 +41,43 @@ const resetUser = async (reqBody: dataForResetEmail) => {
   };
 };
 
-// const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
-//   let updatedUser = await userUtils.checkUserIsExist(reqBody.email);
-//   if (!updatedUser.user.verificationCode) throw new NotFoundError('code not exist');
-//   const isEqual = checkValueEquality(
-//     updatedUser.user.verificationCode,
-//     reqBody.token
-//   );
-//   if (!isEqual) {
-//     updatedUser.user.verificationCode = undefined;
-//     await updatedUser.user.save();
-//     throw new UnauthenticatedError(
-//       'invalid token send request again to reset a password'
-//     );
-//   }
-//   updatedUser.user.password = reqBody.password;
-//   updatedUser.user.verificationCode = null as unknown as string | undefined;
-//   await updatedUser.user.save();
-//   await setupMailSender(
-//     updatedUser.user.email,
-//     'password changed alert',
-//     `hi ${
-//       updatedUser.user.name?.firstName + ' ' + updatedUser.user.name?.lastName
-//     } <h3>contact us if you did not changed the password</h3>` +
-//       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
-//   );
+const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
+  let updatedUser: { user: HydratedDocument<User> } =
+    await userUtils.checkUserIsExist(reqBody.email);
+  // { user: { } }
 
-//   return { message: 'user password changed successfully' };
-// };
+  if (!updatedUser.user.verificationCode)
+    throw new NotFoundError('code not exist');
+
+  const isEqual = checkValueEquality(
+    updatedUser.user.verificationCode,
+    reqBody.token
+  );
+
+  if (!isEqual) {
+    updatedUser.user.verificationCode = '';
+    await updatedUser.user.save();
+    throw new UnauthenticatedError(
+      'invalid token send request again to reset a password'
+    );
+  }
+
+  updatedUser.user.password = reqBody.password;
+  updatedUser.user.verificationCode = '';
+  await updatedUser.user.save();
+
+  await setupMailSender(
+    updatedUser.user.email,
+    'password changed alert',
+    `hi ${
+      updatedUser.user.name?.firstName + ' ' + updatedUser.user.name?.lastName
+    } <h3>contact us if you did not changed the password</h3>` +
+      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+  );
+
+  return { message: 'user password changed successfully' };
+};
+
 // const changePassword = async (
 //   reqBody: dataForChangePassword,
 //   user: IUserDocument
@@ -176,7 +185,7 @@ const logoutUser = (res: Response): { message: string } => {
 // };
 export const userService = {
   resetUser,
-  //   confirmReset,
+  confirmReset,
   //   changePassword,
   //   activateAccount,
   logoutUser,

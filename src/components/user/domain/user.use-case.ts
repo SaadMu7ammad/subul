@@ -1,7 +1,10 @@
 // import {  IUserModifed, IUserResponse, dataForActivateAccount, dataForChangePassword, dataForConfirmResetEmail, dataForResetEmail } from '../data-access/interfaces/user.interface';
-import { dataForResetEmail } from '../data-access/interfaces/user.interface';
+import {
+  dataForConfirmResetEmail,
+  dataForResetEmail,
+} from '../data-access/interfaces/user.interface';
 import { userService } from './user.service';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 //@desc   reset password
 //@route  POST /api/users/reset
 //@access public
@@ -12,20 +15,20 @@ const resetUser = async (req: Request): Promise<{ message: string }> => {
     message: responseData.message,
   };
 };
-// //@desc   reset password
-// //@route  POST /api/users/confirm
-// //@access public
-// const confirmReset = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): Promise<{ message: string }> => {
-//   const resetInputsData:dataForConfirmResetEmail = req.body;
-//   const responseData = await userService.confirmReset(resetInputsData);
-//   return {
-//     message: responseData.message,
-//   };
-// };
+//@desc   reset password
+//@route  POST /api/users/confirm
+//@access public
+const confirmReset = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<{ message: string }> => {
+  const resetInputsData: dataForConfirmResetEmail = req.body;
+  const responseData = await userService.confirmReset(resetInputsData);
+  return {
+    message: responseData.message,
+  };
+};
 
 // //@desc   change password
 // //@route  POST /api/users/changepassword
@@ -130,7 +133,7 @@ const logoutUser = (res: Response): { message: string } => {
 export const userUseCase = {
   logoutUser,
   resetUser,
-  //   confirmReset,
+  confirmReset,
   //   changePassword,
   //   activateAccount,
   //   editUserProfile,

@@ -5,7 +5,7 @@ import { validate } from '../../../../libraries/validation/index';
 // import { editUserProfileValidation } from '../../../../libraries/validation/components/user/editUserProfileValidation';
 import {
   //   changePasswordUserValidation,
-  //   confirmResetUserValidation,
+  confirmResetUserValidation,
   requestResetEmailUserValidation,
   //   tokenUserValidation,
 } from '../../../../libraries/validation/components/user/allUserValidation';
@@ -46,26 +46,25 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  // router.post(
-  //   '/reset/confirm',
-  //   confirmResetUserValidation,
-  //   validate,
-  //   async (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-
-  //       logger.info(`User API was called to confirm Reset`);
-  //       const confirmResetResponse = await userUseCase.confirmReset(
-  //         req,
-  //         res,
-  //         next
-  //       );
-  //       return res.json(confirmResetResponse);
-  //     } catch (error) {
-  //       next(error);
-  //       return undefined;
-  //     }
-  //   }
-  // );
+  router.post(
+    '/reset/confirm',
+    confirmResetUserValidation,
+    validate,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to confirm Reset`);
+        const confirmResetResponse = await userUseCase.confirmReset(
+          req,
+          res,
+          next
+        );
+        return res.json(confirmResetResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
   // router.put(
   //   '/changepassword',

@@ -42,7 +42,7 @@ const userSchema = new Schema(
     },
     locationUser: {
       type: locationSchema, // Use locationSchema here
-      // required: true,  👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️
+      // required: true, // 👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️ locationUser shouldn't be required.
     }, // profileImage: {
     //     type: String,
     //
