@@ -54,8 +54,13 @@ export interface DataForChangePassword {
 export interface DataForChangeProfileImage {
   image: string;
 }
+export interface ICharityPaymentMethodDocumentSpecial extends Document {
+  bankAccount: CharityPaymentMethodBankAccountDocument;
+  fawry: CharityPaymentMethodFawryDocument;
+  vodafoneCash: CharityPaymentMethodVodafoneCashDocument;
+}
 export interface DataForRequestEditCharityPayments {
-  paymentMethods: ICharityPaymentMethodDocument;
+  paymentMethods: ICharityPaymentMethodDocumentSpecial;
   paymentId: string;
 }
 // RENAME IT LATER (DOCUMENT NAME ABOUT DB)👇
@@ -388,6 +393,10 @@ export interface IPaymentCharityDocumentResponse {
   message?: string;
 }
 
+export interface IRequestPaymentCharityDocumentResponse {
+  paymentMethods: CharityPaymentMethodBankAccountDocument | CharityPaymentMethodVodafoneCashDocument | CharityPaymentMethodFawryDocument
+  message?: string;
+}
 export type ICharityPaymentMethod =
   | CharityPaymentMethodBankAccount
   | CharityPaymentMethodFawry

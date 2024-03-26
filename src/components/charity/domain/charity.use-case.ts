@@ -13,6 +13,7 @@ import {
     ICharityDocumentResponse,
     IPaymentCharityDocumentResponse,
     IDataForSendDocs,
+    IRequestPaymentCharityDocumentResponse,
 } from '../data-access/interfaces/charity.interface';
 
 const activateCharityAccount = async (
@@ -152,17 +153,13 @@ const requestEditCharityPayments = async (
     req: Request,
     res: Response,
     next: NextFunction
-): Promise<IPaymentCharityDocumentResponse> => {
+): Promise<IRequestPaymentCharityDocumentResponse> => {
     const data: DataForRequestEditCharityPayments = {
         paymentMethods: req.body.paymentMethods,
         paymentId: req.body.payment_id,
     };
-    const responseData = await charityService.requestEditCharityPayments(
-        res.locals.charity,
-        data.paymentId,
-        data.paymentMethods
-    );
-
+    const storedCharity = res.locals.charity
+    const responseData = await charityService.requestEditCharityPayments(storedCharity,data);
     return {
         paymentMethods: responseData.paymentMethods,
         message: responseData.message,

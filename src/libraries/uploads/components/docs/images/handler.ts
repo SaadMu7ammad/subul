@@ -64,7 +64,7 @@ const uploadDocs = upload.fields([
     { name: 'vodafoneDocs', maxCount: 2 },
 ]);
 
-async function processDocs(
+export async function processDocs(
     docsKey: uploadDocsSchema,
     ref: Express.Multer.File[],
     req: Request,
