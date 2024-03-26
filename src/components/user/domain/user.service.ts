@@ -11,11 +11,10 @@ import {
   // updateNestedProperties,
 } from '../../../utils/shared';
 import {
-  //   IUserDocument,
   //   IUserModifed,
   //   IUserResponse,
   //   dataForActivateAccount,
-  //   dataForChangePassword,
+  dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
 } from '../data-access/interfaces/user.interface';
@@ -78,23 +77,24 @@ const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
   return { message: 'user password changed successfully' };
 };
 
-// const changePassword = async (
-//   reqBody: dataForChangePassword,
-//   user: IUserDocument
-// ) => {
-//   let updatedUser = user;
-//   updatedUser.password = reqBody.password;
-//   await updatedUser.save();
-//   await setupMailSender(
-//     updatedUser.email,
-//     'password changed alert',
-//     `hi ${
-//       updatedUser.name.firstName + ' ' + updatedUser.name.lastName
-//     }<h3>contact us if you did not changed the password</h3>` +
-//       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
-//   );
-//   return { message: 'user password changed successfully' };
-// };
+const changePassword = async (
+  reqBody: dataForChangePassword,
+  user: HydratedDocument<User>
+) => {
+  let updatedUser = user;
+  updatedUser.password = reqBody.password;
+  await updatedUser.save();
+  await setupMailSender(
+    updatedUser.email,
+    'password changed alert',
+    `hi ${
+      updatedUser.name.firstName + ' ' + updatedUser.name.lastName
+    }<h3>contact us if you did not changed the password</h3>` +
+      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+  );
+  return { message: 'user password changed successfully' };
+};
+
 // const activateAccount = async (
 //   reqBody: dataForActivateAccount,
 //   user: IUserDocument,
@@ -186,7 +186,7 @@ const logoutUser = (res: Response): { message: string } => {
 export const userService = {
   resetUser,
   confirmReset,
-  //   changePassword,
+  changePassword,
   //   activateAccount,
   logoutUser,
   //   getUserProfileData,

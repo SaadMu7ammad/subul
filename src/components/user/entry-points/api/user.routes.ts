@@ -1,13 +1,13 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { userUseCase } from '../../domain/user.use-case';
 import { validate } from '../../../../libraries/validation/index';
-// import { auth, isActivated } from '../../../auth/shared/index';
+import { auth, isActivated } from '../../../auth/shared/index';
 // import { editUserProfileValidation } from '../../../../libraries/validation/components/user/editUserProfileValidation';
 import {
-  //   changePasswordUserValidation,
+  changePasswordUserValidation,
   confirmResetUserValidation,
   requestResetEmailUserValidation,
-  //   tokenUserValidation,
+  // tokenUserValidation,
 } from '../../../../libraries/validation/components/user/allUserValidation';
 // import { getAllTransactions } from '../../../transaction/domain/transaction.use-case';
 import logger from '../../../../utils/logger';
@@ -66,28 +66,27 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  // router.put(
-  //   '/changepassword',
-  //   changePasswordUserValidation,
-  //   validate,
-  //   auth,
-  //   isActivated,
-  //   async (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-
-  //       logger.info(`User API was called to change Password`);
-  //       const changePasswordResponse = await userUseCase.changePassword(
-  //         req,
-  //         res,
-  //         next
-  //       );
-  //       return res.json(changePasswordResponse);
-  //     } catch (error) {
-  //       next(error);
-  //       return undefined;
-  //     }
-  //   }
-  // );
+  router.put(
+    '/changepassword',
+    changePasswordUserValidation,
+    validate,
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to change Password`);
+        const changePasswordResponse = await userUseCase.changePassword(
+          req,
+          res,
+          next
+        );
+        return res.json(changePasswordResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
   // router.post(
   //   '/activate',

@@ -1,8 +1,11 @@
 // import {  IUserModifed, IUserResponse, dataForActivateAccount, dataForChangePassword, dataForConfirmResetEmail, dataForResetEmail } from '../data-access/interfaces/user.interface';
+import { HydratedDocument } from 'mongoose';
 import {
+  dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
 } from '../data-access/interfaces/user.interface';
+import { User } from '../data-access/models/user.model';
 import { userService } from './user.service';
 import { Request, Response, NextFunction } from 'express';
 //@desc   reset password
@@ -30,24 +33,28 @@ const confirmReset = async (
   };
 };
 
-// //@desc   change password
-// //@route  POST /api/users/changepassword
-// //@access private
-// const changePassword = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): Promise<{ message: string }> => {
-//   const changePasswordInputsData:dataForChangePassword = req.body;
-//   const storedUser = res.locals.user;
-//   const responseData = await userService.changePassword(
-//     changePasswordInputsData,
-//     storedUser
-//   );
-//   return {
-//     message: responseData.message,
-//   };
-// };
+//@desc   change password
+//@route  POST /api/users/changepassword
+//@access private
+const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<{ message: string }> => {
+  const changePasswordInputsData: dataForChangePassword = req.body;
+
+  const storedUser: HydratedDocument<User> = res.locals.user;
+
+  console.log('storedUser', storedUser);
+
+  const responseData = await userService.changePassword(
+    changePasswordInputsData,
+    storedUser
+  );
+  return {
+    message: responseData.message,
+  };
+};
 
 // //@desc   activate account email
 // //@route  POST /api/users/activate
@@ -134,7 +141,7 @@ export const userUseCase = {
   logoutUser,
   resetUser,
   confirmReset,
-  //   changePassword,
+  changePassword,
   //   activateAccount,
   //   editUserProfile,
   //   getUserProfileData,
