@@ -72,7 +72,8 @@ async function processDocs(docsKey, ref, req) {
 }
 
 const resizeDoc = async (req, res, next) => {
-  req.body.charityDocs = {};
+  try{
+    req.body.charityDocs = {};
   req.body.charityDocs.docs1 = [];
   req.body.charityDocs.docs2 = [];
   req.body.charityDocs.docs3 = [];
@@ -127,6 +128,10 @@ const resizeDoc = async (req, res, next) => {
     );
 
   next();
+  }catch(error){
+    next(error);
+  }
+  
 };
 
 export { uploadDocs, resizeDoc };

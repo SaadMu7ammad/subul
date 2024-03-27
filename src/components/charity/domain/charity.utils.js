@@ -238,7 +238,7 @@ const makeTempPaymentObj = (selector, reqPaymentMethodsObj) => {
 
 const swapPaymentInfo = (charityPaymentMethodsObj, temp, selector, idx) => {
     for (let key in temp) {
-        if (key.startsWith('docs')) {
+        if (key.endsWith('docs')) {
             deleteOldImgs(
                 'charityDocs',
                 charityPaymentMethodsObj[selector][idx][key]
