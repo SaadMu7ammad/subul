@@ -23,3 +23,4 @@ export type ICharityDonorRequest = Exclude<
 >;
 
 export type ICharityLocation = ICharity['charityLocation'][0];
+

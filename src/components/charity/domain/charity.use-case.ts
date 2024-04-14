@@ -1,5 +1,4 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express';
-
 import { charityService } from './charity.service';
 import {
     DataForActivateCharityAccount,
@@ -11,6 +10,7 @@ import {
     DataForChangeProfileImage,
     DataForRequestEditCharityPayments,
     ICharityDocs,
+    IRequestPaymentCharityDocumentResponse
 } from '../data-access/interfaces/';
 
 const activateCharityAccount = async (
@@ -137,24 +137,20 @@ const changeProfileImage = async (
 };
 
 const requestEditCharityPayments = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const data: DataForRequestEditCharityPayments = {
-    paymentMethods: req.body.paymentMethods,
-    paymentId: req.body.payment_id,
-  };
-  const responseData = await charityService.requestEditCharityPayments(
-    res.locals.charity,
-    data.paymentId,
-    data.paymentMethods
-  );
-
-  return {
-    paymentMethods: responseData.paymentMethods,
-    message: responseData.message,
-  };
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<IRequestPaymentCharityDocumentResponse> => {
+    const data: DataForRequestEditCharityPayments = {
+        paymentMethods: req.body.paymentMethods,
+        paymentId: req.body.payment_id,
+    };
+    const storedCharity = res.locals.charity
+    const responseData = await charityService.requestEditCharityPayments(storedCharity,data);
+    return {
+        paymentMethods: responseData.paymentMethods,
+        message: responseData.message,
+    };
 };
 
 const logout: RequestHandler = (req, res, next): { message: string } => {

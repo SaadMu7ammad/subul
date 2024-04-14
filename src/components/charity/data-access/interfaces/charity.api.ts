@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import {
   ICharityLocation,
   ICharityPaymentMethod,
-  ICharityPaymentMethods,
   ICharityDocs,
   ICharity,
 } from '.';
@@ -38,8 +37,8 @@ export interface DataForChangeProfileImage {
   image: string;
 }
 export interface DataForRequestEditCharityPayments {
-  paymentMethods: ICharityPaymentMethods;
+  paymentMethods: ICharityPaymentMethod;
   paymentId: string;
 }
 
-export interface DataForSendDocs extends ICharityDocs {}
+export interface IDataForSendDocs extends ICharityDocs {}

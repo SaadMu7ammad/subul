@@ -13,3 +13,8 @@ export interface RequestPaymentMethodsObject {
 }
 
 export type PaymentMethodNames = 'bankAccount' | 'fawry' | 'vodafoneCash';
+
+export interface IRequestPaymentCharityDocumentResponse {
+  paymentMethods: CharityPaymentMethodBankAccount| CharityPaymentMethodVodafoneCash| CharityPaymentMethodFawry
+  message?: string;
+}
