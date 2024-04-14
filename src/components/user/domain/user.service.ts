@@ -11,21 +11,19 @@ import {
   // updateNestedProperties,
 } from '../../../utils/shared';
 import {
-  //   IUserModifed,
-  //   IUserResponse,
-  //   dataForActivateAccount,
+  // IUserModifed,
+  // IUserResponse,
+  dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
 } from '../data-access/interfaces/user.interface';
 import { User } from '../data-access/models/user.model';
-import { HydratedDocument } from 'mongoose';
 
 const resetUser = async (reqBody: dataForResetEmail) => {
   const email = reqBody.email;
   //   if (!email) throw new BadRequestError('no email input');
-  const userResponse: { user: HydratedDocument<User> } =
-    await userUtils.checkUserIsExist(email);
+  const userResponse: { user: User } = await userUtils.checkUserIsExist(email);
   const token = await generateResetTokenTemp();
   userResponse.user.verificationCode = token;
   await userResponse.user.save();
@@ -41,8 +39,9 @@ const resetUser = async (reqBody: dataForResetEmail) => {
 };
 
 const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
-  let updatedUser: { user: HydratedDocument<User> } =
-    await userUtils.checkUserIsExist(reqBody.email);
+  let updatedUser: { user: User } = await userUtils.checkUserIsExist(
+    reqBody.email
+  );
   // { user: { } }
 
   if (!updatedUser.user.verificationCode)
@@ -77,10 +76,7 @@ const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
   return { message: 'user password changed successfully' };
 };
 
-const changePassword = async (
-  reqBody: dataForChangePassword,
-  user: HydratedDocument<User>
-) => {
+const changePassword = async (reqBody: dataForChangePassword, user: User) => {
   let updatedUser = user;
   updatedUser.password = reqBody.password;
   await updatedUser.save();
@@ -88,50 +84,55 @@ const changePassword = async (
     updatedUser.email,
     'password changed alert',
     `hi ${
-      updatedUser.name.firstName + ' ' + updatedUser.name.lastName
+      // updatedUser.name?.firstName will safely access firstName if name is not undefined.
+      updatedUser.name?.firstName + ' ' + updatedUser.name?.lastName
     }<h3>contact us if you did not changed the password</h3>` +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
   );
   return { message: 'user password changed successfully' };
 };
 
-// const activateAccount = async (
-//   reqBody: dataForActivateAccount,
-//   user: IUserDocument,
-//   res: Response
-// ) => {
-//   let storedUser = user;
-//   if (storedUser.emailVerification.isVerified) {
-//     return { message: 'account already is activated' };
-//   }
-//   if(!storedUser.verificationCode)throw new NotFoundError('verificationCode not found')
-//   const isMatch = checkValueEquality(
-//     storedUser.verificationCode,
-//     reqBody.token
-//   );
-//   if (!isMatch) {
-//     await userUtils.resetSentToken(storedUser);
-//     userUtils.logout(res);
-//     throw new UnauthenticatedError('invalid token you have been logged out');
-//   }
-//   await userUtils.verifyUserAccount(storedUser);
-//   await setupMailSender(
-//     storedUser.email,
-//     'account has been activated ',
-//     `<h2>now you are ready to spread the goodness with us </h2>`
-//   );
+const activateAccount = async (
+  reqBody: dataForActivateAccount,
+  user: User,
+  res: Response
+) => {
+  let storedUser = user;
+  if (storedUser.emailVerification?.isVerified) {
+    return { message: 'account already is activated' };
+  }
+  if (!storedUser.verificationCode)
+    throw new NotFoundError('verificationCode not found');
+  const isMatch = checkValueEquality(
+    storedUser.verificationCode,
+    reqBody.token
+  );
+  if (!isMatch) {
+    await userUtils.resetSentToken(storedUser);
+    userUtils.logout(res);
+    throw new UnauthenticatedError('invalid token you have been logged out');
+  }
+  await userUtils.verifyUserAccount(storedUser);
+  await setupMailSender(
+    storedUser.email,
+    'account has been activated ',
+    `<h2>now you are ready to spread the goodness with us </h2>`
+  );
 
-//   return {
-//     message: 'account has been activated successfully',
-//   };
-// };
-const logoutUser = (res: Response): { message: string } => {
+  return {
+    message: 'account has been activated successfully',
+  };
+};
+
+const logoutUser = (res: Response) => {
   userUtils.logout(res);
   return { message: 'logout' };
 };
-// const getUserProfileData = (user: IUserDocument):{user:IUserDocument} => {
-//   return { user: user };
-// };
+
+const getUserProfileData = (user: User) => {
+  return { user: user };
+};
+
 // const editUserProfile = async (
 //   reqBody: IUserModifed,
 //   user: IUserDocument
@@ -187,8 +188,8 @@ export const userService = {
   resetUser,
   confirmReset,
   changePassword,
-  //   activateAccount,
+  activateAccount,
   logoutUser,
-  //   getUserProfileData,
+  getUserProfileData,
   //   editUserProfile,
 };

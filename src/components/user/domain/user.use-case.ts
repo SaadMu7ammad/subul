@@ -1,13 +1,14 @@
 // import {  IUserModifed, IUserResponse, dataForActivateAccount, dataForChangePassword, dataForConfirmResetEmail, dataForResetEmail } from '../data-access/interfaces/user.interface';
-import { HydratedDocument } from 'mongoose';
+
 import {
+  dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
 } from '../data-access/interfaces/user.interface';
 import { User } from '../data-access/models/user.model';
 import { userService } from './user.service';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 //@desc   reset password
 //@route  POST /api/users/reset
 //@access public
@@ -18,13 +19,14 @@ const resetUser = async (req: Request): Promise<{ message: string }> => {
     message: responseData.message,
   };
 };
-//@desc   reset password
-//@route  POST /api/users/confirm
-//@access public
+
+// @desc   reset password
+// @route  POST /api/users/confirm
+// @access public
 const confirmReset = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  _next: NextFunction
 ): Promise<{ message: string }> => {
   const resetInputsData: dataForConfirmResetEmail = req.body;
   const responseData = await userService.confirmReset(resetInputsData);
@@ -39,13 +41,17 @@ const confirmReset = async (
 const changePassword = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): Promise<{ message: string }> => {
   const changePasswordInputsData: dataForChangePassword = req.body;
 
-  const storedUser: HydratedDocument<User> = res.locals.user;
+  const storedUser: User = res.locals.user; // req.app gives you access to the main Express application object.
 
-  console.log('storedUser', storedUser);
+  //   /** اعتقد الاصل اننا نأتي من الريز أولا لو موجودة نكمل لو مش موجودة نروح للريك => req.app.locals
+  //    * res.locals is used for request-specific data that is only relevant to the current request,
+  //    *  while req.app.locals is used for storing data that needs to be accessed globally across the entire application
+  //    *  and continue throughout the application's lifecycle.
+  //    */
 
   const responseData = await userService.changePassword(
     changePasswordInputsData,
@@ -56,93 +62,94 @@ const changePassword = async (
   };
 };
 
-// //@desc   activate account email
-// //@route  POST /api/users/activate
-// //@access private
-// const activateAccount = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): Promise<{ message: string }> => {
-//   const activateAccountInputsData:dataForActivateAccount = req.body;
-//   const storedUser = res.locals.user;
-//   const responseData = await userService.activateAccount(
-//     activateAccountInputsData,
-//     storedUser,
-//     res
-//   );
-//   return {
-//     message: responseData.message,
-//   };
-// };
-// //@desc   logout user
-// //@route  POST /api/users/logout
-// //@access private
+//@desc   activate account email
+//@route  POST /api/users/activate
+//@access private
+const activateAccount = async (
+  req: Request,
+  res: Response,
+  _next: NextFunction
+): Promise<{ message: string }> => {
+  const activateAccountInputsData: dataForActivateAccount = req.body;
+  const storedUser: User = res.locals.user;
+  const responseData = await userService.activateAccount(
+    activateAccountInputsData,
+    storedUser,
+    res
+  );
+  return {
+    message: responseData.message,
+  };
+};
+
+//@desc   logout user
+//@route  POST /api/users/logout
+//@access private
 const logoutUser = (res: Response): { message: string } => {
   const responseData = userService.logoutUser(res);
   return {
     message: responseData.message,
   };
 };
-// //@desc   edit user profile
-// //@route  POST /api/users/profile/edit
-// //@access private
-// const editUserProfile = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): Promise<IUserResponse> => {
-//   const editUserProfileInputsData: IUserModifed = {
-//     //for TS
-//     name: {
-//       firstName: req.body?.name?.firstName,
-//       lastName: req.body?.name?.lastName,
-//     },
-//     email: req.body?.email,
-//     locationUser: req.body?.locationUser?.governorate,
-//     gender: req.body?.gender,
-//     phone: req.body?.phone,
-//   };
-//   const storedUser = res.locals.user;
-//   const responseData = await userService.editUserProfile(
-//     editUserProfileInputsData,
-//     storedUser
-//   );
-//   if (responseData.emailAlert) {
-//     return {
-//       user: responseData.user,
-//       message:
-//         'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
-//     };
-//   } else {
-//     return {
-//       user: responseData.user,
-//       message: 'User Data Changed Successfully',
-//     };
-//   }
-// };
-// //@desc   get user profile
-// //@route  GET /api/users/profile
-// //@access private
-// const getUserProfileData = (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ): IUserResponse => {
-//   const storedUser = res.locals.user;
-//   const responseData = userService.getUserProfileData(storedUser);
-//   return {
-//     user: responseData.user,
-//     message: 'User Profile Fetched Successfully',
-//   };
-// };
+// // //@desc   edit user profile
+// // //@route  POST /api/users/profile/edit
+// // //@access private
+// // const editUserProfile = async (
+// //   req: Request,
+// //   res: Response,
+// //   next: NextFunction
+// // ): Promise<IUserResponse> => {
+// //   const editUserProfileInputsData: IUserModifed = {
+// //     //for TS
+// //     name: {
+// //       firstName: req.body?.name?.firstName,
+// //       lastName: req.body?.name?.lastName,
+// //     },
+// //     email: req.body?.email,
+// //     locationUser: req.body?.locationUser?.governorate,
+// //     gender: req.body?.gender,
+// //     phone: req.body?.phone,
+// //   };
+// //   const storedUser = res.locals.user;
+// //   const responseData = await userService.editUserProfile(
+// //     editUserProfileInputsData,
+// //     storedUser
+// //   );
+// //   if (responseData.emailAlert) {
+// //     return {
+// //       user: responseData.user,
+// //       message:
+// //         'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
+// //     };
+// //   } else {
+// //     return {
+// //       user: responseData.user,
+// //       message: 'User Data Changed Successfully',
+// //     };
+// //   }
+// // };
+//@desc   get user profile
+//@route  GET /api/users/profile
+//@access private
+const getUserProfileData = (
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
+  const storedUser = res.locals.user;
+  const responseData = userService.getUserProfileData(storedUser);
+  return {
+    user: responseData.user,
+    message: 'User Profile Fetched Successfully',
+  };
+};
 
 export const userUseCase = {
   logoutUser,
   resetUser,
   confirmReset,
   changePassword,
-  //   activateAccount,
+  activateAccount,
   //   editUserProfile,
-  //   getUserProfileData,
+  getUserProfileData,
 };

@@ -2,12 +2,12 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import { userUseCase } from '../../domain/user.use-case';
 import { validate } from '../../../../libraries/validation/index';
 import { auth, isActivated } from '../../../auth/shared/index';
-// import { editUserProfileValidation } from '../../../../libraries/validation/components/user/editUserProfileValidation';
+// // import { editUserProfileValidation } from '../../../../libraries/validation/components/user/editUserProfileValidation';
 import {
   changePasswordUserValidation,
   confirmResetUserValidation,
   requestResetEmailUserValidation,
-  // tokenUserValidation,
+  tokenUserValidation,
 } from '../../../../libraries/validation/components/user/allUserValidation';
 // import { getAllTransactions } from '../../../transaction/domain/transaction.use-case';
 import logger from '../../../../utils/logger';
@@ -88,47 +88,45 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  // router.post(
-  //   '/activate',
-  //   tokenUserValidation,
-  //   validate,
-  //   auth,
-  //   async (req: Request, res: Response, next: NextFunction) => {
-  //     try {
+  router.post(
+    '/activate',
+    tokenUserValidation,
+    validate,
+    auth,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to activate user Account`);
+        const activateAccountResponse = await userUseCase.activateAccount(
+          req,
+          res,
+          next
+        );
+        return res.json(activateAccountResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
-  //       logger.info(`User API was called to activate user Account`);
-  //       const activateAccountResponse = await userUseCase.activateAccount(
-  //         req,
-  //         res,
-  //         next
-  //       );
-  //       return res.json(activateAccountResponse);
-  //     } catch (error) {
-  //       next(error);
-  //       return undefined;
-  //     }
-  //   }
-  // );
-
-  // router.get(
-  //   '/profile',
-  //   auth,
-  //   (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-
-  //       logger.info(`User API was called to get user profile`);
-  //       const getUserProfileDataResponse = userUseCase.getUserProfileData(
-  //         req,
-  //         res,
-  //         next
-  //       );
-  //       return res.json(getUserProfileDataResponse);
-  //     } catch (error) {
-  //       next(error);
-  //       return undefined;
-  //     }
-  //   }
-  // );
+  router.get(
+    '/profile',
+    auth,
+    (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to get user profile`);
+        const getUserProfileDataResponse = userUseCase.getUserProfileData(
+          req,
+          res,
+          next
+        );
+        return res.json(getUserProfileDataResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
   // router.put(
   //   '/profile/edit',

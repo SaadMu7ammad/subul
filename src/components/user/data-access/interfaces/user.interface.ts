@@ -74,6 +74,7 @@ export type IUserModifed = {
   phone: string;
 };
 export type IUserDocument = IUser & Document;
+
 export type IUserResponse = {
   // emailEdited?: boolean;
   emailAlert?: boolean;

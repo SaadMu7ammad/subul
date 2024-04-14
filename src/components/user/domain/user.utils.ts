@@ -1,24 +1,20 @@
 import { NotFoundError } from '../../../libraries/errors/components/index';
 import { userRepository } from '../data-access/user.repository';
-// import {
-//   generateResetTokenTemp,
-//   setupMailSender,
-// } from '../../../utils/mailer';
+// // import {
+// //   generateResetTokenTemp,
+// //   setupMailSender,
+// // } from '../../../utils/mailer';
 import { Response } from 'express';
 import { User } from '../data-access/models/user.model';
-import { HydratedDocument } from 'mongoose';
-// import {
-//   IUserDocument,
-//   IUserResponse,
-// } from '../data-access/interfaces/user.interface';
+// // import {
+// //   IUserDocument,
+// //   IUserResponse,
+// // } from '../data-access/interfaces/user.interface';
 const userRepositoryObj = new userRepository();
 
-const checkUserIsExist = async (
-  email: string
-): Promise<{ user: HydratedDocument<User> }> => {
+const checkUserIsExist = async (email: string): Promise<{ user: User }> => {
   //return user if it exists
-  const userIsExist: HydratedDocument<User> | null =
-    await userRepositoryObj.findUser(email);
+  const userIsExist: User | null = await userRepositoryObj.findUser(email);
   if (!userIsExist) {
     throw new NotFoundError('email not found Please use another one');
   }
@@ -34,52 +30,68 @@ const logout = (res: Response): void => {
   });
 };
 
-// const getUser = (res:Response): Partial<IUserResponse> => {
-//   return { user: res.locals.user };
-// };
-// const checkIsEmailDuplicated = async (email: string): Promise<boolean> => {
-//   const isDuplicatedEmail = await userRepositoryObj.findUser(email);
-//   // if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
-//   return isDuplicatedEmail ? true : false;
-// };
-// const changeUserEmailWithMailAlert = async (
-//   UserBeforeUpdate: IUserDocument,
-//   newEmail: string
-// ): Promise<IUserResponse> => {
-//   //for sending email if changed or edited
-//   UserBeforeUpdate.email = newEmail;
-//   UserBeforeUpdate.emailVerification.isVerified = false;
-//   UserBeforeUpdate.emailVerification.verificationDate = undefined;
-//   const token = await generateResetTokenTemp();
-//   UserBeforeUpdate.verificationCode = token;
-//   await setupMailSender(
-//     UserBeforeUpdate.email,
-//     'email changed alert',
-//     `hi ${
-//       UserBeforeUpdate?.name?.firstName + ' ' + UserBeforeUpdate?.name?.lastName
-//     }email has been changed You must Re activate account ` +
-//       `<h3>(www.activate.com)</h3>` +
-//       `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-//   );
-//   await UserBeforeUpdate.save();
-//   return { user: UserBeforeUpdate };
-// };
-// const verifyUserAccount = async (user:IUserDocument) => {
-//   user.verificationCode = null;
+// // const getUser = (res:Response): Partial<IUserResponse> => {
+// //   return { user: res.locals.user };
+// // };
+// // const checkIsEmailDuplicated = async (email: string): Promise<boolean> => {
+// //   const isDuplicatedEmail = await userRepositoryObj.findUser(email);
+// //   // if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
+// //   return isDuplicatedEmail ? true : false;
+// // };
+// // const changeUserEmailWithMailAlert = async (
+// //   UserBeforeUpdate: IUserDocument,
+// //   newEmail: string
+// // ): Promise<IUserResponse> => {
+// //   //for sending email if changed or edited
+// //   UserBeforeUpdate.email = newEmail;
+// //   UserBeforeUpdate.emailVerification.isVerified = false;
+// //   UserBeforeUpdate.emailVerification.verificationDate = undefined;
+// //   const token = await generateResetTokenTemp();
+// //   UserBeforeUpdate.verificationCode = token;
+// //   await setupMailSender(
+// //     UserBeforeUpdate.email,
+// //     'email changed alert',
+// //     `hi ${
+// //       UserBeforeUpdate?.name?.firstName + ' ' + UserBeforeUpdate?.name?.lastName
+// //     }email has been changed You must Re activate account ` +
+// //       `<h3>(www.activate.com)</h3>` +
+// //       `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+// //   );
+// //   await UserBeforeUpdate.save();
+// //   return { user: UserBeforeUpdate };
+// // };
+
+// const verifyUserAccount = async (user: User) => {
+//   user.verificationCode = '';
+// // Optional chaining not allowed when assigning a value
 //   user.emailVerification.isVerified = true;
-//   user.emailVerification.verificationDate = Date.now();
+//   user.emailVerification.verificationDate = Date.now().toString();
 //   user = await user.save();
 // };
-// const resetSentToken = async (user:IUserDocument) => {
-//   user.verificationCode = null;
-//   user = await user.save();
-// };
+const verifyUserAccount = async (user: User) => {
+  user.verificationCode = '';
+  // Make sure emailVerification exists before assigning values
+  if (!user.emailVerification) {
+    user.emailVerification = {
+      isVerified: false,
+      verificationDate: '',
+    };
+  }
+  user.emailVerification.isVerified = true;
+  user.emailVerification.verificationDate = Date.now().toString();
+  user = await user.save();
+};
+
+const resetSentToken = async (user: User) => {
+  user.verificationCode = '';
+  user = await user.save();
+};
 export const userUtils = {
   checkUserIsExist,
   logout,
   //   getUser,
   //   checkIsEmailDuplicated,
-  //   verifyUserAccount,
-  //   resetSentToken,
+  verifyUserAccount,
+  resetSentToken,
   //   changeUserEmailWithMailAlert,
 };
