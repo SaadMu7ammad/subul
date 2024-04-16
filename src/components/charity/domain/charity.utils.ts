@@ -20,7 +20,7 @@ const checkCharityIsExist = async (
   email: string
 ): Promise<{ charity: ICharity }> => {
   //return charity if it exists
-  const charityIsExist: ICharity | null = await charityRepository.findCharity(
+  const charityIsExist = await charityRepository.findCharity(
     email
   );
   if (!charityIsExist) {
@@ -40,7 +40,7 @@ const getCharity = (res: Response): { charity: ICharity } => {
   return { charity: res.locals.charity };
 };
 const checkIsEmailDuplicated = async (email: string): Promise<void> => {
-  const isDuplicatedEmail: ICharity | null =
+  const isDuplicatedEmail =
     await charityRepository.findCharity(email);
   if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
@@ -54,7 +54,7 @@ const changeCharityEmailWithMailAlert = async (
     CharityBeforeUpdate.emailVerification.isVerified = false;
     CharityBeforeUpdate.emailVerification.verificationDate = '';
   }
-  const token: string = await generateResetTokenTemp();
+  const token = await generateResetTokenTemp();
   CharityBeforeUpdate.verificationCode = token;
   await setupMailSender(
     CharityBeforeUpdate.email,
@@ -263,7 +263,7 @@ const getChangedPaymentMethod = (
     'vodafoneCash',
   ];
   paymentMethods.forEach((pm: PaymentMethodNames) => {
-    if (reqPaymentMethodsObj![pm]) changedPaymentMethod = pm;
+    if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
   });
 
   return changedPaymentMethod;

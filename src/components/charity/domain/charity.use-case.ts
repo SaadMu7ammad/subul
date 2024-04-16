@@ -85,7 +85,7 @@ const showCharityProfile = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+) : { charity: ICharity } => {
   const storedCharity: ICharity = res.locals.charity;
 
   const responseData = charityService.getCharityProfileData(storedCharity);
@@ -98,7 +98,7 @@ const editCharityProfile = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+): Promise<{ charity: ICharity; message: string }> => {
   const data: DataForEditCharityProfile = {
     name: req.body.name,
     email: req.body.email,

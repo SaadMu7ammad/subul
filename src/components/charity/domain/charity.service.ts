@@ -11,7 +11,6 @@ import { charityUtils } from './charity.utils';
 import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import {
   ICharity,
-  ICharityPaymentMethods,
   DataForEditCharityProfile,
   DataForActivateCharityAccount,
   DataForRequestResetPassword,
@@ -215,8 +214,8 @@ const requestEditCharityPayments = async (
   storedCharity: ICharity,
   reqPaymentMethodsObj: DataForRequestEditCharityPayments
 ): Promise<IRequestPaymentCharityDocumentResponse> => {
-  let created: boolean = false;
-  let edited: boolean = false;
+  let created= false;
+  let edited= false;
 
   type paymentType = 'bankAccount' | 'vodafoneCash' | 'fawry' | undefined;
   let paymentTypeSelected: paymentType;
