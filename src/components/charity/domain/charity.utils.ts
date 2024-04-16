@@ -278,6 +278,7 @@ const editBankAccount = async (
 
   for (let [_, item] of storedCharity.paymentMethods.bankAccount.entries()) {
     console.log('1---------------');
+    //@ts-expect-error
     if (item._id.toString() === reqPaymentMethodsObj.paymentId.toString()) {
       console.log(item);
       item.enable = false;
@@ -304,6 +305,7 @@ const editFawryAccount = async (
 
   for (let [_, item] of storedCharity.paymentMethods.fawry.entries()) {
     console.log('2---------------');
+    //@ts-expect-error
     if (item._id.toString() === reqPaymentMethodsObj.paymentId.toString()) {
       console.log(item);
       item.enable = false;
@@ -328,6 +330,7 @@ const editVodafoneAccount = async (
 
   for (let [_, item] of storedCharity.paymentMethods.vodafoneCash.entries()) {
     console.log('-3--------------');
+    //@ts-expect-error
     if (item._id.toString() === reqPaymentMethodsObj.paymentId.toString()) {
       console.log(item);
       item.enable = false;
