@@ -78,8 +78,7 @@ const activateAccount = async (
 ): Promise<{ message: string }> => {
   let storedCharity = charity;
   if (
-    storedCharity.emailVerification &&
-    storedCharity.emailVerification.isVerified
+    charityUtils.checkCharityVerification(storedCharity) 
   ) {
     return { message: 'account already is activated' };
   }
@@ -184,8 +183,7 @@ const changeProfileImage = async (
 const sendDocs = async (reqBody: ICharityDocs, charity: ICharity) => {
   console.log({ ...reqBody });
   if (
-    ((charity.emailVerification && charity.emailVerification.isVerified) ||
-      (charity.phoneVerification && charity.phoneVerification.isVerified)) &&
+    charityUtils.checkCharityVerification(charity) &&
     !charity.isConfirmed &&
     !charity.isPending
   ) {
@@ -194,12 +192,7 @@ const sendDocs = async (reqBody: ICharityDocs, charity: ICharity) => {
       paymentMethods: addCharityPaymentsResponse.paymentMethods,
       message: 'sent successfully',
     };
-  } else if (
-    charity.emailVerification &&
-    !charity.emailVerification.isVerified &&
-    charity.phoneVerification &&
-    !charity.phoneVerification.isVerified
-  ) {
+  } else if (!charityUtils.checkCharityVerification(charity)) {
     throw new UnauthenticatedError('you must verify your account again');
   } else if (charity.isConfirmed) {
     throw new BadRequestError('Charity is Confirmed already!');

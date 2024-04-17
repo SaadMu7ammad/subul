@@ -387,6 +387,15 @@ const createVodafoneAccount = async (
   await storedCharity.save();
 };
 
+const checkCharityVerification = (charity: ICharity): boolean => {
+  if (
+    (charity.emailVerification && charity.emailVerification.isVerified) ||
+    (charity.phoneVerification && charity.phoneVerification.isVerified)
+  )
+    return true;
+  else return false;
+};
+
 export const charityUtils = {
   checkCharityIsExist,
   logout,
@@ -408,4 +417,5 @@ export const charityUtils = {
   createBankAccount,
   createFawryAccount,
   createVodafoneAccount,
+  checkCharityVerification
 };
