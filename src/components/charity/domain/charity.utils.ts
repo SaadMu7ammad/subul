@@ -14,6 +14,7 @@ import {
   DataForRequestEditCharityPayments,
   ICharityDocs,
   IDataForSendDocs,
+  ICharityPaymentMethods,
 } from '../data-access/interfaces/';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (
@@ -254,7 +255,7 @@ const addPaymentAccounts = async (
 };
 
 const getChangedPaymentMethod = (
-  reqPaymentMethodsObj: ICharity['paymentMethods']
+  reqPaymentMethodsObj: ICharityPaymentMethods
 ): PaymentMethodNames => {
   let changedPaymentMethod: PaymentMethodNames = 'bankAccount'; //it will be overwritten by the value in the request , so don't worry;
   let paymentMethods: PaymentMethodNames[] = [
