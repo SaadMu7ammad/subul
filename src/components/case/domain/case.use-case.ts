@@ -2,13 +2,13 @@ import { NextFunction,  Response ,Request} from 'express';
 
 import {
   ICase,
-  ICaseDocument,
   GetAllCasesQueryParams,
   ICaseDocumentResponse,
   ICasesDocumentResponse,
-} from '../data-access/interfaces/case.interface';
+} from '../data-access/interfaces/';
 import { caseService } from './case.service';
 import { NotFoundError } from '../../../libraries/errors/components';
+import { ICharity } from '../../charity/data-access/interfaces';
 
 const addCase = async (
   req: Request,
@@ -17,7 +17,7 @@ const addCase = async (
 ): Promise<ICaseDocumentResponse> => {
   const caseData: ICase = req.body;
   const caseImage: string = req.body.image[0];
-  const charity = res.locals.charity;
+  const charity: ICharity = res.locals.charity;
 
   const responseData = await caseService.addCase(caseData, caseImage, charity);
 
@@ -48,7 +48,7 @@ const getCaseById = async (
   res: Response,
   next: NextFunction
 ): Promise<ICaseDocumentResponse> => {
-  const charityCases: ICaseDocument[] = res.locals.charity.cases;
+  const charityCases: ICase['id'][] = res.locals.charity.cases;
   const caseId: string | undefined = req.params.caseId;
   if (!caseId) throw new NotFoundError('no id exist for the case');
 

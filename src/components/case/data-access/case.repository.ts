@@ -1,5 +1,4 @@
 import {
-  ICaseDocument,
   ICase,
   FilterObj,
   SortObj,
@@ -8,17 +7,17 @@ import CaseModel from './models/case.model';
 import { CaseDao } from './interfaces/case.dao';
 
 export class CaseRepository implements CaseDao {
-  createCase = async (caseData: ICase): Promise<ICaseDocument | null> => {
-    const newCase = (await CaseModel.create(caseData)) as ICaseDocument | null;
+  createCase = async (caseData: ICase): Promise<ICase| null> => {
+    const newCase = (await CaseModel.create(caseData)) as ICase| null;
     return newCase;
   };
 
   getAllCases = async (
-    sortObj:SortObj,//it need fix or a discussion XXXXXXX
+    sortObj:SortObj,
     filterObj: FilterObj,
     page: number,
     limit: number
-  ): Promise<ICaseDocument[] | null> => {
+  ): Promise<ICase[] | null> => {
     const charityCases = await CaseModel.aggregate([
       {
         $match: filterObj,
@@ -45,22 +44,22 @@ export class CaseRepository implements CaseDao {
     return charityCases;
   };
 
-  getCaseById = async (id: string): Promise<ICaseDocument | null> => {
-    const _case = (await CaseModel.findById(id)) as ICaseDocument | null;
+  getCaseById = async (id: string): Promise<ICase| null> => {
+    const _case = (await CaseModel.findById(id)) as ICase| null;
     return _case;
   };
 
-  deleteCaseById = async (id: string): Promise<ICaseDocument | null> => {
+  deleteCaseById = async (id: string): Promise<ICase| null> => {
     const _case = (await CaseModel.findByIdAndDelete(
       id
-    )) as ICaseDocument | null;
+    )) as ICase| null;
     return _case;
   };
 
   editCase = async (
     caseData: ICase,
     id: string
-  ): Promise<ICaseDocument | null> => {
+  ): Promise<ICase | null> => {
     const updatedCase = (await CaseModel.findByIdAndUpdate(
       id,
       {
@@ -70,7 +69,7 @@ export class CaseRepository implements CaseDao {
         new: true,
         runValidators: true,
       }
-    )) as ICaseDocument | null;
+    )) as ICase | null;
 
     return updatedCase;
   };
