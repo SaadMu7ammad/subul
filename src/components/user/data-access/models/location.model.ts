@@ -35,7 +35,7 @@ const locationSchema = new mongoose.Schema(
         'Suez',
         'Tanta',
       ],
-      required: true,
+      // required: true,
     },
     city: {
       type: String,
@@ -47,6 +47,7 @@ const locationSchema = new mongoose.Schema(
   { _id: false }
 );
 
-export type locationSchema = InferSchemaType<typeof locationSchema>;
+// export type locationSchema = InferSchemaType<typeof locationSchema>;
+export type locationUser = InferSchemaType<typeof locationSchema>;
 
 export default locationSchema;

@@ -1,6 +1,8 @@
 // import {  IUserModifed, IUserResponse, dataForActivateAccount, dataForChangePassword, dataForConfirmResetEmail, dataForResetEmail } from '../data-access/interfaces/user.interface';
 
 import {
+  EditUserProfileResponse,
+  IUserModifed,
   dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
@@ -91,43 +93,49 @@ const logoutUser = (res: Response): { message: string } => {
     message: responseData.message,
   };
 };
-// // //@desc   edit user profile
-// // //@route  POST /api/users/profile/edit
-// // //@access private
-// // const editUserProfile = async (
-// //   req: Request,
-// //   res: Response,
-// //   next: NextFunction
-// // ): Promise<IUserResponse> => {
-// //   const editUserProfileInputsData: IUserModifed = {
-// //     //for TS
-// //     name: {
-// //       firstName: req.body?.name?.firstName,
-// //       lastName: req.body?.name?.lastName,
-// //     },
-// //     email: req.body?.email,
-// //     locationUser: req.body?.locationUser?.governorate,
-// //     gender: req.body?.gender,
-// //     phone: req.body?.phone,
-// //   };
-// //   const storedUser = res.locals.user;
-// //   const responseData = await userService.editUserProfile(
-// //     editUserProfileInputsData,
-// //     storedUser
-// //   );
-// //   if (responseData.emailAlert) {
-// //     return {
-// //       user: responseData.user,
-// //       message:
-// //         'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
-// //     };
-// //   } else {
-// //     return {
-// //       user: responseData.user,
-// //       message: 'User Data Changed Successfully',
-// //     };
-// //   }
-// // };
+//@desc   edit user profile
+//@route  POST /api/users/profile/edit
+//@access private
+const editUserProfile = async (
+  req: Request,
+  res: Response,
+  _next: NextFunction
+): Promise<EditUserProfileResponse> => {
+  const editUserProfileInputsData: IUserModifed = req.body;
+  //❌ Code below causes an error: `Cannot read prop of undefined`
+  // const editUserProfileInputsData: IUserModifed = {
+  //   //for TS
+  //   name: {
+  //     firstName: req.body.name.firstName,
+  //     lastName: req.body.name.lastName,
+  //   },
+  //   email: req.body.email,
+  //   locationUser: req.body.locationUser.governorate,
+  //   gender: req.body.gender,
+  //   phone: req.body.phone,
+  // };
+
+  const storedUser: User = res.locals.user;
+
+  const responseData = await userService.editUserProfile(
+    editUserProfileInputsData,
+    storedUser
+  );
+
+  if (responseData.emailAlert) {
+    return {
+      user: responseData.user,
+      message:
+        'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
+    };
+  } else {
+    return {
+      user: responseData.user,
+      message: 'User Data Changed Successfully',
+    };
+  }
+};
+
 //@desc   get user profile
 //@route  GET /api/users/profile
 //@access private
@@ -136,7 +144,7 @@ const getUserProfileData = (
   res: Response,
   _next: NextFunction
 ) => {
-  const storedUser = res.locals.user;
+  const storedUser: User = res.locals.user;
   const responseData = userService.getUserProfileData(storedUser);
   return {
     user: responseData.user,
@@ -150,6 +158,6 @@ export const userUseCase = {
   confirmReset,
   changePassword,
   activateAccount,
-  //   editUserProfile,
+  editUserProfile,
   getUserProfileData,
 };

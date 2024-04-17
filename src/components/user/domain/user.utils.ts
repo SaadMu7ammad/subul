@@ -1,15 +1,8 @@
 import { NotFoundError } from '../../../libraries/errors/components/index';
 import { userRepository } from '../data-access/user.repository';
-// // import {
-// //   generateResetTokenTemp,
-// //   setupMailSender,
-// // } from '../../../utils/mailer';
+import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import { Response } from 'express';
 import { User } from '../data-access/models/user.model';
-// // import {
-// //   IUserDocument,
-// //   IUserResponse,
-// // } from '../data-access/interfaces/user.interface';
 const userRepositoryObj = new userRepository();
 
 const checkUserIsExist = async (email: string): Promise<{ user: User }> => {
@@ -33,33 +26,44 @@ const logout = (res: Response): void => {
 // // const getUser = (res:Response): Partial<IUserResponse> => {
 // //   return { user: res.locals.user };
 // // };
-// // const checkIsEmailDuplicated = async (email: string): Promise<boolean> => {
-// //   const isDuplicatedEmail = await userRepositoryObj.findUser(email);
-// //   // if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
-// //   return isDuplicatedEmail ? true : false;
-// // };
-// // const changeUserEmailWithMailAlert = async (
-// //   UserBeforeUpdate: IUserDocument,
-// //   newEmail: string
-// // ): Promise<IUserResponse> => {
-// //   //for sending email if changed or edited
-// //   UserBeforeUpdate.email = newEmail;
-// //   UserBeforeUpdate.emailVerification.isVerified = false;
-// //   UserBeforeUpdate.emailVerification.verificationDate = undefined;
-// //   const token = await generateResetTokenTemp();
-// //   UserBeforeUpdate.verificationCode = token;
-// //   await setupMailSender(
-// //     UserBeforeUpdate.email,
-// //     'email changed alert',
-// //     `hi ${
-// //       UserBeforeUpdate?.name?.firstName + ' ' + UserBeforeUpdate?.name?.lastName
-// //     }email has been changed You must Re activate account ` +
-// //       `<h3>(www.activate.com)</h3>` +
-// //       `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-// //   );
-// //   await UserBeforeUpdate.save();
-// //   return { user: UserBeforeUpdate };
-// // };
+const checkIsEmailDuplicated = async (email: string): Promise<boolean> => {
+  const isDuplicatedEmail: User | null = await userRepositoryObj.findUser(
+    email
+  );
+  // if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
+  return isDuplicatedEmail ? true : false;
+};
+
+const changeUserEmailWithMailAlert = async (
+  UserBeforeUpdate: User,
+  newEmail: string
+): Promise<{ user: User }> => {
+  //for sending email if changed or edited
+  UserBeforeUpdate.email = newEmail;
+
+  if (UserBeforeUpdate.emailVerification) {
+    UserBeforeUpdate.emailVerification = {
+      isVerified: false,
+      verificationDate: '',
+    };
+  }
+  // UserBeforeUpdate.emailVerification.isVerified = false;
+  // UserBeforeUpdate.emailVerification.verificationDate = undefined;
+
+  const token = await generateResetTokenTemp();
+  UserBeforeUpdate.verificationCode = token;
+  await setupMailSender(
+    UserBeforeUpdate.email,
+    'email changed alert',
+    `hi ${
+      UserBeforeUpdate?.name?.firstName + ' ' + UserBeforeUpdate?.name?.lastName
+    }email has been changed You must Re activate account ` +
+      `<h3>(www.activate.com)</h3>` +
+      `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+  );
+  await UserBeforeUpdate.save();
+  return { user: UserBeforeUpdate };
+};
 
 // const verifyUserAccount = async (user: User) => {
 //   user.verificationCode = '';
@@ -90,8 +94,8 @@ export const userUtils = {
   checkUserIsExist,
   logout,
   //   getUser,
-  //   checkIsEmailDuplicated,
+  checkIsEmailDuplicated,
   verifyUserAccount,
   resetSentToken,
-  //   changeUserEmailWithMailAlert,
+  changeUserEmailWithMailAlert,
 };

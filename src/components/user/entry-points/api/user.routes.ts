@@ -2,7 +2,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import { userUseCase } from '../../domain/user.use-case';
 import { validate } from '../../../../libraries/validation/index';
 import { auth, isActivated } from '../../../auth/shared/index';
-// // import { editUserProfileValidation } from '../../../../libraries/validation/components/user/editUserProfileValidation';
+import { editUserProfileValidation } from '../../../../libraries/validation/components/user/editUserProfileValidation';
 import {
   changePasswordUserValidation,
   confirmResetUserValidation,
@@ -128,28 +128,27 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  // router.put(
-  //   '/profile/edit',
-  //   editUserProfileValidation,
-  //   validate,
-  //   auth,
-  //   isActivated,
-  //   async (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-
-  //       logger.info(`User API was called to edit user profile`);
-  //       const editUserProfileResponse = await userUseCase.editUserProfile(
-  //         req,
-  //         res,
-  //         next
-  //       );
-  //       return res.json(editUserProfileResponse);
-  //     } catch (error) {
-  //       next(error);
-  //       return undefined;
-  //     }
-  //   }
-  // );
+  router.put(
+    '/profile/edit',
+    editUserProfileValidation,
+    validate,
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to edit user profile`);
+        const editUserProfileResponse = await userUseCase.editUserProfile(
+          req,
+          res,
+          next
+        );
+        return res.json(editUserProfileResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
   // router.get(
   //   '/myTransactions',

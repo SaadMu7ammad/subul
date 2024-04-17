@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 
 import { UserObject, authUserService } from './auth.service';
-import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
+// import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
+import { locationUser } from '../../../user/data-access/models/location.model';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -52,7 +53,7 @@ export type RegisterUSerInputData = {
     lastName: string;
   };
   email: string;
-  locationUser: UserLocation;
+  locationUser: locationUser;
   gender: 'male' | 'female';
   phone: string;
   password: string;

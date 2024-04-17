@@ -2,17 +2,17 @@ import { userUtils } from './user.utils';
 import { Response } from 'express';
 import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import {
-  //   BadRequestError,
+  BadRequestError,
   NotFoundError,
   UnauthenticatedError,
 } from '../../../libraries/errors/components/index';
 import {
   checkValueEquality,
-  // updateNestedProperties,
+  updateNestedProperties,
 } from '../../../utils/shared';
 import {
-  // IUserModifed,
-  // IUserResponse,
+  EditProfile,
+  IUserModifed,
   dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
@@ -133,57 +133,66 @@ const getUserProfileData = (user: User) => {
   return { user: user };
 };
 
-// const editUserProfile = async (
-//   reqBody: IUserModifed,
-//   user: IUserDocument
-// ): Promise<IUserResponse> => {
-//   if (!reqBody) throw new BadRequestError('no data sent');
-//   if (
-//     //put restriction  on the edit elements
-//     !reqBody.name &&
-//     !reqBody.email &&
-//     !reqBody.locationUser &&
-//     !reqBody.gender &&
-//     !reqBody.phone
-//   )
-//     throw new BadRequestError('cant edit that');
+const editUserProfile = async (
+  reqBody: IUserModifed,
+  user: User
+): Promise<EditProfile> => {
+  if (!reqBody) throw new BadRequestError('no data sent');
+  if (
+    //put restriction  on the edit elements
+    !reqBody.name &&
+    !reqBody.email &&
+    !reqBody.locationUser &&
+    !reqBody.gender &&
+    !reqBody.phone
+  )
+    throw new BadRequestError('cant edit that');
 
-//   const { email = undefined } = { ...reqBody };
-//   if (email) {
-//     //if the edit for email
-//     // const alreadyRegisteredEmail = await User.findOne({ email });
-//     const isDupliacated = await userUtils.checkIsEmailDuplicated(email);
-//     if (isDupliacated) throw new BadRequestError('Email is already taken!');
-//     const userWithEmailUpdated = await userUtils.changeUserEmailWithMailAlert(
-//       user,
-//       email
-//     ); //email is the NewEmail
-//     const userObj: Partial<IUserDocument> = {
-//       name: userWithEmailUpdated.user.name,
-//       email: userWithEmailUpdated.user.email,
-//       locationUser: userWithEmailUpdated.user.locationUser,
-//       gender: userWithEmailUpdated.user.gender,
-//       phone: userWithEmailUpdated.user.phone,
-//     };
-//     return {
-//       emailAlert: true,
-//       user: userObj,
-//     };
-//   }
-//   updateNestedProperties(user, reqBody);
-//   await user.save();
-//   const userObj: Partial<IUserDocument> = {
-//     name: user.name,
-//     email: user.email,
-//     locationUser: user.locationUser, //.governorate,
-//     gender: user.gender,
-//     phone: user.phone,
-//   };
-//   return {
-//     emailAlert: false,
-//     user:userObj,
-//   };
-// };
+  const { email = undefined } = { ...reqBody };
+
+  console.log('email', email);
+
+  if (email) {
+    //if the edit for email
+    // const alreadyRegisteredEmail = await User.findOne({ email });
+    const isDupliacated = await userUtils.checkIsEmailDuplicated(email);
+
+    if (isDupliacated) throw new BadRequestError('Email is already taken!');
+
+    const userWithEmailUpdated: { user: User } =
+      await userUtils.changeUserEmailWithMailAlert(user, email); //email is the NewEmail
+
+    const userObj: IUserModifed = {
+      name: userWithEmailUpdated.user.name,
+      email: userWithEmailUpdated.user.email,
+      locationUser: userWithEmailUpdated.user.locationUser,
+      gender: userWithEmailUpdated.user.gender,
+      phone: userWithEmailUpdated.user.phone,
+    };
+
+    return {
+      emailAlert: true,
+      user: userObj,
+    };
+  }
+  updateNestedProperties(user, reqBody);
+
+  await user.save();
+
+  const userObj: IUserModifed = {
+    name: user.name,
+    email: user.email,
+    locationUser: user.locationUser, //.governorate,
+    gender: user.gender,
+    phone: user.phone,
+  };
+
+  return {
+    emailAlert: false,
+    user: userObj,
+  };
+};
+
 export const userService = {
   resetUser,
   confirmReset,
@@ -191,5 +200,5 @@ export const userService = {
   activateAccount,
   logoutUser,
   getUserProfileData,
-  //   editUserProfile,
+  editUserProfile,
 };
