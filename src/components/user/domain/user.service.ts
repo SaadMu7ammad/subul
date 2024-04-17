@@ -150,8 +150,6 @@ const editUserProfile = async (
 
   const { email = undefined } = { ...reqBody };
 
-  console.log('email', email);
-
   if (email) {
     //if the edit for email
     // const alreadyRegisteredEmail = await User.findOne({ email });

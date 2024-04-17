@@ -9,7 +9,7 @@ import {
   requestResetEmailUserValidation,
   tokenUserValidation,
 } from '../../../../libraries/validation/components/user/allUserValidation';
-// import { getAllTransactions } from '../../../transaction/domain/transaction.use-case';
+import { getAllTransactions } from '../../../transaction/domain/transaction.use-case';
 import logger from '../../../../utils/logger';
 
 export default function defineRoutes(expressApp: Application) {
@@ -150,26 +150,25 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  // router.get(
-  //   '/myTransactions',
-  //   auth,
-  //   isActivated,
-  //   async (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-
-  //       logger.info(`User API was called to get user transactions`);
-  //       const getAllTransactionsResponse = await getAllTransactions(
-  //         req,
-  //         res,
-  //         next
-  //       );
-  //       return res.json(getAllTransactionsResponse);
-  //     } catch (error) {
-  //       next(error);
-  //       return undefined;
-  //     }
-  //   }
-  // );
+  router.get(
+    '/myTransactions',
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to get user transactions`);
+        const getAllTransactionsResponse = await getAllTransactions(
+          req,
+          res,
+          next
+        );
+        return res.json(getAllTransactionsResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
   expressApp.use('/api/users', router);
 }
