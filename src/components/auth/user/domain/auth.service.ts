@@ -6,15 +6,13 @@ import {
 } from '../../../../utils/mailer';
 // import { IUserResponse } from '../../../user/data-access/interfaces/user.interface';
 import { Response } from 'express';
-import { IloginData } from '../data-access/auth.interface';
-import { RegisterUserInputData } from './auth.use-case';
+import {
+  IloginData,
+  RegisterUserInputData,
+  UserObject,
+  UserResponseBasedOnUserVerification,
+} from '../data-access/auth.interface';
 import { User } from '../../../user/data-access/models/user.model';
-
-type UserResponseBasedOnUserVerification = {
-  user: UserObject;
-  emailAlert: boolean;
-  token?: string;
-};
 
 const authUser = async (
   reqBody: IloginData,
@@ -63,12 +61,6 @@ const authUser = async (
     };
   }
 };
-
-export interface UserObject {
-  _id: User['_id'];
-  name: User['name'];
-  email: User['email'];
-}
 
 // export interface UserObject {
 //   _id: mongoose.Types.ObjectId;

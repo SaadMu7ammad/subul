@@ -5,8 +5,8 @@ import {
   UnauthenticatedError,
 } from '../../../../libraries/errors/components/index';
 import { authUserRepository } from '../data-access/user.repository';
-import { RegisterUserInputData } from './auth.use-case';
 import { User } from '../../../user/data-access/models/user.model';
+import { RegisterUserInputData } from '../data-access/auth.interface';
 
 const checkUserPassword = async (
   email: string,
