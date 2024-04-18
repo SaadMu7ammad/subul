@@ -8,14 +8,15 @@ import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import { checkValueEquality } from '../../../utils/shared';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import {
-  ICharityDocs,
   ICharityDocument,
   ICharityPaymentMethodDocument,
   ICharityLocationDocument,
-  ICharityPaymentMethod,
+  // ICharityPaymentMethod,
   PaymentMethodNames,
-  RequestPaymentMethodsObject,
-  TypeWithAtLeastOneProperty,
+  // RequestPaymentMethodsObject,
+  // TypeWithAtLeastOneProperty,
+  IDataForSendDocs,
+  DataForRequestEditCharityPayments,
 } from '../data-access/interfaces/charity.interface';
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (
@@ -59,8 +60,8 @@ const changeCharityEmailWithMailAlert = async (
     CharityBeforeUpdate.email,
     'email changed alert',
     `hi ${CharityBeforeUpdate.name}email has been changed You must Re activate account ` +
-      `<h3>(www.activate.com)</h3>` +
-      `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+    `<h3>(www.activate.com)</h3>` +
+    `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
   );
   await CharityBeforeUpdate.save();
   return { charity: CharityBeforeUpdate };
@@ -101,7 +102,7 @@ const changeCharityPasswordWithMailAlert = async (
     charity.email,
     'password changed alert',
     `hi ${charity.name} <h3>contact us if you did not changed the password</h3>` +
-      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+    `<h3>go to link(www.dummy.com) to freeze your account</h3>`
   );
 };
 const editCharityProfileAddress = async (
@@ -149,21 +150,21 @@ const replaceProfileImage = async (
   return { image: charity.image };
 };
 const addDocs = async (
-  reqBody: ICharityDocs,
+  reqBody: IDataForSendDocs,
   charity: ICharityDocument
 ): Promise<{ paymentMethods: ICharityPaymentMethodDocument }> => {
   charity.charityDocs = { ...reqBody.charityDocs }; //assign the doc
 
-  if (!reqBody.paymentMethods) {
+  if (!reqBody || !reqBody.paymentMethods) {
     throw new BadRequestError(
       'must send one of payment gateways information..'
     );
   }
-  if (reqBody.paymentMethods.bankAccount)
+  if (reqBody.paymentMethods.bankAccount && reqBody.paymentMethods.bankAccount?.bankDocs.length > 0)
     await addPaymentAccounts(reqBody, charity, 'bankAccount');
-  if (reqBody.paymentMethods.fawry)
+  if (reqBody.paymentMethods.fawry && reqBody.paymentMethods.fawry.fawryDocs.length > 0)
     await addPaymentAccounts(reqBody, charity, 'fawry');
-  if (reqBody.paymentMethods.vodafoneCash)
+  if (reqBody.paymentMethods.vodafoneCash && reqBody.paymentMethods.vodafoneCash.vodafoneCashDocs.length > 0)
     await addPaymentAccounts(reqBody, charity, 'vodafoneCash');
   await makeCharityIsPending(charity); // update and save changes
   console.log(charity.paymentMethods);
@@ -178,47 +179,37 @@ const makeCharityIsPending = async (
   await charity.save();
 };
 const addPaymentAccounts = async (
-  accountObj: ICharityDocs,
+  accountObj: IDataForSendDocs,
   charity: ICharityDocument,
   type: string
 ): Promise<void> => {
   if (charity.paymentMethods === undefined)
     charity.paymentMethods = {} as ICharityPaymentMethodDocument;
+  // console.log({ ...req.body.paymentMethods.fawry[0] });
   if (type === 'bankAccount') {
     const { bankAccount } = accountObj.paymentMethods;
-    const { accNumber, iban, swiftCode } = bankAccount[0];
+    if (!bankAccount || bankAccount.bankDocs.length === 0) throw new BadRequestError('no account provided');
+    const { accNumber, iban, swiftCode } = bankAccount;
 
-    // @ts-expect-error
-    const _bankDocs = bankAccount.bankDocs[0];
-    if (accNumber && iban && swiftCode && _bankDocs) {
-      const temp: {
-        accNumber: any;
-        iban: any;
-        swiftCode: any;
-        bankDocs: string[]; // Ensure bankDocs is an array of strings
-      } = {
-        accNumber,
-        iban,
-        swiftCode,
-        bankDocs: [_bankDocs],
-      };
-      charity.paymentMethods['bankAccount'].push(temp);
+    const _bankDocs = [...bankAccount.bankDocs];
+    if (accNumber != '' && iban != '' && swiftCode != '' && _bankDocs && accountObj?.paymentMethods?.bankAccount && accountObj?.paymentMethods?.bankAccount?.bankDocs?.length > 0) {
+      charity.paymentMethods['bankAccount'].push(accountObj.paymentMethods.bankAccount);
     } else {
       throw new BadRequestError('must provide complete information');
     }
   }
   if (type === 'fawry') {
     const { fawry } = accountObj.paymentMethods;
-    const { number } = fawry[0];
-    // @ts-expect-error
-    const _fawryDocs = fawry.fawryDocs[0];
-    if (number && _fawryDocs) {
+    if (!fawry || fawry.fawryDocs.length === 0) throw new BadRequestError('no account provided');
+    const { number } = fawry
+    const _fawryDocs = [...fawry.fawryDocs];
+    if (number != '' && _fawryDocs) {
       const temp: {
-        number: any;
+        number: string;
         fawryDocs: string[]; // Ensure fawryDocs is an array of strings
       } = {
         number: number,
-        fawryDocs: [_fawryDocs], // An array of strings
+        fawryDocs: _fawryDocs, // An array of strings
       };
       charity.paymentMethods['fawry'].push(temp);
     } else {
@@ -227,17 +218,17 @@ const addPaymentAccounts = async (
   }
   if (type === 'vodafoneCash') {
     const { vodafoneCash } = accountObj.paymentMethods;
-    const { number } = vodafoneCash[0];
-    // @ts-expect-error
-    const _vodafoneCashDocs = vodafoneCash.vodafoneCashDocs[0];
+    if (!vodafoneCash || vodafoneCash.vodafoneCashDocs.length === 0) throw new BadRequestError('no account provided');
+    const { number } = vodafoneCash;
+    const _vodafoneCashDocs = [...vodafoneCash.vodafoneCashDocs];
 
-    if (number && _vodafoneCashDocs) {
+    if (number != '' && _vodafoneCashDocs) {
       const temp: {
-        number: any;
+        number: string;
         vodafoneCashDocs: string[]; // Ensure vodafoneCashDocs is an array of strings
       } = {
         number: number,
-        vodafoneCashDocs: [_vodafoneCashDocs], // An array of strings
+        vodafoneCashDocs: _vodafoneCashDocs, // An array of strings
       };
       charity.paymentMethods['vodafoneCash'].push(temp);
     } else {
@@ -263,113 +254,92 @@ const getChangedPaymentMethod = (
   return changedPaymentMethod;
 };
 
-const getPaymentMethodIdx = (
-  charityPaymentMethodsObj: ICharityPaymentMethodDocument,
-  changedPaymentMethod: PaymentMethodNames,
-  paymentId: string
-): number => {
-  const idx: number = charityPaymentMethodsObj[changedPaymentMethod].findIndex(
-    (paymentMethod) => paymentMethod._id.toString() === paymentId
-  );
+const editBankAccount = async (storedCharity: ICharityDocument, reqPaymentMethodsObj: DataForRequestEditCharityPayments) => {
+  if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to edit')
 
-  return idx;
-};
+  for (let [_, item] of storedCharity.paymentMethods.bankAccount.entries()) {
+    console.log('1---------------');
+    if (item._id.toString() === reqPaymentMethodsObj.paymentId.toString()) {
+      console.log(item);
+      item.enable = false;
+      item.iban = reqPaymentMethodsObj.paymentMethods.bankAccount.iban
+      item.accNumber = reqPaymentMethodsObj.paymentMethods.bankAccount.accNumber
+      item.swiftCode = reqPaymentMethodsObj.paymentMethods.bankAccount.swiftCode
+      deleteOldImgs('charityDocs', item.bankDocs);
+      item.bankDocs = reqPaymentMethodsObj.paymentMethods.bankAccount.bankDocs
 
-const makeTempPaymentObj = (
-  selector: PaymentMethodNames,
-  reqPaymentMethodsObj: TypeWithAtLeastOneProperty<RequestPaymentMethodsObject>
-): ICharityPaymentMethod => {
-  const temp: ICharityPaymentMethod = <ICharityPaymentMethod>{};
-
-  const methodMap: {
-    bankAccount: {
-      fields: ['accNumber', 'iban', 'swiftCode'];
-      docsField: 'bankDocs';
-    };
-    fawry: {
-      fields: ['number'];
-      docsField: 'fawryDocs';
-    };
-    vodafoneCash: {
-      fields: ['number'];
-      docsField: 'vodafoneCashDocs';
-    };
-  } = {
-    bankAccount: {
-      fields: ['accNumber', 'iban', 'swiftCode'],
-      docsField: 'bankDocs',
-    },
-    fawry: {
-      fields: ['number'],
-      docsField: 'fawryDocs',
-    },
-    vodafoneCash: {
-      fields: ['number'],
-      docsField: 'vodafoneCashDocs',
-    },
-  };
-  type FD = {
-    fields: ['accNumber', 'iban', 'swiftCode'] | ['number'];
-    docsField: 'bankDocs' | 'fawryDocs' | 'vodafoneCashDocs';
-  };
-
-  if (methodMap.hasOwnProperty(selector)) {
-    const { fields, docsField }: FD = methodMap[selector];
-
-    const methodData:
-      | RequestPaymentMethodsObject['fawry'][0]
-      | RequestPaymentMethodsObject['bankAccount'][0]
-      | RequestPaymentMethodsObject['vodafoneCash'][0] =
-      reqPaymentMethodsObj[selector][0]!;
-    fields.forEach((field: 'number' | 'accNumber' | 'iban' | 'swiftCode') => {
-      //@ts-expect-error
-      temp[field] = methodData[field];
-    });
-    //@ts-expect-error
-    temp[docsField] = methodData[docsField];
+      await storedCharity.save()
+      return item;
+    }
   }
+}
 
-  return temp as ICharityPaymentMethod;
-};
+const editFawryAccount = async (storedCharity: ICharityDocument, reqPaymentMethodsObj: DataForRequestEditCharityPayments) => {
+  if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to edit')
 
-const swapPaymentInfo = (
-  charityPaymentMethodsObj: ICharityPaymentMethodDocument,
-  temp: ICharityPaymentMethod,
-  selector: PaymentMethodNames,
-  idx: number
-): void => {
-  for (let key in temp) {
-    if (key.endsWith('docs')) {
-      deleteOldImgs(
-        'charityDocs',
-        charityPaymentMethodsObj[
-          selector as keyof ICharityPaymentMethodDocument
-        ][idx][key]
-      );
+  for (let [_, item] of storedCharity.paymentMethods.fawry.entries()) {
+    console.log('2---------------');
+    if (item._id.toString() === reqPaymentMethodsObj.paymentId.toString()) {
+      console.log(item);
+      item.enable = false;
+      item.number = reqPaymentMethodsObj.paymentMethods.fawry.number
+      deleteOldImgs('charityDocs', item.fawryDocs);
+      item.fawryDocs = reqPaymentMethodsObj.paymentMethods.fawry.fawryDocs
 
-      charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][
-        idx
-      ][key] = [temp[key as keyof ICharityPaymentMethod]];
-    } else
-      charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][
-        idx
-      ][key] = temp[key as keyof ICharityPaymentMethod];
+      await storedCharity.save()
+
+
+      // break; // Exit the loop
+      return item;
+
+    }
   }
+}
 
-  charityPaymentMethodsObj[selector as keyof ICharityPaymentMethodDocument][
-    idx
-  ].enable = false;
-};
+const editVodafoneAccount = async (storedCharity: ICharityDocument, reqPaymentMethodsObj: DataForRequestEditCharityPayments) => {
+  if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to edit')
 
-const addNewPayment = (
-  charityPaymentMethodsObj: ICharityPaymentMethodDocument,
-  temp: ICharityPaymentMethod,
-  selector: string
-): void => {
-  charityPaymentMethodsObj[
-    selector as keyof ICharityPaymentMethodDocument
-  ].push(temp);
-};
+  for (let [_, item] of storedCharity.paymentMethods.vodafoneCash.entries()) {
+    console.log('-3--------------');
+    if (item._id.toString() === reqPaymentMethodsObj.paymentId.toString()) {
+      console.log(item);
+      item.enable = false;
+      item.number = reqPaymentMethodsObj.paymentMethods.vodafoneCash.number
+      deleteOldImgs('charityDocs', item.vodafoneCashDocs);
+      item.vodafoneCashDocs = reqPaymentMethodsObj.paymentMethods.vodafoneCash.vodafoneCashDocs
+
+      await storedCharity.save()
+
+
+
+      // break; // Exit the loop
+      return item;
+
+    }
+  }
+}
+
+const createBankAccount = async (storedCharity: ICharityDocument, reqPaymentMethodsObj: DataForRequestEditCharityPayments) => {
+  if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to create')
+
+  storedCharity.paymentMethods.bankAccount.push(reqPaymentMethodsObj.paymentMethods.bankAccount)
+
+  await storedCharity.save()
+}
+const createFawryAccount = async (storedCharity: ICharityDocument, reqPaymentMethodsObj: DataForRequestEditCharityPayments) => {
+  if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to create')
+
+  storedCharity.paymentMethods.fawry.push(reqPaymentMethodsObj.paymentMethods.fawry)
+
+  await storedCharity.save()
+}
+const createVodafoneAccount = async (storedCharity: ICharityDocument, reqPaymentMethodsObj: DataForRequestEditCharityPayments) => {
+  if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to create')
+
+  storedCharity.paymentMethods.vodafoneCash.push(reqPaymentMethodsObj.paymentMethods.vodafoneCash)
+
+  await storedCharity.save()
+}
 
 export const charityUtils = {
   checkCharityIsExist,
@@ -386,8 +356,10 @@ export const charityUtils = {
   replaceProfileImage,
   addDocs,
   getChangedPaymentMethod,
-  getPaymentMethodIdx,
-  makeTempPaymentObj,
-  swapPaymentInfo,
-  addNewPayment,
+  editBankAccount,
+  editFawryAccount,
+  editVodafoneAccount,
+  createBankAccount,
+  createFawryAccount,
+  createVodafoneAccount
 };

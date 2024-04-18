@@ -19,27 +19,21 @@ const descriptionValidation = body('description')
   .withMessage('Description must be at least 10 characters long');
 
 const bankAccountNumberValidation = body(
-  'paymentMethods.bankAccount[0].accNumber'
+  'accNumber'
 )
   .trim()
   .notEmpty()
-  // .if(body('paymentMethods.bankAccount[0].iban').exists())
-  // .if(body('paymentMethods.bankAccount[0].swiftCode').exists())
   .withMessage('Account Number is Required')
   .isNumeric()
   .isLength({ min: 19, max: 19 });
 
-const ibanValidation = body('paymentMethods.bankAccount[0].iban')
+const ibanValidation = body('iban')
   .trim()
-  // .if(body('paymentMethods.bankAccount[0].swiftCode').exists())
-  // .if(body('paymentMethods.bankAccount[0].accNumber').exists())
   .notEmpty()
   .withMessage('iban is Required')
   .isLength({ min: 29, max: 29 });
-const switfCodeValidation = body('paymentMethods.bankAccount[0].swiftCode')
+const switfCodeValidation = body('swiftCode')
   .trim()
-  // .if(body('paymentMethods.bankAccount[0].iban').exists())
-  // .if(body('paymentMethods.bankAccount[0].accNumber').exists())
   .notEmpty()
   .withMessage('Swift Code is Required')
   .isLength({ min: 8, max: 11 });
@@ -259,7 +253,7 @@ const currencyValidation = body('currency')
   ])
   .withMessage('Currency Invalid');
 
-const vodafoneCashValidation = body('paymentMethods.vodafoneCash[0].number')
+const vodafoneCashValidation = body('vodafoneNumber')
   .trim()
   .notEmpty()
   .isMobilePhone('any')
@@ -267,7 +261,7 @@ const vodafoneCashValidation = body('paymentMethods.vodafoneCash[0].number')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
 
-const fawryValidation = body('paymentMethods.fawry[0].number')
+const fawryValidation = body('fawryNumber')
   .trim()
   .notEmpty()
   .isMobilePhone('any')
@@ -355,10 +349,10 @@ const confirmResetCharityValidation = [
 const requestResetEmailCharityValidation = [emailValidation];
 
 const paymentIdValidation = body('payment_id')
-.trim()
-.notEmpty()
-.isMongoId()
-.withMessage('Invalid Id!')
+  .trim()
+  .notEmpty()
+  .isMongoId()
+  .withMessage('Invalid Id!')
 
 export {
   tokenCharityValidation,

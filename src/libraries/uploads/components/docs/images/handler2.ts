@@ -1,10 +1,9 @@
 import multer,{Multer,StorageEngine,FileFilterCallback} from 'multer';
-import { v4 as uuidv4 } from 'uuid';
-import sharp from 'sharp';
 import { BadRequestError } from '../../../../errors/components/bad-request';
-import { saveImg } from '../../index';
 import { NextFunction, Request, Response } from 'express';
-const multerFilter = (req:Request, file:Express.Multer.File, cb:FileFilterCallback) => {
+import { deleteOldImgs } from '../../../../../utils/deleteFile';
+import { processDocs } from './handler';
+const multerFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
     if (file.mimetype.startsWith('image')) {
         //accepts imgs only
         cb(null, true);
@@ -12,100 +11,84 @@ const multerFilter = (req:Request, file:Express.Multer.File, cb:FileFilterCallba
         cb(new BadRequestError('invalid type,Only images allowed'));
     }
 };
-async function processDocs(docsKey:string, ref:Express.Multer.File[], req:Request,res:Response) {
-    return Promise.all(
-        ref.map(async (obj, indx) => {
-            // const ex = obj.mimetype.split('/')[1];
-            const uniquePrefix = uuidv4();
-            const fileName = `${docsKey}-${res.locals.charity.name}--${res.locals.charity._id}--${indx}${uniquePrefix}.jpeg`;
-
-            const sharpPromise = sharp(obj.buffer)
-                .resize(320, 240)
-                .toFormat('jpeg')
-                .jpeg({ quality: 90 });
-
-            await saveImg(sharpPromise, 'charityDocs', fileName);
-
-            if (
-                req.body.paymentMethods &&
-                req.body.paymentMethods.bankAccount &&
-                docsKey === 'bankDocs'
-            ) {
-                req.body.paymentMethods.bankAccount[indx].bankDocs.push(
-                    fileName
-                );
-            }
-            if (
-                req.body.paymentMethods &&
-                req.body.paymentMethods.fawry &&
-                docsKey === 'fawryDocs'
-            ) {
-                req.body.paymentMethods.fawry[indx].fawryDocs.push(fileName);
-            }
-            if (
-                req.body.paymentMethods &&
-                req.body.paymentMethods.vodafoneCash &&
-                docsKey === 'vodafoneCashDocs'
-            ) {
-                req.body.paymentMethods.vodafoneCash[
-                    indx
-                ].vodafoneCashDocs.push(fileName);
-            }
-        })
-    );
-}
-const resizeDocReq = async (req:Request & { files: {[fieldname:string]:Express.Multer.File[]}; }
-, res:Response, next:NextFunction) => {
+const resizeDocReq = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (req.body.paymentMethods && req.body.paymentMethods.bankAccount) {
-            req.body.paymentMethods.bankAccount[0].bankDocs = [];
+        req.body.paymentMethods = {
+            bankAccount: {
+                enable: false,
+                accNumber: req.body.accNumber,
+                iban: req.body.iban,
+                swiftCode: req.body.swiftCode,
+                bankDocs: [],
+            },
+            fawry: {
+                enable: false,
+                number: req.body.fawryNumber,
+                fawryDocs: [],
+            },
+            vodafoneCash: {
+                enable: false,
+                number: req.body.vodafoneNumber,
+                vodafoneCashDocs: [],
+            },
         }
-        if (req.body.paymentMethods && req.body.paymentMethods.fawry) {
-            req.body.paymentMethods.fawry[0].fawryDocs = [];
+        //paymentId:req.body.payment_id
+        
+         //duplicated now 
+         delete req.body.accNumber;
+         delete req.body.iban;
+         delete req.body.swiftCode;
+         delete req.body.fawryNumber;
+         delete req.body.vodafoneNumber;
+    
+        if (!req.files || req.files.length === 0 || Object.keys(req.files).length === 0) {
+            throw new BadRequestError('Docs are required');
         }
-        if (req.body.paymentMethods && req.body.paymentMethods.vodafoneCash) {
-            req.body.paymentMethods.vodafoneCash[0].vodafoneCashDocs = [];
+        //pre check
+        let flag = false
+        for (const [key] of Object.entries(req.files)) {
+            console.log(key);
+            assertFiles(key);
+            if (key === "bankDocs" || key == "fawryDocs" || key == "vodafoneDocs") {
+                flag = true
+            }
+            if (!flag) throw new BadRequestError('not completed input for payment methods')
+
         }
 
-        if (!req.files) {
-            throw new BadRequestError('docs are required');
+        let flagPaymentMethodsUploaded = false
+        let i = 0;
+        for (const [key, val] of Object.entries(req.files)) {
+            console.log(i);
+            assertFiles(key);
+            if (key === "bankDocs" || key == "fawryDocs" || key == "vodafoneDocs") {
+                await processDocs(key, val, req, res);
+
+                flagPaymentMethodsUploaded = true
+            }
+            if (!flagPaymentMethodsUploaded) throw new BadRequestError('not completed input for payment methods')
+
         }
-        if (
-            //if not upload docs
-            !req.files['paymentMethods.bankAccount[0][bankDocs]'] &&
-            !req.files['paymentMethods.fawry[0][fawryDocs]'] &&
-            !req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]']
-        ) {
-            throw new BadRequestError('docs are required');
-        }
-
-        if (req.files['paymentMethods.bankAccount[0][bankDocs]'])
-            await processDocs(
-                'bankDocs',
-                req.files['paymentMethods.bankAccount[0][bankDocs]'],
-                req,res
-            );
-
-        if (req.files['paymentMethods.fawry[0][fawryDocs]'])
-            await processDocs(
-                'fawryDocs',
-                req.files['paymentMethods.fawry[0][fawryDocs]'],
-                req,res
-            );
-
-        if (req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'])
-            await processDocs(
-                'vodafoneCashDocs',
-                req.files['paymentMethods.vodafoneCash[0][vodafoneCashDocs]'],
-                req,res
-            );
 
         next();
     } catch (error) {
-        next(error);
+        deleteOldImgs('charityDocs', req?.body?.paymentMethods?.bankAccount?.bankDocs);
+        deleteOldImgs('charityDocs', req?.body?.paymentMethods?.fawry?.fawryDocs);
+        deleteOldImgs('charityDocs', req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs);
+        return next(error);
     }
 };
-
+type paymentDocsSchema =
+    'bankDocs' |
+    'fawryDocs' |
+    'vodafoneDocs'
+function assertFiles(file: any): asserts file is paymentDocsSchema {
+    if (file && file.length > 0) {
+        return file;
+    } else {
+        throw new BadRequestError('bad type of file or not uploaded all docs')
+    }
+}
 //diskStorage
 // const upload = multer({ storage: multerStorage,fileFilter:multerFilter });
 // const uploadCoverImage = upload.single('image');
@@ -113,9 +96,9 @@ const resizeDocReq = async (req:Request & { files: {[fieldname:string]:Express.M
 const multerStorage:StorageEngine = multer.memoryStorage();
 const upload:Multer = multer({ storage: multerStorage, fileFilter: multerFilter });
 const uploadDocsReq = upload.fields([
-    { name: 'paymentMethods.bankAccount[0][bankDocs]', maxCount: 2 },
-    { name: 'paymentMethods.fawry[0][fawryDocs]', maxCount: 2 },
-    { name: 'paymentMethods.vodafoneCash[0][vodafoneCashDocs]', maxCount: 2 },
+    { name: 'bankDocs', maxCount: 2 },
+    { name: 'fawryDocs', maxCount: 2 },
+    { name: 'vodafoneDocs', maxCount: 2 },
 ]);
 
 export { uploadDocsReq, resizeDocReq };

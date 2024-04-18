@@ -10,9 +10,10 @@ import {
     DataForChangePassword,
     DataForChangeProfileImage,
     DataForRequestEditCharityPayments,
-    DataForSendDocs,
     ICharityDocumentResponse,
     IPaymentCharityDocumentResponse,
+    IDataForSendDocs,
+    IRequestPaymentCharityDocumentResponse,
 } from '../data-access/interfaces/charity.interface';
 
 const activateCharityAccount = async (
@@ -152,17 +153,13 @@ const requestEditCharityPayments = async (
     req: Request,
     res: Response,
     next: NextFunction
-): Promise<IPaymentCharityDocumentResponse> => {
+): Promise<IRequestPaymentCharityDocumentResponse> => {
     const data: DataForRequestEditCharityPayments = {
         paymentMethods: req.body.paymentMethods,
         paymentId: req.body.payment_id,
     };
-    const responseData = await charityService.requestEditCharityPayments(
-        res.locals.charity,
-        data.paymentId,
-        data.paymentMethods
-    );
-
+    const storedCharity = res.locals.charity
+    const responseData = await charityService.requestEditCharityPayments(storedCharity,data);
     return {
         paymentMethods: responseData.paymentMethods,
         message: responseData.message,
@@ -181,19 +178,7 @@ const sendDocs = async (
     res: Response,
     next: NextFunction
 ): Promise<IPaymentCharityDocumentResponse> => {
-    const data: DataForSendDocs = {
-        charityDocs: {
-            docs1: req.body.charityDocs.docs1,
-            docs2: req.body.charityDocs.docs2,
-            docs3: req.body.charityDocs.docs3,
-            docs4: req.body.charityDocs.docs4,
-        },
-        paymentMethods: {
-            bankAccount: req.body.paymentMethods['bankAccount'],
-            fawry: req.body.paymentMethods['fawry'],
-            vodafoneCash: req.body.paymentMethods['vodafoneCash'],
-        },
-    };
+    const data: IDataForSendDocs = req.body
     const storedCharity: ICharityDocument = res.locals.charity
     const responseData = await charityService.sendDocs(data, storedCharity);
     return {

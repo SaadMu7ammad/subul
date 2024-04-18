@@ -11,22 +11,19 @@ import {
 } from '../../../../libraries/validation/components/charity/allCharityValidation';
 import {
     editCharityProfileValidation,
-    // reqEditPaymentMethodsValidation,
+    reqEditPaymentMethodsValidation,
 } from '../../../../libraries/validation/components/charity/editCharityProfileValidation';
 import { validate } from '../../../../libraries/validation/index';
 import {
     imageAssertion,
     resizeImg,
 } from '../../../../libraries/uploads/components/images/handlers';
-// import {
-//     resizeDoc,
-//     uploadDocs,
-// } from '../../../../libraries/uploads/components/docs/images/handler';
-// import { deleteCharityDocs, deleteOldImgs } from '../../../../utils/deleteFile';
-// import {
-//     uploadDocsReq,
-//     resizeDocReq,
-// } from '../../../../libraries/uploads/components/docs/images/handler2';
+import {
+    resizeDoc,
+    uploadDocs,
+} from '../../../../libraries/uploads/components/docs/images/handler';
+import { deleteOldImgs } from '../../../../utils/deleteFile';
+import { resizeDocReq, uploadDocsReq } from '../../../../libraries/uploads/components/docs/images/handler2';
 
 export default function defineRoutes(expressApp: Application) {
     const router = express.Router();
@@ -170,83 +167,56 @@ export default function defineRoutes(expressApp: Application) {
         }
     );
 
-    // router.post(
-    //     '/request-edit-payment',
-    //     auth,
-    //     isActivated,
-    //     isConfirmed,
-    //     uploadDocsReq,
-    //     reqEditPaymentMethodsValidation,
-    //     validate,
-    //     resizeDocReq,
-    //     async (req: Request, res: Response, next: NextFunction) => {
-    //         try {
-    //             logger.info(`Charity API was called to Request Edit Payments`);
-    //             const editCharityPaymentResponse =
-    //                 await charityUseCase.requestEditCharityPayments(
-    //                     req,
-    //                     res,
-    //                     next
-    //                 );
-    //             return res.json(editCharityPaymentResponse);
-    //         } catch (error) {
-    //             deleteCharityDocs(req, 'payment');
-    //             next(error);
-    //             return undefined;
-    //         }
-    //     }
-    // );
+    router.post(
+        '/request-edit-payment',
+        uploadDocsReq,
+        auth,
+        isActivated,
+        isConfirmed,
+        reqEditPaymentMethodsValidation,
+        validate,
+        resizeDocReq,
+        async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                logger.info(`Charity API was called to Request Edit Payments`);
+                const editCharityPaymentResponse = await charityUseCase.requestEditCharityPayments(req, res, next);
+                return res.json(editCharityPaymentResponse);
+            } catch (error) {
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.bankAccount?.bankDocs);
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.fawry?.fawryDocs);
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs);
+                next(error);
+                return undefined;
+            }
+        }
+    );
 
-    // router.post(
-    //     '/send-docs',
-    //     auth,
-    //     uploadDocs,
-    //     reqEditPaymentMethodsValidation,
-    //     validate,
-    //     resizeDoc,
-    //     async (req: Request & {
-    //         files:
-    //         {
-    //             charityDocs: {
-    //                 docs1: Express.Multer.File[];
-    //                 docs2: Express.Multer.File[];
-    //                 docs3: Express.Multer.File[];
-    //                 docs4: Express.Multer.File[];
-    //             };
-    //         }
+    router.post(
+        '/send-docs',
+        uploadDocs,
+        auth,
+        reqEditPaymentMethodsValidation,
+        validate,
+        resizeDoc,
+        async (req: Request, res: Response, next: NextFunction) => {
+            try {
+                logger.info(`Charity API was called to Send Docs`);
+                const sendDocsResponse = await charityUseCase.sendDocs(req, res, next);
+                return res.json(sendDocsResponse);
+            } catch (error) {
+                deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs1);
+                deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs2);
+                deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs3);
+                deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs4);
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.bankAccount?.bankDocs);
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.fawry?.fawryDocs);
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs);
 
-    //     }
-    //         , res: Response, next: NextFunction) => {
-    //         try {
-    //             logger.info(`Charity API was called to Send Docs`);
-    //             const sendDocsResponse = await charityUseCase.sendDocs(
-    //                 req,
-    //                 res,
-    //                 next
-    //             );
-    //             return res.json(sendDocsResponse);
-    //         } catch (error) {
-    //             deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs2);
-    //             deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs1);
-    //             deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs3);
-    //             deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs4);
-    //             deleteOldImgs(
-    //                 'charityDocs',
-    //                 req?.body?.paymentMethods?.bankAccount?.bankDocs
-    //             );
-    //             deleteOldImgs(
-    //                 'charityDocs',
-    //                 req?.body?.paymentMethods?.fawry?.fawryDocs
-    //             );
-    //             deleteOldImgs(
-    //                 'charityDocs',
-    //                 req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs
-    //             );
-    //             next(error);
-    //             return undefined;
-    //         }
-    //     }
-    // );
+                next(error);
+                return undefined;
+            }
+        }
+    );
 
     expressApp.use('/api/charities', router);
 }

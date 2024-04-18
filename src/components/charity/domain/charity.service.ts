@@ -18,11 +18,11 @@ import {
     DataForConfirmResetPassword,
     DataForChangePassword,
     DataForChangeProfileImage,
-    DataForSendDocs,
     ICharityDocumentResponse,
     IPaymentCharityDocumentResponse,
-    PaymentMethodNames,
-    ICharityPaymentMethod,
+    IDataForSendDocs,
+    DataForRequestEditCharityPayments,
+    IRequestPaymentCharityDocumentResponse,
 } from '../data-access/interfaces/charity.interface';
 import { Response } from 'express';
 
@@ -37,7 +37,7 @@ const requestResetPassword = async (
         charityResponse.charity.email,
         'reset alert',
         'go to that link to reset the password (www.dummy.com) ' +
-            `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
     return {
         charity: charityResponse.charity,
@@ -194,9 +194,10 @@ const changeProfileImage = async (
     return { image: updatedImg.image, message: 'image changed successfully' };
 };
 const sendDocs = async (
-    reqBody: DataForSendDocs,
+    reqBody: IDataForSendDocs,
     charity: ICharityDocument
 ): Promise<IPaymentCharityDocumentResponse> => {
+    console.log({...reqBody});
     if (
         (charity.emailVerification.isVerified ||
             charity.phoneVerification.isVerified) &&
@@ -225,60 +226,95 @@ const sendDocs = async (
 };
 
 const requestEditCharityPayments = async (
-    charityObj: ICharityDocument,
-    paymentId: string,
-    reqPaymentMethodsObj: ICharityPaymentMethodDocument
-): Promise<IPaymentCharityDocumentResponse> => {
+    storedCharity: ICharityDocument,
+    reqPaymentMethodsObj: DataForRequestEditCharityPayments
+): Promise<IRequestPaymentCharityDocumentResponse> => {
+    let created: boolean = false;
+    let edited: boolean = false;
+    
+    type paymentType = 'bankAccount' | 'vodafoneCash' | 'fawry' | undefined
+    let paymentTypeSelected: paymentType;
+
     if (!reqPaymentMethodsObj) {
         throw new BadRequestError('Incomplete Data!');
     }
-    if (!charityObj.paymentMethods) {
+    if (!storedCharity.paymentMethods) {
         throw new BadRequestError('No Payment Methods Found!');
     }
+    if (!(reqPaymentMethodsObj.paymentMethods.bankAccount.iban && reqPaymentMethodsObj.paymentMethods.bankAccount.accNumber && reqPaymentMethodsObj.paymentMethods.bankAccount.swiftCode)
+        &&
+        !(reqPaymentMethodsObj.paymentMethods.fawry.number)
+        &&
+        !(reqPaymentMethodsObj.paymentMethods.vodafoneCash.number)) {
 
-    let charityPaymentMethodsObj: ICharityPaymentMethodDocument =
-        charityObj.paymentMethods;
-
-    let changedPaymentMethod: PaymentMethodNames =
-        charityUtils.getChangedPaymentMethod(reqPaymentMethodsObj);
-
-    const idx: number = charityUtils.getPaymentMethodIdx(
-        charityPaymentMethodsObj,
-        changedPaymentMethod,
-        paymentId
-    );
-
-    const temp: ICharityPaymentMethod = charityUtils.makeTempPaymentObj(
-        changedPaymentMethod,
-        reqPaymentMethodsObj
-    ); //👋
-
-    if (idx !== -1) {
-        charityUtils.swapPaymentInfo(
-            charityPaymentMethodsObj,
-            temp,
-            changedPaymentMethod,
-            idx
-        );
-    } else if (idx === -1) {
-        charityUtils.addNewPayment(
-            charityPaymentMethodsObj,
-            temp,
-            changedPaymentMethod
-        );
+        throw new BadRequestError('Incomplete Data!');
     }
 
-    await charityObj.save();
 
-    // const len: number =   charityObj.paymentMethods[changedPaymentMethod].length - 1;
-    const len: number =
-        charityObj.paymentMethods[changedPaymentMethod].length - 1;
+    if (reqPaymentMethodsObj.paymentId) {
+        if (reqPaymentMethodsObj.paymentMethods.bankAccount.iban && reqPaymentMethodsObj.paymentMethods.bankAccount.accNumber && reqPaymentMethodsObj.paymentMethods.bankAccount.swiftCode) {
+            const isUpdated = await charityUtils.editBankAccount(storedCharity, reqPaymentMethodsObj)
+            if (isUpdated) {
+                paymentTypeSelected = "bankAccount"
+                edited = true;
+                created = false
+            }
+        }
+        else if (reqPaymentMethodsObj.paymentMethods.fawry.number) {
+            const isUpdated = await charityUtils.editFawryAccount(storedCharity, reqPaymentMethodsObj)
+            if (isUpdated) {
+                paymentTypeSelected = "fawry"
+                edited = true;
+                created = false
+            }
 
+        }
+        else if (reqPaymentMethodsObj.paymentMethods.vodafoneCash.number) {
+            const isUpdated = await charityUtils.editVodafoneAccount(storedCharity, reqPaymentMethodsObj)
+
+            if (isUpdated) {
+                paymentTypeSelected = "vodafoneCash"
+                edited = true;
+                created = false
+            }
+
+        }
+    }
+    else {
+        if (reqPaymentMethodsObj.paymentMethods.bankAccount.bankDocs.length > 0) {
+            if (reqPaymentMethodsObj.paymentMethods.bankAccount.iban && reqPaymentMethodsObj.paymentMethods.bankAccount.accNumber && reqPaymentMethodsObj.paymentMethods.bankAccount.swiftCode) {
+                await charityUtils.createBankAccount(storedCharity, reqPaymentMethodsObj)
+                paymentTypeSelected = "bankAccount"
+                edited = false;
+                created = true
+
+            }
+
+        }
+        else if (reqPaymentMethodsObj.paymentMethods.fawry.fawryDocs.length > 0) {
+            if (reqPaymentMethodsObj.paymentMethods.fawry.number) {
+                paymentTypeSelected = "fawry"
+                edited = false;
+                created = true
+            }
+
+        } else if (reqPaymentMethodsObj.paymentMethods.vodafoneCash.vodafoneCashDocs.length > 0) {
+            if (reqPaymentMethodsObj.paymentMethods.vodafoneCash.number) {
+                paymentTypeSelected = "vodafoneCash"
+                edited = false;
+                created = true
+            }
+        }
+    }
+    if (edited !== created && paymentTypeSelected) {
         return {
-        //@ts-expect-error
-        paymentMethods: charityObj.paymentMethods[changedPaymentMethod][len]!,
-        message: 'Payment Method Has been Added Successfully!',
-    };
+            paymentMethods: reqPaymentMethodsObj.paymentMethods[paymentTypeSelected],
+            message: `${paymentTypeSelected} Payment Method Has been ${edited ? 'edited' : created ? 'created' : ' '} Successfully!`,
+        };
+    } else {
+        throw new BadRequestError('something went wrong .. try again')
+    }
+
 };
 
 export const charityService = {
