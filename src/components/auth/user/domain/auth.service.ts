@@ -7,8 +7,8 @@ import {
 // import { IUserResponse } from '../../../user/data-access/interfaces/user.interface';
 import { Response } from 'express';
 import { IloginData } from '../data-access/auth.interface';
-import { RegisterUSerInputData } from './auth.use-case';
-import mongoose from 'mongoose';
+import { RegisterUserInputData } from './auth.use-case';
+import { User } from '../../../user/data-access/models/user.model';
 
 type UserResponseBasedOnUserVerification = {
   user: UserObject;
@@ -22,9 +22,11 @@ const authUser = async (
 ): Promise<UserResponseBasedOnUserVerification> => {
   const { email, password }: { email: string; password: string } = reqBody;
 
-  const userResponse = await authUserUtils.checkUserPassword(email, password);
+  const userResponse: { isMatch: boolean; user: User } =
+    await authUserUtils.checkUserPassword(email, password);
 
-  const token: string = generateToken(res, userResponse.user._id, 'user');
+  const token = generateToken(res, userResponse.user.id, 'user');
+
   const userObj: UserObject = {
     _id: userResponse.user._id,
     name: userResponse.user.name,
@@ -48,7 +50,9 @@ const authUser = async (
       userResponse.user.email,
       'login alert',
       `hi ${
-        userResponse.user.name.firstName + ' ' + userResponse.user.name.lastName
+        userResponse.user.name?.firstName +
+        ' ' +
+        userResponse.user.name?.lastName
       } it seems that your account still not verified or activated please go to that link to activate the account ` +
         `<h3>(www.activate.com)</h3>` +
         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
@@ -61,16 +65,21 @@ const authUser = async (
 };
 
 export interface UserObject {
-  _id: mongoose.Types.ObjectId;
-  name: {
-    firstName: string;
-    lastName: string;
-  };
-  email: string;
+  _id: User['_id'];
+  name: User['name'];
+  email: User['email'];
 }
+
+// export interface UserObject {
+//   _id: mongoose.Types.ObjectId;
+//   name: {
+//     firstName: string;
+//     lastName: string;
+//   };
+//   email: string;
+// }
 const registerUser = async (
-  reqBody: RegisterUSerInputData,
-  _res: Response
+  reqBody: RegisterUserInputData
 ): Promise<{
   user: UserObject;
 }> => {
@@ -80,9 +89,9 @@ const registerUser = async (
     newCreatedUser.user.email,
     'welcome alert',
     `hi ${
-      newCreatedUser.user.name.firstName +
+      newCreatedUser.user.name?.firstName +
       ' ' +
-      newCreatedUser.user.name.lastName
+      newCreatedUser.user.name?.lastName
     } ` +
       ' we are happy that you joined our community ... keep spreading goodness with us'
   );

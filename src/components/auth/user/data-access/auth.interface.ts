@@ -4,8 +4,11 @@
 // export interface AuthedRequest extends Request {
 //     user: IUserDocument;
 //     charity: ICharityDocument;
+
+import { User } from '../../../user/data-access/models/user.model';
+
 // }
-export interface IloginData  {
-    email: string;
-    password:string;
+export interface IloginData {
+  email: User['email'];
+  password: User['password'];
 }

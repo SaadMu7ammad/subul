@@ -1,17 +1,13 @@
-import User from '../../../user/data-access/models/user.model';
-import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
-import { RegisterUSerInputData } from '../domain/auth.use-case';
+import UserModel, { User } from '../../../user/data-access/models/user.model';
+import { RegisterUserInputData } from '../domain/auth.use-case';
 
-const findUser = async (email: string): Promise<IUserDocument | null> => {
-  let user: IUserDocument | null = await User.findOne({ email: email });
+const findUser = async (email: string): Promise<User | null> => {
+  let user: User | null = await UserModel.findOne({ email: email });
   return user;
 };
 
-const createUser = async (
-  dataInputs: RegisterUSerInputData
-): Promise<IUserDocument> => {
-  // @ts-expect-error
-  const user: IUserDocument = await User.create(dataInputs);
+const createUser = async (dataInputs: RegisterUserInputData): Promise<User> => {
+  const user: User = await UserModel.create(dataInputs);
   return user;
 };
 

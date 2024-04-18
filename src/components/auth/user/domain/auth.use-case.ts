@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 
 import { UserObject, authUserService } from './auth.service';
 // import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
-import { locationUser } from '../../../user/data-access/models/location.model';
+import { User } from '../../../user/data-access/models/user.model';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -47,29 +47,35 @@ const authUser: RequestHandler = async (
 //@route  POST /api/users/
 //@access public
 
-export type RegisterUSerInputData = {
-  name: {
-    firstName: string;
-    lastName: string;
-  };
-  email: string;
-  locationUser: locationUser;
-  gender: 'male' | 'female';
-  phone: string;
-  password: string;
+// Define RegisterUserInputData based on the structure of the User type
+export type RegisterUserInputData = {
+  name: User['name'];
+  email: User['email'];
+  locationUser: User['locationUser'];
+  gender: User['gender'];
+  phone: User['phone'];
+  password: User['password'];
 };
+// export type RegisterUSerInputData = {
+//   name: {
+//     firstName: string;
+//     lastName: string;
+//   };
+//   email: string;
+//   locationUser: locationUser;
+//   gender: 'male' | 'female';
+//   phone: string;
+//   password: string;
+// };
 
 const registerUser: RequestHandler = async (
   req,
   res,
   _next
 ): Promise<{ user: UserObject }> => {
-  const registerInputsData: RegisterUSerInputData = req.body;
+  const registerInputsData: RegisterUserInputData = req.body;
 
-  const responseData = await authUserService.registerUser(
-    registerInputsData,
-    res
-  );
+  const responseData = await authUserService.registerUser(registerInputsData);
 
   const userResponsed: UserObject = {
     ...responseData.user,
