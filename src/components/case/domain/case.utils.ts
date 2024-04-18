@@ -8,8 +8,7 @@ import {
   SortObj,
   ICase,
   PaginationObj,
-  ICaseDocument,
-} from '../data-access/interfaces/case.interface';
+} from '../data-access/interfaces';
 
 const caseRepository = new CaseRepository();
 
@@ -71,7 +70,7 @@ const getAllCases = async (
   page: number,
   limit: number
 ) => {
-  const cases: ICaseDocument[] | null = await caseRepository.getAllCases(
+  const cases: ICase[] | null = await caseRepository.getAllCases(
     sortObj,
     filterObj,
     page,
@@ -81,8 +80,8 @@ const getAllCases = async (
   return cases;
 };
 
-const getCaseByIdFromDB = async (caseId: string): Promise<ICaseDocument> => {
-  const _case: ICaseDocument | null = await caseRepository.getCaseById(caseId);
+const getCaseByIdFromDB = async (caseId: string): Promise<ICase> => {
+  const _case: ICase | null = await caseRepository.getCaseById(caseId);
 
   if (!_case) throw new NotFoundError('No Such Case With this Id!');
 
@@ -90,7 +89,7 @@ const getCaseByIdFromDB = async (caseId: string): Promise<ICaseDocument> => {
 };
 
 const checkIfCaseBelongsToCharity = (
-  charityCasesArray: ICaseDocument['_id'][],
+  charityCasesArray: ICase['_id'][],
   caseId: string
 ): number => {
   const idx: number = charityCasesArray.findIndex(function (id) {
@@ -105,7 +104,7 @@ const checkIfCaseBelongsToCharity = (
 };
 
 const deleteCaseFromDB = async (id: string) => {
-  const deletedCase: ICaseDocument | null = await caseRepository.deleteCaseById(
+  const deletedCase: ICase | null = await caseRepository.deleteCaseById(
     id
   );
 
@@ -132,7 +131,7 @@ const deleteCaseFromCharityCasesArray = async (
 };
 
 const editCase = async (caseData: ICase, caseId: string) => {
-  const updatedCase: ICaseDocument | null = await caseRepository.editCase(
+  const updatedCase: ICase | null = await caseRepository.editCase(
     caseData,
     caseId
   );
@@ -148,7 +147,7 @@ const replaceCaseImg = async (
 ) => {
   if (caseData.image[0]) caseData.coverImage = caseData.image[0];
 
-  const caseObject: ICaseDocument | null = await caseRepository.getCaseById(
+  const caseObject: ICase | null = await caseRepository.getCaseById(
     caseId
   );
 

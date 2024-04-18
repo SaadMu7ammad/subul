@@ -1,30 +1,29 @@
 import { caseUtils } from './case.utils';
 import {
   ICase,
-  ICaseDocument,
   FilterObj,
   GetAllCasesQueryParams,
   PaginationObj,
   SortObj,
   ICaseDocumentResponse,
   ICasesDocumentResponse,
-} from '../data-access/interfaces/case.interface';
+} from '../data-access/interfaces';
 import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components';
 import { ICharity } from '../../charity/data-access/interfaces/';
 const addCase = async (
-  caseData: ICase,
+  caseData:ICase,
   image: string,
   charity: ICharity
 ): Promise<ICaseDocumentResponse> => {
-  const newCase = await caseUtils.createCase({
-    ...caseData,
-    coverImage: image,
-    charity: charity._id,
-  });
+  caseData.coverImage = image;
+  caseData.charity = charity._id;
+  const newCase = await caseUtils.createCase(caseData);
+
   if (!newCase) throw new BadRequestError('case not created... try again');
+
   charity.cases.push(newCase._id);
 
   await charity.save();
@@ -49,12 +48,12 @@ const getAllCases = async (
 };
 
 const getCaseById = async (
-  charityCases: ICaseDocument[],
+  charityCases: ICase['id'][],
   caseId: string
 ): Promise<ICaseDocumentResponse> => {
   caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
 
-  const _case: ICaseDocument = await caseUtils.getCaseByIdFromDB(caseId);
+  const _case: ICase = await caseUtils.getCaseByIdFromDB(caseId);
 
   return {
     case: _case,
@@ -70,7 +69,7 @@ const deleteCase = async (
     caseId
   );
 
-  const deletedCase: ICaseDocument = await caseUtils.deleteCaseFromDB(caseId);
+  const deletedCase: ICase = await caseUtils.deleteCaseFromDB(caseId);
 
   await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
 
@@ -91,7 +90,7 @@ const editCase = async (
     deleteOldImg = await caseUtils.replaceCaseImg(caseData, caseId);
   }
 
-  let updatedCase: ICaseDocument = await caseUtils.editCase(caseData, caseId);
+  let updatedCase: ICase = await caseUtils.editCase(caseData, caseId);
 
   if (deleteOldImg) deleteOldImg();
 
