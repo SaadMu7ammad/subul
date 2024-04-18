@@ -38,7 +38,7 @@ const requestResetPassword: RequestHandler = async (
   res: Response,
   next: NextFunction
 ): Promise<{ message: string }> => {
-  const data: DataForRequestResetPassword = { email: req.body };
+  const data: DataForRequestResetPassword = { email: req.body.email };
 
   const requestResetPasswordResponse =
     await charityService.requestResetPassword(data);
