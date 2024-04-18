@@ -206,7 +206,7 @@ const charitySchema = new Schema(
     },
     paymentMethods: {
       type: paymentMethodSchema,
-      required: true,
+      required: false,
     },
     rate: {
       type: Number,
