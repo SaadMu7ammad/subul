@@ -21,9 +21,7 @@ const checkCharityIsExist = async (
   email: string
 ): Promise<{ charity: ICharity }> => {
   //return charity if it exists
-  const charityIsExist = await charityRepository.findCharity(
-    email
-  );
+  const charityIsExist = await charityRepository.findCharity(email);
   if (!charityIsExist) {
     throw new NotFoundError('email not found Please use another one');
   }
@@ -41,8 +39,7 @@ const getCharity = (res: Response): { charity: ICharity } => {
   return { charity: res.locals.charity };
 };
 const checkIsEmailDuplicated = async (email: string): Promise<void> => {
-  const isDuplicatedEmail =
-    await charityRepository.findCharity(email);
+  const isDuplicatedEmail = await charityRepository.findCharity(email);
   if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
 };
 const changeCharityEmailWithMailAlert = async (
@@ -177,7 +174,7 @@ const addDocs = async (reqBody: ICharityDocs, charity: ICharity) => {
   console.log(charity.paymentMethods);
   return {
     paymentMethods: charity.paymentMethods,
-  }; 
+  };
 };
 const makeCharityIsPending = async (charity: ICharity): Promise<void> => {
   charity.isPending = true;
@@ -188,11 +185,12 @@ const addPaymentAccounts = async (
   charity: ICharity,
   type: string
 ) => {
-  if (charity.paymentMethods === undefined) charity.paymentMethods = {
-    bankAccount: [],
-    fawry: [],
-    vodafoneCash: [],
-  };
+  if (charity.paymentMethods === undefined)
+    charity.paymentMethods = {
+      bankAccount: [],
+      fawry: [],
+      vodafoneCash: [],
+    };
   // console.log({ ...req.body.paymentMethods.fawry[0] });
   if (type === 'bankAccount') {
     const { bankAccount } = accountObj.paymentMethods;
@@ -224,7 +222,7 @@ const addPaymentAccounts = async (
     const _fawryDocs = [...fawry.fawryDocs];
     if (number != '' && _fawryDocs) {
       const temp = {
-        enable:false,
+        enable: false,
         number: number,
         fawryDocs: _fawryDocs, // An array of strings
       };
@@ -242,7 +240,7 @@ const addPaymentAccounts = async (
 
     if (number != '' && _vodafoneCashDocs) {
       const temp = {
-        enable:false,
+        enable: false,
         number: number,
         vodafoneCashDocs: _vodafoneCashDocs, // An array of strings
       };
@@ -279,8 +277,8 @@ const editBankAccount = async (
 
   for (let [_, item] of storedCharity.paymentMethods.bankAccount.entries()) {
     console.log('1---------------');
-    //@ts-expect-error
-    if (item._id.toString() === reqPaymentMethodsObj.paymentId.toString()) {
+
+    if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
       console.log(item);
       item.enable = false;
       item.iban = reqPaymentMethodsObj.paymentMethods.bankAccount.iban;
@@ -306,8 +304,8 @@ const editFawryAccount = async (
 
   for (let [_, item] of storedCharity.paymentMethods.fawry.entries()) {
     console.log('2---------------');
-    //@ts-expect-error
-    if (item._id.toString() === reqPaymentMethodsObj.paymentId.toString()) {
+
+    if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
       console.log(item);
       item.enable = false;
       item.number = reqPaymentMethodsObj.paymentMethods.fawry.number;
@@ -331,8 +329,7 @@ const editVodafoneAccount = async (
 
   for (let [_, item] of storedCharity.paymentMethods.vodafoneCash.entries()) {
     console.log('-3--------------');
-    //@ts-expect-error
-    if (item._id.toString() === reqPaymentMethodsObj.paymentId.toString()) {
+    if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
       console.log(item);
       item.enable = false;
       item.number = reqPaymentMethodsObj.paymentMethods.vodafoneCash.number;
@@ -418,5 +415,5 @@ export const charityUtils = {
   createBankAccount,
   createFawryAccount,
   createVodafoneAccount,
-  checkCharityVerification
+  checkCharityVerification,
 };

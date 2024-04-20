@@ -52,6 +52,7 @@ const locationSchema = new mongoose.Schema({
 const paymentMethodSchema = new Schema({
   bankAccount: [
     {
+      _id: mongoose.Types.ObjectId,
       enable: {
         //account is valid to use or not (freezed or in reviewing)
         type: Boolean,
@@ -77,6 +78,7 @@ const paymentMethodSchema = new Schema({
   ],
   fawry: [
     {
+      _id: mongoose.Types.ObjectId,
       enable: {
         type: Boolean,
         default: false,
@@ -94,6 +96,7 @@ const paymentMethodSchema = new Schema({
   ],
   vodafoneCash: [
     {
+      _id: mongoose.Types.ObjectId,
       enable: {
         type: Boolean,
         default: false,
@@ -272,7 +275,9 @@ charitySchema.pre('save', async function (next) {
 });
 
 declare module '../interfaces/charity.interface' {
-  export type ICharity = HydratedDocument<InferSchemaType<typeof charitySchema>>;
+  export type ICharity = HydratedDocument<
+    InferSchemaType<typeof charitySchema>
+  >;
 }
 
 const Charity = mongoose.model<ICharity>('Charity', charitySchema);
