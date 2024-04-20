@@ -1,7 +1,6 @@
-import { Document } from 'mongoose';
-import { ITransactionDocument } from '../../../transaction/data-access/interfaces/transaction.interface';
 
 import { locationUser } from '../models/location.model';
+import { User } from '../models/user.model';
 
 // export type UserLocation = {
 //   governorate?:
@@ -38,34 +37,34 @@ import { locationUser } from '../models/location.model';
 //   street?: string;
 // };
 
-export type IUser = {
-  name: {
-    firstName: string;
-    lastName: string;
-  };
-  email: string;
-  password: string;
-  isAdmin: boolean;
-  pointsOnDonations: number;
-  totalDonationsAmount?: number;
-  locationUser: locationUser;
-  gender: 'male' | 'female';
-  phone?: string;
-  verificationCode?: string | null;
-  emailVerification: {
-    isVerified?: boolean;
-    verificationDate?: Date | number;
-  };
-  phoneVerification: {
-    isVerified?: boolean;
-    verificationDate?: Date | number;
-  };
-  isEnabled: boolean;
-  transactions: ITransactionDocument['_id'][];
-  // _id: mongoose.Types.ObjectId;
-  // createdAt: Date;
-  // updatedAt: Date;
-};
+// export type IUser = {
+//   name: {
+//     firstName: string;
+//     lastName: string;
+//   };
+//   email: string;
+//   password: string;
+//   isAdmin: boolean;
+//   pointsOnDonations: number;
+//   totalDonationsAmount?: number;
+//   locationUser: locationUser;
+//   gender: 'male' | 'female';
+//   phone?: string;
+//   verificationCode?: string | null;
+//   emailVerification: {
+//     isVerified?: boolean;
+//     verificationDate?: Date | number;
+//   };
+//   phoneVerification: {
+//     isVerified?: boolean;
+//     verificationDate?: Date | number;
+//   };
+//   isEnabled: boolean;
+//   transactions: ITransactionDocument['_id'][];
+//   // _id: mongoose.Types.ObjectId;
+//   // createdAt: Date;
+//   // updatedAt: Date;
+// };
 
 export type IUserModifed = {
   name?: {
@@ -79,7 +78,7 @@ export type IUserModifed = {
   phone?: string;
 };
 
-export type IUserDocument = IUser & Document;
+// export type IUserDocument = IUser & Document;
 
 export type EditProfile = {
   emailAlert: boolean;
@@ -95,7 +94,7 @@ export type IUserResponse = {
   // emailEdited?: boolean;
   emailAlert?: boolean;
   // user: Partial<IUserDocument>;
-  user: Partial<IUserDocument>;
+  user: Partial<User>;
   message?: string;
   token?: string;
 };

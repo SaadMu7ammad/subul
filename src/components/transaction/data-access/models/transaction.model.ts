@@ -1,5 +1,6 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import { ITransaction } from '../interfaces/transaction.interface';
+import mongoose, {  Schema } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
+import { InferSchemaType } from 'mongoose';
 
 const paymentMethodSchema = new Schema({
   onlineCard: {
@@ -25,7 +26,7 @@ const paymentMethodSchema = new Schema({
   // },
 });
 
-const transactionSchema: Schema<ITransaction & Document> = new Schema(
+const transactionSchema= new Schema(
   {
     case: {
       type: mongoose.Schema.Types.ObjectId,
@@ -69,6 +70,9 @@ const transactionSchema: Schema<ITransaction & Document> = new Schema(
   },
   { timestamps: true }
 );
+
+export type ITransaction = HydratedDocument<InferSchemaType<typeof transactionSchema>>;
+
 const TransactionModel = mongoose.model('Transaction', transactionSchema);
 
 // const Transaction: TransactionModel = mongoose.model<

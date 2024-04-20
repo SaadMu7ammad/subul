@@ -7,6 +7,7 @@ import {
 import { authCharityRepository } from '../data-access/charity.repository';
 import { deleteOldImgs } from '../../../../utils/deleteFile';
 import { ICharity } from '../../../charity/data-access/interfaces/';
+import { CharityData } from './auth.use-case';
 const checkCharityPassword = async (email: string, password: string) => {
   const charity = await authCharityRepository.findCharity(email);
   if (!charity) throw new NotFoundError('email not found');
@@ -40,7 +41,7 @@ const setTokenToCharity = async (charity: ICharity, token: string) => {
 
 const createCharity = async (
   dataInputs: CharityData
-): Promise<{ charity: ICharityDocument }> => {
+): Promise<{ charity: ICharity }> => {
   const charityExist = await authCharityRepository.findCharity(
     dataInputs.email
   );

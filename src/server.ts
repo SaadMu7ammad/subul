@@ -17,7 +17,7 @@ import authUserRoutes from './components/auth/user/entry-points/api/auth.routes'
 import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes';
 import charityRoutes from './components/charity/entry-points/api/charity.routes';
 import casesRoutes from './components/case/entry-points/api/case.routes';
-import adminRoutes from './components/admin/entry-points/api/admin.routes';
+// import adminRoutes from './components/admin/entry-points/api/admin.routes';
 
 dotenv.config();
 
@@ -46,7 +46,7 @@ transactionRoutes(app);
 authUserRoutes(app);
 authCharityRoutes(app);
 charityRoutes(app);
-adminRoutes(app);
+// adminRoutes(app);
 userRoutes(app);
 casesRoutes(app);
 

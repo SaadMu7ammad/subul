@@ -1,14 +1,14 @@
-import { ITransaction, ITransactionDocument } from './transaction.interface';
-import { ICaseDocument } from '../../../case/data-access/interfaces/case.interface';
+import { ICase } from '../../../case/data-access/interfaces/case.interface';
 import { ICharity } from '../../../charity/data-access/interfaces/charity.interface';
-import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
+import { User } from '../../../user/data-access/models/user.model';
+import { ITransaction } from '../models/transaction.model';
 export interface TransactionDataStore {
-  findCaseById(id: string): Promise<ICaseDocument | null>;
+  findCaseById(id: string): Promise<ICase | null>;
   findCharityById(id: string): Promise<ICharity | null>;
-  findTransactionByQuery(queryObj: any): Promise<ITransactionDocument | null>;
-  findTransactionById(id: string): Promise<ITransactionDocument | null>;
-  findUserByEmail(email: string): Promise<IUserDocument | null>;
+  findTransactionByQuery(queryObj: any): Promise<ITransaction | null>;
+  findTransactionById(id: string): Promise<ITransaction | null>;
+  findUserByEmail(email: string): Promise<User | null>;
   createTransaction(
     transaction: ITransaction
-  ): Promise<ITransactionDocument | null>;
+  ): Promise<ITransaction | null>;
 }

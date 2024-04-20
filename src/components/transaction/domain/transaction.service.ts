@@ -8,15 +8,14 @@ import { transactionUtils } from './transaction.utils';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
-  ITransaction,
-  ITransactionDocument,
   TransactionPaymentInfo,
 } from '../data-access/interfaces/transaction.interface';
-import { IUserDocument } from '../../user/data-access/interfaces/user.interface';
+import { ITransaction } from '../data-access/models/transaction.model';
+import { User } from '../../user/data-access/models/user.model';
 const transactionRepository = new TransactionRepository();
 const preCreateTransaction = async (
   data: IDataPreCreateTransaction,
-  user: IUserDocument
+  user: User
 ): Promise<boolean> => {
   //must check the account for the charity is valid or not
   const {
@@ -96,7 +95,7 @@ const updateCaseInfo = async (
     orderId: orderId,
   };
 
-  let transactionIsExist: ITransactionDocument | null =
+  let transactionIsExist: ITransaction | null =
     await transactionRepository.findTransactionByQuery(queryObj);
   if (transactionIsExist) {
     //transaction must updated not created again
@@ -134,7 +133,7 @@ const updateCaseInfo = async (
     };
   }
   //what if the payment happened but the transaction not stored in the db??i think must make a report or something like that to alert that to support
-  const transactionData: ITransaction = {
+  const transactionData: Partial<ITransaction> = {
     case: caseIsExist._id,
     user: userIsExist._id,
     moneyPaid: +amount,
@@ -153,7 +152,7 @@ const updateCaseInfo = async (
   //add the transaction id to the user
   await transactionUtils.addTransactionIdToUserTransactionIds(
     userIsExist,
-    newTransaction._id.toString()
+    newTransaction._id
   );
   if (status == 'failed') {
     return newTransaction;
@@ -164,7 +163,7 @@ const updateCaseInfo = async (
   return newTransaction;
 };
 const getAllTransactions = async (
-  user:IUserDocument
+  user: User
 ): Promise<{ allTransactions: (ITransaction | null)[] }> => {
   const allTransactionsPromised =
     await transactionUtils.getAllTransactionsPromised(user);

@@ -1,6 +1,6 @@
-import { Document } from 'mongoose';
-import { ICaseDocument } from '../../../case/data-access/interfaces/case.interface';
-import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
+// import { Document } from 'mongoose';
+// import { ICase } from '../../../case/data-access/interfaces/case.interface';
+// import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 
 export interface TransactionPaymentInfo {
   onlineCard?: {
@@ -12,22 +12,22 @@ export interface TransactionPaymentInfo {
   // _id: mongoose.Types.ObjectId;
 }
 
-export interface ITransaction {
-  case?: ICaseDocument['_id'];
-  user?: IUserDocument['_id'];
-  moneyPaid: number;
-  paidAt?: Date;
-  externalTransactionId: string;
-  orderId: string;
-  status?: 'pending' | 'success' | 'failed' | 'refunded';
-  currency: string;
-  paymentGateway: string;
-  paymentInfo?: TransactionPaymentInfo;
-  // _id: mongoose.Types.ObjectId;
-  // createdAt?: Date;
-  // updatedAt?: Date;
-}
-export interface ITransactionDocument extends ITransaction, Document {}
+// export interface ITransaction {
+//   case?: ICase['_id'];
+//   user?: IUserDocument['_id'];
+//   moneyPaid: number;
+//   paidAt?: Date;
+//   externalTransactionId: string;
+//   orderId: string;
+//   status?: 'pending' | 'success' | 'failed' | 'refunded';
+//   currency: string;
+//   paymentGateway: string;
+//   paymentInfo?: TransactionPaymentInfo;
+//   // _id: mongoose.Types.ObjectId;
+//   // createdAt?: Date;
+//   // updatedAt?: Date;
+// }
+// export interface ITransactionDocument extends ITransaction, Document {}
 
 export interface IDataPreCreateTransaction {
   charityId: string;

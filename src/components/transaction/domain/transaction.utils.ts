@@ -1,11 +1,13 @@
+import { Types } from 'mongoose';
 import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components/index';
-import { ICaseDocument } from '../../case/data-access/interfaces/case.interface';
+import { ICase } from '../../case/data-access/interfaces/case.interface';
 import { ICharity} from '../../charity/data-access/interfaces/';
-import {  IUserDocument } from '../../user/data-access/interfaces/user.interface';
-import { IDataPreCreateTransaction, ITransaction, ITransactionDocument } from '../data-access/interfaces/transaction.interface';
+import { User } from '../../user/data-access/models/user.model';
+import { IDataPreCreateTransaction } from '../data-access/interfaces/transaction.interface';
+import { ITransaction } from '../data-access/models/transaction.model';
 import { TransactionRepository } from '../data-access/transaction.repository';
 
 const transactionRepository = new TransactionRepository();
@@ -54,14 +56,14 @@ const checkCharityIsValidToDonate = (charity:ICharity) => {
     );
   }
 };
-const checkCaseIsValidToDonate = (cause:ICaseDocument) => {
+const checkCaseIsValidToDonate = (cause:ICase) => {
   if (cause.finished === true || cause.freezed === true) {
     throw new BadRequestError(
       'this case is finished...choose case not completed'
     );
   }
 };
-const donationAmountAssertion = (cause: ICaseDocument, amount: number) => {
+const donationAmountAssertion = (cause: ICase, amount: number) => {
   const currentAmount: number = +cause.currentDonationAmount + +amount;
   if (
     +cause.targetDonationAmount < currentAmount &&
@@ -74,46 +76,46 @@ const donationAmountAssertion = (cause: ICaseDocument, amount: number) => {
   }
   return true;
 };
-const updateTransactionAfterRefund = async (transaction:ITransactionDocument) => {
+const updateTransactionAfterRefund = async (transaction:ITransaction) => {
   transaction.status = 'refunded';
   await transaction.save();
 };
-const updateCaseAfterRefund = async (cause:ICaseDocument, amount: number) => {
+const updateCaseAfterRefund = async (cause:ICase, amount: number) => {
   if (cause.finished) cause.finished = false; //re open the case again
   if (cause.currentDonationAmount >= amount)
     cause.currentDonationAmount -= amount;
   if (cause.donationNumbers >= 1) cause.donationNumbers -= 1;
-  if (cause.dateFinished) cause.dateFinished = null;
+  if (cause.dateFinished) cause.dateFinished = undefined;
   await cause.save();
 };
-const checkIsLastDonation = (cause:ICaseDocument, amount: number) => {
+const checkIsLastDonation = (cause:ICase, amount: number) => {
   const currentAmount: number = +cause.currentDonationAmount! + +amount;
   if (+cause.targetDonationAmount === currentAmount) {
-    cause.dateFinished = Date.now();
+    cause.dateFinished = Date.now().toString();
     cause.finished = true;
-  }
+  } 
   return cause;
 };
-const updateCaseAfterDonation = (cause: ICaseDocument, amount: number) => {
+const updateCaseAfterDonation = (cause: ICase, amount: number) => {
   +cause.donationNumbers!++;
   cause.currentDonationAmount! += +amount;
   return cause;
 };
 const addTransactionIdToUserTransactionIds = async (
-  user:IUserDocument,
-  newTransactionId: string
+  user:User,
+  newTransactionId: Types.ObjectId
 ) => {
   user.transactions.push(newTransactionId);
   await user.save();
   return user;
 };
-const confirmSavingCase = async (cause:ICaseDocument) => {
+const confirmSavingCase = async (cause:ICase) => {
   await cause.save();
 };
-const confirmSavingUser = async (user:IUserDocument) => {
+const confirmSavingUser = async (user:User) => {
   await user.save();
 };
-const getAllTransactionsPromised = async (user:IUserDocument): Promise<(ITransaction|null)[]>  => {
+const getAllTransactionsPromised = async (user:User): Promise<(ITransaction|null)[]>  => {
   const transactionPromises: Promise<ITransaction|null>[] = user.transactions.map(
     async (itemId, index) => {
       const myTransaction = await transactionRepository.findTransactionById(
@@ -136,9 +138,9 @@ const getAllTransactionsPromised = async (user:IUserDocument): Promise<(ITransac
   return allTransactionsPromised;
 };
 const refundUtility = async (
-  transaction: ITransactionDocument,
+  transaction: ITransaction,
   amount: number
-): Promise<ITransactionDocument> => {
+): Promise<ITransaction> => {
   const caseId: string|undefined = transaction?.case?.toString(); //get the id of the case
   if (!caseId) throw new NotFoundError('case id not found');
 

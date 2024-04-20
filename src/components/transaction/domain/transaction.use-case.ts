@@ -3,11 +3,11 @@ import { BadRequestError } from '../../../libraries/errors/components/index';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
-  ITransaction,
 } from '../data-access/interfaces/transaction.interface';
 
 import { transactionService } from './transaction.service';
-import { IUserDocument } from '../../user/data-access/interfaces/user.interface';
+import { ITransaction } from '../data-access/models/transaction.model';
+import { User } from '../../user/data-access/models/user.model';
 const preCreateTransaction = async (
   req: Request,
   res: Response,
@@ -16,7 +16,7 @@ const preCreateTransaction = async (
   try {
 
     const data :IDataPreCreateTransaction= req.body;
-    const storedUser:IUserDocument = res.locals.user;
+    const storedUser:User = res.locals.user;
     const transaction: boolean = await transactionService.preCreateTransaction(
       data,
       storedUser

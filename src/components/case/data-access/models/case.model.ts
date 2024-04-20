@@ -91,12 +91,12 @@ const caseSchema = new mongoose.Schema(
       default: 0,
     },
     dateFinished: {
-      type: Date,
+      type: String,
       required: false,
     },
     donationNumbers: {
       type: Number,
-      required: false,
+      required: true,
       default: 0,
     },
     // number of beneficiaries
@@ -117,7 +117,7 @@ const caseSchema = new mongoose.Schema(
     },
     currentDonationAmount: {
       type: Number,
-      required: false,
+      required: true,
       default: 0,
     },
     //last time donated from timestamps

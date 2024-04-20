@@ -1,54 +1,50 @@
 import CharityModel from '../../charity/data-access/models/charity.model';
-import UserModel from '../../user/data-access/models/user.model';
+import UserModel, { User } from '../../user/data-access/models/user.model';
 import CaseModel from '../../case/data-access/models/case.model';
-import {
-  ITransaction,
-  ITransactionDocument,
-} from './interfaces/transaction.interface';
+
 import { FilterQuery } from 'mongoose';
 import { TransactionDataStore } from './interfaces/transaction.dao';
-import TransactionModel from './models/transaction.model';
-import { ICaseDocument } from '../../case/data-access/interfaces/case.interface';
-import { ICharity} from '../../charity/data-access/interfaces';
-import { IUserDocument } from '../../user/data-access/interfaces/user.interface';
+import TransactionModel, { ITransaction } from './models/transaction.model';
+import { ICase } from '../../case/data-access/interfaces/case.interface';
+import { ICharity } from '../../charity/data-access/interfaces';
 export class TransactionRepository implements TransactionDataStore {
-  async findCaseById(id: string): Promise<ICaseDocument | null> {
-    const cases = (await CaseModel.findById(id)) as ICaseDocument | null;
+  async findCaseById(id: string): Promise<ICase | null> {
+    const cases = (await CaseModel.findById(id));
     return cases;
   }
 
   async findCharityById(id: string): Promise<ICharity | null> {
     const charity = (await CharityModel.findById(
       id
-    )) as ICharity | null;
+    ))
     return charity;
   }
   async findTransactionByQuery(
     queryObj: FilterQuery<ITransaction>
-  ): Promise<ITransactionDocument | null> {
+  ): Promise<ITransaction | null> {
     const transaction = (await TransactionModel.findOne(
       queryObj
-    )) as ITransactionDocument | null;
+    ));
     return transaction;
   }
-  async findTransactionById(id: string): Promise<ITransactionDocument | null> {
+  async findTransactionById(id: string): Promise<ITransaction | null> {
     const transaction = (await TransactionModel.findOne({
       _id: id,
-    })) as ITransactionDocument | null;
+    }))
     return transaction;
   }
-  async findUserByEmail(email: string): Promise<IUserDocument | null> {
+  async findUserByEmail(email: string): Promise<User | null> {
     const user = (await UserModel.findOne({
       email: email,
-    })) as IUserDocument | null;
+    }))
     return user;
   }
   async createTransaction(
-    transaction: ITransaction
-  ): Promise<ITransactionDocument | null> {
+    transaction: Partial<ITransaction>
+  ): Promise<ITransaction | null> {
     const newTransaction = (await TransactionModel.create(
       transaction
-    )) as ITransactionDocument | null;
+    ))
     return newTransaction;
   }
 }
