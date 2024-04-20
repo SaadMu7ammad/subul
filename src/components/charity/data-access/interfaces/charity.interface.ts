@@ -1,16 +1,4 @@
-type Unpacked<T> = T extends (infer U)[] ? U : T;
-
-export type ICharityPaymentMethods = Exclude<
-  ICharity['paymentMethods'],
-  undefined
->;
-
-type PaymentMethodsNames = keyof ICharityPaymentMethods;
-
-export type ICharityPaymentMethod= {
-  [k in PaymentMethodsNames]:Unpacked<ICharityPaymentMethods[k]>; 
-}
-
+import { ICharity, ICharityPaymentMethod } from '.';
 
 export type ICharityDocs = {
   charityDocs: Exclude<ICharity['charityDocs'], undefined>;

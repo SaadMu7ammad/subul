@@ -2,43 +2,94 @@ import mongoose from 'mongoose';
 import {
   ICharityLocation,
   ICharityPaymentMethod,
+  ICharityPaymentMethods,
   ICharityDocs,
   ICharity,
+  CharityPaymentMethodBankAccount,
+  CharityPaymentMethodVodafoneCash,
+  CharityPaymentMethodFawry
+
 } from '.';
 
-export interface DataForPaymentRequestsForConfirmedCharity {
+export type DataForPaymentRequestsForConfirmedCharity = {
   _id?: mongoose.Types.ObjectId;
   paymentMethods: ICharityPaymentMethod;
-}
+};
 
-export interface DataForConfirmResetPassword {
+export type DataForConfirmResetPassword = {
   token: string;
   password: string;
   email: string;
-}
-export interface DataForEditCharityProfile {
+};
+export type DataForEditCharityProfile = {
   name: string;
   contactInfo: ICharity['contactInfo'];
   email: string;
   description: string;
   charityLocation: ICharityLocation;
   locationId: string;
-}
-export interface DataForActivateCharityAccount {
+};
+export type DataForActivateCharityAccount = {
   token: string;
-}
-export interface DataForRequestResetPassword {
+};
+export type DataForRequestResetPassword = {
   email: string;
-}
-export interface DataForChangePassword {
+};
+export type DataForChangePassword = {
   password: string;
-}
-export interface DataForChangeProfileImage {
+};
+export type DataForChangeProfileImage = {
   image: string;
-}
-export interface DataForRequestEditCharityPayments {
+};
+export type DataForRequestEditCharityPayments = {
   paymentMethods: ICharityPaymentMethod;
   paymentId: string;
-}
+};
 
-export interface IDataForSendDocs extends ICharityDocs {}
+export type IDataForSendDocs = ICharityDocs;
+
+export type ActivateCharityAccountResponse = Promise<{
+  message: string;
+}>;
+
+export type RequestResetPasswordResponse = Promise<{
+  message: string;
+}>;
+
+export type ConfirmResetPasswordResponse = Promise<{
+  message: string;
+}>;
+
+export type SendDocsResponse = Promise<{
+  paymentMethods: ICharityPaymentMethods | undefined;
+  message: string;
+}>;
+
+export type ChangePasswordResponse = Promise<{
+  message: string;
+}>;
+
+export type ShowCharityProfileResponse = { charity: ICharity };
+
+export type EditCharityProfileResponse = Promise<{
+  charity: ICharity;
+  message: string;
+}>;
+
+export type ChangeProfileImageResponse = Promise<{
+  image: string;
+  message: string;
+}>;
+
+export type RequestEditCharityPaymentsResponse = Promise<{
+  paymentMethods:
+    | CharityPaymentMethodBankAccount
+    | CharityPaymentMethodVodafoneCash
+    | CharityPaymentMethodFawry;
+  message?: string;
+}>;
+
+export type logoutResponse = {
+  message: string;
+};
+

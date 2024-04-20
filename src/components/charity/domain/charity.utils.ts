@@ -10,7 +10,7 @@ import { deleteOldImgs } from '../../../utils/deleteFile';
 import {
   ICharity,
   ICharityLocation,
-  PaymentMethodNames,
+  PaymentMethodsNames,
   DataForRequestEditCharityPayments,
   ICharityDocs,
   IDataForSendDocs,
@@ -256,14 +256,14 @@ const addPaymentAccounts = async (
 
 const getChangedPaymentMethod = (
   reqPaymentMethodsObj: ICharityPaymentMethods
-): PaymentMethodNames => {
-  let changedPaymentMethod: PaymentMethodNames = 'bankAccount'; //it will be overwritten by the value in the request , so don't worry;
-  let paymentMethods: PaymentMethodNames[] = [
+): PaymentMethodsNames => {
+  let changedPaymentMethod: PaymentMethodsNames = 'bankAccount'; //it will be overwritten by the value in the request , so don't worry;
+  let paymentMethods: PaymentMethodsNames[] = [
     'bankAccount',
     'fawry',
     'vodafoneCash',
   ];
-  paymentMethods.forEach((pm: PaymentMethodNames) => {
+  paymentMethods.forEach((pm: PaymentMethodsNames) => {
     if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
   });
 

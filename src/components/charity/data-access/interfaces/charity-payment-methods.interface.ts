@@ -1,20 +1,35 @@
-import { ICharityPaymentMethod } from '.';
+import { ICharity } from '.';
 
-export type CharityPaymentMethodBankAccount = ICharityPaymentMethod['bankAccount'] ;
+type Unpacked<T> = T extends (infer U)[] ? U : T;
 
-export type CharityPaymentMethodVodafoneCash= ICharityPaymentMethod['vodafoneCash'] ;
+export type ICharityPaymentMethods = Exclude<
+  ICharity['paymentMethods'],
+  undefined
+>;
 
-export type CharityPaymentMethodFawry= ICharityPaymentMethod['fawry'] ;
+export type PaymentMethodsNames = keyof ICharityPaymentMethods;
 
-export interface RequestPaymentMethodsObject {
-    bankAccount: Omit<CharityPaymentMethodBankAccount, 'enable'>[];
-    fawry: Omit<CharityPaymentMethodFawry, 'enable'>[];
-    vodafoneCash: Omit<CharityPaymentMethodVodafoneCash, 'enable'>[];
+export type ICharityPaymentMethod= {
+  [k in PaymentMethodsNames]:Unpacked<ICharityPaymentMethods[k]>; 
 }
+export type CharityPaymentMethodBankAccount =
+  ICharityPaymentMethod['bankAccount'];
 
-export type PaymentMethodNames = 'bankAccount' | 'fawry' | 'vodafoneCash';
+export type CharityPaymentMethodVodafoneCash =
+  ICharityPaymentMethod['vodafoneCash'];
 
-export interface IRequestPaymentCharityDocumentResponse {
-  paymentMethods: CharityPaymentMethodBankAccount| CharityPaymentMethodVodafoneCash| CharityPaymentMethodFawry
+export type CharityPaymentMethodFawry = ICharityPaymentMethod['fawry'];
+
+export type RequestPaymentMethodsObject = {
+  bankAccount: Omit<CharityPaymentMethodBankAccount, 'enable'>[];
+  fawry: Omit<CharityPaymentMethodFawry, 'enable'>[];
+  vodafoneCash: Omit<CharityPaymentMethodVodafoneCash, 'enable'>[];
+};
+
+export type IRequestPaymentCharityDocumentResponse = {
+  paymentMethods:
+    | CharityPaymentMethodBankAccount
+    | CharityPaymentMethodVodafoneCash
+    | CharityPaymentMethodFawry;
   message?: string;
-}
+};

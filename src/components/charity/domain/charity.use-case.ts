@@ -10,14 +10,23 @@ import {
     DataForChangeProfileImage,
     DataForRequestEditCharityPayments,
     ICharityDocs,
-    IRequestPaymentCharityDocumentResponse
+    ActivateCharityAccountResponse,
+    RequestResetPasswordResponse,
+    ConfirmResetPasswordResponse,
+    ChangePasswordResponse,
+    ShowCharityProfileResponse,
+    EditCharityProfileResponse,
+    ChangeProfileImageResponse,
+    RequestEditCharityPaymentsResponse, 
+    logoutResponse,
+    SendDocsResponse
 } from '../data-access/interfaces/';
 
 const activateCharityAccount = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<{ message: string }> => {
+): ActivateCharityAccountResponse => {
   let storedCharity: ICharity = res.locals.charity;
 
   const data: DataForActivateCharityAccount = { token: req.body.token };
@@ -37,7 +46,7 @@ const requestResetPassword: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<{ message: string }> => {
+): RequestResetPasswordResponse => {
   const data: DataForRequestResetPassword = { email: req.body.email };
 
   const requestResetPasswordResponse =
@@ -52,7 +61,7 @@ const confirmResetPassword: RequestHandler = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<{ message: string }> => {
+): ConfirmResetPasswordResponse => {
   const data: DataForConfirmResetPassword = {
     token: req.body.token,
     email: req.body.email,
@@ -69,7 +78,7 @@ const changePassword = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<{ message: string }> => {
+): ChangePasswordResponse => {
   const data: DataForChangePassword = { password: req.body.password };
 
   const storedCharity: ICharity = res.locals.charity;
@@ -85,7 +94,7 @@ const showCharityProfile = (
   req: Request,
   res: Response,
   next: NextFunction
-) : { charity: ICharity } => {
+): ShowCharityProfileResponse => {
   const storedCharity: ICharity = res.locals.charity;
 
   const responseData = charityService.getCharityProfileData(storedCharity);
@@ -98,7 +107,7 @@ const editCharityProfile = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<{ charity: ICharity; message: string }> => {
+): EditCharityProfileResponse => {
   const data: DataForEditCharityProfile = {
     name: req.body.name,
     email: req.body.email,
@@ -124,7 +133,7 @@ const changeProfileImage = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<{ image: string; message: string }> => {
+): ChangeProfileImageResponse => {
   const data: DataForChangeProfileImage = {
     image: req.body.image[0],
   };
@@ -140,7 +149,7 @@ const requestEditCharityPayments = async (
     req: Request,
     res: Response,
     next: NextFunction
-): Promise<IRequestPaymentCharityDocumentResponse> => {
+):RequestEditCharityPaymentsResponse => {
     const data: DataForRequestEditCharityPayments = {
         paymentMethods: req.body.paymentMethods,
         paymentId: req.body.payment_id,
@@ -153,7 +162,7 @@ const requestEditCharityPayments = async (
     };
 };
 
-const logout: RequestHandler = (req, res, next): { message: string } => {
+const logout: RequestHandler = (req, res, next):logoutResponse => {
   const responseData = charityService.logoutCharity(res);
   return {
     message: responseData.message,
@@ -164,7 +173,7 @@ const sendDocs = async (
     req: Request,
     res: Response,
     next: NextFunction
-) => {
+): SendDocsResponse => {
     const data: ICharityDocs = req.body
 
     const storedCharity: ICharity= res.locals.charity
