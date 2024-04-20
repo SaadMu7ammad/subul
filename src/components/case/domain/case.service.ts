@@ -5,8 +5,11 @@ import {
   GetAllCasesQueryParams,
   PaginationObj,
   SortObj,
-  ICaseDocumentResponse,
-  ICasesDocumentResponse,
+  GetAllCasesResponse,
+  AddCaseResponse,
+  GetCaseByIdResponse,
+  DeleteCaseResponse,
+  EditCaseResponse
 } from '../data-access/interfaces';
 import {
   BadRequestError,
@@ -17,7 +20,7 @@ const addCase = async (
   caseData:ICase,
   image: string,
   charity: ICharity
-): Promise<ICaseDocumentResponse> => {
+): Promise<AddCaseResponse> => {
   caseData.coverImage = image;
   caseData.charity = charity._id;
   const newCase = await caseUtils.createCase(caseData);
@@ -34,7 +37,7 @@ const addCase = async (
 const getAllCases = async (
   charityId: string,
   queryParams: GetAllCasesQueryParams
-): Promise<ICasesDocumentResponse> => {
+): Promise<GetAllCasesResponse> => {
   const sortObj: SortObj = caseUtils.getSortObj(queryParams.sort);
 
   const filterObj: FilterObj = caseUtils.getFilterObj(charityId, queryParams);
@@ -50,7 +53,7 @@ const getAllCases = async (
 const getCaseById = async (
   charityCases: ICase['id'][],
   caseId: string
-): Promise<ICaseDocumentResponse> => {
+): Promise<GetCaseByIdResponse> => {
   caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
 
   const _case: ICase = await caseUtils.getCaseByIdFromDB(caseId);
@@ -63,7 +66,7 @@ const getCaseById = async (
 const deleteCase = async (
   charity: ICharity,
   caseId: string
-): Promise<ICaseDocumentResponse> => {
+): Promise<DeleteCaseResponse> => {
   const idx: number = caseUtils.checkIfCaseBelongsToCharity(
     charity.cases,
     caseId
@@ -82,7 +85,7 @@ const editCase = async (
   charity: ICharity,
   caseData: ICase & { coverImage: string; image: string[] },
   caseId: string
-): Promise<ICaseDocumentResponse> => {
+): Promise<EditCaseResponse> => {
   caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
   let deleteOldImg: (() => void) | null = null;

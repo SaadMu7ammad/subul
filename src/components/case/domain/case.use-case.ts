@@ -3,8 +3,11 @@ import { NextFunction,  Response ,Request} from 'express';
 import {
   ICase,
   GetAllCasesQueryParams,
-  ICaseDocumentResponse,
-  ICasesDocumentResponse,
+  AddCaseResponse,
+  GetAllCasesResponse,
+  GetCaseByIdResponse,
+  EditCaseResponse,
+  DeleteCaseResponse,
 } from '../data-access/interfaces/';
 import { caseService } from './case.service';
 import { NotFoundError } from '../../../libraries/errors/components';
@@ -14,7 +17,7 @@ const addCase = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICaseDocumentResponse> => {
+): Promise<AddCaseResponse> => {
   const caseData: ICase = req.body;
   const caseImage: string = req.body.image[0];
   const charity: ICharity = res.locals.charity;
@@ -31,7 +34,7 @@ const getAllCases = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICasesDocumentResponse> => {
+): Promise<GetAllCasesResponse> => {
   const queryParams: GetAllCasesQueryParams = req.query;
   const charityId: string = res.locals.charity._id;
 
@@ -47,7 +50,7 @@ const getCaseById = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICaseDocumentResponse> => {
+): Promise<GetCaseByIdResponse> => {
   const charityCases: ICase['id'][] = res.locals.charity.cases;
   const caseId: string | undefined = req.params.caseId;
   if (!caseId) throw new NotFoundError('no id exist for the case');
@@ -64,7 +67,7 @@ const deleteCase = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICaseDocumentResponse> => {
+): Promise<DeleteCaseResponse> => {
   const charity = res.locals.charity;
 
   const caseId: string | undefined = req.params.caseId;
@@ -82,7 +85,7 @@ const editCase = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICaseDocumentResponse> => {
+): Promise<EditCaseResponse> => {
   const charity = res.locals.charity;
 
   const caseId: string | undefined = req.params.caseId;
