@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { HydratedDocument, InferSchemaType } from 'mongoose';
 import locationSchema from './location.model';
 
 const caseSchema = new mongoose.Schema(
@@ -127,6 +127,10 @@ const caseSchema = new mongoose.Schema(
 // caseSchema.virtual('charityName.name').get(function () {
 //   return this.charityName ? this.charityName.name : '';
 // });
+
+declare module '../interfaces/case.interface' {
+  export type ICase = HydratedDocument<InferSchemaType<typeof caseSchema>>;
+}
 
 const Case = mongoose.model('Cases', caseSchema);
 export default Case;

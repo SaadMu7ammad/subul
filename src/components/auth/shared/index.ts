@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
 import User from '../../user/data-access/models/user.model';
 import Charity from '../../charity/data-access/models/charity.model';
@@ -20,18 +20,18 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
         throw new UnauthenticatedError('no token found');
       }
       // const authCookie = req.headers.jwt; //according to cookie parser
-      const decoded = (<Decoded>(
+      const decoded = <Decoded>(
         jwt.verify(
           jwtToken,
           configurationProvider.getValue('hashing.jwtSecret')
         )
-      )) as JwtPayload;
+      );
       // attach the user to the job routes
       if (decoded.userId) {
         // check first the user or chariy exists in the db
         const IsUserExist = await User.findById(decoded.userId).select(
           '-password'
-        )
+        );
         if (!IsUserExist)
           throw new UnauthenticatedError('Authentication invalid');
         res.locals.user = IsUserExist;
@@ -53,12 +53,15 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 const isConfirmed = (req: Request, res: Response, next: NextFunction) => {
-
   //for the sending docs to the admin website for Charity Only
   if (res.locals.user) {
     throw new UnauthenticatedError('Users Are Not Allowed To Do This Action!');
   }
-  if (res.locals.charity && res.locals.charity.isConfirmed && res.locals.charity.isEnabled) {
+  if (
+    res.locals.charity &&
+    res.locals.charity.isConfirmed &&
+    res.locals.charity.isEnabled
+  ) {
     next();
   } else {
     throw new UnauthenticatedError(
@@ -67,7 +70,6 @@ const isConfirmed = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 const isActivated = (req: Request, res: Response, next: NextFunction) => {
-
   //for both charity and user
   if (
     (res.locals.charity &&

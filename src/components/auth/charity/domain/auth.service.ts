@@ -33,10 +33,12 @@ const authCharity = async (
     email,
     password
   );
-
-  const token = generateToken(res, charityResponse.charity._id, 'charity');
-
-  const charityObj: AuthCharity = {
+  const token = generateToken(
+    res,
+    charityResponse.charity._id.toString(),
+    'charity'
+  );
+  const charityObj = {
     _id: charityResponse.charity._id,
     name: charityResponse.charity.name,
     email: charityResponse.charity.email,

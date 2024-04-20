@@ -9,7 +9,7 @@ import {
   ConfirmPendingCharity,
   ICharityDocs,
   PendingRequestCharityResponse,
-} from '../../charity/data-access/interfaces/charity.interface';
+} from '../../charity/data-access/interfaces';
 
 const getAllPendingRequestsCharities = async (
   _req: Request,

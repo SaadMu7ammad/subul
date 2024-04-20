@@ -2,22 +2,25 @@ import { NextFunction,  Response ,Request} from 'express';
 
 import {
   ICase,
-  ICaseDocument,
   GetAllCasesQueryParams,
-  ICaseDocumentResponse,
-  ICasesDocumentResponse,
-} from '../data-access/interfaces/case.interface';
+  AddCaseResponse,
+  GetAllCasesResponse,
+  GetCaseByIdResponse,
+  EditCaseResponse,
+  DeleteCaseResponse,
+} from '../data-access/interfaces/';
 import { caseService } from './case.service';
 import { NotFoundError } from '../../../libraries/errors/components';
+import { ICharity } from '../../charity/data-access/interfaces';
 
 const addCase = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICaseDocumentResponse> => {
+): Promise<AddCaseResponse> => {
   const caseData: ICase = req.body;
   const caseImage: string = req.body.image[0];
-  const charity = res.locals.charity;
+  const charity: ICharity = res.locals.charity;
 
   const responseData = await caseService.addCase(caseData, caseImage, charity);
 
@@ -31,7 +34,7 @@ const getAllCases = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICasesDocumentResponse> => {
+): Promise<GetAllCasesResponse> => {
   const queryParams: GetAllCasesQueryParams = req.query;
   const charityId: string = res.locals.charity._id;
 
@@ -47,8 +50,8 @@ const getCaseById = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICaseDocumentResponse> => {
-  const charityCases: ICaseDocument[] = res.locals.charity.cases;
+): Promise<GetCaseByIdResponse> => {
+  const charityCases: ICase['id'][] = res.locals.charity.cases;
   const caseId: string | undefined = req.params.caseId;
   if (!caseId) throw new NotFoundError('no id exist for the case');
 
@@ -64,7 +67,7 @@ const deleteCase = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICaseDocumentResponse> => {
+): Promise<DeleteCaseResponse> => {
   const charity = res.locals.charity;
 
   const caseId: string | undefined = req.params.caseId;
@@ -82,7 +85,7 @@ const editCase = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<ICaseDocumentResponse> => {
+): Promise<EditCaseResponse> => {
   const charity = res.locals.charity;
 
   const caseId: string | undefined = req.params.caseId;

@@ -6,17 +6,8 @@ import {
 } from '../../../../libraries/errors/components/index';
 import { authCharityRepository } from '../data-access/charity.repository';
 import { deleteOldImgs } from '../../../../utils/deleteFile';
-// import { ICharityDocument } from '../../../charity/data-access/interfaces/charity.interface';
-import { CharityData } from './auth.use-case';
-import { ICharityDocument } from '../../../charity/data-access/interfaces/charity.interface';
-
-const checkCharityPassword = async (
-  email: string,
-  password: string
-): Promise<{
-  isMatch: boolean;
-  charity: ICharityDocument;
-}> => {
+import { ICharity } from '../../../charity/data-access/interfaces/';
+const checkCharityPassword = async (email: string, password: string) => {
   const charity = await authCharityRepository.findCharity(email);
   if (!charity) throw new NotFoundError('email not found');
   const isMatch = await bcryptjs.compare(password, charity.password);
@@ -25,11 +16,10 @@ const checkCharityPassword = async (
   }
   return { isMatch: true, charity: charity };
 };
-
-const checkCharityIsVerified = (charity: ICharityDocument) => {
+const checkCharityIsVerified = (charity: ICharity) => {
   if (
-    charity.emailVerification.isVerified ||
-    charity.phoneVerification.isVerified
+    (charity.emailVerification && charity.emailVerification.isVerified) ||
+    (charity.phoneVerification && charity.phoneVerification.isVerified)
   ) {
     return true; //charity verified already
   }
@@ -43,7 +33,7 @@ const checkCharityIsVerified = (charity: ICharityDocument) => {
 //   charity.verificationCode = null;
 //   await charity.save();
 // };
-const setTokenToCharity = async (charity: ICharityDocument, token: string) => {
+const setTokenToCharity = async (charity: ICharity, token: string) => {
   charity.verificationCode = token;
   await charity.save();
 };

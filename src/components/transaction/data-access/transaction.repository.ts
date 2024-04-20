@@ -9,7 +9,7 @@ import { FilterQuery } from 'mongoose';
 import { TransactionDataStore } from './interfaces/transaction.dao';
 import TransactionModel from './models/transaction.model';
 import { ICaseDocument } from '../../case/data-access/interfaces/case.interface';
-import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
+import { ICharity} from '../../charity/data-access/interfaces';
 import { IUserDocument } from '../../user/data-access/interfaces/user.interface';
 export class TransactionRepository implements TransactionDataStore {
   async findCaseById(id: string): Promise<ICaseDocument | null> {
@@ -17,10 +17,10 @@ export class TransactionRepository implements TransactionDataStore {
     return cases;
   }
 
-  async findCharityById(id: string): Promise<ICharityDocument | null> {
+  async findCharityById(id: string): Promise<ICharity | null> {
     const charity = (await CharityModel.findById(
       id
-    )) as ICharityDocument | null;
+    )) as ICharity | null;
     return charity;
   }
   async findTransactionByQuery(
