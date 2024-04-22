@@ -1,13 +1,16 @@
-import User from '../../../user/data-access/models/user.model';
-import { IUser, IUserDocument } from '../../../user/data-access/interfaces/user.interface';
-const findUser = async (email: string): Promise<IUserDocument | null> => {
-  let user = await User.findOne({ email: email }) as IUserDocument|null;
+import UserModel, { User } from '../../../user/data-access/models/user.model';
+import { RegisterUserInputData } from './auth.interface';
+
+const findUser = async (email: string): Promise<User | null> => {
+  let user: User | null = await UserModel.findOne({ email: email });
   return user;
 };
-const createUser = async (dataInputs: IUser): Promise<IUserDocument|null> => {
-  const user = await User.create(dataInputs)as IUserDocument|null;;
+
+const createUser = async (dataInputs: RegisterUserInputData): Promise<User> => {
+  const user: User = await UserModel.create(dataInputs);
   return user;
 };
+
 export const authUserRepository = {
   findUser,
   createUser,

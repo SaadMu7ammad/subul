@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { UnauthenticatedError } from '../../libraries/errors/components/index';
-import { AuthedRequest } from '../auth/user/data-access/auth.interface';
+// import { AuthedRequest } from '../auth/user/data-access/auth.interface';
 
-const isAdmin = (_req: Request, res: Response, next: NextFunction) => {
-  const req = _req as AuthedRequest;
+const isAdmin = (req: Request, res: Response, next: NextFunction) => {
+  // const req = _req as AuthedRequest;
 
-  if (!req.charity) {
+  if (!res.locals.charity) {
     //no isAdmin attribure in req.charity to prevent error of undefined isAdmin
-    if (req.user.isAdmin && req.user) {
+    if (res.locals.user.isAdmin && res.locals.user) {
       next(); //notice if i remove else from code the exec will go to the throw err
     } else {
       throw new UnauthenticatedError('you are not an admin');

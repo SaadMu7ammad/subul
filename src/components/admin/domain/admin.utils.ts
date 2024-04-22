@@ -12,7 +12,7 @@ import {
   ICharityDocs,
   ICharityPaymentMethodDocument,
   PendingCharities,
-} from '../../charity/data-access/interfaces/charity.interface';
+} from '../../charity/data-access/interfaces/';
 import { adminRepository } from '../data-access/admin.repository';
 import { QueryObject } from './admin.service';
 
@@ -43,7 +43,7 @@ const confirmingCharity = async (charity: PendingCharities): Promise<void> => {
   await charity.save();
 };
 
-// const rejectingCharity = async (charity: ICharityDocument) => {
+// const rejectingCharity = async (charity: ICharity) => {
 const rejectingCharity = async (charity: PendingCharities) => {
   charity.isPending = false;
   charity.isConfirmed = false;
@@ -98,7 +98,7 @@ const rejectingCharity = async (charity: PendingCharities) => {
 };
 
 const checkPaymentMethodAvailability = (
-  // charity: ICharityDocument,
+  // charity: ICharity,
   charity: ConfirmedCharities,
   paymentMethod: string,
   paymentAccountID: string

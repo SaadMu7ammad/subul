@@ -1,4 +1,4 @@
-import express, { Application,NextFunction, Request, Response} from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 import logger from '../../../../../utils/logger';
 import { authUseCase } from '../../domain/auth.use-case';
 import {
@@ -6,7 +6,6 @@ import {
   registerUserValidation,
 } from '../../../../../libraries/validation/components/user/userAuthValidation';
 import { validate } from '../../../../../libraries/validation/index';
-import { AuthedRequest } from '../../data-access/auth.interface';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -15,10 +14,8 @@ export default function defineRoutes(expressApp: Application) {
     '/',
     registerUserValidation,
     validate,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
-
         logger.info(`Auth API was called to register User`);
         const authResponse = await authUseCase.registerUser(req, res, next);
         return res.json(authResponse);
@@ -33,10 +30,8 @@ export default function defineRoutes(expressApp: Application) {
     '/auth',
     loginUserValidation,
     validate,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
-
         logger.info(`Auth API was called to auth User`);
         const authResponse = await authUseCase.authUser(req, res, next);
         return res.json(authResponse);

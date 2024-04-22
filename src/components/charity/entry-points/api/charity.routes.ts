@@ -22,12 +22,8 @@ import {
     resizeDoc,
     uploadDocs,
 } from '../../../../libraries/uploads/components/docs/images/handler';
-import { deleteCharityDocs, deleteOldImgs } from '../../../../utils/deleteFile';
-import {
-    uploadDocsReq,
-    resizeDocReq,
-} from '../../../../libraries/uploads/components/docs/images/handler2';
-import { AuthedRequest } from '../../../auth/user/data-access/auth.interface';
+import { deleteOldImgs } from '../../../../utils/deleteFile';
+import { resizeDocReq, uploadDocsReq } from '../../../../libraries/uploads/components/docs/images/handler2';
 
 export default function defineRoutes(expressApp: Application) {
     const router = express.Router();
@@ -36,9 +32,8 @@ export default function defineRoutes(expressApp: Application) {
         tokenCharityValidation,
         validate,
         auth,
-        async (_req:Request, res:Response, next:NextFunction) => {
+        async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const req = _req as AuthedRequest;
                 logger.info(`Charity API was called to Activate Account`);
                 const activateCharityAccountResponse =
                     await charityUseCase.activateCharityAccount(req, res, next);
@@ -87,9 +82,8 @@ export default function defineRoutes(expressApp: Application) {
         validate,
         auth,
         isActivated,
-        async (_req: Request, res: Response, next: NextFunction) => {
+        async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const req = _req as AuthedRequest;
 
                 logger.info(`Charity API was called to Change Password`);
                 const changePasswordResponse =
@@ -118,9 +112,8 @@ export default function defineRoutes(expressApp: Application) {
     router.get(
         '/profile',
         auth,
-        (_req: Request, res: Response, next: NextFunction) => {
+        (req: Request, res: Response, next: NextFunction) => {
             try {
-                const req = _req as AuthedRequest;
 
                 logger.info(`Charity API was called to Show Profile`);
                 const showCharityProfileResponse =
@@ -140,9 +133,8 @@ export default function defineRoutes(expressApp: Application) {
         isConfirmed,
         editCharityProfileValidation,
         validate,
-        async (_req: Request, res: Response, next: NextFunction) => {
+        async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const req = _req as AuthedRequest;
 
                 logger.info(`Charity API was called to Edit Profile`);
                 const changePasswordResponse =
@@ -161,9 +153,8 @@ export default function defineRoutes(expressApp: Application) {
         isConfirmed,
         imageAssertion,
         resizeImg,
-        async (_req: Request, res: Response, next: NextFunction) => {
+        async (req: Request, res: Response, next: NextFunction) => {
             try {
-                const req = _req as AuthedRequest;
 
                 logger.info(`Charity API was called to Edit Profile Img`);
                 const changeProfileImageResponse =
@@ -178,27 +169,22 @@ export default function defineRoutes(expressApp: Application) {
 
     router.post(
         '/request-edit-payment',
+        uploadDocsReq,
         auth,
         isActivated,
         isConfirmed,
-        uploadDocsReq,
         reqEditPaymentMethodsValidation,
         validate,
-        //@ts-expect-error
         resizeDocReq,
-        async (_req: Request, res: Response, next: NextFunction) => {
-            const req = _req as AuthedRequest;
+        async (req: Request, res: Response, next: NextFunction) => {
             try {
                 logger.info(`Charity API was called to Request Edit Payments`);
-                const editCharityPaymentResponse =
-                    await charityUseCase.requestEditCharityPayments(
-                        req,
-                        res,
-                        next
-                    );
+                const editCharityPaymentResponse = await charityUseCase.requestEditCharityPayments(req, res, next);
                 return res.json(editCharityPaymentResponse);
             } catch (error) {
-                deleteCharityDocs(req, 'payment');
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.bankAccount?.bankDocs);
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.fawry?.fawryDocs);
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs);
                 next(error);
                 return undefined;
             }
@@ -207,39 +193,25 @@ export default function defineRoutes(expressApp: Application) {
 
     router.post(
         '/send-docs',
-        auth,
         uploadDocs,
+        auth,
         reqEditPaymentMethodsValidation,
         validate,
-        //@ts-expect-error
         resizeDoc,
-        async (_req: Request, res: Response, next: NextFunction) => {
-            const req = _req as AuthedRequest;
+        async (req: Request, res: Response, next: NextFunction) => {
             try {
                 logger.info(`Charity API was called to Send Docs`);
-                const sendDocsResponse = await charityUseCase.sendDocs(
-                    req,
-                    res,
-                    next
-                );
+                const sendDocsResponse = await charityUseCase.sendDocs(req, res, next);
                 return res.json(sendDocsResponse);
             } catch (error) {
-                deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs2);
                 deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs1);
+                deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs2);
                 deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs3);
                 deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs4);
-                deleteOldImgs(
-                    'charityDocs',
-                    req?.body?.paymentMethods?.bankAccount?.bankDocs
-                );
-                deleteOldImgs(
-                    'charityDocs',
-                    req?.body?.paymentMethods?.fawry?.fawryDocs
-                );
-                deleteOldImgs(
-                    'charityDocs',
-                    req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs
-                );
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.bankAccount?.bankDocs);
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.fawry?.fawryDocs);
+                deleteOldImgs('charityDocs', req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs);
+
                 next(error);
                 return undefined;
             }

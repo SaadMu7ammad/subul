@@ -4,13 +4,12 @@ import { adminUseCase } from '../../domain/admin.use-case';
 import { auth } from '../../../auth/shared/index';
 import { isAdmin } from '../../index';
 import logger from '../../../../utils/logger';
-import { AuthedRequest } from '../../../auth/user/data-access/auth.interface';
 import {
   AllPendingRequestsCharitiesResponse,
   AllPendingRequestsPaymentMethods,
   ConfirmPendingCharity,
   PendingRequestCharityResponse,
-} from '../../../charity/data-access/interfaces/charity.interface';
+} from '../../../charity/data-access/interfaces/';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -19,9 +18,8 @@ export default function defineRoutes(expressApp: Application) {
     '/AllRequestsCharities',
     auth,
     isAdmin,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
 
         logger.info(
           `Admin API was called to get All Pending Requests Charities`
@@ -40,9 +38,8 @@ export default function defineRoutes(expressApp: Application) {
     '/requestCharity/:id',
     auth,
     isAdmin,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
         logger.info(
           `Admin API was called to get a Pending Request for Charity by Id`
         );
@@ -60,9 +57,8 @@ export default function defineRoutes(expressApp: Application) {
     '/confirmedCharity/requestsPaymentMethods/:id',
     auth,
     isAdmin,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
 
         logger.info(
           `Admin API was called to get Pending Requests payment account`
@@ -85,9 +81,8 @@ export default function defineRoutes(expressApp: Application) {
     '/confirmedCharities/AllRequestsPaymentMethods',
     auth,
     isAdmin,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
 
         logger.info(
           `Admin API was called to get all Pending Requests payment account`
@@ -110,9 +105,8 @@ export default function defineRoutes(expressApp: Application) {
     '/confirmrequestsCharities/:id',
     auth,
     isAdmin,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
 
         logger.info(`Admin API was called to get confirm a charity`);
         const confirmCharityResponse = (await adminUseCase.confirmCharity(
@@ -132,9 +126,8 @@ export default function defineRoutes(expressApp: Application) {
     '/rejectrequestsCharities/:id',
     auth,
     isAdmin,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
 
         logger.info(`Admin API was called to get reject a charity`);
         const rejectCharityResponse = (await adminUseCase.rejectCharity(
@@ -154,9 +147,8 @@ export default function defineRoutes(expressApp: Application) {
     '/confirmedCharity/confirmrequestPaymentMethod/:id',
     auth,
     isAdmin,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
 
         logger.info(
           `Admin API was called to get confirm a payment account for charity`
@@ -179,9 +171,8 @@ export default function defineRoutes(expressApp: Application) {
     '/confirmedCharity/rejectrequestPaymentMethod/:id',
     auth,
     isAdmin,
-    async (_req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const req = _req as AuthedRequest;
 
         logger.info(
           `Admin API was called to get reject a payment account for charity`

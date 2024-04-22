@@ -1,70 +1,40 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, InferSchemaType, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index';
-const locationSchema = new mongoose.Schema(
+import locationSchema from './location.model';
+const userSchema = new Schema(
   {
-    governorate: {
-      type: String,
-      enum: [
-        'Alexandria',
-        'Assiut',
-        'Aswan',
-        'Beheira',
-        'Bani Suef',
-        'Cairo',
-        'Daqahliya',
-        'Damietta',
-        'Fayyoum',
-        'Gharbiya',
-        'Giza',
-        'Helwan',
-        'Ismailia',
-        'Kafr El Sheikh',
-        'Luxor',
-        'Marsa Matrouh',
-        'Minya',
-        'Monofiya',
-        'New Valley',
-        'North Sinai',
-        'Port Said',
-        'Qalioubiya',
-        'Qena',
-        'Red Sea',
-        'Sharqiya',
-        'Sohag',
-        'South Sinai',
-        'Suez',
-        'Tanta',
-      ],
-      required: true,
-    },
-    city: {
-      type: String,
-      required: false,
-    },
-    street: {
-      type: String,
-      required: false,
-    },
-  },
-  { _id: false }
-);
+    // name: {
+    //   type: {
+    //     firstName: {
+    //       type: String,
+    //       required: true,
+    //     },
+    //     lastName: {
+    //       type: String,
+    //       required: true,
+    //     },
+    //   },
+    //   required: true,
+    // },
 
-const userSchema= new Schema(
-  {
+    // If you want the entire name object to be required, meaning both firstName and lastName must be provided,
+    // you can use a custom validator.
+
     name: {
       firstName: {
         type: String,
-        required: true,
+        required: [true, 'First name is required'],
       },
       lastName: {
         type: String,
-        required: true,
+        required: [true, 'Last name is required'],
       },
     },
+
     email: {
       type: String,
-      required: true,
+      required: [true, 'Email is required'],
       unique: true,
     },
     password: {
@@ -74,24 +44,22 @@ const userSchema= new Schema(
     isAdmin: {
       type: Boolean,
       default: false,
-      required: true,
     },
     pointsOnDonations: {
       type: Number,
       default: 0,
-      required: true,
     },
     totalDonationsAmount: {
       type: Number,
       default: 0,
-      required: false,
     },
     locationUser: {
-      type: locationSchema, // Use locationSchema here
-      required: true,
-    }, // profileImage: {
+      type: locationSchema,
+      // required: true, // 👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️ locationUser shouldn't be required.
+    },
+    // profileImage: {
     //     type: String,
-    //     required: false,
+    //
     // },
     gender: {
       type: String,
@@ -100,23 +68,53 @@ const userSchema= new Schema(
     },
     phone: {
       type: String,
-      required: false,
     },
     verificationCode: {
       type: String,
-      required: false,
       default: null,
+      // default: '',   LOOK HERE 👁️👁️👁️
     },
+    // emailVerification: {
+    //   required: true, // 👁️👁️
+    //   isVerified: {
+    //     type: Boolean,
+    //     default: false,
+    //   },
+    //   verificationDate: {
+    //     // type: Date,
+    //     // default: null,
+    //     type: String,
+    //     default: '',
+    //   },
+    // },
+
+    // If you want to make the emailVerification object itself required, you’ll need to use a custom validator as well.
     emailVerification: {
       isVerified: {
         type: Boolean,
         default: false,
       },
       verificationDate: {
-        type: Date,
-        default: null,
+        type: String,
+        default: '',
       },
     },
+    // Another way 👇👇
+    // emailVerification: {
+    //   // This will satisfy TypeScript’s strict null checks and prevent the error.
+    //   default: () => ({}), // Set a default empty object for emailVerification
+    //   type: {
+    //     isVerified: {
+    //       type: Boolean,
+    //       default: false,
+    //     },
+    //     verificationDate: {
+    //       type: String,
+    //       default: '',
+    //     },
+    //   },
+    // },
+
     phoneVerification: {
       isVerified: {
         type: Boolean,
@@ -125,12 +123,13 @@ const userSchema= new Schema(
       verificationDate: {
         type: Date,
         default: null,
+        // type: String,
+        // default: '',
       },
     },
     isEnabled: {
       type: Boolean,
       default: true,
-      required: true,
     },
     transactions: [
       { type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' },
@@ -138,6 +137,7 @@ const userSchema= new Schema(
   },
   { timestamps: true }
 );
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     //to not change password every time we edit the user data
@@ -163,6 +163,15 @@ userSchema.pre('save', async function (next) {
 //     }
 
 // });
+// export type User = InferSchemaType<typeof userSchema>;
+export type User = HydratedDocument<InferSchemaType<typeof userSchema>>;
+// InferSchemaType will determine the type as follows:
+// type User = {
+//   name: string;
+//   email: string;
+//   avatar?: string;
+// }
 
-const UserModel = mongoose.model('Users', userSchema);
+// `UserModel` will have `name: string`, etc..
+const UserModel = mongoose.model<User>('Users', userSchema);
 export default UserModel;

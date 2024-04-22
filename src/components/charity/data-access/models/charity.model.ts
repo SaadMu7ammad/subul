@@ -1,6 +1,7 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { InferSchemaType, Schema, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index';
+import { ICharity } from '../interfaces/';
 
 const locationSchema = new mongoose.Schema({
   governorate: {
@@ -51,6 +52,7 @@ const locationSchema = new mongoose.Schema({
 const paymentMethodSchema = new Schema({
   bankAccount: [
     {
+      _id: mongoose.Types.ObjectId,
       enable: {
         //account is valid to use or not (freezed or in reviewing)
         type: Boolean,
@@ -58,77 +60,59 @@ const paymentMethodSchema = new Schema({
       },
       accNumber: {
         type: String,
-        // required: true,
+        required: true,
       },
       iban: {
         type: String,
-        // required: true,
+        required: true,
       },
       swiftCode: {
         type: String,
-        // required: true,
+        required: true,
       },
       bankDocs: {
         type: [String], // Define it as an array of strings
-        // required: true, // The entire array is required
+        required: true,
       },
     },
   ],
   fawry: [
     {
+      _id: mongoose.Types.ObjectId,
       enable: {
         type: Boolean,
         default: false,
       },
       number: {
         type: String,
-        // required: true,
+        required: true,
       },
 
       fawryDocs: {
         type: [String],
-        // required: true,
+        required: true,
       },
     },
   ],
   vodafoneCash: [
     {
+      _id: mongoose.Types.ObjectId,
       enable: {
         type: Boolean,
         default: false,
       },
       number: {
         type: String,
-        // required: true,
+        required: true,
       },
 
       vodafoneCashDocs: {
         type: [String],
-        // required: true,
+        required: true,
       },
     },
   ],
 });
-// paymentMethodSchema.path('bankAccount').validate(function (value) {
-//   for (const bankAccount of value) {
-//     if (bankAccount.accNumber && bankAccount.iban&&bankAccount.swiftCode) {
-//       return true;
-//     }
-//   }
-//   return false
-// }, 'Validation input bank not completed');
-
-// paymentMethodSchema.path('bankAccount').validate(function (value) {
-//   return value.length > 0;
-// }, 'At least one bank account must be provided.');
-
-// paymentMethodSchema.path('fawry').validate(function (value) {
-//   return value.length > 0;
-// }, 'At least one fawry account must be provided.');
-
-// paymentMethodSchema.path('vodafoneCash').validate(function (value) {
-//   return value.length > 0;
-// }, 'At least one vodafoneCash account must be provided.');
 
 const charitySchema = new Schema(
   {
@@ -141,7 +125,7 @@ const charitySchema = new Schema(
     image: {
       type: String,
       required: true, // Ensure it's required
-    }, // profileImg: {},
+    },
     email: {
       type: String,
       required: true,
@@ -156,18 +140,21 @@ const charitySchema = new Schema(
       required: true,
     },
     contactInfo: {
-      email: {
-        type: String,
-        required: true,
+      type: {
+        email: {
+          type: String,
+          required: true,
+        },
+        phone: {
+          type: Number,
+          required: true,
+        },
+        websiteUrl: {
+          type: String,
+          required: true,
+        },
       },
-      phone: {
-        type: Number,
-        required: true,
-      },
-      websiteUrl: {
-        type: String,
-        required: true,
-      },
+      required: true,
     },
     description: {
       type: String,
@@ -180,7 +167,7 @@ const charitySchema = new Schema(
     verificationCode: {
       type: String,
       required: false,
-      default: null,
+      default: '',
     },
     emailVerification: {
       isVerified: {
@@ -188,8 +175,8 @@ const charitySchema = new Schema(
         default: false,
       },
       verificationDate: {
-        type: Date,
-        default: null,
+        type: String,
+        default: '',
       },
     },
     phoneVerification: {
@@ -198,8 +185,8 @@ const charitySchema = new Schema(
         default: false,
       },
       verificationDate: {
-        type: Date,
-        default: null,
+        type: String,
+        default: '',
       },
     },
     isEnabled: {
@@ -220,15 +207,9 @@ const charitySchema = new Schema(
       default: false,
       required: true,
     },
-    // modifyPaymentMethodsRequest: {
-    //   //if the charity admin request to add a new payment account or edit existing one
-    //   type: Boolean,
-    //   default: false,
-    //   required: true,
-    // },
     paymentMethods: {
       type: paymentMethodSchema,
-      // required: true,
+      required: false,
     },
     rate: {
       type: Number,
@@ -259,10 +240,9 @@ const charitySchema = new Schema(
     ],
     charityLocation: {
       type: [locationSchema],
-      // default: undefined,
+      default: undefined,
       required: [true, 'At least one location is required.'],
     },
-    // files: [{}],
     charityInfo: {
       registeredNumber: {
         type: String,
@@ -279,203 +259,27 @@ const charitySchema = new Schema(
       docs3: [String],
       docs4: [String],
     },
-    //, charityReqDocs: {
-    //   docs: [String],
-    // },
   },
   { timestamps: true }
 );
 
 charitySchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        //to not change password every time we edit the user data
-        next();
-    }
-    const salt = await bcrypt.genSalt(
-        configurationProvider.getValue('hashing.salt')
-    );
-    this.password = await bcrypt.hash(this.password, salt);
+  if (!this.isModified('password')) {
+    //to not change password every time we edit the user data
+    next();
+  }
+  const salt = await bcrypt.genSalt(
+    configurationProvider.getValue('hashing.salt')
+  );
+  this.password = await bcrypt.hash(this.password, salt);
 });
-// const editImgUrl = (doc) => {
-//   if (doc.image) {
-//     const urlImg = `http://${configurationProvider.getValue(
-//       'environment.host'
-//     )}:${configurationProvider.getValue('environment.port')}/charityLogos/${
-//       doc.image
-//     }`;
-//     doc.image = urlImg;
-//   }
-// };
-// const editDocUrl = function (ref, field) {
-//   ref[field].map((img, indx) => {
-//     // console.log(img);//before adding localhost
-//     const url = `http://${configurationProvider.getValue(
-//       'environment.host'
-//     )}:${configurationProvider.getValue(
-//       'environment.port'
-//     )}/charityDocs/${img}`;
-//     img = url;
-//     // console.log(img);//after adding localhost
-//     ref[field][indx] = img;
-//   });
-// };
-// const editDocUrlPayment = function (ref, field) {
-//   // console.log(ref);
-//   ref.forEach((account, index) => {
-//     // console.log(account);
-//     // account.forEach((img, indx) => {
-//     // console.log(img);//before adding localhost
-//     // console.log('acc=');
-//     // console.log(account.bankDocs[0]);
-//     if (field === 'bankDocs') {
-//       console.log('editDocUrlPayment');
-//       account.bankDocs.forEach((sub, indx) => {
-//         console.log('before ' + sub);
-//         const url = `http://${configurationProvider.getValue(
-//           'environment.host'
-//         )}:${configurationProvider.getValue(
-//           'environment.port'
-//         )}/charityDocs/${sub}`;
-//         sub = url;
-//         account.bankDocs[indx] = sub;
-//         console.log('after ' + sub);
-//       });
-//       // account.bankDocs[0] = url;
-//     } else if (field === 'fawryDocs') {
-//       account.fawryDocs.forEach((sub, indx) => {
-//         // console.log(sub);
-//         const url = `http://${configurationProvider.getValue(
-//           'environment.host'
-//         )}:${configurationProvider.getValue(
-//           'environment.port'
-//         )}/charityDocs/${sub}`;
-//         sub = url;
-//         account.fawryDocs[indx] = sub;
-//       });
-//     } else if (field === 'vodafoneCashDocs') {
-//       account.vodafoneCashDocs.forEach((sub, indx) => {
-//         // console.log(sub);
-//         const url = `http://${configurationProvider.getValue(
-//           'environment.host'
-//         )}:${configurationProvider.getValue(
-//           'environment.port'
-//         )}/charityDocs/${sub}`;
-//         sub = url;
-//         account.vodafoneCashDocs[indx] = sub;
-//       });
-//     }
 
-//     // console.log(img);//after adding localhost
-//     // ref.account[index] =  account.bankDocs;
-//   });
-//   // })
-// };
-// charitySchema.post('init', (doc) => {
-//   //findone,findall,update
-//   //after initialized the doc in db when a document is created or retrieved from the database.
-//   console.log('after init');
-//   // console.log('accessing data');
-//   if (!doc.isModified('image')) {
-//     console.log('NOTTT modifieddd');
-//   } else {
-//     console.log('modifieddd');
-//     editImgUrl(doc);
-//   }
-//   // if (doc.paymentMethods && (doc.paymentMethods.bankAccount, 'bankDocs')) {
-//   //   console.log('xcxcxc');
-//   //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'bankDocs');
-//   // }
-//   // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
-//   //   editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
-//   // }
-//   // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs')) {
-//   //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs');
-//   // }
-//   // if (
-//   //   !doc.isModified('charityDocs[docs1]') &&
-//   //   !doc.isModified('charityDocs[docs2]') &&
-//   //   !doc.isModified('charityDocs[docs3]') &&
-//   //   !doc.isModified('charityDocs[docs4]')
-//   // ) {
-//   //   console.log('NOTTT modifieddd docs');
-//   //   console.log(doc.charityDocs.docs1);
-//   //   // console.log(doc.image);
-//   // } else {
-//   //   console.log('modifieddd docs');
-//   //   // console.log(doc.image);
-//   //   editImgUrl(doc);
-//   //   // console.log(doc.image);
-//   // }
-// });
-// charitySchema.post('save', (doc) => {
-//   //create
-//   // after a new document is created and saved for the first time or when an existing document is updated and saved.  // console.log('after first time we create the data');
-//   console.log('after created');
-//   editImgUrl(doc);
-//   if (
-//     !doc.charityDocs.docs1 &&
-//     !doc.charityDocs.docs2 &&
-//     !doc.charityDocs.docs3 &&
-//     !doc.charityDocs.docs4
-//   ) {
-//     // console.log(doc.charityDocs);
-//     console.log('docs is empty');
-//   } else {
-//     editDocUrl(doc.charityDocs, 'docs1');
-//     editDocUrl(doc.charityDocs, 'docs2');
-//     editDocUrl(doc.charityDocs, 'docs3');
-//     editDocUrl(doc.charityDocs, 'docs4');
-//     // if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'bankDocs')) {
-//     //   editDocUrlPayment(doc.paymentMethods.bankAccount, 'bankDocs');
-//     // }
-//     // if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
-//     //   editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
-//     // }
-//     // if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs')) {
-//     //   editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs');
-//     // }
-//   }
-// });
+declare module '../interfaces/charity.interface' {
+  export type ICharity = HydratedDocument<
+    InferSchemaType<typeof charitySchema>
+  >;
+}
 
-// charitySchema.pre('init', (doc) => {
-//   if (!doc.charityDocs||
-//     !doc.charityDocs.docs1 &&
-//     !doc.charityDocs.docs2 &&
-//     !doc.charityDocs.docs3 &&
-//     !doc.charityDocs.docs4
-//   ) {
-//     // console.log(doc.charityDocs);
-//     console.log('docs is empty');
-//   } else {
-//     editDocUrl(doc.charityDocs, 'docs1');
-//     editDocUrl(doc.charityDocs, 'docs2');
-//     editDocUrl(doc.charityDocs, 'docs3');
-//     editDocUrl(doc.charityDocs, 'docs4');
-//   }
-//   if (doc.paymentMethods&&(doc.paymentMethods.bankAccount, 'bankDocs')) {
-//     editDocUrlPayment(doc.paymentMethods.bankAccount, 'bankDocs');
-//   }
-//   if (doc.paymentMethods&&(doc.paymentMethods.fawry, 'fawryDocs')) {
-//     editDocUrlPayment(doc.paymentMethods.fawry, 'fawryDocs');
-//   }
-//   if (doc.paymentMethods&&(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs')) {
-//     editDocUrlPayment(doc.paymentMethods.vodafoneCash, 'vodafoneCashDocs');
-//   }
-// });
-// charitySchema.pre('findOneAndUpdate', async function (next) {
-//   // the update operation object is stored within this.getUpdate()
-//   console.log('charitySchemaMiddleWare');
-//   console.log(this.getUpdate());
-//   // console.log( this.getUpdate().$set.password);
-//   const passwordToUpdate = this.getUpdate().$set.password;
-
-//   if (passwordToUpdate) {
-//     const salt = await bcrypt.genSalt(
-//       configurationProvider.getValue('hashing.salt')
-//     );
-//     this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
-//   }
-// });
-const Charity = mongoose.model('Charity', charitySchema);
+const Charity = mongoose.model<ICharity>('Charity', charitySchema);
 
 export default Charity;

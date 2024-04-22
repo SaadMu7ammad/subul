@@ -1,4 +1,4 @@
-import { IUser, IUserDocument } from '../../../components/user/data-access/interfaces/user.interface';
+import { User } from '../../../components/user/data-access/models/user.model';
 import * as configurationProvider from '../../configuration-provider/index';
 import { NotFoundError } from '../../errors/components/index';
 import { paymentUtils } from './payment.utils';
@@ -54,7 +54,7 @@ const OrderRegistrationAPI = async (
 const generatePaymentKey = async (
   token:string,
   order_id:string,
-  user:IUser,
+  user:User,
   amount:number,
   integration_id:string
 ) => {
@@ -78,8 +78,8 @@ const generatePaymentKey = async (
             street: user.locationUser ? user.locationUser.street : 'NA',
             city: user.locationUser ? user.locationUser.city : 'NA',
             country: 'Egypt', //"user.address ? user.address.country ": 'NA',
-            first_name: user.name.firstName,
-            last_name: user.name.lastName,
+            first_name: user.name?.firstName,
+            last_name: user.name?.lastName,
             state: user.locationUser ? user.locationUser.governorate : 'NA',
             zip_code:'NA',// user.locationUser ? user.locationUser.zip_code : 'NA',
           },
@@ -96,7 +96,7 @@ const generatePaymentKey = async (
   }
 };
 const createPayment = async (
-  user:IUserDocument,
+  user:User,
   amount:number,
   charityId:string,
   caseId:string,

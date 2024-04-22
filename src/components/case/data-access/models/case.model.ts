@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { HydratedDocument, InferSchemaType } from 'mongoose';
 import locationSchema from './location.model';
 
 const caseSchema = new mongoose.Schema(
@@ -91,12 +91,12 @@ const caseSchema = new mongoose.Schema(
       default: 0,
     },
     dateFinished: {
-      type: Date,
+      type: String,
       required: false,
     },
     donationNumbers: {
       type: Number,
-      required: false,
+      required: true,
       default: 0,
     },
     // number of beneficiaries
@@ -117,7 +117,7 @@ const caseSchema = new mongoose.Schema(
     },
     currentDonationAmount: {
       type: Number,
-      required: false,
+      required: true,
       default: 0,
     },
     //last time donated from timestamps
@@ -127,6 +127,10 @@ const caseSchema = new mongoose.Schema(
 // caseSchema.virtual('charityName.name').get(function () {
 //   return this.charityName ? this.charityName.name : '';
 // });
+
+declare module '../interfaces/case.interface' {
+  export type ICase = HydratedDocument<InferSchemaType<typeof caseSchema>>;
+}
 
 const Case = mongoose.model('Cases', caseSchema);
 export default Case;

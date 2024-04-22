@@ -1,30 +1,36 @@
-import { AuthedRequest } from '../../auth/user/data-access/auth.interface';
-import { IUser, IUserResponse } from '../data-access/interfaces/user.interface';
+// import {  IUserModifed, IUserResponse, dataForActivateAccount, dataForChangePassword, dataForConfirmResetEmail, dataForResetEmail } from '../data-access/interfaces/user.interface';
+
+import {
+  EditUserProfileResponse,
+  IUserModifed,
+  dataForActivateAccount,
+  dataForChangePassword,
+  dataForConfirmResetEmail,
+  dataForResetEmail,
+} from '../data-access/interfaces/user.interface';
+import { User } from '../data-access/models/user.model';
 import { userService } from './user.service';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 //@desc   reset password
 //@route  POST /api/users/reset
 //@access public
-const resetUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<{ message: string }> => {
-  const resetInputsData = req.body;
+const resetUser = async (req: Request): Promise<{ message: string }> => {
+  const resetInputsData: dataForResetEmail = req.body;
   const responseData = await userService.resetUser(resetInputsData);
   return {
     message: responseData.message,
   };
 };
-//@desc   reset password
-//@route  POST /api/users/confirm
-//@access public
+
+// @desc   reset password
+// @route  POST /api/users/confirm
+// @access public
 const confirmReset = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  _res: Response,
+  _next: NextFunction
 ): Promise<{ message: string }> => {
-  const resetInputsData = req.body;
+  const resetInputsData: dataForConfirmResetEmail = req.body;
   const responseData = await userService.confirmReset(resetInputsData);
   return {
     message: responseData.message,
@@ -35,12 +41,20 @@ const confirmReset = async (
 //@route  POST /api/users/changepassword
 //@access private
 const changePassword = async (
-  req: AuthedRequest,
+  req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): Promise<{ message: string }> => {
-  const changePasswordInputsData = req.body;
-  const storedUser = req.user;
+  const changePasswordInputsData: dataForChangePassword = req.body;
+
+  const storedUser: User = res.locals.user; // req.app gives you access to the main Express application object.
+
+  //   /** اعتقد الاصل اننا نأتي من الريز أولا لو موجودة نكمل لو مش موجودة نروح للريك => req.app.locals
+  //    * res.locals is used for request-specific data that is only relevant to the current request,
+  //    *  while req.app.locals is used for storing data that needs to be accessed globally across the entire application
+  //    *  and continue throughout the application's lifecycle.
+  //    */
+
   const responseData = await userService.changePassword(
     changePasswordInputsData,
     storedUser
@@ -54,12 +68,12 @@ const changePassword = async (
 //@route  POST /api/users/activate
 //@access private
 const activateAccount = async (
-  req: AuthedRequest,
+  req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): Promise<{ message: string }> => {
-  const activateAccountInputsData = req.body;
-  const storedUser = req.user;
+  const activateAccountInputsData: dataForActivateAccount = req.body;
+  const storedUser: User = res.locals.user;
   const responseData = await userService.activateAccount(
     activateAccountInputsData,
     storedUser,
@@ -69,14 +83,11 @@ const activateAccount = async (
     message: responseData.message,
   };
 };
+
 //@desc   logout user
 //@route  POST /api/users/logout
 //@access private
-const logoutUser = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): { message: string } => {
+const logoutUser = (res: Response): { message: string } => {
   const responseData = userService.logoutUser(res);
   return {
     message: responseData.message,
@@ -86,26 +97,31 @@ const logoutUser = (
 //@route  POST /api/users/profile/edit
 //@access private
 const editUserProfile = async (
-  req: AuthedRequest,
+  req: Request,
   res: Response,
-  next: NextFunction
-): Promise<IUserResponse> => {
-  const editUserProfileInputsData: Partial<IUser> = {
-    //for TS
-    name: {
-      firstName: req.body?.name?.firstName,
-      lastName: req.body?.name?.lastName,
-    },
-    email: req.body?.email,
-    locationUser: req.body?.locationUser?.governorate,
-    gender: req.body?.gender,
-    phone: req.body?.phone,
-  };
-  const storedUser = req.user;
+  _next: NextFunction
+): Promise<EditUserProfileResponse> => {
+  const editUserProfileInputsData: IUserModifed = req.body;
+  //❌ Code below causes an error: `Cannot read prop of undefined`
+  // const editUserProfileInputsData: IUserModifed = {
+  //   //for TS
+  //   name: {
+  //     firstName: req.body.name.firstName,
+  //     lastName: req.body.name.lastName,
+  //   },
+  //   email: req.body.email,
+  //   locationUser: req.body.locationUser.governorate,
+  //   gender: req.body.gender,
+  //   phone: req.body.phone,
+  // };
+
+  const storedUser: User = res.locals.user;
+
   const responseData = await userService.editUserProfile(
     editUserProfileInputsData,
     storedUser
   );
+
   if (responseData.emailAlert) {
     return {
       user: responseData.user,
@@ -119,15 +135,16 @@ const editUserProfile = async (
     };
   }
 };
+
 //@desc   get user profile
 //@route  GET /api/users/profile
 //@access private
 const getUserProfileData = (
-  req: AuthedRequest,
+  _req: Request,
   res: Response,
-  next: NextFunction
-): IUserResponse => {
-  const storedUser = req.user;
+  _next: NextFunction
+) => {
+  const storedUser: User = res.locals.user;
   const responseData = userService.getUserProfileData(storedUser);
   return {
     user: responseData.user,

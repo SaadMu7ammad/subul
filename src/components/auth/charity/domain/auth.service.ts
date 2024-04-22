@@ -1,18 +1,43 @@
-import { Response } from 'express';
+// import { Response } from 'express';
 import generateToken from '../../../../utils/generateToken';
 import {
   generateResetTokenTemp,
   setupMailSender,
 } from '../../../../utils/mailer';
 import { authCharityUtils } from './auth.utils';
+import { CharityData } from './auth.use-case';
+import mongoose from 'mongoose';
+import { Response } from 'express';
 
-const authCharity = async (reqBody: { email: string; password: string; }, res: Response<any, Record<string, any>>) => {
-  const { email, password }: { email: string; password: string; } = reqBody;
+export interface AuthCharity {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  isEnabled: string;
+  isConfirmed: boolean;
+  isPending: boolean;
+}
+interface AuthCharityResponse {
+  charity: AuthCharity;
+  emailAlert: boolean;
+  token: string;
+}
+
+const authCharity = async (
+  reqBody: { email: string; password: string },
+  res: Response<any, Record<string, any>>
+): Promise<AuthCharityResponse> => {
+  const { email, password }: { email: string; password: string } = reqBody;
+
   const charityResponse = await authCharityUtils.checkCharityPassword(
     email,
     password
   );
-  const token = generateToken(res, charityResponse.charity._id, 'charity');
+  const token = generateToken(
+    res,
+    charityResponse.charity._id.toString(),
+    'charity'
+  );
   const charityObj = {
     _id: charityResponse.charity._id,
     name: charityResponse.charity.name,
@@ -49,7 +74,15 @@ const authCharity = async (reqBody: { email: string; password: string; }, res: R
     };
   }
 };
-const registerCharity = async (reqBody: any, res: any) => {
+export interface CharityObject {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  image: string;
+}
+const registerCharity = async (
+  reqBody: CharityData
+): Promise<{ charity: CharityObject }> => {
   const newCreatedCharity = await authCharityUtils.createCharity(reqBody);
   // generateToken(res, newCreatedCharity.charity._id, 'charity');
   await setupMailSender(
@@ -58,16 +91,18 @@ const registerCharity = async (reqBody: any, res: any) => {
     `hi ${newCreatedCharity.charity.name} ` +
       ' we are happy that you joined our community ... keep spreading goodness with us'
   );
-  const charityObj = {
+  const charityObj: CharityObject = {
     _id: newCreatedCharity.charity._id,
     name: newCreatedCharity.charity.name,
     email: newCreatedCharity.charity.email,
     image: newCreatedCharity.charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
   };
+
   return {
     charity: charityObj,
   };
 };
+
 export const authCharityService = {
   authCharity,
   registerCharity,

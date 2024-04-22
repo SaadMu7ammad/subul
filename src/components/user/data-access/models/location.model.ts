@@ -1,9 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose, { InferSchemaType } from 'mongoose';
+
 const locationSchema = new mongoose.Schema(
-{
+  {
     governorate: {
-    type: String,
-    enum: [
+      type: String,
+      enum: [
         'Alexandria',
         'Assiut',
         'Aswan',
@@ -33,14 +34,20 @@ const locationSchema = new mongoose.Schema(
         'South Sinai',
         'Suez',
         'Tanta',
-    ],
-    required: true,
+      ],
+      // required: true,
     },
     city: {
-    type: String,
-    required: false,
+      type: String,
     },
-},
-{ _id: false }
+    street: {
+      type: String,
+    },
+  },
+  { _id: false }
 );
+
+// export type locationSchema = InferSchemaType<typeof locationSchema>;
+export type locationUser = InferSchemaType<typeof locationSchema>;
+
 export default locationSchema;

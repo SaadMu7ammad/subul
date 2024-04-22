@@ -6,8 +6,9 @@ import {
 } from '../../../../libraries/errors/components/index';
 import { authCharityRepository } from '../data-access/charity.repository';
 import { deleteOldImgs } from '../../../../utils/deleteFile';
-import { ICharityDocument } from '../../../charity/data-access/interfaces/charity.interface';
-const checkCharityPassword = async (email:string, password:string) => {
+import { ICharity } from '../../../charity/data-access/interfaces/';
+import { CharityData } from './auth.use-case';
+const checkCharityPassword = async (email: string, password: string) => {
   const charity = await authCharityRepository.findCharity(email);
   if (!charity) throw new NotFoundError('email not found');
   const isMatch = await bcryptjs.compare(password, charity.password);
@@ -16,10 +17,10 @@ const checkCharityPassword = async (email:string, password:string) => {
   }
   return { isMatch: true, charity: charity };
 };
-const checkCharityIsVerified = (charity:ICharityDocument) => {
+const checkCharityIsVerified = (charity: ICharity) => {
   if (
-    charity.emailVerification.isVerified ||
-    charity.phoneVerification.isVerified
+    (charity.emailVerification && charity.emailVerification.isVerified) ||
+    (charity.phoneVerification && charity.phoneVerification.isVerified)
   ) {
     return true; //charity verified already
   }
@@ -33,18 +34,23 @@ const checkCharityIsVerified = (charity:ICharityDocument) => {
 //   charity.verificationCode = null;
 //   await charity.save();
 // };
-const setTokenToCharity = async (charity:ICharityDocument, token:string) => {
+const setTokenToCharity = async (charity: ICharity, token: string) => {
   charity.verificationCode = token;
   await charity.save();
 };
-const createCharity = async (dataInputs:any) => {
+
+const createCharity = async (
+  dataInputs: CharityData
+): Promise<{ charity: ICharity }> => {
   const charityExist = await authCharityRepository.findCharity(
     dataInputs.email
   );
+
   if (charityExist) {
     deleteOldImgs('charityLogos', dataInputs.image);
     throw new BadRequestError('charity is registered already');
   }
+
   const newCharity = await authCharityRepository.createCharity(dataInputs);
   console.log('New' + newCharity);
   if (!newCharity) {
@@ -53,6 +59,7 @@ const createCharity = async (dataInputs:any) => {
   }
   return { charity: newCharity };
 };
+
 export const authCharityUtils = {
   checkCharityPassword,
   checkCharityIsVerified,

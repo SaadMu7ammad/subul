@@ -1,30 +1,32 @@
 import { caseUtils } from './case.utils';
 import {
   ICase,
-  ICaseDocument,
   FilterObj,
   GetAllCasesQueryParams,
   PaginationObj,
   SortObj,
-  ICaseDocumentResponse,
-  ICasesDocumentResponse,
-} from '../data-access/interfaces/case.interface';
+  GetAllCasesResponse,
+  AddCaseResponse,
+  GetCaseByIdResponse,
+  DeleteCaseResponse,
+  EditCaseResponse
+} from '../data-access/interfaces';
 import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components';
-import { ICharityDocument } from '../../charity/data-access/interfaces/charity.interface';
+import { ICharity } from '../../charity/data-access/interfaces/';
 const addCase = async (
-  caseData: ICase,
+  caseData:ICase,
   image: string,
-  charity: ICharityDocument
-): Promise<ICaseDocumentResponse> => {
-  const newCase = await caseUtils.createCase({
-    ...caseData,
-    coverImage: image,
-    charity: charity._id,
-  });
+  charity: ICharity
+): Promise<AddCaseResponse> => {
+  caseData.coverImage = image;
+  caseData.charity = charity._id;
+  const newCase = await caseUtils.createCase(caseData);
+
   if (!newCase) throw new BadRequestError('case not created... try again');
+
   charity.cases.push(newCase._id);
 
   await charity.save();
@@ -35,7 +37,7 @@ const addCase = async (
 const getAllCases = async (
   charityId: string,
   queryParams: GetAllCasesQueryParams
-): Promise<ICasesDocumentResponse> => {
+): Promise<GetAllCasesResponse> => {
   const sortObj: SortObj = caseUtils.getSortObj(queryParams.sort);
 
   const filterObj: FilterObj = caseUtils.getFilterObj(charityId, queryParams);
@@ -49,12 +51,12 @@ const getAllCases = async (
 };
 
 const getCaseById = async (
-  charityCases: ICaseDocument[],
+  charityCases: ICase['id'][],
   caseId: string
-): Promise<ICaseDocumentResponse> => {
+): Promise<GetCaseByIdResponse> => {
   caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
 
-  const _case: ICaseDocument = await caseUtils.getCaseByIdFromDB(caseId);
+  const _case: ICase = await caseUtils.getCaseByIdFromDB(caseId);
 
   return {
     case: _case,
@@ -62,15 +64,15 @@ const getCaseById = async (
 };
 
 const deleteCase = async (
-  charity: ICharityDocument,
+  charity: ICharity,
   caseId: string
-): Promise<ICaseDocumentResponse> => {
+): Promise<DeleteCaseResponse> => {
   const idx: number = caseUtils.checkIfCaseBelongsToCharity(
     charity.cases,
     caseId
   );
 
-  const deletedCase: ICaseDocument = await caseUtils.deleteCaseFromDB(caseId);
+  const deletedCase: ICase = await caseUtils.deleteCaseFromDB(caseId);
 
   await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
 
@@ -80,10 +82,10 @@ const deleteCase = async (
 };
 
 const editCase = async (
-  charity: ICharityDocument,
+  charity: ICharity,
   caseData: ICase & { coverImage: string; image: string[] },
   caseId: string
-): Promise<ICaseDocumentResponse> => {
+): Promise<EditCaseResponse> => {
   caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
   let deleteOldImg: (() => void) | null = null;
@@ -91,7 +93,7 @@ const editCase = async (
     deleteOldImg = await caseUtils.replaceCaseImg(caseData, caseId);
   }
 
-  let updatedCase: ICaseDocument = await caseUtils.editCase(caseData, caseId);
+  let updatedCase: ICase = await caseUtils.editCase(caseData, caseId);
 
   if (deleteOldImg) deleteOldImg();
 
