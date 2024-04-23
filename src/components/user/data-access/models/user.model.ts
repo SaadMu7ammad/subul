@@ -4,33 +4,33 @@ import * as configurationProvider from '../../../../libraries/configuration-prov
 import locationSchema from './location.model';
 const userSchema = new Schema(
   {
-    // name: {
-    //   type: {
-    //     firstName: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //     lastName: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //   },
-    //   required: true,
-    // },
+    name: {
+      type: {
+        firstName: {
+          type: String,
+          required: true,
+        },
+        lastName: {
+          type: String,
+          required: true,
+        },
+      },
+      required: true,
+    },
 
     // If you want the entire name object to be required, meaning both firstName and lastName must be provided,
     // you can use a custom validator.
 
-    name: {
-      firstName: {
-        type: String,
-        required: [true, 'First name is required'],
-      },
-      lastName: {
-        type: String,
-        required: [true, 'Last name is required'],
-      },
-    },
+    // name: {
+    //   firstName: {
+    //     type: String,
+    //     required: [true, 'First name is required'],
+    //   },
+    //   lastName: {
+    //     type: String,
+    //     required: [true, 'Last name is required'],
+    //   },
+    // },
 
     email: {
       type: String,

@@ -85,7 +85,7 @@ const changePassword = async (reqBody: dataForChangePassword, user: User) => {
     'password changed alert',
     `hi ${
       // updatedUser.name?.firstName will safely access firstName if name is not undefined.
-      updatedUser.name?.firstName + ' ' + updatedUser.name?.lastName
+      updatedUser.name.firstName + ' ' + updatedUser.name?.lastName
     }<h3>contact us if you did not changed the password</h3>` +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
   );
