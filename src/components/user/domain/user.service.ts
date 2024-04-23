@@ -130,7 +130,7 @@ const logoutUser = (res: Response) => {
 };
 
 const getUserProfileData = (user: User) => {
-  return { user: user };
+  return { user: user, message: 'User Profile Fetched Successfully' };
 };
 
 const editUserProfile = async (

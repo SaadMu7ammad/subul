@@ -140,7 +140,7 @@ const getUserProfileData = (
   const responseData = userService.getUserProfileData(storedUser);
   return {
     user: responseData.user,
-    message: 'User Profile Fetched Successfully',
+    message: responseData.message 
   };
 };
 
