@@ -171,6 +171,8 @@ const editUserProfile = async (
     return {
       emailAlert: true,
       user: userObj,
+      message:
+        'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
     };
   }
   updateNestedProperties(user, reqBody);
@@ -188,6 +190,7 @@ const editUserProfile = async (
   return {
     emailAlert: false,
     user: userObj,
+    message: 'User Data Changed Successfully',
   };
 };
 

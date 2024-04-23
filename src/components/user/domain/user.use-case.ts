@@ -122,18 +122,10 @@ const editUserProfile = async (
     storedUser
   );
 
-  if (responseData.emailAlert) {
-    return {
-      user: responseData.user,
-      message:
-        'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
-    };
-  } else {
-    return {
-      user: responseData.user,
-      message: 'User Data Changed Successfully',
-    };
-  }
+  return {
+    user: responseData.user,
+    message: responseData.message,
+  };
 };
 
 //@desc   get user profile

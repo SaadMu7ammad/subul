@@ -83,6 +83,7 @@ export type IUserModifed = {
 export type EditProfile = {
   emailAlert: boolean;
   user: IUserModifed;
+  message:string
 };
 
 export type EditUserProfileResponse = {
