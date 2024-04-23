@@ -53,9 +53,9 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
-    locationUser: {
+    userLocation: {
       type: locationSchema,
-      // required: true, // 👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️ locationUser shouldn't be required.
+      // required: true, // 👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️ userLocation shouldn't be required.
     },
     // profileImage: {
     //     type: String,

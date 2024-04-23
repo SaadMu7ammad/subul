@@ -15,7 +15,7 @@ export interface IloginData {
 export type RegisterUserInputData = {
   name: User['name'];
   email: User['email'];
-  locationUser: User['locationUser'];
+  userLocation: User['userLocation'];
   gender: User['gender'];
   phone: User['phone'];
   password: User['password'];
@@ -26,7 +26,7 @@ export type RegisterUserInputData = {
 //     lastName: string;
 //   };
 //   email: string;
-//   locationUser: locationUser;
+//   userLocation: userLocation;
 //   gender: 'male' | 'female';
 //   phone: string;
 //   password: string;

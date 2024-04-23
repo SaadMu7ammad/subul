@@ -110,7 +110,7 @@ const editUserProfile = async (
   //     lastName: req.body.name.lastName,
   //   },
   //   email: req.body.email,
-  //   locationUser: req.body.locationUser.governorate,
+  //   userLocation: req.body.userLocation.governorate,
   //   gender: req.body.gender,
   //   phone: req.body.phone,
   // };
@@ -140,7 +140,7 @@ const getUserProfileData = (
   const responseData = userService.getUserProfileData(storedUser);
   return {
     user: responseData.user,
-    message: responseData.message 
+    message: responseData.message,
   };
 };
 

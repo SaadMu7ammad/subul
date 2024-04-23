@@ -142,7 +142,7 @@ const editUserProfile = async (
     //put restriction  on the edit elements
     !reqBody.name &&
     !reqBody.email &&
-    !reqBody.locationUser &&
+    !reqBody.userLocation&&
     !reqBody.gender &&
     !reqBody.phone
   )
@@ -163,7 +163,7 @@ const editUserProfile = async (
     const userObj: IUserModified = {
       name: userWithEmailUpdated.user.name,
       email: userWithEmailUpdated.user.email,
-      locationUser: userWithEmailUpdated.user.locationUser,
+      userLocation: userWithEmailUpdated.user.userLocation,
       gender: userWithEmailUpdated.user.gender,
       phone: userWithEmailUpdated.user.phone,
     };
@@ -182,7 +182,7 @@ const editUserProfile = async (
   const userObj = {
     name: user.name,
     email: user.email,
-    locationUser: user.locationUser, //.governorate,
+    userLocation: user.userLocation, //.governorate,
     gender: user.gender,
     phone: user.phone,
   } satisfies IUserModified;

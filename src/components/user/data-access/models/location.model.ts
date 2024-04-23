@@ -48,6 +48,6 @@ const locationSchema = new mongoose.Schema(
 );
 
 // export type locationSchema = InferSchemaType<typeof locationSchema>;
-export type locationUser = InferSchemaType<typeof locationSchema>;
+export type UserLocation = InferSchemaType<typeof locationSchema>;
 
 export default locationSchema;

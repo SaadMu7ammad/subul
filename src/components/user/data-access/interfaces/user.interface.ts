@@ -1,5 +1,4 @@
-
-import { locationUser } from '../models/location.model';
+import { UserLocation } from '../models/location.model';
 import { User } from '../models/user.model';
 
 // export type UserLocation = {
@@ -47,7 +46,7 @@ import { User } from '../models/user.model';
 //   isAdmin: boolean;
 //   pointsOnDonations: number;
 //   totalDonationsAmount?: number;
-//   locationUser: locationUser;
+//   userLocation: userLocation;
 //   gender: 'male' | 'female';
 //   phone?: string;
 //   verificationCode?: string | null;
@@ -72,8 +71,8 @@ export type IUserModified = {
     lastName?: string;
   };
   email?: string;
-  // locationUser?: UserLocation;
-  locationUser?: locationUser;
+  // userLocation?: UserLocation;
+  userLocation?: UserLocation;
   gender?: 'male' | 'female';
   phone?: string;
 };
@@ -83,7 +82,7 @@ export type IUserModified = {
 export type EditProfile = {
   emailAlert: boolean;
   user: IUserModified;
-  message:string
+  message: string;
 };
 
 export type EditUserProfileResponse = {
