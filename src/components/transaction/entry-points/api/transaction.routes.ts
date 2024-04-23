@@ -1,4 +1,4 @@
-import express, { Application,NextFunction,Request,Response } from 'express';
+import express, { Application, NextFunction, Request, Response } from 'express';
 
 import { auth, isActivated } from '../../../auth/shared/index';
 import { isAdmin } from '../../../admin/index';
@@ -24,7 +24,7 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     preCreateTransaction,
-    async (req:Request, res:Response, next:NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
         // const req=_req as AuthedRequest
         logger.info(`transaction API was called to pay With OnlineCard`);
@@ -45,7 +45,7 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     preCreateTransaction,
-    async (req:Request, res:Response, next:NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
         // const req=_req as AuthedRequest
         logger.info(`transaction API was called to pay With MobileWallet`);
@@ -96,7 +96,7 @@ export default function defineRoutes(expressApp: Application) {
     '/admin/paymob/getTransactionById/:id',
     auth,
     isAdmin,
-    async (req:Request, res:Response, next:NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
         // const req=_req as AuthedRequest
 
@@ -118,7 +118,7 @@ export default function defineRoutes(expressApp: Application) {
     '/admin/paymob/refund/:id',
     auth,
     isAdmin,
-    async (req:Request, res:Response, next:NextFunction) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
         // const req=_req as AuthedRequest
         logger.info(`transaction API was called to refund`);
