@@ -3,10 +3,16 @@
 import {
   EditUserProfileResponse,
   IUserModified,
+  ResetUserResponse,
   dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
+  ConfirmResetResponse,
+  ChangePasswordResponse,
+  ActivateAccountResponse,
+  LogoutUserResponse,
+  getUserProfileDataResponse
 } from '../data-access/interfaces/user.interface';
 import { User } from '../data-access/models/user.model';
 import { userService } from './user.service';
@@ -14,7 +20,7 @@ import { NextFunction, Request, Response } from 'express';
 //@desc   reset password
 //@route  POST /api/users/reset
 //@access public
-const resetUser = async (req: Request): Promise<{ message: string }> => {
+const resetUser = async (req: Request): Promise<ResetUserResponse> => {
   const resetInputsData: dataForResetEmail = req.body;
   const responseData = await userService.resetUser(resetInputsData);
   return {
@@ -29,7 +35,7 @@ const confirmReset = async (
   req: Request,
   _res: Response,
   _next: NextFunction
-): Promise<{ message: string }> => {
+): Promise<ConfirmResetResponse> => {
   const resetInputsData: dataForConfirmResetEmail = req.body;
   const responseData = await userService.confirmReset(resetInputsData);
   return {
@@ -44,7 +50,7 @@ const changePassword = async (
   req: Request,
   res: Response,
   _next: NextFunction
-): Promise<{ message: string }> => {
+): Promise<ChangePasswordResponse> => {
   const changePasswordInputsData: dataForChangePassword = req.body;
 
   const storedUser: User = res.locals.user; // req.app gives you access to the main Express application object.
@@ -71,7 +77,7 @@ const activateAccount = async (
   req: Request,
   res: Response,
   _next: NextFunction
-): Promise<{ message: string }> => {
+): Promise<ActivateAccountResponse> => {
   const activateAccountInputsData: dataForActivateAccount = req.body;
   const storedUser: User = res.locals.user;
   const responseData = await userService.activateAccount(
@@ -87,7 +93,7 @@ const activateAccount = async (
 //@desc   logout user
 //@route  POST /api/users/logout
 //@access private
-const logoutUser = (res: Response): { message: string } => {
+const logoutUser = (res: Response): LogoutUserResponse => {
   const responseData = userService.logoutUser(res);
   return {
     message: responseData.message,
@@ -135,7 +141,7 @@ const getUserProfileData = (
   _req: Request,
   res: Response,
   _next: NextFunction
-) => {
+) :getUserProfileDataResponse=> {
   const storedUser: User = res.locals.user;
   const responseData = userService.getUserProfileData(storedUser);
   return {

@@ -99,6 +99,31 @@ export type IUserResponse = {
   token?: string;
 };
 
+export type ResetUserResponse = {
+  message: string;  
+};
+
+export type ConfirmResetResponse = {
+  message: string;
+};
+
+export type ChangePasswordResponse = {
+  message: string;
+};
+
+export type ActivateAccountResponse = {
+  message: string;
+};
+
+export type LogoutUserResponse = {
+  message: string;
+};
+
+export type getUserProfileDataResponse = {
+  user:User
+  message: string;
+};
+
 export type dataForResetEmail = {
   email: string;
 };
