@@ -2,7 +2,7 @@
 
 import {
   EditUserProfileResponse,
-  IUserModifed,
+  IUserModified,
   dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
@@ -101,7 +101,7 @@ const editUserProfile = async (
   res: Response,
   _next: NextFunction
 ): Promise<EditUserProfileResponse> => {
-  const editUserProfileInputsData: IUserModifed = req.body;
+  const editUserProfileInputsData: IUserModified = req.body;
   //❌ Code below causes an error: `Cannot read prop of undefined`
   // const editUserProfileInputsData: IUserModifed = {
   //   //for TS

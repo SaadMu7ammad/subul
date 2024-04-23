@@ -66,7 +66,7 @@ import { User } from '../models/user.model';
 //   // updatedAt: Date;
 // };
 
-export type IUserModifed = {
+export type IUserModified = {
   name?: {
     firstName?: string;
     lastName?: string;
@@ -82,12 +82,12 @@ export type IUserModifed = {
 
 export type EditProfile = {
   emailAlert: boolean;
-  user: IUserModifed;
+  user: IUserModified;
   message:string
 };
 
 export type EditUserProfileResponse = {
-  user: IUserModifed;
+  user: IUserModified;
   message: string;
 };
 

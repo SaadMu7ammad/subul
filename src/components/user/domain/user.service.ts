@@ -12,7 +12,7 @@ import {
 } from '../../../utils/shared';
 import {
   EditProfile,
-  IUserModifed,
+  IUserModified,
   dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
@@ -23,7 +23,7 @@ import { User } from '../data-access/models/user.model';
 const resetUser = async (reqBody: dataForResetEmail) => {
   const email = reqBody.email;
   //   if (!email) throw new BadRequestError('no email input');
-  const userResponse: { user: User } = await userUtils.checkUserIsExist(email);
+  const userResponse = await userUtils.checkUserIsExist(email);
   const token = await generateResetTokenTemp();
   userResponse.user.verificationCode = token;
   await userResponse.user.save();
@@ -39,7 +39,7 @@ const resetUser = async (reqBody: dataForResetEmail) => {
 };
 
 const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
-  let updatedUser: { user: User } = await userUtils.checkUserIsExist(
+  let updatedUser = await userUtils.checkUserIsExist(
     reqBody.email
   );
   // { user: { } }
@@ -134,7 +134,7 @@ const getUserProfileData = (user: User) => {
 };
 
 const editUserProfile = async (
-  reqBody: IUserModifed,
+  reqBody: IUserModified,
   user: User
 ): Promise<EditProfile> => {
   if (!reqBody) throw new BadRequestError('no data sent');
@@ -160,7 +160,7 @@ const editUserProfile = async (
     const userWithEmailUpdated: { user: User } =
       await userUtils.changeUserEmailWithMailAlert(user, email); //email is the NewEmail
 
-    const userObj: IUserModifed = {
+    const userObj: IUserModified = {
       name: userWithEmailUpdated.user.name,
       email: userWithEmailUpdated.user.email,
       locationUser: userWithEmailUpdated.user.locationUser,
@@ -179,13 +179,13 @@ const editUserProfile = async (
 
   await user.save();
 
-  const userObj: IUserModifed = {
+  const userObj = {
     name: user.name,
     email: user.email,
     locationUser: user.locationUser, //.governorate,
     gender: user.gender,
     phone: user.phone,
-  };
+  } satisfies IUserModified;
 
   return {
     emailAlert: false,

@@ -7,10 +7,12 @@ const userRepositoryObj = new userRepository();
 
 const checkUserIsExist = async (email: string): Promise<{ user: User }> => {
   //return user if it exists
-  const userIsExist: User | null = await userRepositoryObj.findUser(email);
+  const userIsExist = await userRepositoryObj.findUser(email);
+
   if (!userIsExist) {
     throw new NotFoundError('email not found Please use another one');
   }
+
   return {
     user: userIsExist,
   };
