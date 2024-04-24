@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 
-import { AuthCharity, CharityObject, authCharityService } from './auth.service';
+import {  authCharityService } from './auth.service';
+import { AuthCharity, CharityObject } from '../data-access/interfaces/authCharity';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public

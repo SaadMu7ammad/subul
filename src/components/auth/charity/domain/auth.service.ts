@@ -1,4 +1,3 @@
-// import { Response } from 'express';
 import generateToken from '../../../../utils/generateToken';
 import {
   generateResetTokenTemp,
@@ -6,22 +5,8 @@ import {
 } from '../../../../utils/mailer';
 import { authCharityUtils } from './auth.utils';
 import { CharityData } from './auth.use-case';
-import mongoose from 'mongoose';
 import { Response } from 'express';
-
-export interface AuthCharity {
-  _id: mongoose.Types.ObjectId;
-  name: string;
-  email: string;
-  isEnabled: string;
-  isConfirmed: boolean;
-  isPending: boolean;
-}
-interface AuthCharityResponse {
-  charity: AuthCharity;
-  emailAlert: boolean;
-  token: string;
-}
+import { AuthCharityResponse, CharityObject } from '../data-access/interfaces/authCharity';
 
 const authCharity = async (
   reqBody: { email: string; password: string },
@@ -64,8 +49,8 @@ const authCharity = async (
       charityResponse.charity.email,
       'login alert',
       `hi ${charityResponse.charity.name} it seems that your account still not verified or activated please go to that link to activate the account ` +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+      `<h3>(www.activate.com)</h3>` +
+      `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
     return {
       charity: charityObj,
@@ -74,12 +59,7 @@ const authCharity = async (
     };
   }
 };
-export interface CharityObject {
-  _id: mongoose.Types.ObjectId;
-  name: string;
-  email: string;
-  image: string;
-}
+
 const registerCharity = async (
   reqBody: CharityData
 ): Promise<{ charity: CharityObject }> => {
@@ -89,7 +69,7 @@ const registerCharity = async (
     newCreatedCharity.charity.email,
     'welcome alert',
     `hi ${newCreatedCharity.charity.name} ` +
-      ' we are happy that you joined our community ... keep spreading goodness with us'
+    ' we are happy that you joined our community ... keep spreading goodness with us'
   );
   const charityObj: CharityObject = {
     _id: newCreatedCharity.charity._id,
