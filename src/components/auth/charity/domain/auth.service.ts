@@ -6,12 +6,12 @@ import {
 import { authCharityUtils } from './auth.utils';
 import { CharityData } from './auth.use-case';
 import { Response } from 'express';
-import { AuthCharityResponse, CharityObject } from '../data-access/interfaces/authCharity';
+import { AuthCharityObject, CharityObject } from '../data-access/interfaces';
 
 const authCharity = async (
   reqBody: { email: string; password: string },
   res: Response<any, Record<string, any>>
-): Promise<AuthCharityResponse> => {
+): Promise<AuthCharityObject> => {
   const { email, password }: { email: string; password: string } = reqBody;
 
   const charityResponse = await authCharityUtils.checkCharityPassword(

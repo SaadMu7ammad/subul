@@ -8,7 +8,7 @@ export interface AuthCharity {
     isConfirmed: boolean;
     isPending: boolean;
 }
-export interface AuthCharityResponse {
+export interface AuthCharityObject {
     charity: AuthCharity;
     emailAlert: boolean;
     token: string;
