@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import { ICharityPaymentMethod, ICharityDocs } from './';
-
+import { ICharityPaymentMethod, ICharity } from './';
 export interface AllPendingRequestsPaymentMethods {
   allPendingRequestedPaymentAccounts: CharitiesAccounts;
 }
@@ -19,13 +18,13 @@ export interface CharitiesAccountsByAggregation {
   paymentMethods: ICharityPaymentMethod; //👈 _id is commented may cuz an issue
 }
 
-export interface PendingCharities extends ICharityDocs {
-  _id: mongoose.Types.ObjectId;
-  name: string;
-  email: string;
-  isPending?: boolean;
-  isConfirmed?: boolean;
-}
+// export interface PendingCharities extends ICharityDocs {
+//   _id: mongoose.Types.ObjectId;
+//   name: string;
+//   email: string;
+//   isPending?: boolean;
+//   isConfirmed?: boolean;
+// }
 export interface ConfirmedCharities extends PendingCharities {}
 
 export interface ConfirmPendingCharity {
@@ -38,3 +37,12 @@ export interface AllPendingRequestsCharitiesResponse {
 export interface PendingRequestCharityResponse {
   pendingCharity: PendingCharities[];
 }
+
+type PickMany<T, K extends keyof T> = {
+  [P in K]: T[P];
+};
+
+export type PendingCharities = PickMany<
+  ICharity,
+  'name' | 'email' | '_id' | 'charityDocs' | 'paymentMethods'
+>;

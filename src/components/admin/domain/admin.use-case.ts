@@ -1,6 +1,6 @@
 import { NextFunction, Response, Request } from 'express';
-
 import { adminService } from './admin.service';
+import { NotFoundError } from '../../../libraries/errors/components';
 // import { NotFoundError } from '../../../libraries/errors/components';
 // import {
 //   AllPendingRequestsCharitiesResponse,
@@ -20,19 +20,19 @@ const getAllPendingRequestsCharities = async (
   return { allPendingCharities: charities.allPendingCharities };
 };
 
-// const getPendingRequestCharityById = async (
-//   req: Request,
-//   _res: Response,
-//   _next: NextFunction
-// ): Promise<PendingRequestCharityResponse> => {
-//   const { id }: { id?: string } = req.params;
+const getPendingRequestCharityById = async (
+  req: Request,
+  _res: Response,
+  _next: NextFunction
+) => {
+  const { id }: { id?: string } = req.params;
 
-//   if (!id) throw new NotFoundError('no id found to make a rejection');
+  if (!id) throw new NotFoundError('no id found to make a rejection');
 
-//   const pendingRequestCharityById: AllPendingRequestsCharitiesResponse =
-//     await adminService.getAllOrOnePendingRequestsCharities(id);
-//   return { pendingCharity: pendingRequestCharityById.allPendingCharities };
-// };
+  const pendingRequestCharityById =
+    await adminService.getAllOrOnePendingRequestsCharities(id);
+  return { pendingCharity: pendingRequestCharityById.allPendingCharities };
+};
 
 // const getPendingPaymentRequestsForConfirmedCharityById = async (
 //   req: Request,
@@ -164,11 +164,11 @@ const getAllPendingRequestsCharities = async (
 // };
 export const adminUseCase = {
   getAllPendingRequestsCharities,
-  //   getPendingRequestCharityById,
+  getPendingRequestCharityById,
   //   confirmCharity,
   //   rejectCharity,
   //   getAllRequestsPaymentMethodsForConfirmedCharities,
-  //   getPendingPaymentRequestsForConfirmedCharityById,
+  // getPendingPaymentRequestsForConfirmedCharityById,
   //   confirmPaymentAccountRequestForConfirmedCharities,
   //   rejectPaymentAccountRequestForConfirmedCharities,
 };

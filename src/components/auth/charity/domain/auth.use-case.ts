@@ -13,7 +13,7 @@ export interface CharityData {
   contactInfo: string;
   description: string;
   currency: string;
-  location: string;
+  charityLocation: string;
   charityInfo: string;
   image: string;
 }
@@ -32,7 +32,7 @@ const registerCharity: RequestHandler = async (
     contactInfo,
     description,
     currency,
-    location,
+    charityLocation,
     charityInfo,
     image: [firstImage],
   }: CharityData = req.body;
@@ -45,7 +45,7 @@ const registerCharity: RequestHandler = async (
     contactInfo,
     description,
     currency,
-    location,
+    charityLocation,
     charityInfo,
     image: firstImage !== undefined ? firstImage : '', // [0]
   };

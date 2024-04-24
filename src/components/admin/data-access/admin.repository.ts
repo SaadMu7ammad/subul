@@ -3,27 +3,21 @@
 //   DataForPaymentRequestsForConfirmedCharity,
 //   PendingCharities,
 // } from '../../charity/data-access/interfaces/charity.interface';
-// import { PendingCharities } from '../../charity/data-access/interfaces';
+import {
+  DataForPaymentRequestsForConfirmedCharity,
+  PendingCharities,
+} from '../../charity/data-access/interfaces';
 import Charity from '../../charity/data-access/models/charity.model';
-// import { PendingCharities } from '../../charity/data-access/interfaces';
 import { QueryObject } from '../domain/admin.service';
 
 const findAllPendingCharities = async (
   queryObject: QueryObject,
   selection: string
-) => {
-  const pendingCharities = await Charity.find(queryObject, selection).exec();
-
-  // console.log(pendingCharities);
-
-  // [
-  //   {
-  //     charityDocs: { docs1: [], docs2: [], docs3: [], docs4: [] },
-  //     _id: new ObjectId("6621013561f11b5ce4f81c49"),
-  //     email: 'bughunterextraaordinairea@gmail.com',
-  //     name: 'subul'
-  //   }
-  // ]
+): Promise<PendingCharities[]> => {
+  const pendingCharities: PendingCharities[] = await Charity.find(
+    queryObject,
+    selection
+  ).exec();
 
   // .select('name email charityDocs paymentMethods')
   return pendingCharities;
@@ -41,15 +35,15 @@ const findAllPendingCharities = async (
 //   return pendingCharities; // [ { name email paymentMethods _id } ]
 // };
 
-// const findConfirmedCharityById = async (
-//   queryObject: QueryObject,
-//   selection: string
-// ) => {
-//   const charity: DataForPaymentRequestsForConfirmedCharity =
-//     await Charity.findOne(queryObject, selection).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
+const findConfirmedCharityById = async (
+  queryObject: QueryObject,
+  selection: string
+) => {
+  const charity: DataForPaymentRequestsForConfirmedCharity =
+    await Charity.findOne(queryObject, selection).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
 
-//   return charity;
-// };
+  return charity;
+};
 
 // const getPendingPaymentAccountByAggregation = async (
 //   paymentMethod: string
@@ -86,7 +80,7 @@ const findAllPendingCharities = async (
 // };
 export const adminRepository = {
   findAllPendingCharities,
-  // findConfirmedCharityById,
+  findConfirmedCharityById,
   // getPendingPaymentAccountByAggregation,
   // findCharitiesByQueryWithOptionalId,
 };

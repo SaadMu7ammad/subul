@@ -33,48 +33,47 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  //   router.get(
-  //     '/requestCharity/:id',
-  //     auth,
-  //     isAdmin,
-  //     async (req: Request, res: Response, next: NextFunction) => {
-  //       try {
-  //         logger.info(
-  //           `Admin API was called to get a Pending Request for Charity by Id`
-  //         );
-  //         const pendingRequestCharityResponse: PendingRequestCharityResponse =
-  //           await adminUseCase.getPendingRequestCharityById(req, res, next);
-  //         return res.json(pendingRequestCharityResponse);
-  //       } catch (error) {
-  //         next(error);
-  //         return undefined;
-  //       }
-  //     }
-  //   );
+  router.get(
+    '/requestCharity/:id',
+    auth,
+    isAdmin,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(
+          `Admin API was called to get a Pending Request for Charity by Id`
+        );
+        const pendingRequestCharityResponse =
+          await adminUseCase.getPendingRequestCharityById(req, res, next);
+        return res.json(pendingRequestCharityResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
-  //   router.get(
-  //     '/confirmedCharity/requestsPaymentMethods/:id',
-  //     auth,
-  //     isAdmin,
-  //     async (req: Request, res: Response, next: NextFunction) => {
-  //       try {
-
-  //         logger.info(
-  //           `Admin API was called to get Pending Requests payment account`
+  // router.get(
+  //   '/confirmedCharity/requestsPaymentMethods/:id',
+  //   auth,
+  //   isAdmin,
+  //   async (req: Request, res: Response, next: NextFunction) => {
+  //     try {
+  //       logger.info(
+  //         `Admin API was called to get Pending Requests payment account`
+  //       );
+  //       const getCharityPaymentsRequestsByIdResponse =
+  //         await adminUseCase.getPendingPaymentRequestsForConfirmedCharityById(
+  //           req,
+  //           res,
+  //           next
   //         );
-  //         const getCharityPaymentsRequestsByIdResponse =
-  //           await adminUseCase.getPendingPaymentRequestsForConfirmedCharityById(
-  //             req,
-  //             res,
-  //             next
-  //           );
-  //         return res.json(getCharityPaymentsRequestsByIdResponse);
-  //       } catch (error) {
-  //         next(error);
-  //         return undefined;
-  //       }
+  //       return res.json(getCharityPaymentsRequestsByIdResponse);
+  //     } catch (error) {
+  //       next(error);
+  //       return undefined;
   //     }
-  //   );
+  //   }
+  // );
 
   //   router.get(
   //     '/confirmedCharities/AllRequestsPaymentMethods',

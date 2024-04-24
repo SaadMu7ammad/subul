@@ -1,6 +1,7 @@
 import { adminRepository } from '../data-access/admin.repository';
 import { BadRequestError } from '../../../libraries/errors/components/index';
 import mongoose from 'mongoose';
+import { PendingCharities } from '../../charity/data-access/interfaces';
 // import { AllPendingRequestsCharitiesResponse, PendingCharities } from '../../charity/data-access/interfaces';
 // import {
 // CharitiesAccountsByAggregation,
@@ -9,7 +10,6 @@ import mongoose from 'mongoose';
 // CharityPaymentMethodVodafoneCash,
 // DataForPaymentRequestsForConfirmedCharity,
 // AllPaymentAccounts,
-// PendingCharities,
 // AllPendingRequestsCharitiesResponse,
 // ConfirmPendingCharity,
 // ConfirmedCharities,
@@ -46,10 +46,11 @@ const getAllOrOnePendingRequestsCharities = async (
       // id ? { _id: new mongoose.Types.ObjectId(id) } : {},
     ],
   };
-  const allPendingCharities = await adminRepository.findAllPendingCharities(
-    queryObject,
-    'name email charityDocs paymentMethods'
-  );
+  const allPendingCharities: PendingCharities[] =
+    await adminRepository.findAllPendingCharities(
+      queryObject,
+      'name email charityDocs paymentMethods'
+    );
 
   // console.log(allPendingCharities[0]); // { selection }
 
@@ -268,5 +269,5 @@ export const adminService = {
   //   rejectPaymentAccountRequestForConfirmedCharities,
   //   confirmPaymentAccountRequestForConfirmedCharities,
   //   getAllRequestsPaymentMethodsForConfirmedCharities,
-  //   getPendingPaymentRequestsForConfirmedCharityById,
+  // getPendingPaymentRequestsForConfirmedCharityById,
 };
