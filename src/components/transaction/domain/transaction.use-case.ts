@@ -6,7 +6,7 @@ import {
 } from '../data-access/interfaces/transaction.interface';
 
 import { transactionService } from './transaction.service';
-import { ITransaction } from '../data-access/models/transaction.model';
+import { ITransaction } from '../data-access/interfaces';
 import { User } from '../../user/data-access/models/user.model';
 const preCreateTransaction = async (
   req: Request,

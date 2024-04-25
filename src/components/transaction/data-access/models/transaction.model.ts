@@ -71,13 +71,10 @@ const transactionSchema= new Schema(
   { timestamps: true }
 );
 
-export type ITransaction = HydratedDocument<InferSchemaType<typeof transactionSchema>>;
+declare module '../interfaces/'{
+  export type ITransaction = HydratedDocument<InferSchemaType<typeof transactionSchema>>;
+}
 
 const TransactionModel = mongoose.model('Transaction', transactionSchema);
-
-// const Transaction: TransactionModel = mongoose.model<
-//     TransactionDocument,
-//     TransactionModel
-// >('Transaction', transactionSchema);
 
 export default TransactionModel;

@@ -7,7 +7,7 @@ import { ICase } from '../../case/data-access/interfaces/case.interface';
 import { ICharity} from '../../charity/data-access/interfaces/';
 import { User } from '../../user/data-access/models/user.model';
 import { IDataPreCreateTransaction } from '../data-access/interfaces/transaction.interface';
-import { ITransaction } from '../data-access/models/transaction.model';
+import { ITransaction } from '../data-access/interfaces';
 import { TransactionRepository } from '../data-access/transaction.repository';
 
 const transactionRepository = new TransactionRepository();

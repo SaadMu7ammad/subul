@@ -10,7 +10,7 @@ import {
   IDataUpdateCaseInfo,
   TransactionPaymentInfo,
 } from '../data-access/interfaces/transaction.interface';
-import { ITransaction } from '../data-access/models/transaction.model';
+import { ITransaction } from '../data-access/interfaces';
 import { User } from '../../user/data-access/models/user.model';
 const transactionRepository = new TransactionRepository();
 const preCreateTransaction = async (
