@@ -20,8 +20,3 @@ export type EditProfile = {
   message: string;
 };
 
-export type EditUserProfileResponse = {
-  user: IUserModified;
-  message: string;
-};
-

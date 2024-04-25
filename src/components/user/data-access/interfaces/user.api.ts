@@ -1,4 +1,4 @@
-import { User } from '.'
+import { IUserModified, User } from '.';
 
 export type IUserResponse = {
   // emailEdited?: boolean;
@@ -10,7 +10,7 @@ export type IUserResponse = {
 };
 
 export type ResetUserResponse = {
-  message: string;  
+  message: string;
 };
 
 export type ConfirmResetResponse = {
@@ -30,7 +30,12 @@ export type LogoutUserResponse = {
 };
 
 export type getUserProfileDataResponse = {
-  user:User
+  user: User;
+  message: string;
+};
+
+export type EditUserProfileResponse = {
+  user: IUserModified;
   message: string;
 };
 
