@@ -6,7 +6,7 @@ import {
 } from '../data-access/interfaces/transaction.interface';
 
 import { transactionService } from './transaction.service';
-import { ITransaction } from '../data-access/interfaces';
+import { GetAllTransactionResponse, ITransaction} from '../data-access/interfaces';
 import { User } from '../../user/data-access/models/user.model';
 
 const preCreateTransaction = async (
@@ -42,7 +42,7 @@ const getAllTransactions = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+):Promise<GetAllTransactionResponse> => {
   const myTransactions: { allTransactions: (ITransaction | null)[] } =
     await transactionService.getAllTransactions(res.locals.user);
 
