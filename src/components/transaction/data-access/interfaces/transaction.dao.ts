@@ -1,6 +1,6 @@
 import { ICase } from '../../../case/data-access/interfaces/case.interface';
 import { ICharity } from '../../../charity/data-access/interfaces/charity.interface';
-import { User } from '../../../user/data-access/models/user.model';
+import { User } from '../../../user/data-access/interfaces';
 import { ITransaction } from '../models/transaction.model';
 export interface TransactionDataStore {
   findCaseById(id: string): Promise<ICase | null>;

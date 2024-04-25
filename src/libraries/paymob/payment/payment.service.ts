@@ -1,4 +1,4 @@
-import { User } from '../../../components/user/data-access/models/user.model';
+import { User } from '../../../components/user/data-access/interfaces';
 import * as configurationProvider from '../../configuration-provider/index';
 import { NotFoundError } from '../../errors/components/index';
 import { paymentUtils } from './payment.utils';

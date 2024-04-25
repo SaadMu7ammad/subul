@@ -12,7 +12,7 @@ import {
   UserObject,
   UserResponseBasedOnUserVerification,
 } from '../data-access/auth.interface';
-import { User } from '../../../user/data-access/models/user.model';
+import { User } from '../../../user/data-access/interfaces';
 
 const authUser = async (
   reqBody: IloginData,

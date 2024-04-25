@@ -1,4 +1,4 @@
-import { User } from '../../../user/data-access/models/user.model';
+import { User } from '../../../user/data-access/interfaces';
 // import { Request } from 'express';
 // import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 // import { ICharity } from '../../../charity/data-access/interfaces/charity.interface';
