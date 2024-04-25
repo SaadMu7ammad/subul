@@ -12,9 +12,9 @@ import {
   ChangePasswordResponse,
   ActivateAccountResponse,
   LogoutUserResponse,
-  getUserProfileDataResponse
-} from '../data-access/interfaces/user.interface';
-import { User } from '../data-access/models/user.model';
+  getUserProfileDataResponse,
+  User
+} from '../data-access/interfaces';
 import { userService } from './user.service';
 import { NextFunction, Request, Response } from 'express';
 //@desc   reset password

@@ -2,6 +2,7 @@ import mongoose, { Schema, InferSchemaType, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index';
 import locationSchema from './location.model';
+import { User } from '../interfaces';
 const userSchema = new Schema(
   {
     name: {
@@ -164,7 +165,9 @@ userSchema.pre('save', async function (next) {
 
 // });
 // export type User = InferSchemaType<typeof userSchema>;
-export type User = HydratedDocument<InferSchemaType<typeof userSchema>>;
+declare module '../interfaces/'{
+  export type User = HydratedDocument<InferSchemaType<typeof userSchema>>;
+}
 // InferSchemaType will determine the type as follows:
 // type User = {
 //   name: string;

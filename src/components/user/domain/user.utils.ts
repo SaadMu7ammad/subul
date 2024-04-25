@@ -2,7 +2,7 @@ import { NotFoundError } from '../../../libraries/errors/components/index';
 import { userRepository } from '../data-access/user.repository';
 import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import { Response } from 'express';
-import { User } from '../data-access/models/user.model';
+import { User } from '../data-access/interfaces';
 const userRepositoryObj = new userRepository();
 
 const checkUserIsExist = async (email: string): Promise<{ user: User }> => {

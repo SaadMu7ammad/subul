@@ -17,8 +17,8 @@ import {
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
-} from '../data-access/interfaces/user.interface';
-import { User } from '../data-access/models/user.model';
+  User
+} from '../data-access/interfaces/';
 
 const resetUser = async (reqBody: dataForResetEmail) => {
   const email = reqBody.email;

@@ -1,6 +1,6 @@
-import { UserDao } from './interfaces/user.dao';
+import { UserDao,User } from './interfaces/';
 // import { IUser, IUserDocument } from './interfaces/user.interface';
-import UserModel, { User } from './models/user.model';
+import UserModel from './models/user.model';
 
 export class userRepository implements UserDao {
   async findUser(email: string): Promise<User | null> {
