@@ -1,16 +1,6 @@
-import { UserLocation } from '../models/location.model';
+import { User } from '.';
 
-export type IUserModified = {
-  name?: {
-    firstName?: string;
-    lastName?: string;
-  };
-  email?: string;
-  // userLocation?: UserLocation;
-  userLocation?: UserLocation;
-  gender?: 'male' | 'female';
-  phone?: string;
-};
+export type IUserModified = RecursivePartial<Pick<User, 'name' | 'email' | 'userLocation' | 'gender' | 'phone'>>;
 
 // export type IUserDocument = IUser & Document;
 
@@ -20,3 +10,6 @@ export type EditProfile = {
   message: string;
 };
 
+type RecursivePartial<T> = {
+  [P in keyof T ]?:T[P] extends object|undefined ? RecursivePartial<T[P]> : T[P] 
+}

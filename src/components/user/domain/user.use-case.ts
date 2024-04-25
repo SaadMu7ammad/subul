@@ -1,5 +1,3 @@
-// import {  IUserModifed, IUserResponse, dataForActivateAccount, dataForChangePassword, dataForConfirmResetEmail, dataForResetEmail } from '../data-access/interfaces/user.interface';
-
 import {
   EditUserProfileResponse,
   IUserModified,
@@ -13,15 +11,16 @@ import {
   ActivateAccountResponse,
   LogoutUserResponse,
   getUserProfileDataResponse,
-  User
+  User,
 } from '../data-access/interfaces';
 import { userService } from './user.service';
 import { NextFunction, Request, Response } from 'express';
+
 //@desc   reset password
 //@route  POST /api/users/reset
 //@access public
 const resetUser = async (req: Request): Promise<ResetUserResponse> => {
-  const resetInputsData: dataForResetEmail = req.body;
+  const resetInputsData: dataForResetEmail = { email: req.body.email };
   const responseData = await userService.resetUser(resetInputsData);
   return {
     message: responseData.message,
@@ -33,11 +32,19 @@ const resetUser = async (req: Request): Promise<ResetUserResponse> => {
 // @access public
 const confirmReset = async (
   req: Request,
-  _res: Response,
-  _next: NextFunction
+  res: Response,
+  next: NextFunction
 ): Promise<ConfirmResetResponse> => {
-  const resetInputsData: dataForConfirmResetEmail = req.body;
+  const { email, token, password } = req.body;
+
+  const resetInputsData: dataForConfirmResetEmail = {
+    email,
+    token,
+    password,
+  };
+
   const responseData = await userService.confirmReset(resetInputsData);
+
   return {
     message: responseData.message,
   };
@@ -49,9 +56,11 @@ const confirmReset = async (
 const changePassword = async (
   req: Request,
   res: Response,
-  _next: NextFunction
+  next: NextFunction
 ): Promise<ChangePasswordResponse> => {
-  const changePasswordInputsData: dataForChangePassword = req.body;
+  const { password } = req.body;
+
+  const changePasswordInputsData: dataForChangePassword = { password };
 
   const storedUser: User = res.locals.user; // req.app gives you access to the main Express application object.
 
@@ -65,6 +74,7 @@ const changePassword = async (
     changePasswordInputsData,
     storedUser
   );
+
   return {
     message: responseData.message,
   };
@@ -76,15 +86,20 @@ const changePassword = async (
 const activateAccount = async (
   req: Request,
   res: Response,
-  _next: NextFunction
+  next: NextFunction
 ): Promise<ActivateAccountResponse> => {
-  const activateAccountInputsData: dataForActivateAccount = req.body;
+  const { token } = req.body;
+
+  const activateAccountInputsData: dataForActivateAccount = { token };
+  
   const storedUser: User = res.locals.user;
+  
   const responseData = await userService.activateAccount(
     activateAccountInputsData,
     storedUser,
     res
   );
+
   return {
     message: responseData.message,
   };
@@ -105,9 +120,11 @@ const logoutUser = (res: Response): LogoutUserResponse => {
 const editUserProfile = async (
   req: Request,
   res: Response,
-  _next: NextFunction
+  next: NextFunction
 ): Promise<EditUserProfileResponse> => {
+
   const editUserProfileInputsData: IUserModified = req.body;
+
   //❌ Code below causes an error: `Cannot read prop of undefined`
   // const editUserProfileInputsData: IUserModifed = {
   //   //for TS
@@ -138,12 +155,14 @@ const editUserProfile = async (
 //@route  GET /api/users/profile
 //@access private
 const getUserProfileData = (
-  _req: Request,
+  req: Request,
   res: Response,
-  _next: NextFunction
-) :getUserProfileDataResponse=> {
+  next: NextFunction
+): getUserProfileDataResponse => {
   const storedUser: User = res.locals.user;
+
   const responseData = userService.getUserProfileData(storedUser);
+
   return {
     user: responseData.user,
     message: responseData.message,
