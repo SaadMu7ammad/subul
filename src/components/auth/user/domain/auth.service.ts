@@ -11,7 +11,7 @@ import {
   RegisterUserInputData,
   UserObject,
   UserResponseBasedOnUserVerification,
-} from '../data-access/auth.interface';
+} from '../data-access/interfaces/auth.user';
 import { User } from '../../../user/data-access/models/user.model';
 
 const authUser = async (
@@ -47,13 +47,12 @@ const authUser = async (
     await setupMailSender(
       userResponse.user.email,
       'login alert',
-      `hi ${
-        userResponse.user.name?.firstName +
-        ' ' +
-        userResponse.user.name?.lastName
+      `hi ${userResponse.user.name?.firstName +
+      ' ' +
+      userResponse.user.name?.lastName
       } it seems that your account still not verified or activated please go to that link to activate the account ` +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+      `<h3>(www.activate.com)</h3>` +
+      `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
     return {
       user: userObj,
@@ -80,12 +79,11 @@ const registerUser = async (
   await setupMailSender(
     newCreatedUser.user.email,
     'welcome alert',
-    `hi ${
-      newCreatedUser.user.name?.firstName +
-      ' ' +
-      newCreatedUser.user.name?.lastName
+    `hi ${newCreatedUser.user.name?.firstName +
+    ' ' +
+    newCreatedUser.user.name?.lastName
     } ` +
-      ' we are happy that you joined our community ... keep spreading goodness with us'
+    ' we are happy that you joined our community ... keep spreading goodness with us'
   );
   const userObj: UserObject = {
     _id: newCreatedUser.user._id,
