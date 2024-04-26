@@ -1,7 +1,10 @@
 import { NextFunction, Response, Request } from 'express';
 import { adminService } from './admin.service';
 import { NotFoundError } from '../../../libraries/errors/components';
-import { ConfirmPendingCharity } from '../../charity/data-access/interfaces';
+import {
+  ConfirmPendingCharity,
+  ICharityDocs,
+} from '../../charity/data-access/interfaces';
 // import { NotFoundError } from '../../../libraries/errors/components';
 // import {
 //   AllPendingRequestsCharitiesResponse,
@@ -72,55 +75,49 @@ const confirmCharity = async (req: Request): Promise<ConfirmPendingCharity> => {
   };
 };
 
-// const rejectCharity = async (
-//   req: Request,
-//   _res: Response,
-//   _next: NextFunction
-// ) => {
-//   const { id }: { id?: string } = req.params;
+const rejectCharity = async (req: Request) => {
+  const { id }: { id?: string } = req.params;
 
-//   if (!id) throw new NotFoundError('no id found to make a rejection');
+  if (!id) throw new NotFoundError('no id found to make a rejection');
 
-//   const rejectedCharity = (await adminService.rejectCharity(
-//     id
-//   )) as ConfirmPendingCharity;
+  const rejectedCharity = await adminService.rejectCharity(id);
 
-//   return {
-//     message: rejectedCharity.message,
-//     charity: rejectedCharity.charity,
-//   };
-// };
+  return {
+    message: rejectedCharity.message,
+    charity: rejectedCharity.charity,
+  };
+};
 
-// const confirmPaymentAccountRequestForConfirmedCharities = async (
-//   req: Request,
-//   _res: Response,
-//   _next: NextFunction
-// ) => {
-//   const { id }: { id?: string } = req.params; //charityId
+const confirmPaymentAccountRequestForConfirmedCharities = async (
+  req: Request,
+  _res: Response,
+  _next: NextFunction
+) => {
+  const { id }: { id?: string } = req.params; //charityId
 
-//   const {
-//     paymentMethod,
-//     paymentAccountID,
-//   }: {
-//     // paymentMethod: string, // Allows any string value, which could include invalid keys
-//     paymentMethod: keyof ICharityDocs['paymentMethods']; // Restrict the possible values for the paymentMethod
-//     paymentAccountID: string;
-//   } = req.body;
+  const {
+    paymentMethod,
+    paymentAccountID,
+  }: {
+    // paymentMethod: string, // Allows any string value, which could include invalid keys
+    paymentMethod: keyof ICharityDocs['paymentMethods']; // Restrict the possible values for the paymentMethod
+    paymentAccountID: string;
+  } = req.body;
 
-//   if (!id) throw new NotFoundError('no id found to make a rejection');
+  if (!id) throw new NotFoundError('no id found to make a rejection');
 
-//   const confirmedPaymentAccount: ConfirmPendingCharity =
-//     await adminService.confirmPaymentAccountRequestForConfirmedCharities(
-//       id,
-//       paymentMethod,
-//       paymentAccountID
-//     );
+  const confirmedPaymentAccount: ConfirmPendingCharity =
+    await adminService.confirmPaymentAccountRequestForConfirmedCharities(
+      id,
+      paymentMethod,
+      paymentAccountID
+    );
 
-//   return {
-//     charity: confirmedPaymentAccount.charity,
-//     message: confirmedPaymentAccount.message,
-//   };
-// };
+  return {
+    charity: confirmedPaymentAccount.charity,
+    message: confirmedPaymentAccount.message,
+  };
+};
 
 // const rejectPaymentAccountRequestForConfirmedCharities = async (
 //   req: Request,
@@ -155,9 +152,9 @@ export const adminUseCase = {
   getAllPendingRequestsCharities,
   getPendingRequestCharityById,
   confirmCharity,
-  //   rejectCharity,
+  rejectCharity,
   getAllRequestsPaymentMethodsForConfirmedCharities,
   getPendingPaymentRequestsForConfirmedCharityById,
-  //   confirmPaymentAccountRequestForConfirmedCharities,
+  confirmPaymentAccountRequestForConfirmedCharities,
   //   rejectPaymentAccountRequestForConfirmedCharities,
 };

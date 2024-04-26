@@ -25,17 +25,17 @@ const findAllPendingCharities = async (
   return pendingCharities;
 };
 
-// const findCharitiesByQueryWithOptionalId = async (
-//   queryObject: QueryObject,
-//   selection: string
-// ): Promise<PendingCharities[]> => {
-//   // select => name email paymentMethods
-//   const pendingCharities: PendingCharities[] = await Charity.find(
-//     queryObject,
-//     selection
-//   ).exec();
-//   return pendingCharities; // [ { name email paymentMethods _id } ]
-// };
+const findCharitiesByQueryWithOptionalId = async (
+  queryObject: QueryObject,
+  selection: string
+): Promise<PendingCharities[]> => {
+  // select => name email paymentMethods
+  const pendingCharities: PendingCharities[] = await Charity.find(
+    queryObject,
+    selection
+  ).exec();
+  return pendingCharities; // [ { name email paymentMethods _id } ]
+};
 
 const findConfirmedCharityById = async (
   queryObject: QueryObject,
@@ -84,5 +84,5 @@ export const adminRepository = {
   findAllPendingCharities,
   findConfirmedCharityById,
   getPendingPaymentAccountByAggregation,
-  // findCharitiesByQueryWithOptionalId,
+  findCharitiesByQueryWithOptionalId,
 };

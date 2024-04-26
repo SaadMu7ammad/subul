@@ -5,12 +5,15 @@ import {
 } from '../../../libraries/errors/components/index';
 import mongoose from 'mongoose';
 import {
+  AllPendingRequestsCharitiesResponse,
   CharitiesAccountsByAggregation,
   CharityPaymentMethodBankAccount,
   CharityPaymentMethodFawry,
   CharityPaymentMethodVodafoneCash,
   ConfirmPendingCharity,
+  ConfirmedCharities,
   DataForForConfirmedCharity,
+  ICharityDocs,
   PendingCharities,
 } from '../../charity/data-access/interfaces';
 // import { AllPendingRequestsCharitiesResponse, PendingCharities } from '../../charity/data-access/interfaces';
@@ -68,55 +71,56 @@ const getAllOrOnePendingRequestsCharities = async (
 
   if (id && !allPendingCharities[0])
     throw new BadRequestError('charity not found');
+
   return { allPendingCharities: allPendingCharities };
 };
 
-// const confirmPaymentAccountRequestForConfirmedCharities = async (
-//   charityId: string,
-//   // paymentMethod: string, // Allows any string value, which could include invalid keys
-//   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
-//   paymentAccountID: string
-// ): Promise<ConfirmPendingCharity> => {
-//   // Convert charityId to a mongoose.Types.ObjectId
-//   // const CharityObjectId: mongoose.Types.ObjectId = mongoose.Types.ObjectId(charityId);
-//   const queryObject: QueryObject = {
-//     $and: [
-//       { isPending: false },
-//       { isEnabled: true },
-//       { isConfirmed: true },
-//       {
-//         $or: [
-//           { 'emailVerification.isVerified': true },
-//           { 'phoneVerification.isVerified': true },
-//         ],
-//       },
-//       { _id: charityId },
-//       // { _id: CharityObjectId },
-//     ],
-//   };
-//   const charity: ConfirmedCharities = await adminUtils.getConfirmedCharities(
-//     queryObject
-//   );
+const confirmPaymentAccountRequestForConfirmedCharities = async (
+  charityId: string,
+  // paymentMethod: string, // Allows any string value, which could include invalid keys
+  paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
+  paymentAccountID: string
+): Promise<ConfirmPendingCharity> => {
+  // Convert charityId to a mongoose.Types.ObjectId
+  // const CharityObjectId: mongoose.Types.ObjectId = mongoose.Types.ObjectId(charityId);
+  const queryObject: QueryObject = {
+    $and: [
+      { isPending: false },
+      { isEnabled: true },
+      { isConfirmed: true },
+      {
+        $or: [
+          { 'emailVerification.isVerified': true },
+          { 'phoneVerification.isVerified': true },
+        ],
+      },
+      { _id: charityId },
+      // { _id: CharityObjectId },
+    ],
+  };
+  const charity: ConfirmedCharities = await adminUtils.getConfirmedCharities(
+    queryObject
+  );
 
-//   const idx: number = adminUtils.checkPaymentMethodAvailability(
-//     charity,
-//     paymentMethod,
-//     paymentAccountID
-//   );
+  const idx: number = adminUtils.checkPaymentMethodAvailability(
+    charity,
+    paymentMethod,
+    paymentAccountID
+  );
 
-//   await adminUtils.confirmingPaymentAccount(charity, paymentMethod, idx);
+  await adminUtils.confirmingPaymentAccount(charity, paymentMethod, idx);
 
-//   await setupMailSender(
-//     charity.email,
-//     'Charity payment account has been confirmed successfully',
-//     `<h2>after reviewing the payment account docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
-//   );
+  await setupMailSender(
+    charity.email,
+    'Charity payment account has been confirmed successfully',
+    `<h2>after reviewing the payment account docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
+  );
 
-//   return {
-//     charity: charity,
-//     message: 'Charity payment account has been confirmed successfully',
-//   };
-// };
+  return {
+    charity: charity,
+    message: 'Charity payment account has been confirmed successfully',
+  };
+};
 
 // const rejectPaymentAccountRequestForConfirmedCharities = async (
 //   charityId: string,
@@ -242,9 +246,7 @@ const confirmCharity = async (id: string): Promise<ConfirmPendingCharity> => {
   const pendingCharity: PendingCharities | undefined =
     charity.allPendingCharities[0];
 
-  if (!pendingCharity) {
-    throw new NotFoundError('Charity not found');
-  }
+  if (!pendingCharity) throw new NotFoundError('Charity not found');
 
   await adminUtils.confirmingCharity(pendingCharity);
 
@@ -260,32 +262,35 @@ const confirmCharity = async (id: string): Promise<ConfirmPendingCharity> => {
   };
 };
 
-// const rejectCharity = async (id: string): Promise<ConfirmPendingCharity> => {
-//   const charity: AllPendingRequestsCharitiesResponse =
-//     await getAllOrOnePendingRequestsCharities(id);
+const rejectCharity = async (id: string): Promise<ConfirmPendingCharity> => {
+  const charity: AllPendingRequestsCharitiesResponse =
+    await getAllOrOnePendingRequestsCharities(id);
 
-//   const pendingCharity = charity.allPendingCharities[0] as PendingCharities;
+  const pendingCharity: PendingCharities | undefined =
+    charity.allPendingCharities[0];
 
-//   await adminUtils.rejectingCharity(pendingCharity);
+  if (!pendingCharity) throw new NotFoundError('Charity not found');
 
-//   await setupMailSender(
-//     pendingCharity.email,
-//     'Charity has not been confirmed',
-//     `<h2>you must upload all the docs mentioned to auth the charity and always keep the quality of uploadings high and clear</h2>`
-//   );
+  await adminUtils.rejectingCharity(pendingCharity);
 
-//   return {
-//     charity: charity.allPendingCharities[0],
-//     message: 'Charity has not been confirmed',
-//   };
-// };
+  await setupMailSender(
+    pendingCharity.email,
+    'Charity has not been confirmed',
+    `<h2>you must upload all the docs mentioned to auth the charity and always keep the quality of uploadings high and clear</h2>`
+  );
+
+  return {
+    charity: charity.allPendingCharities[0],
+    message: 'Charity has not been confirmed',
+  };
+};
 
 export const adminService = {
   getAllOrOnePendingRequestsCharities,
   confirmCharity,
-  //   rejectCharity,
+  rejectCharity,
   //   rejectPaymentAccountRequestForConfirmedCharities,
-  //   confirmPaymentAccountRequestForConfirmedCharities,
+  confirmPaymentAccountRequestForConfirmedCharities,
   getAllRequestsPaymentMethodsForConfirmedCharities,
   getPendingPaymentRequestsForConfirmedCharityById,
 };

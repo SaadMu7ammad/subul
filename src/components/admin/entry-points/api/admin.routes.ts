@@ -108,50 +108,44 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  //   router.put(
-  //     '/rejectrequestsCharities/:id',
-  //     auth,
-  //     isAdmin,
-  //     async (req: Request, res: Response, next: NextFunction) => {
-  //       try {
+  router.put(
+    '/rejectrequestsCharities/:id',
+    auth,
+    isAdmin,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Admin API was called to get reject a charity`);
+        const rejectCharityResponse = await adminUseCase.rejectCharity(req);
+        return res.json(rejectCharityResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
-  //         logger.info(`Admin API was called to get reject a charity`);
-  //         const rejectCharityResponse = (await adminUseCase.rejectCharity(
-  //           req,
-  //           res,
-  //           next
-  //         )) as ConfirmPendingCharity;
-  //         return res.json(rejectCharityResponse);
-  //       } catch (error) {
-  //         next(error);
-  //         return undefined;
-  //       }
-  //     }
-  //   );
-
-  //   router.put(
-  //     '/confirmedCharity/confirmrequestPaymentMethod/:id',
-  //     auth,
-  //     isAdmin,
-  //     async (req: Request, res: Response, next: NextFunction) => {
-  //       try {
-
-  //         logger.info(
-  //           `Admin API was called to get confirm a payment account for charity`
-  //         );
-  //         const confirmPaymentAccountResponse =
-  //           await adminUseCase.confirmPaymentAccountRequestForConfirmedCharities(
-  //             req,
-  //             res,
-  //             next
-  //           );
-  //         return res.json(confirmPaymentAccountResponse);
-  //       } catch (error) {
-  //         next(error);
-  //         return undefined;
-  //       }
-  //     }
-  //   );
+  router.put(
+    '/confirmedCharity/confirmrequestPaymentMethod/:id',
+    auth,
+    isAdmin,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(
+          `Admin API was called to get confirm a payment account for charity`
+        );
+        const confirmPaymentAccountResponse =
+          await adminUseCase.confirmPaymentAccountRequestForConfirmedCharities(
+            req,
+            res,
+            next
+          );
+        return res.json(confirmPaymentAccountResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
   //   router.put(
   //     '/confirmedCharity/rejectrequestPaymentMethod/:id',

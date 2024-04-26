@@ -279,6 +279,11 @@ declare module '../interfaces/charity.interface' {
     InferSchemaType<typeof charitySchema>
   >;
 }
+declare module '../interfaces/charity.interface' {
+  export type IPaymentMethods = HydratedDocument<
+    InferSchemaType<typeof paymentMethodSchema>
+  >;
+}
 
 const Charity = mongoose.model<ICharity>('Charity', charitySchema);
 

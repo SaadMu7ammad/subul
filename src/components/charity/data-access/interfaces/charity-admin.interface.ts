@@ -1,5 +1,5 @@
 import { HydratedDocument } from 'mongoose';
-import { ICharity } from './';
+import { ICharity, IPaymentMethods } from './';
 export interface AllPendingRequestsPaymentMethods {
   allPendingRequestedPaymentAccounts: CharitiesAccounts;
 }
@@ -61,3 +61,11 @@ export interface CharitiesAccountsByAggregation
   extends DataForForConfirmedCharity {
   name: string;
 }
+
+export type CharitiesAccountsOfPaymentMethods = Pick<
+  IPaymentMethods,
+  'bankAccount' | 'fawry' | 'vodafoneCash'
+>;
+
+export type AccType =
+  CharitiesAccountsOfPaymentMethods[keyof CharitiesAccountsOfPaymentMethods][number];
