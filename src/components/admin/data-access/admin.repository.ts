@@ -4,7 +4,9 @@
 //   PendingCharities,
 // } from '../../charity/data-access/interfaces/charity.interface';
 import {
-  DataForPaymentRequestsForConfirmedCharity,
+  CharitiesAccountsByAggregation,
+  DataForForConfirmedCharity,
+  // DataForPaymentRequestsForConfirmedCharity,
   PendingCharities,
 } from '../../charity/data-access/interfaces';
 import Charity from '../../charity/data-access/models/charity.model';
@@ -39,48 +41,48 @@ const findConfirmedCharityById = async (
   queryObject: QueryObject,
   selection: string
 ) => {
-  const charity: DataForPaymentRequestsForConfirmedCharity =
-    await Charity.findOne(queryObject, selection).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
+  const charity: DataForForConfirmedCharity = await Charity.findOne(
+    queryObject,
+    selection
+  ).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
 
   return charity;
 };
 
-// const getPendingPaymentAccountByAggregation = async (
-//   paymentMethod: string
-// ): Promise<CharitiesAccountsByAggregation[]> => {
-//   const charity: CharitiesAccountsByAggregation[] = await Charity.aggregate([
-//     {
-//       $match: {
-//         isPending: false,
-//         isEnabled: true,
-//         isConfirmed: true,
-//         $or: [
-//           { 'emailVerification.isVerified': true },
-//           { 'phoneVerification.isVerified': true },
-//         ],
-//       },
-//     },
-//     // {
-//     //   $unwind: `$paymentMethods.${paymentMethod}`,
-//     // },
-//     {
-//       $match: {
-//         [`paymentMethods.${paymentMethod}.enable`]: false,
-//       },
-//     },
-//     {
-//       $project: {
-//         name: 1,
-//         [`paymentMethods.${paymentMethod}`]: 1,
-//       },
-//     },
-//   ]).exec();
-//   // console.log(charity); // [ { _id, name, paymentMethods: { bankAccount: [Array] } } ] [ { } ]...
-//   return charity;
-// };
+const getPendingPaymentAccountByAggregation = async (paymentMethod: string) => {
+  const charity: CharitiesAccountsByAggregation[] = await Charity.aggregate([
+    {
+      $match: {
+        isPending: false,
+        isEnabled: true,
+        isConfirmed: true,
+        $or: [
+          { 'emailVerification.isVerified': true },
+          { 'phoneVerification.isVerified': true },
+        ],
+      },
+    },
+    // {
+    //   $unwind: `$paymentMethods.${paymentMethod}`,
+    // },
+    {
+      $match: {
+        [`paymentMethods.${paymentMethod}.enable`]: false,
+      },
+    },
+    {
+      $project: {
+        name: 1,
+        [`paymentMethods.${paymentMethod}`]: 1,
+      },
+    },
+  ]).exec();
+  // console.log(charity); // [ { _id, name, paymentMethods: { bankAccount: [Array] } } ] [ { } ]...
+  return charity;
+};
 export const adminRepository = {
   findAllPendingCharities,
   findConfirmedCharityById,
-  // getPendingPaymentAccountByAggregation,
+  getPendingPaymentAccountByAggregation,
   // findCharitiesByQueryWithOptionalId,
 };

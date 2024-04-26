@@ -1,7 +1,18 @@
 import { adminRepository } from '../data-access/admin.repository';
-import { BadRequestError } from '../../../libraries/errors/components/index';
+import {
+  BadRequestError,
+  NotFoundError,
+} from '../../../libraries/errors/components/index';
 import mongoose from 'mongoose';
-import { PendingCharities } from '../../charity/data-access/interfaces';
+import {
+  CharitiesAccountsByAggregation,
+  CharityPaymentMethodBankAccount,
+  CharityPaymentMethodFawry,
+  CharityPaymentMethodVodafoneCash,
+  ConfirmPendingCharity,
+  DataForForConfirmedCharity,
+  PendingCharities,
+} from '../../charity/data-access/interfaces';
 // import { AllPendingRequestsCharitiesResponse, PendingCharities } from '../../charity/data-access/interfaces';
 // import {
 // CharitiesAccountsByAggregation,
@@ -15,7 +26,8 @@ import { PendingCharities } from '../../charity/data-access/interfaces';
 // ConfirmedCharities,
 // ICharityDocs,
 // } from '../../charity/data-access/interfaces/charity.interface';
-// import { adminUtils } from './admin.utils';
+import { adminUtils } from './admin.utils';
+import { setupMailSender } from '../../../utils/mailer';
 // import { setupMailSender } from '../../../utils/mailer';
 
 export type QueryObject = {
@@ -150,97 +162,103 @@ const getAllOrOnePendingRequestsCharities = async (
 //   };
 // };
 
-// // That mean if charity makes a requestEditCharityPayment (add another acc for receive payment)
-// const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
-//   const queryObject: QueryObject = {
-//     $and: [
-//       { isPending: false },
-//       { isEnabled: true },
-//       { isConfirmed: true },
-//       {
-//         $or: [
-//           { 'emailVerification.isVerified': true },
-//           { 'phoneVerification.isVerified': true },
-//         ],
-//       },
-//       // { _id: id },
-//       id ? { _id: new mongoose.Types.ObjectId(id) } : {},
-//     ],
-//   };
-//   const paymentRequests: DataForPaymentRequestsForConfirmedCharity =
-//     await adminRepository.findConfirmedCharityById(
-//       queryObject,
-//       'paymentMethods _id'
-//     );
+// That mean if charity makes a requestEditCharityPayment (add another acc for receive payment)
+const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
+  const queryObject: QueryObject = {
+    $and: [
+      { isPending: false },
+      { isEnabled: true },
+      { isConfirmed: true },
+      {
+        $or: [
+          { 'emailVerification.isVerified': true },
+          { 'phoneVerification.isVerified': true },
+        ],
+      },
+      id ? { _id: id } : {}, // to find by Id only one
+    ],
+  };
+  const paymentRequests: DataForForConfirmedCharity =
+    await adminRepository.findConfirmedCharityById(
+      queryObject,
+      'paymentMethods _id'
+    );
 
-//   if (!paymentRequests) throw new BadRequestError('charity not found');
+  if (!paymentRequests) throw new BadRequestError('charity not found');
 
-//   let bankAccount: CharityPaymentMethodBankAccount[] =
-//     paymentRequests.paymentMethods.bankAccount.filter(
-//       (acc: CharityPaymentMethodBankAccount) => acc.enable === false
-//     );
+  let bankAccount: CharityPaymentMethodBankAccount[] | undefined =
+    paymentRequests.paymentMethods?.bankAccount.filter(
+      (acc: CharityPaymentMethodBankAccount) => acc.enable === false
+    );
 
-//   let fawry: CharityPaymentMethodFawry[] =
-//     paymentRequests.paymentMethods.fawry.filter(
-//       (acc: CharityPaymentMethodFawry) => acc.enable === false
-//     );
+  let fawry: CharityPaymentMethodFawry[] | undefined =
+    paymentRequests.paymentMethods?.fawry.filter(
+      (acc: CharityPaymentMethodFawry) => acc.enable === false
+    );
 
-//   let vodafoneCash: CharityPaymentMethodVodafoneCash[] =
-//     paymentRequests.paymentMethods.vodafoneCash.filter(
-//       (acc: CharityPaymentMethodVodafoneCash) => acc.enable === false
-//     );
+  let vodafoneCash: CharityPaymentMethodVodafoneCash[] | undefined =
+    paymentRequests.paymentMethods?.vodafoneCash.filter(
+      (acc: CharityPaymentMethodVodafoneCash) => acc.enable === false
+    );
 
-//   // RETURNS ONLY THE NEW REQUEST ACC TO BE APPROVED👇
-//   return { paymentRequestsAccounts: { bankAccount, fawry, vodafoneCash } };
-// };
+  // RETURNS ONLY THE NEW REQUEST ACC TO BE APPROVED👇
+  return { paymentRequestsAccounts: { bankAccount, fawry, vodafoneCash } };
+};
 
-// const getAllRequestsPaymentMethodsForConfirmedCharities =
-//   async (): Promise<AllPaymentAccounts> => {
-//     const bankAccountRequests: CharitiesAccountsByAggregation[] =
-//       await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
-//         'bankAccount'
-//       ); // [ { } ]
+const getAllRequestsPaymentMethodsForConfirmedCharities = async () => {
+  const bankAccountRequests: CharitiesAccountsByAggregation[] =
+    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
+      'bankAccount'
+    ); // [ { _id, name, paymentMethods }, { }, ... ]
 
-//     const fawryRequests =
-//       await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
-//         'fawry'
-//       );
-//     const vodafoneCashRequests =
-//       await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
-//         'vodafoneCash'
-//       );
+  const fawryRequests: CharitiesAccountsByAggregation[] =
+    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
+      'fawry'
+    );
 
-//     if (!bankAccountRequests && !fawryRequests && !vodafoneCashRequests)
-//       throw new BadRequestError('No paymentRequests found');
+  const vodafoneCashRequests: CharitiesAccountsByAggregation[] =
+    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
+      'vodafoneCash'
+    );
 
-//     return {
-//       allPaymentAccounts: {
-//         bankAccountRequests,
-//         fawryRequests,
-//         vodafoneCashRequests,
-//       },
-//     };
-//   };
+  if (!bankAccountRequests && !fawryRequests && !vodafoneCashRequests)
+    throw new BadRequestError('No paymentRequests found');
 
-// const confirmCharity = async (id: string): Promise<ConfirmPendingCharity> => {
-//   const charity: AllPendingRequestsCharitiesResponse =
-//     await getAllOrOnePendingRequestsCharities(id);
+  return {
+    allPaymentAccounts: {
+      bankAccountRequests,
+      fawryRequests,
+      vodafoneCashRequests,
+    },
+  };
+};
 
-//   const pendingCharity = charity.allPendingCharities[0] as PendingCharities;
+const confirmCharity = async (id: string): Promise<ConfirmPendingCharity> => {
+  // const charity: AllPendingRequestsCharitiesResponse =
+  //   await getAllOrOnePendingRequestsCharities(id);
+  const charity = await getAllOrOnePendingRequestsCharities(id);
+  // { allPendingCharities: allPendingCharities }
 
-//   await adminUtils.confirmingCharity(pendingCharity);
+  const pendingCharity: PendingCharities | undefined =
+    charity.allPendingCharities[0];
 
-//   await setupMailSender(
-//     pendingCharity.email,
-//     'Charity has been confirmed successfully',
-//     `<h2>after reviewing the charity docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
-//   );
+  if (!pendingCharity) {
+    throw new NotFoundError('Charity not found');
+  }
 
-//   return {
-//     charity: charity.allPendingCharities[0],
-//     message: 'Charity has been confirmed successfully',
-//   };
-// };
+  await adminUtils.confirmingCharity(pendingCharity);
+
+  await setupMailSender(
+    pendingCharity.email,
+    'Charity has been confirmed successfully',
+    `<h2>after reviewing the charity docs we accept it </h2><h2>now you are ready to help the world with us by start to share cases need help </h2>`
+  );
+
+  return {
+    charity: charity.allPendingCharities[0],
+    message: 'Charity has been confirmed successfully',
+  };
+};
 
 // const rejectCharity = async (id: string): Promise<ConfirmPendingCharity> => {
 //   const charity: AllPendingRequestsCharitiesResponse =
@@ -264,10 +282,10 @@ const getAllOrOnePendingRequestsCharities = async (
 
 export const adminService = {
   getAllOrOnePendingRequestsCharities,
-  //   confirmCharity,
+  confirmCharity,
   //   rejectCharity,
   //   rejectPaymentAccountRequestForConfirmedCharities,
   //   confirmPaymentAccountRequestForConfirmedCharities,
-  //   getAllRequestsPaymentMethodsForConfirmedCharities,
-  // getPendingPaymentRequestsForConfirmedCharityById,
+  getAllRequestsPaymentMethodsForConfirmedCharities,
+  getPendingPaymentRequestsForConfirmedCharityById,
 };

@@ -1,7 +1,3 @@
-// import {
-//   BadRequestError,
-//   NotFoundError,
-// } from '../../../libraries/errors/components/index';
 // import { deleteOldImgs } from '../../../utils/deleteFile';
 // import {
 //   CharitiesAccountsByAggregation,
@@ -13,35 +9,36 @@
 //   ICharityPaymentMethodDocument,
 //   PendingCharities,
 // } from '../../charity/data-access/interfaces/';
-// import { adminRepository } from '../data-access/admin.repository';
+import { PendingCharities } from '../../charity/data-access/interfaces';
+import { adminRepository } from '../data-access/admin.repository';
 // import { QueryObject } from './admin.service';
 
-// const getAllPendingPaymentMethodsRequestsForConfirmedCharity = async (
-//   paymentMethod: string // bankAccount | fawry...
-// ): Promise<CharitiesAccountsByAggregation[]> => {
-//   const paymentMethodRequests: CharitiesAccountsByAggregation[] =
-//     await adminRepository.getPendingPaymentAccountByAggregation(paymentMethod);
+const getAllPendingPaymentMethodsRequestsForConfirmedCharity = async (
+  paymentMethod: string // bankAccount | fawry...
+) => {
+  const paymentMethodRequests =
+    await adminRepository.getPendingPaymentAccountByAggregation(paymentMethod);
 
-//   return paymentMethodRequests; // []
-// };
+  return paymentMethodRequests; // []
+};
 
-// const confirmingCharity = async (charity: PendingCharities): Promise<void> => {
-//   charity.isPending = false;
-//   charity.isConfirmed = true;
-//   //enable all paymentMethods when first time the charity send the docs
-//   if (charity && charity.paymentMethods) {
-//     charity.paymentMethods.bankAccount.forEach((item) => {
-//       item.enable = true;
-//     });
-//     charity.paymentMethods.fawry.forEach((item) => {
-//       item.enable = true;
-//     });
-//     charity.paymentMethods.vodafoneCash.forEach((item) => {
-//       item.enable = true;
-//     });
-//   }
-//   await charity.save();
-// };
+const confirmingCharity = async (charity: PendingCharities) => {
+  charity.isPending = false;
+  charity.isConfirmed = true;
+  //enable all paymentMethods when first time the charity send the docs
+  if (charity && charity.paymentMethods) {
+    charity.paymentMethods.bankAccount.forEach((item) => {
+      item.enable = true;
+    });
+    charity.paymentMethods.fawry.forEach((item) => {
+      item.enable = true;
+    });
+    charity.paymentMethods.vodafoneCash.forEach((item) => {
+      item.enable = true;
+    });
+  }
+  await charity.save();
+};
 
 // // const rejectingCharity = async (charity: ICharity) => {
 // const rejectingCharity = async (charity: PendingCharities) => {
@@ -245,12 +242,12 @@
 
 //   // await charity.save();
 // };
-// export const adminUtils = {
-//   getAllPendingPaymentMethodsRequestsForConfirmedCharity,
-//   confirmingCharity,
-//   rejectingCharity,
-//   checkPaymentMethodAvailability,
-//   getConfirmedCharities,
-//   confirmingPaymentAccount,
-//   rejectingPaymentAccount,
-// };
+export const adminUtils = {
+  getAllPendingPaymentMethodsRequestsForConfirmedCharity,
+  confirmingCharity,
+  //   rejectingCharity,
+  //   checkPaymentMethodAvailability,
+  //   getConfirmedCharities,
+  //   confirmingPaymentAccount,
+  //   rejectingPaymentAccount,
+};
