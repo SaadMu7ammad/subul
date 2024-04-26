@@ -89,9 +89,7 @@ const rejectCharity = async (req: Request) => {
 };
 
 const confirmPaymentAccountRequestForConfirmedCharities = async (
-  req: Request,
-  _res: Response,
-  _next: NextFunction
+  req: Request
 ) => {
   const { id }: { id?: string } = req.params; //charityId
 
@@ -119,35 +117,35 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
   };
 };
 
-// const rejectPaymentAccountRequestForConfirmedCharities = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const { id }: { id?: string } = req.params; //charityId
-//   const {
-//     paymentMethod,
-//     paymentAccountID,
-//   }: {
-//     // paymentMethod: string, // Allows any string value, which could include invalid keys
-//     paymentMethod: keyof ICharityDocs['paymentMethods']; // Restrict the possible values for the paymentMethod
-//     paymentAccountID: string;
-//   } = req.body;
+const rejectPaymentAccountRequestForConfirmedCharities = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id }: { id?: string } = req.params; //charityId
+  const {
+    paymentMethod,
+    paymentAccountID,
+  }: {
+    // paymentMethod: string, // Allows any string value, which could include invalid keys
+    paymentMethod: keyof ICharityDocs['paymentMethods']; // Restrict the possible values for the paymentMethod
+    paymentAccountID: string;
+  } = req.body;
 
-//   if (!id) throw new NotFoundError('no id found to make a rejection');
+  if (!id) throw new NotFoundError('no id found to make a rejection');
 
-//   const rejectedPaymentAccount: ConfirmPendingCharity =
-//     await adminService.rejectPaymentAccountRequestForConfirmedCharities(
-//       id,
-//       paymentMethod,
-//       paymentAccountID
-//     );
+  const rejectedPaymentAccount: ConfirmPendingCharity =
+    await adminService.rejectPaymentAccountRequestForConfirmedCharities(
+      id,
+      paymentMethod,
+      paymentAccountID
+    );
 
-//   return {
-//     charity: rejectedPaymentAccount.charity,
-//     message: rejectedPaymentAccount.message,
-//   };
-// };
+  return {
+    charity: rejectedPaymentAccount.charity,
+    message: rejectedPaymentAccount.message,
+  };
+};
 export const adminUseCase = {
   getAllPendingRequestsCharities,
   getPendingRequestCharityById,
@@ -156,5 +154,5 @@ export const adminUseCase = {
   getAllRequestsPaymentMethodsForConfirmedCharities,
   getPendingPaymentRequestsForConfirmedCharityById,
   confirmPaymentAccountRequestForConfirmedCharities,
-  //   rejectPaymentAccountRequestForConfirmedCharities,
+  rejectPaymentAccountRequestForConfirmedCharities,
 };

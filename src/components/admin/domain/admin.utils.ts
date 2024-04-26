@@ -15,6 +15,9 @@ import { deleteOldImgs } from '../../../utils/deleteFile';
 // } from '../../charity/data-access/interfaces/';
 import {
   AccType,
+  CharityPaymentMethodBankAccount,
+  CharityPaymentMethodFawry,
+  CharityPaymentMethodVodafoneCash,
   ConfirmedCharities,
   ICharityDocs,
   PendingCharities,
@@ -113,8 +116,8 @@ const rejectingCharity = async (charity: PendingCharities) => {
 
 const checkPaymentMethodAvailability = (
   // charity: ICharity,
-  charity: ConfirmedCharities,
-  paymentMethod: string,
+  charity: PendingCharities,
+  paymentMethod: keyof ICharityDocs['paymentMethods'],
   paymentAccountID: string
 ): number => {
   if (
@@ -125,23 +128,21 @@ const checkPaymentMethodAvailability = (
     throw new BadRequestError('Invalid Payment Method type');
   }
 
-  // charity.paymentMethods => [ { enable number paymentDocs _id } ]
   if (!charity.paymentMethods)
     throw new NotFoundError('Not found any payment methods');
 
   const idx: number = charity.paymentMethods[paymentMethod].findIndex(
-    (item) => item._id?.toString() === paymentAccountID
+    (item) => item._id == paymentAccountID
   );
+
   if (idx === -1) throw new BadRequestError('not found Payment Method account');
 
   return idx;
 };
 
-const getConfirmedCharities = async (
-  queryObject: QueryObject
-): Promise<ConfirmedCharities> => {
+const getConfirmedCharities = async (queryObject: QueryObject) => {
   // [ { name email paymentMethods _id } ]
-  const charities: ConfirmedCharities[] =
+  const charities: PendingCharities[] =
     await adminRepository.findCharitiesByQueryWithOptionalId(
       queryObject,
       'name email paymentMethods'
@@ -153,7 +154,7 @@ const getConfirmedCharities = async (
 };
 
 const confirmingPaymentAccount = async (
-  charity: ConfirmedCharities,
+  charity: PendingCharities,
   // paymentMethod: string, // Allows any string value, which could include invalid keys
   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
   idx: number
@@ -172,9 +173,9 @@ const confirmingPaymentAccount = async (
   //   | CharityPaymentMethodFawry
   //   | CharityPaymentMethodVodafoneCash;
 
-  const paymentMethodData = charity.paymentMethods[paymentMethod]; // [ { } ]
+  const paymentMethodData: AccType[] = charity.paymentMethods[paymentMethod]; // [ { Data } ]
 
-  const paymentAccount = paymentMethodData[idx]; // { }
+  const paymentAccount: AccType | undefined = paymentMethodData[idx]; // { }
 
   if (paymentAccount?.enable === false) {
     paymentAccount.enable = true;
@@ -185,77 +186,77 @@ const confirmingPaymentAccount = async (
   await charity.save();
 };
 
-// const rejectingPaymentAccount = async (
-//   charity: ConfirmedCharities,
-//   // paymentMethod: string, // Allows any string value, which could include invalid keys
-//   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
-//   idx: number
-// ): Promise<void> => {
-//   if (!charity.paymentMethods)
-//     throw new NotFoundError('Not found any payment methods');
+const rejectingPaymentAccount = async (
+  charity: ConfirmedCharities,
+  // paymentMethod: string, // Allows any string value, which could include invalid keys
+  paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
+  idx: number
+): Promise<void> => {
+  if (!charity.paymentMethods)
+    throw new NotFoundError('Not found any payment methods');
 
-//   type PaymentMethod =
-//     | CharityPaymentMethodBankAccount
-//     | CharityPaymentMethodFawry
-//     | CharityPaymentMethodVodafoneCash;
+  type PaymentMethod =
+    | CharityPaymentMethodBankAccount
+    | CharityPaymentMethodFawry
+    | CharityPaymentMethodVodafoneCash;
 
-//   const paymentMethodData = charity.paymentMethods[
-//     paymentMethod
-//   ] as PaymentMethod[]; // [ { } ]
+  const paymentMethodData = charity.paymentMethods[
+    paymentMethod
+  ] as PaymentMethod[]; // [ { } ]
 
-//   const paymentAccount = paymentMethodData[idx] as PaymentMethod; // { }
+  const paymentAccount = paymentMethodData[idx] as PaymentMethod; // { }
 
-//   if (paymentAccount.enable === false) {
-//     throw new BadRequestError('Already this payment account is enabled');
-//   }
+  if (paymentAccount.enable === false) {
+    throw new BadRequestError('Already this payment account is enabled');
+  }
 
-//   let urlOldImage: string[] | null = null;
+  let urlOldImage: string[] | null = null;
 
-//   // TypeScript only allows access to properties that are common to all types in a union.
-//   if (paymentMethod === 'vodafoneCash') {
-//     const vodafoneCashAccount =
-//       paymentAccount as CharityPaymentMethodVodafoneCash;
-//     urlOldImage = vodafoneCashAccount.vodafoneCashDocs;
-//   } else if (paymentMethod === 'bankAccount') {
-//     const bankAccount = paymentAccount as CharityPaymentMethodBankAccount;
-//     urlOldImage = bankAccount.bankDocs;
-//   } else if (paymentMethod === 'fawry') {
-//     const fawryAccount = paymentAccount as CharityPaymentMethodFawry;
-//     urlOldImage = fawryAccount.fawryDocs;
-//   }
+  // TypeScript only allows access to properties that are common to all types in a union.
+  if (paymentMethod === 'vodafoneCash') {
+    const vodafoneCashAccount =
+      paymentAccount as CharityPaymentMethodVodafoneCash;
+    urlOldImage = vodafoneCashAccount.vodafoneCashDocs;
+  } else if (paymentMethod === 'bankAccount') {
+    const bankAccount = paymentAccount as CharityPaymentMethodBankAccount;
+    urlOldImage = bankAccount.bankDocs;
+  } else if (paymentMethod === 'fawry') {
+    const fawryAccount = paymentAccount as CharityPaymentMethodFawry;
+    urlOldImage = fawryAccount.fawryDocs;
+  }
 
-//   paymentMethodData.splice(idx, 1); // Removing 1 acc at index idx
-//   if (urlOldImage) {
-//     deleteOldImgs('charityDocs', urlOldImage);
-//   } else {
-//     throw new BadRequestError('No docs found for that account');
-//   }
-//   await charity.save();
+  paymentMethodData.splice(idx, 1); // Removing 1 acc at index idx
+  if (urlOldImage) {
+    deleteOldImgs('charityDocs', urlOldImage);
+  } else {
+    throw new BadRequestError('No docs found for that account');
+  }
+  await charity.save();
 
-//   // if (charity.paymentMethods[paymentMethod][idx].enable === true)
-//   //   throw new BadRequestError('Already this payment account is enabled');
+  // if (charity.paymentMethods[paymentMethod][idx].enable === true)
+  //   throw new BadRequestError('Already this payment account is enabled');
 
-//   // let urlOldImage: string | null = null;
+  // let urlOldImage: string | null = null;
 
-//   // if (paymentMethod === 'bankAccount') {
-//   //   urlOldImage = charity.paymentMethods[paymentMethod][idx].bankDocs;
-//   // } else if (paymentMethod === 'vodafoneCash') {
-//   //   urlOldImage = charity.paymentMethods[paymentMethod][idx].vodafoneCashDocs;
-//   // } else if (paymentMethod === 'fawry') {
-//   //   urlOldImage = charity.paymentMethods[paymentMethod][idx].fawryDocs;
-//   // }
+  // if (paymentMethod === 'bankAccount') {
+  //   urlOldImage = charity.paymentMethods[paymentMethod][idx].bankDocs;
+  // } else if (paymentMethod === 'vodafoneCash') {
+  //   urlOldImage = charity.paymentMethods[paymentMethod][idx].vodafoneCashDocs;
+  // } else if (paymentMethod === 'fawry') {
+  //   urlOldImage = charity.paymentMethods[paymentMethod][idx].fawryDocs;
+  // }
 
-//   // charity.paymentMethods[paymentMethod].splice(idx, 1); //delete the account
-//   // // url: 'http://localhost:5000/charityDocs/bankDocs-name.jpeg';
-//   // // const url = path.join('./uploads/charityDocs', charity.paymentMethods[paymentMethod][idx].fawryDocs[0])
-//   // if (urlOldImage) {
-//   //   deleteOldImgs('charityDocs', urlOldImage);
-//   // } else {
-//   //   throw new BadRequestError('No docs found for that account');
-//   // }
+  // charity.paymentMethods[paymentMethod].splice(idx, 1); //delete the account
+  // // url: 'http://localhost:5000/charityDocs/bankDocs-name.jpeg';
+  // // const url = path.join('./uploads/charityDocs', charity.paymentMethods[paymentMethod][idx].fawryDocs[0])
+  // if (urlOldImage) {
+  //   deleteOldImgs('charityDocs', urlOldImage);
+  // } else {
+  //   throw new BadRequestError('No docs found for that account');
+  // }
 
-//   // await charity.save();
-// };
+  // await charity.save();
+};
 export const adminUtils = {
   getAllPendingPaymentMethodsRequestsForConfirmedCharity,
   confirmingCharity,
@@ -263,5 +264,5 @@ export const adminUtils = {
   checkPaymentMethodAvailability,
   getConfirmedCharities,
   confirmingPaymentAccount,
-  //   rejectingPaymentAccount,
+  rejectingPaymentAccount,
 };

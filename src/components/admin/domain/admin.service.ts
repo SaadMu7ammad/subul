@@ -80,9 +80,7 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
   // paymentMethod: string, // Allows any string value, which could include invalid keys
   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
   paymentAccountID: string
-): Promise<ConfirmPendingCharity> => {
-  // Convert charityId to a mongoose.Types.ObjectId
-  // const CharityObjectId: mongoose.Types.ObjectId = mongoose.Types.ObjectId(charityId);
+) => {
   const queryObject: QueryObject = {
     $and: [
       { isPending: false },
@@ -95,12 +93,11 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
         ],
       },
       { _id: charityId },
-      // { _id: CharityObjectId },
     ],
   };
-  const charity: ConfirmedCharities = await adminUtils.getConfirmedCharities(
+  const charity: PendingCharities = await adminUtils.getConfirmedCharities(
     queryObject
-  );
+  ); // charities[0]
 
   const idx: number = adminUtils.checkPaymentMethodAvailability(
     charity,
@@ -122,49 +119,49 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
   };
 };
 
-// const rejectPaymentAccountRequestForConfirmedCharities = async (
-//   charityId: string,
-//   // paymentMethod: string, // Allows any string value, which could include invalid keys
-//   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
-//   paymentAccountID: string
-// ): Promise<ConfirmPendingCharity> => {
-//   const queryObject: QueryObject = {
-//     $and: [
-//       { isPending: false },
-//       { isEnabled: true },
-//       { isConfirmed: true },
-//       {
-//         $or: [
-//           { 'emailVerification.isVerified': true },
-//           { 'phoneVerification.isVerified': true },
-//         ],
-//       },
-//       { _id: charityId },
-//     ],
-//   };
+const rejectPaymentAccountRequestForConfirmedCharities = async (
+  charityId: string,
+  // paymentMethod: string, // Allows any string value, which could include invalid keys
+  paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
+  paymentAccountID: string
+): Promise<ConfirmPendingCharity> => {
+  const queryObject: QueryObject = {
+    $and: [
+      { isPending: false },
+      { isEnabled: true },
+      { isConfirmed: true },
+      {
+        $or: [
+          { 'emailVerification.isVerified': true },
+          { 'phoneVerification.isVerified': true },
+        ],
+      },
+      { _id: charityId },
+    ],
+  };
 
-//   const charity: ConfirmedCharities = await adminUtils.getConfirmedCharities(
-//     queryObject
-//   );
+  const charity: ConfirmedCharities = await adminUtils.getConfirmedCharities(
+    queryObject
+  );
 
-//   const idx: number = adminUtils.checkPaymentMethodAvailability(
-//     charity,
-//     paymentMethod,
-//     paymentAccountID
-//   );
+  const idx: number = adminUtils.checkPaymentMethodAvailability(
+    charity,
+    paymentMethod,
+    paymentAccountID
+  );
 
-//   await adminUtils.rejectingPaymentAccount(charity, paymentMethod, idx);
+  await adminUtils.rejectingPaymentAccount(charity, paymentMethod, idx);
 
-//   await setupMailSender(
-//     charity.email,
-//     'Charity payment account has been rejected',
-//     `<h2>after reviewing the payment account docs we reject it </h2><h2>you can re upload the docs again, BeCareful to add correct info</h2>`
-//   );
-//   return {
-//     charity: charity,
-//     message: 'Charity payment account has been rejected',
-//   };
-// };
+  await setupMailSender(
+    charity.email,
+    'Charity payment account has been rejected',
+    `<h2>after reviewing the payment account docs we reject it </h2><h2>you can re upload the docs again, BeCareful to add correct info</h2>`
+  );
+  return {
+    charity: charity,
+    message: 'Charity payment account has been rejected',
+  };
+};
 
 // That mean if charity makes a requestEditCharityPayment (add another acc for receive payment)
 const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
@@ -289,7 +286,7 @@ export const adminService = {
   getAllOrOnePendingRequestsCharities,
   confirmCharity,
   rejectCharity,
-  //   rejectPaymentAccountRequestForConfirmedCharities,
+  rejectPaymentAccountRequestForConfirmedCharities,
   confirmPaymentAccountRequestForConfirmedCharities,
   getAllRequestsPaymentMethodsForConfirmedCharities,
   getPendingPaymentRequestsForConfirmedCharityById,

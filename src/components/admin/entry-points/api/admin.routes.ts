@@ -4,6 +4,7 @@ import { adminUseCase } from '../../domain/admin.use-case';
 import { auth } from '../../../auth/shared/index';
 import { isAdmin } from '../../index';
 import logger from '../../../../utils/logger';
+import { ConfirmPendingCharity } from '../../../charity/data-access/interfaces';
 // import {
 //   AllPendingRequestsCharitiesResponse,
 //   // AllPendingRequestsPaymentMethods,
@@ -99,7 +100,8 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Admin API was called to get confirm a charity`);
-        const confirmCharityResponse = await adminUseCase.confirmCharity(req);
+        const confirmCharityResponse: ConfirmPendingCharity =
+          await adminUseCase.confirmCharity(req);
         return res.json(confirmCharityResponse);
       } catch (error) {
         next(error);
@@ -115,7 +117,8 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Admin API was called to get reject a charity`);
-        const rejectCharityResponse = await adminUseCase.rejectCharity(req);
+        const rejectCharityResponse: ConfirmPendingCharity =
+          await adminUseCase.rejectCharity(req);
         return res.json(rejectCharityResponse);
       } catch (error) {
         next(error);
@@ -133,11 +136,9 @@ export default function defineRoutes(expressApp: Application) {
         logger.info(
           `Admin API was called to get confirm a payment account for charity`
         );
-        const confirmPaymentAccountResponse =
+        const confirmPaymentAccountResponse: ConfirmPendingCharity =
           await adminUseCase.confirmPaymentAccountRequestForConfirmedCharities(
-            req,
-            res,
-            next
+            req
           );
         return res.json(confirmPaymentAccountResponse);
       } catch (error) {
@@ -147,28 +148,27 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  //   router.put(
-  //     '/confirmedCharity/rejectrequestPaymentMethod/:id',
-  //     auth,
-  //     isAdmin,
-  //     async (req: Request, res: Response, next: NextFunction) => {
-  //       try {
-
-  //         logger.info(
-  //           `Admin API was called to get reject a payment account for charity`
-  //         );
-  //         const rejectPaymentAccountResponse =
-  //           await adminUseCase.rejectPaymentAccountRequestForConfirmedCharities(
-  //             req,
-  //             res,
-  //             next
-  //           );
-  //         return res.json(rejectPaymentAccountResponse);
-  //       } catch (error) {
-  //         next(error);
-  //         return undefined;
-  //       }
-  //     }
-  //   );
+  router.put(
+    '/confirmedCharity/rejectrequestPaymentMethod/:id',
+    auth,
+    isAdmin,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(
+          `Admin API was called to get reject a payment account for charity`
+        );
+        const rejectPaymentAccountResponse =
+          await adminUseCase.rejectPaymentAccountRequestForConfirmedCharities(
+            req,
+            res,
+            next
+          );
+        return res.json(rejectPaymentAccountResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
   expressApp.use('/api/admin', router);
 }
