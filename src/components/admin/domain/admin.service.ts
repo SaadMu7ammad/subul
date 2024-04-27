@@ -16,19 +16,6 @@ import {
   ICharityDocs,
   PendingCharities,
 } from '../../charity/data-access/interfaces';
-// import { AllPendingRequestsCharitiesResponse, PendingCharities } from '../../charity/data-access/interfaces';
-// import {
-// CharitiesAccountsByAggregation,
-// CharityPaymentMethodBankAccount,
-// CharityPaymentMethodFawry,
-// CharityPaymentMethodVodafoneCash,
-// DataForPaymentRequestsForConfirmedCharity,
-// AllPaymentAccounts,
-// AllPendingRequestsCharitiesResponse,
-// ConfirmPendingCharity,
-// ConfirmedCharities,
-// ICharityDocs,
-// } from '../../charity/data-access/interfaces/charity.interface';
 import { adminUtils } from './admin.utils';
 import { setupMailSender } from '../../../utils/mailer';
 // import { setupMailSender } from '../../../utils/mailer';

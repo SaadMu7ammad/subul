@@ -3,21 +3,8 @@ import {
   NotFoundError,
 } from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
-// import {
-//   CharitiesAccountsByAggregation,
-//   CharityPaymentMethodBankAccount,
-//   CharityPaymentMethodFawry,
-//   CharityPaymentMethodVodafoneCash,
-//   ConfirmedCharities,
-//   ICharityDocs,
-//   ICharityPaymentMethodDocument,
-//   PendingCharities,
-// } from '../../charity/data-access/interfaces/';
 import {
   AccType,
-  CharityPaymentMethodBankAccount,
-  CharityPaymentMethodFawry,
-  CharityPaymentMethodVodafoneCash,
   ConfirmedCharities,
   ICharityDocs,
   PendingCharities,
@@ -177,7 +164,10 @@ const confirmingPaymentAccount = async (
 
   const paymentAccount: AccType | undefined = paymentMethodData[idx]; // { }
 
-  if (paymentAccount?.enable === false) {
+  if (!paymentAccount)
+    throw new NotFoundError('This payment account not found');
+
+  if (paymentAccount.enable === false) {
     paymentAccount.enable = true;
   } else {
     throw new BadRequestError('Already this payment account is enabled');
@@ -195,34 +185,39 @@ const rejectingPaymentAccount = async (
   if (!charity.paymentMethods)
     throw new NotFoundError('Not found any payment methods');
 
-  type PaymentMethod =
-    | CharityPaymentMethodBankAccount
-    | CharityPaymentMethodFawry
-    | CharityPaymentMethodVodafoneCash;
+  // type PaymentMethod =
+  //   | CharityPaymentMethodBankAccount
+  //   | CharityPaymentMethodFawry
+  //   | CharityPaymentMethodVodafoneCash;
 
-  const paymentMethodData = charity.paymentMethods[
-    paymentMethod
-  ] as PaymentMethod[]; // [ { } ]
+  const paymentMethodData: AccType[] = charity.paymentMethods[paymentMethod]; // [ { Data } ]
 
-  const paymentAccount = paymentMethodData[idx] as PaymentMethod; // { }
+  const paymentAccount: AccType | undefined = paymentMethodData[idx]; // { }
+
+  if (!paymentAccount)
+    throw new NotFoundError('This payment account not found');
 
   if (paymentAccount.enable === false) {
-    throw new BadRequestError('Already this payment account is enabled');
+    throw new BadRequestError('This payment account is already not enabled');
   }
 
   let urlOldImage: string[] | null = null;
 
   // TypeScript only allows access to properties that are common to all types in a union.
   if (paymentMethod === 'vodafoneCash') {
-    const vodafoneCashAccount =
-      paymentAccount as CharityPaymentMethodVodafoneCash;
-    urlOldImage = vodafoneCashAccount.vodafoneCashDocs;
+    const vodafoneCashAccount: AccType = paymentAccount;
+    // This check cuzOf AccType is oring between multiple choice
+    if ('vodafoneCashDocs' in vodafoneCashAccount) {
+      urlOldImage = vodafoneCashAccount.vodafoneCashDocs;
+    }
   } else if (paymentMethod === 'bankAccount') {
-    const bankAccount = paymentAccount as CharityPaymentMethodBankAccount;
-    urlOldImage = bankAccount.bankDocs;
+    const bankAccount: AccType = paymentAccount;
+    if ('bankDocs' in bankAccount) {
+      urlOldImage = bankAccount.bankDocs;
+    }
   } else if (paymentMethod === 'fawry') {
-    const fawryAccount = paymentAccount as CharityPaymentMethodFawry;
-    urlOldImage = fawryAccount.fawryDocs;
+    const fawryAccount: AccType = paymentAccount;
+    if ('fawryDocs' in fawryAccount) urlOldImage = fawryAccount.fawryDocs;
   }
 
   paymentMethodData.splice(idx, 1); // Removing 1 acc at index idx

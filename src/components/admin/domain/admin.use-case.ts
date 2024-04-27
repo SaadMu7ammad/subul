@@ -5,16 +5,6 @@ import {
   ConfirmPendingCharity,
   ICharityDocs,
 } from '../../charity/data-access/interfaces';
-// import { NotFoundError } from '../../../libraries/errors/components';
-// import {
-//   AllPendingRequestsCharitiesResponse,
-//   // AllPaymentAccounts,
-//   // AllPendingRequestsPaymentMethods,
-//   // ConfirmPendingCharity,
-//   // ICharityDocs,
-//   // PendingRequestCharityResponse,
-// } from '../../charity/data-access/interfaces';
-
 const getAllPendingRequestsCharities = async (
   _req: Request,
   _res: Response,

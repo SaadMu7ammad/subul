@@ -1,12 +1,6 @@
-// import {
-//   CharitiesAccountsByAggregation,
-//   DataForPaymentRequestsForConfirmedCharity,
-//   PendingCharities,
-// } from '../../charity/data-access/interfaces/charity.interface';
 import {
   CharitiesAccountsByAggregation,
   DataForForConfirmedCharity,
-  // DataForPaymentRequestsForConfirmedCharity,
   PendingCharities,
 } from '../../charity/data-access/interfaces';
 import Charity from '../../charity/data-access/models/charity.model';

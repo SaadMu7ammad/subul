@@ -5,12 +5,6 @@ import { auth } from '../../../auth/shared/index';
 import { isAdmin } from '../../index';
 import logger from '../../../../utils/logger';
 import { ConfirmPendingCharity } from '../../../charity/data-access/interfaces';
-// import {
-//   AllPendingRequestsCharitiesResponse,
-//   // AllPendingRequestsPaymentMethods,
-//   // ConfirmPendingCharity,
-//   // PendingRequestCharityResponse,
-// } from '../../../charity/data-access/interfaces/';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
