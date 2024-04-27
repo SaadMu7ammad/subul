@@ -3,10 +3,10 @@ import { BadRequestError } from '../../../libraries/errors/components/index';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
-} from '../data-access/interfaces/transaction.interface';
+} from '../data-access/interfaces';
 
 import { transactionService } from './transaction.service';
-import { GetAllTransactionResponse, ITransaction} from '../data-access/interfaces';
+import { GetAllTransactionResponse, ITransaction, UpdateCaseInfoResponse} from '../data-access/interfaces';
 import { User } from '../../user/data-access/models/user.model';
 
 const preCreateTransaction = async (
@@ -43,6 +43,7 @@ const getAllTransactions = async (
   res: Response,
   next: NextFunction
 ):Promise<GetAllTransactionResponse> => {
+
   const myTransactions: { allTransactions: (ITransaction | null)[] } =
     await transactionService.getAllTransactions(res.locals.user);
 
@@ -57,7 +58,7 @@ const updateCaseInfo = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+):Promise<UpdateCaseInfoResponse> => {
   try {
     //ensure that transaction is not pending
     const data: IDataUpdateCaseInfo = {
