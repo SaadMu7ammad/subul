@@ -28,3 +28,10 @@ export type UpdateCaseInfoResponse = {
   status: string;
   data: ITransaction;
 } | undefined;
+
+export interface IDataPreCreateTransaction {
+  charityId: string;
+  caseId: string;
+  amount: number;
+  mainTypePayment: string;
+}

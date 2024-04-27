@@ -84,7 +84,7 @@ const updateCaseInfo = async (
 
     // create a new transaction here
     //before update the case info check if the transaction is a refund or payment donation
-    const transaction: ITransaction | undefined =
+    const transaction =
       await transactionService.updateCaseInfo(data);
 
     if (!transaction) {

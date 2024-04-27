@@ -6,7 +6,7 @@ import {
 import { ICase } from '../../case/data-access/interfaces/case.interface';
 import { ICharity} from '../../charity/data-access/interfaces/';
 import { User } from '../../user/data-access/models/user.model';
-import { IDataPreCreateTransaction } from '../data-access/interfaces/transaction.interface';
+import { IDataPreCreateTransaction } from '../data-access/interfaces';
 import { ITransaction } from '../data-access/interfaces';
 import { TransactionRepository } from '../data-access/transaction.repository';
 
@@ -18,11 +18,6 @@ const checkPreCreateTransaction = (data:IDataPreCreateTransaction) => {
     caseId,
     amount,
     mainTypePayment,
-  }: {
-    charityId: string;
-    caseId: string;
-    amount: number;
-    mainTypePayment: string;
   } = data;
   if (!charityId) {
     throw new NotFoundError('charity is not found');
