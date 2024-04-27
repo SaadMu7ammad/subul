@@ -5,10 +5,11 @@ import logger from './logger';
 import * as configurationProvider from '../libraries/configuration-provider/index';
 
 const generateResetTokenTemp = async () => {
-  const token:string = crypto.randomBytes(32).toString('hex');
-  const hashedToken:string = await bcryptjs.hash(token, 10);
+  const token = crypto.randomBytes(32).toString('hex');
+  const hashedToken = await bcryptjs.hash(token, 10);
   return hashedToken;
 };
+
 const setupMailSender = async (receiverEmail:string, subject:string, html:string) => {
   logger.info(`sending mail to ${receiverEmail}`);
   try {
@@ -20,7 +21,7 @@ const setupMailSender = async (receiverEmail:string, subject:string, html:string
       },
     });
     const mailOptions = {
-      from: configurationProvider.getValue('mailer.user'),
+      from: configurationProvider.getValue('mailer.user') as string,
       to: receiverEmail,
       subject: subject,
       html: html,

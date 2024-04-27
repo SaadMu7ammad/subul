@@ -3,7 +3,7 @@ import * as configurationProvider from '../../../configuration-provider/index';
 import { IPaymentInfoData } from '../payment.interface';
 import { User } from '../../../../components/user/data-access/models/user.model';
 const paywithMobileWallet = async (reqBody:IPaymentInfoData, user:User) => {
-  const { amount, charityId, caseId, caseTitle }:{amount:number, charityId:string, caseId:string, caseTitle:string} = reqBody;
+  const { amount, charityId, caseId, caseTitle } = reqBody;
   const { tokenThirdStep } = await createPayment(
     user,
     +amount,

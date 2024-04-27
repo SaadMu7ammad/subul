@@ -2,6 +2,7 @@ import { CustomAPIError } from './components/custom-api';
 import logger from '../../utils/logger';
 import * as configurationProvider from '../configuration-provider/index';
 import { NextFunction, Request, Response } from 'express';
+import { IError } from './components/error.interface';
 
 const NotFound = (req:Request, res:Response, next:NextFunction) => {
   logger.error('Not Found Error');
@@ -10,7 +11,7 @@ const NotFound = (req:Request, res:Response, next:NextFunction) => {
 };
 
 //global error handling middleware
-const errorHandler = (err: { stack: any; statusCode: number; message: any; path: string; }, req:Request, res:Response, next:NextFunction) => {
+const errorHandler = (err:IError, req:Request, res:Response, next:NextFunction) => {
   const environment = configurationProvider.getValue('environment.nodeEnv');
 
   const stack = environment === 'development' ? err.stack : null;
