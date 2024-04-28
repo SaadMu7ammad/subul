@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.json",
     "dev": "ts-node-dev ./src/server.ts",
     "watch": "tsc -w",
-    "client": "npm run dev --prefix Frontend"
+    "client": "npm run dev --prefix Frontend",
+    "start:prod":"npx ts-node --transpile-only src/server.ts"
   },
   "repository": {
     "type": "git",
