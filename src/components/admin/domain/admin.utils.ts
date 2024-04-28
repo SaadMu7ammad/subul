@@ -1,31 +1,28 @@
 import {
   BadRequestError,
   NotFoundError,
-} from '../../../libraries/errors/components/index';
+} from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import {
-  CharitiesAccountsByAggregation,
-  CharityPaymentMethodBankAccount,
-  CharityPaymentMethodFawry,
-  CharityPaymentMethodVodafoneCash,
+  AccType,
   ConfirmedCharities,
   ICharityDocs,
-  ICharityPaymentMethodDocument,
   PendingCharities,
-} from '../../charity/data-access/interfaces/';
+} from '../../charity/data-access/interfaces';
 import { adminRepository } from '../data-access/admin.repository';
 import { QueryObject } from './admin.service';
+// import { QueryObject } from './admin.service';
 
 const getAllPendingPaymentMethodsRequestsForConfirmedCharity = async (
   paymentMethod: string // bankAccount | fawry...
-): Promise<CharitiesAccountsByAggregation[]> => {
-  const paymentMethodRequests: CharitiesAccountsByAggregation[] =
+) => {
+  const paymentMethodRequests =
     await adminRepository.getPendingPaymentAccountByAggregation(paymentMethod);
 
   return paymentMethodRequests; // []
 };
 
-const confirmingCharity = async (charity: PendingCharities): Promise<void> => {
+const confirmingCharity = async (charity: PendingCharities) => {
   charity.isPending = false;
   charity.isConfirmed = true;
   //enable all paymentMethods when first time the charity send the docs
@@ -57,6 +54,7 @@ const rejectingCharity = async (charity: PendingCharities) => {
   if (charity.charityDocs) {
     for (let i = 1; i <= 4; ++i) {
       const docsKey = ('docs' + i) as keyof typeof charity.charityDocs;
+
       // Check if the property exists in charity.charityDocs
       if (charity.charityDocs.hasOwnProperty(docsKey)) {
         deleteOldImgs('charityDocs', charity.charityDocs[docsKey]);
@@ -76,21 +74,27 @@ const rejectingCharity = async (charity: PendingCharities) => {
     ['fawry', 'fawryDocs'],
     ['vodafoneCash', 'vodafoneCashDocs'],
   ]);
+  // bankAccount: bankDocs
+  // fawry: fawryDocs
+  // vodafoneCash: vodafoneCashDocs
 
   if (charity.paymentMethods) {
     for (let [method, docs] of paymentMethods) {
       const methodKey = method as keyof typeof charity.paymentMethods;
-      charity.paymentMethods[methodKey]?.forEach(
-        (acc: Partial<ICharityPaymentMethodDocument>) => {
-          // console.log(acc[docs]); // [] of string
-          const docsValue: string | string[] =
-            acc[docs as keyof Partial<ICharityPaymentMethodDocument>];
-          // if (typeof docsValue === 'string' || Array.isArray(docsValue)) {
-          // deleteOldImgs('charityDocs', docsValue);
-          // }
-          deleteOldImgs('charityDocs', docsValue);
+
+      charity.paymentMethods[methodKey].forEach((acc: AccType) => {
+        if (docs in acc) {
+          // console.log(docs); // bankDocs
+          deleteOldImgs('charityDocs', docs);
         }
-      );
+        // console.log(acc[docs]); // [] of string
+        // const docsValue: string | string[] =
+        //   acc[docs as keyof Partial<ICharityPaymentMethodDocument>];
+        // // if (typeof docsValue === 'string' || Array.isArray(docsValue)) {
+        // // deleteOldImgs('charityDocs', docsValue);
+        // // }
+        // deleteOldImgs('charityDocs', docsValue);
+      });
       charity.paymentMethods[methodKey] = [];
     }
   }
@@ -99,8 +103,8 @@ const rejectingCharity = async (charity: PendingCharities) => {
 
 const checkPaymentMethodAvailability = (
   // charity: ICharity,
-  charity: ConfirmedCharities,
-  paymentMethod: string,
+  charity: PendingCharities,
+  paymentMethod: keyof ICharityDocs['paymentMethods'],
   paymentAccountID: string
 ): number => {
   if (
@@ -111,24 +115,21 @@ const checkPaymentMethodAvailability = (
     throw new BadRequestError('Invalid Payment Method type');
   }
 
-  // charity.paymentMethods => [ { enable number paymentDocs _id } ]
   if (!charity.paymentMethods)
     throw new NotFoundError('Not found any payment methods');
 
   const idx: number = charity.paymentMethods[paymentMethod].findIndex(
-    (item: Partial<ICharityPaymentMethodDocument>) =>
-      item._id?.toString() === paymentAccountID
+    (item) => item._id == paymentAccountID
   );
+
   if (idx === -1) throw new BadRequestError('not found Payment Method account');
 
   return idx;
 };
 
-const getConfirmedCharities = async (
-  queryObject: QueryObject
-): Promise<ConfirmedCharities> => {
+const getConfirmedCharities = async (queryObject: QueryObject) => {
   // [ { name email paymentMethods _id } ]
-  const charities: ConfirmedCharities[] =
+  const charities: PendingCharities[] =
     await adminRepository.findCharitiesByQueryWithOptionalId(
       queryObject,
       'name email paymentMethods'
@@ -140,7 +141,7 @@ const getConfirmedCharities = async (
 };
 
 const confirmingPaymentAccount = async (
-  charity: ConfirmedCharities,
+  charity: PendingCharities,
   // paymentMethod: string, // Allows any string value, which could include invalid keys
   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
   idx: number
@@ -154,16 +155,17 @@ const confirmingPaymentAccount = async (
   //   throw new BadRequestError('Already this payment account is enabled');
   // }
 
-  type PaymentMethod =
-    | CharityPaymentMethodBankAccount
-    | CharityPaymentMethodFawry
-    | CharityPaymentMethodVodafoneCash;
+  // type PaymentMethod =
+  //   | CharityPaymentMethodBankAccount
+  //   | CharityPaymentMethodFawry
+  //   | CharityPaymentMethodVodafoneCash;
 
-  const paymentMethodData = charity.paymentMethods[
-    paymentMethod
-  ] as PaymentMethod[]; // [ { } ]
+  const paymentMethodData: AccType[] = charity.paymentMethods[paymentMethod]; // [ { Data } ]
 
-  const paymentAccount = paymentMethodData[idx] as PaymentMethod; // { }
+  const paymentAccount: AccType | undefined = paymentMethodData[idx]; // { }
+
+  if (!paymentAccount)
+    throw new NotFoundError('This payment account not found');
 
   if (paymentAccount.enable === false) {
     paymentAccount.enable = true;
@@ -183,34 +185,39 @@ const rejectingPaymentAccount = async (
   if (!charity.paymentMethods)
     throw new NotFoundError('Not found any payment methods');
 
-  type PaymentMethod =
-    | CharityPaymentMethodBankAccount
-    | CharityPaymentMethodFawry
-    | CharityPaymentMethodVodafoneCash;
+  // type PaymentMethod =
+  //   | CharityPaymentMethodBankAccount
+  //   | CharityPaymentMethodFawry
+  //   | CharityPaymentMethodVodafoneCash;
 
-  const paymentMethodData = charity.paymentMethods[
-    paymentMethod
-  ] as PaymentMethod[]; // [ { } ]
+  const paymentMethodData: AccType[] = charity.paymentMethods[paymentMethod]; // [ { Data } ]
 
-  const paymentAccount = paymentMethodData[idx] as PaymentMethod; // { }
+  const paymentAccount: AccType | undefined = paymentMethodData[idx]; // { }
+
+  if (!paymentAccount)
+    throw new NotFoundError('This payment account not found');
 
   if (paymentAccount.enable === false) {
-    throw new BadRequestError('Already this payment account is enabled');
+    throw new BadRequestError('This payment account is already not enabled');
   }
 
   let urlOldImage: string[] | null = null;
 
   // TypeScript only allows access to properties that are common to all types in a union.
   if (paymentMethod === 'vodafoneCash') {
-    const vodafoneCashAccount =
-      paymentAccount as CharityPaymentMethodVodafoneCash;
-    urlOldImage = vodafoneCashAccount.vodafoneCashDocs;
+    const vodafoneCashAccount: AccType = paymentAccount;
+    // This check cuzOf AccType is oring between multiple choice
+    if ('vodafoneCashDocs' in vodafoneCashAccount) {
+      urlOldImage = vodafoneCashAccount.vodafoneCashDocs;
+    }
   } else if (paymentMethod === 'bankAccount') {
-    const bankAccount = paymentAccount as CharityPaymentMethodBankAccount;
-    urlOldImage = bankAccount.bankDocs;
+    const bankAccount: AccType = paymentAccount;
+    if ('bankDocs' in bankAccount) {
+      urlOldImage = bankAccount.bankDocs;
+    }
   } else if (paymentMethod === 'fawry') {
-    const fawryAccount = paymentAccount as CharityPaymentMethodFawry;
-    urlOldImage = fawryAccount.fawryDocs;
+    const fawryAccount: AccType = paymentAccount;
+    if ('fawryDocs' in fawryAccount) urlOldImage = fawryAccount.fawryDocs;
   }
 
   paymentMethodData.splice(idx, 1); // Removing 1 acc at index idx

@@ -9,9 +9,9 @@ export type ICharityPaymentMethods = Exclude<
 
 export type PaymentMethodsNames = keyof ICharityPaymentMethods;
 
-export type ICharityPaymentMethod= {
-  [k in PaymentMethodsNames]:Unpacked<ICharityPaymentMethods[k]>; 
-}
+export type ICharityPaymentMethod = {
+  [k in PaymentMethodsNames]: Unpacked<ICharityPaymentMethods[k]>;
+};
 export type CharityPaymentMethodBankAccount =
   ICharityPaymentMethod['bankAccount'];
 
