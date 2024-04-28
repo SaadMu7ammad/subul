@@ -2,35 +2,36 @@ import mongoose, { Schema, InferSchemaType, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import * as configurationProvider from '../../../../libraries/configuration-provider/index';
 import locationSchema from './location.model';
+import { User } from '../interfaces';
 const userSchema = new Schema(
   {
-    // name: {
-    //   type: {
-    //     firstName: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //     lastName: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //   },
-    //   required: true,
-    // },
+    name: {
+      type: {
+        firstName: {
+          type: String,
+          required: true,
+        },
+        lastName: {
+          type: String,
+          required: true,
+        },
+      },
+      required: true,
+    },
 
     // If you want the entire name object to be required, meaning both firstName and lastName must be provided,
     // you can use a custom validator.
 
-    name: {
-      firstName: {
-        type: String,
-        required: [true, 'First name is required'],
-      },
-      lastName: {
-        type: String,
-        required: [true, 'Last name is required'],
-      },
-    },
+    // name: {
+    //   firstName: {
+    //     type: String,
+    //     required: [true, 'First name is required'],
+    //   },
+    //   lastName: {
+    //     type: String,
+    //     required: [true, 'Last name is required'],
+    //   },
+    // },
 
     email: {
       type: String,
@@ -53,9 +54,9 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
-    locationUser: {
+    userLocation: {
       type: locationSchema,
-      // required: true, // 👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️ locationUser shouldn't be required.
+      // required: true, // 👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️ userLocation shouldn't be required.
     },
     // profileImage: {
     //     type: String,
@@ -164,7 +165,9 @@ userSchema.pre('save', async function (next) {
 
 // });
 // export type User = InferSchemaType<typeof userSchema>;
-export type User = HydratedDocument<InferSchemaType<typeof userSchema>>;
+declare module '../interfaces/'{
+  export type User = HydratedDocument<InferSchemaType<typeof userSchema>>;
+}
 // InferSchemaType will determine the type as follows:
 // type User = {
 //   name: string;

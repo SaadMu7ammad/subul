@@ -163,7 +163,7 @@ const resizeDoc = async (req: Request, res: Response, next: NextFunction) => {
         delete req.body.swiftCode;
         delete req.body.fawryNumber;
         delete req.body.vodafoneNumber;
-
+        //@ts-expect-error
         if (!req.files || req.files.length === 0 || Object.keys(req.files).length === 0) {
             throw new BadRequestError('Docs are required');
         }

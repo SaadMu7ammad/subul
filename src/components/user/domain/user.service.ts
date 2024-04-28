@@ -12,18 +12,18 @@ import {
 } from '../../../utils/shared';
 import {
   EditProfile,
-  IUserModifed,
+  IUserModified,
   dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
-} from '../data-access/interfaces/user.interface';
-import { User } from '../data-access/models/user.model';
+  User
+} from '../data-access/interfaces/';
 
 const resetUser = async (reqBody: dataForResetEmail) => {
   const email = reqBody.email;
   //   if (!email) throw new BadRequestError('no email input');
-  const userResponse: { user: User } = await userUtils.checkUserIsExist(email);
+  const userResponse = await userUtils.checkUserIsExist(email);
   const token = await generateResetTokenTemp();
   userResponse.user.verificationCode = token;
   await userResponse.user.save();
@@ -39,7 +39,7 @@ const resetUser = async (reqBody: dataForResetEmail) => {
 };
 
 const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
-  let updatedUser: { user: User } = await userUtils.checkUserIsExist(
+  let updatedUser = await userUtils.checkUserIsExist(
     reqBody.email
   );
   // { user: { } }
@@ -85,7 +85,7 @@ const changePassword = async (reqBody: dataForChangePassword, user: User) => {
     'password changed alert',
     `hi ${
       // updatedUser.name?.firstName will safely access firstName if name is not undefined.
-      updatedUser.name?.firstName + ' ' + updatedUser.name?.lastName
+      updatedUser.name.firstName + ' ' + updatedUser.name?.lastName
     }<h3>contact us if you did not changed the password</h3>` +
       `<h3>go to link(www.dummy.com) to freeze your account</h3>`
   );
@@ -130,11 +130,11 @@ const logoutUser = (res: Response) => {
 };
 
 const getUserProfileData = (user: User) => {
-  return { user: user };
+  return { user: user, message: 'User Profile Fetched Successfully' };
 };
 
 const editUserProfile = async (
-  reqBody: IUserModifed,
+  reqBody: IUserModified,
   user: User
 ): Promise<EditProfile> => {
   if (!reqBody) throw new BadRequestError('no data sent');
@@ -142,7 +142,7 @@ const editUserProfile = async (
     //put restriction  on the edit elements
     !reqBody.name &&
     !reqBody.email &&
-    !reqBody.locationUser &&
+    !reqBody.userLocation&&
     !reqBody.gender &&
     !reqBody.phone
   )
@@ -160,10 +160,10 @@ const editUserProfile = async (
     const userWithEmailUpdated: { user: User } =
       await userUtils.changeUserEmailWithMailAlert(user, email); //email is the NewEmail
 
-    const userObj: IUserModifed = {
+    const userObj: IUserModified = {
       name: userWithEmailUpdated.user.name,
       email: userWithEmailUpdated.user.email,
-      locationUser: userWithEmailUpdated.user.locationUser,
+      userLocation: userWithEmailUpdated.user.userLocation,
       gender: userWithEmailUpdated.user.gender,
       phone: userWithEmailUpdated.user.phone,
     };
@@ -171,23 +171,26 @@ const editUserProfile = async (
     return {
       emailAlert: true,
       user: userObj,
+      message:
+        'Email Changed Successfully,But you must Re Activate the account with the token sent to your email', // to access editing your other information again',
     };
   }
   updateNestedProperties(user, reqBody);
 
   await user.save();
 
-  const userObj: IUserModifed = {
+  const userObj = {
     name: user.name,
     email: user.email,
-    locationUser: user.locationUser, //.governorate,
+    userLocation: user.userLocation, //.governorate,
     gender: user.gender,
     phone: user.phone,
-  };
+  } satisfies IUserModified;
 
   return {
     emailAlert: false,
     user: userObj,
+    message: 'User Data Changed Successfully',
   };
 };
 

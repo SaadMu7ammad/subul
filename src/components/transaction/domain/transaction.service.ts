@@ -11,7 +11,7 @@ import {
   TransactionPaymentInfo,
 } from '../data-access/interfaces/transaction.interface';
 import { ITransaction } from '../data-access/models/transaction.model';
-import { User } from '../../user/data-access/models/user.model';
+import { User } from '../../user/data-access/interfaces';
 const transactionRepository = new TransactionRepository();
 const preCreateTransaction = async (
   data: IDataPreCreateTransaction,

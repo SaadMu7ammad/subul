@@ -11,8 +11,8 @@ import {
   RegisterUserInputData,
   UserObject,
   UserResponseBasedOnUserVerification,
-} from '../data-access/interfaces/auth.user';
-import { User } from '../../../user/data-access/models/user.model';
+} from '../data-access/interfaces';
+import { User } from '../../../user/data-access/interfaces';
 
 const authUser = async (
   reqBody: IloginData,

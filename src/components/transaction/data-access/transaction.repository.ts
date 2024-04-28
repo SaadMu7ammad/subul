@@ -1,5 +1,6 @@
 import CharityModel from '../../charity/data-access/models/charity.model';
-import UserModel, { User } from '../../user/data-access/models/user.model';
+import UserModel from '../../user/data-access/models/user.model';
+import { User } from '../../user/data-access/interfaces';
 import CaseModel from '../../case/data-access/models/case.model';
 
 import { FilterQuery } from 'mongoose';
