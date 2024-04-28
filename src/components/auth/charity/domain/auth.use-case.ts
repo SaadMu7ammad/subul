@@ -1,6 +1,8 @@
 import { RequestHandler } from 'express';
 
-import { AuthCharity, CharityObject, authCharityService } from './auth.service';
+import { authCharityService } from './auth.service';
+import { AuthCharity, AuthCharityObject } from '../data-access/interfaces';
+import { AuthCharityResponse, registerCharityResponse } from '../data-access/interfaces';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -22,7 +24,7 @@ const registerCharity: RequestHandler = async (
   req,
   _res,
   _next
-): Promise<{ charity: CharityObject }> => {
+): Promise<registerCharityResponse> => {
   // // const data: CharityData = req.body as CharityData;
   const {
     email,
@@ -75,13 +77,8 @@ const registerCharity: RequestHandler = async (
     },
   };
 };
-export interface AuthCharityReturnedObject {
-  charity: AuthCharity;
-  message: string;
-  token: string;
-}
 
-const authCharity: RequestHandler = async (req, res, _next) => {
+const authCharity: RequestHandler = async (req, res, _next): Promise<AuthCharityResponse> => {
   // Better to use different type for data here, not partial<CharityData>
   const { email, password }: { email: string; password: string } = req.body;
   const data = {
@@ -93,7 +90,7 @@ const authCharity: RequestHandler = async (req, res, _next) => {
   //   password: req.body.password,
   // };
 
-  const responseData = await authCharityService.authCharity(data, res);
+  const responseData:AuthCharityObject = await authCharityService.authCharity(data, res);
 
   const charityResponsed: AuthCharity = {
     ...responseData.charity,
@@ -107,12 +104,14 @@ const authCharity: RequestHandler = async (req, res, _next) => {
       message:
         'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
       token: responseData.token,
+      emailAlert:true
     };
   }
-  const returnedObj: AuthCharityReturnedObject = {
+  const returnedObj: AuthCharityResponse = {
     charity: charityResponsed,
     message: '',
     token: responseData.token,
+    emailAlert: false
   };
   //second stage
   //isPending = true and isConfirmed= false

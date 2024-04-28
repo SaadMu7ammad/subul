@@ -6,7 +6,7 @@ import {
 } from '../../../../libraries/errors/components/index';
 import { authUserRepository } from '../data-access/user.repository';
 import { User } from '../../../user/data-access/models/user.model';
-import { RegisterUserInputData } from '../data-access/auth.interface';
+import { RegisterUserInputData } from '../data-access/interfaces';
 
 const checkUserPassword = async (
   email: string,

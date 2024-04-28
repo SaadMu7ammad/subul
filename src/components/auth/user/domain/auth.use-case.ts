@@ -5,9 +5,9 @@ import { authUserService } from './auth.service';
 import {
   RegisterUserInputData,
   UserObject,
-  UserResponseBasedOnEmailAlert,
   UserResponseBasedOnUserVerification,
-} from '../data-access/auth.interface';
+} from '../data-access/interfaces';
+import { authUserResponse, registerUserResponse } from '../data-access/interfaces';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -16,7 +16,7 @@ const authUser: RequestHandler = async (
   req,
   res,
   _next
-): Promise<UserResponseBasedOnEmailAlert> => {
+): Promise<authUserResponse> => {
   const { email, password }: { email: string; password: string } = req.body;
   const data = { email, password };
   // const data: { email: string; password: string } = {
@@ -51,7 +51,7 @@ const registerUser: RequestHandler = async (
   req,
   _res,
   _next
-): Promise<{ user: UserObject }> => {
+): Promise<registerUserResponse> => {
   const registerInputsData: RegisterUserInputData = req.body;
 
   const responseData = await authUserService.registerUser(registerInputsData);
