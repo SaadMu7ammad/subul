@@ -2,12 +2,13 @@ import CharityModel from '../../charity/data-access/models/charity.model';
 import UserModel from '../../user/data-access/models/user.model';
 import { User } from '../../user/data-access/interfaces';
 import CaseModel from '../../case/data-access/models/case.model';
-
 import { FilterQuery } from 'mongoose';
 import { TransactionDataStore } from './interfaces/transaction.dao';
-import TransactionModel, { ITransaction } from './models/transaction.model';
+import TransactionModel from './models/transaction.model';
+import { ITransaction } from './interfaces';
 import { ICase } from '../../case/data-access/interfaces/case.interface';
 import { ICharity } from '../../charity/data-access/interfaces';
+
 export class TransactionRepository implements TransactionDataStore {
   async findCaseById(id: string): Promise<ICase | null> {
     const cases = (await CaseModel.findById(id));

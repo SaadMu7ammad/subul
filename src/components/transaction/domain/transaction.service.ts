@@ -9,10 +9,12 @@ import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
   TransactionPaymentInfo,
-} from '../data-access/interfaces/transaction.interface';
-import { ITransaction } from '../data-access/models/transaction.model';
+} from '../data-access/interfaces';
+import { ITransaction } from '../data-access/interfaces';
 import { User } from '../../user/data-access/interfaces';
+
 const transactionRepository = new TransactionRepository();
+
 const preCreateTransaction = async (
   data: IDataPreCreateTransaction,
   user: User
@@ -22,11 +24,6 @@ const preCreateTransaction = async (
     charityId,
     caseId,
     amount,
-  }: {
-    charityId: string;
-    caseId: string;
-    amount: number;
-    mainTypePayment: string;
   } = data;
   //pre processing
   transactionUtils.checkPreCreateTransaction(data);
@@ -45,7 +42,7 @@ const preCreateTransaction = async (
   transactionUtils.checkCharityIsValidToDonate(charityIsExist);
 
   //to check that the case is related to the charity id in the database
-  const isMatch: boolean = checkValueEquality(
+  const isMatch = checkValueEquality(
     caseIsExist.charity.toString(),
     charityId.toString()
   );
@@ -55,15 +52,16 @@ const preCreateTransaction = async (
   //check the case is finished or being freezed by the website admin
   transactionUtils.checkCaseIsValidToDonate(caseIsExist);
   //check that donor only donates with the remain part of money and not exceed the target amount
-  const checker: boolean = transactionUtils.donationAmountAssertion(
+  const checker = transactionUtils.donationAmountAssertion(
     caseIsExist,
     amount
   );
   return checker;
 };
+
 const updateCaseInfo = async (
   data: IDataUpdateCaseInfo
-): Promise<ITransaction | undefined> => {
+): Promise<ITransaction | null> => {
   //start updating
   const {
     user,

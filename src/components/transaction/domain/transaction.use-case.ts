@@ -3,54 +3,63 @@ import { BadRequestError } from '../../../libraries/errors/components/index';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
-} from '../data-access/interfaces/transaction.interface';
+} from '../data-access/interfaces';
 
 import { transactionService } from './transaction.service';
-import { ITransaction } from '../data-access/models/transaction.model';
+import { GetAllTransactionResponse, ITransaction, UpdateCaseInfoResponse} from '../data-access/interfaces';
 import { User } from '../../user/data-access/interfaces';
+
 const preCreateTransaction = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
+    const { charityId, caseId, amount, mainTypePayment } = req.body;
 
-    const data :IDataPreCreateTransaction= req.body;
-    const storedUser:User = res.locals.user;
+    const data: IDataPreCreateTransaction = {charityId, caseId, amount, mainTypePayment};
+
+    const storedUser: User = res.locals.user;
+
     const transaction: boolean = await transactionService.preCreateTransaction(
       data,
       storedUser
     );
+
     if (!transaction) {
       throw new BadRequestError(
         'transaction not completed ... please try again!'
       );
     }
+
     next();
   } catch (err) {
     next(err);
   }
 };
+
 const getAllTransactions = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+):Promise<GetAllTransactionResponse> => {
 
   const myTransactions: { allTransactions: (ITransaction | null)[] } =
-    await transactionService.getAllTransactions( res.locals.user);
+    await transactionService.getAllTransactions(res.locals.user);
+
   if (!myTransactions) {
     throw new BadRequestError('no transactions found');
   }
+
   return { status: 'success', data: myTransactions };
 };
+
 const updateCaseInfo = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+):Promise<UpdateCaseInfoResponse> => {
   try {
-
     //ensure that transaction is not pending
     const data: IDataUpdateCaseInfo = {
       user: {
@@ -72,15 +81,18 @@ const updateCaseInfo = async (
       currency: req.body.obj.order.currency,
       secretInfoPayment: req.body.obj.source_data.pan,
     };
+
     // create a new transaction here
     //before update the case info check if the transaction is a refund or payment donation
-    const transaction: ITransaction | undefined =
+    const transaction =
       await transactionService.updateCaseInfo(data);
+
     if (!transaction) {
       throw new BadRequestError(
         'transaction not completed ... please try again!'
       );
     }
+
     return { status: transaction.status, data: transaction };
   } catch (err) {
     console.log(err);
