@@ -11,12 +11,7 @@ const payWithOnlineCard = async (
         charityId,
         caseId,
         caseTitle,
-    }: {
-        amount: number;
-        charityId: string;
-        caseId: string;
-        caseTitle: string;
-    } = req.body;
+    }:IPaymentInfoData = req.body;
     const storedUser =  res.locals.user;
     const data: IPaymentInfoData = {
         amount,

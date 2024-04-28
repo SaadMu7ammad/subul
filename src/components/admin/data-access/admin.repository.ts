@@ -1,8 +1,8 @@
 import {
   CharitiesAccountsByAggregation,
-  DataForPaymentRequestsForConfirmedCharity,
+  DataForForConfirmedCharity,
   PendingCharities,
-} from '../../charity/data-access/interfaces/charity.interface';
+} from '../../charity/data-access/interfaces';
 import Charity from '../../charity/data-access/models/charity.model';
 import { QueryObject } from '../domain/admin.service';
 
@@ -35,15 +35,15 @@ const findConfirmedCharityById = async (
   queryObject: QueryObject,
   selection: string
 ) => {
-  const charity: DataForPaymentRequestsForConfirmedCharity =
-    await Charity.findOne(queryObject, selection).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
+  const charity: DataForForConfirmedCharity = await Charity.findOne(
+    queryObject,
+    selection
+  ).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
 
   return charity;
 };
 
-const getPendingPaymentAccountByAggregation = async (
-  paymentMethod: string
-): Promise<CharitiesAccountsByAggregation[]> => {
+const getPendingPaymentAccountByAggregation = async (paymentMethod: string) => {
   const charity: CharitiesAccountsByAggregation[] = await Charity.aggregate([
     {
       $match: {

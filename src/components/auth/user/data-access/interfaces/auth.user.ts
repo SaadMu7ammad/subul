@@ -1,10 +1,11 @@
-import { User } from '../../../user/data-access/models/user.model';
 // import { Request } from 'express';
 // import { IUserDocument } from '../../../user/data-access/interfaces/user.interface';
 // import { ICharity } from '../../../charity/data-access/interfaces/charity.interface';
 // export interface AuthedRequest extends Request {
 //     user: IUserDocument;
 //     charity: ICharityDocument;
+
+import { User } from "../../../../user/data-access/interfaces";
 
 export interface IloginData {
   email: User['email'];
@@ -15,7 +16,7 @@ export interface IloginData {
 export type RegisterUserInputData = {
   name: User['name'];
   email: User['email'];
-  locationUser: User['locationUser'];
+  locationUser: User['userLocation'];
   gender: User['gender'];
   phone: User['phone'];
   password: User['password'];

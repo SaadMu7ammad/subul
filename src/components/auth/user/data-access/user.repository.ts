@@ -1,5 +1,6 @@
-import UserModel, { User } from '../../../user/data-access/models/user.model';
-import { RegisterUserInputData } from './auth.interface';
+import { User } from '../../../user/data-access/interfaces';
+import UserModel from '../../../user/data-access/models/user.model';
+import { RegisterUserInputData } from './interfaces';
 
 const findUser = async (email: string): Promise<User | null> => {
   let user: User | null = await UserModel.findOne({ email: email });

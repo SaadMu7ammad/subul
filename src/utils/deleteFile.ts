@@ -4,6 +4,7 @@ import logger from './logger';
 import Cloudinary from './cloudinary';
 import { Request } from 'express';
 import * as configurationProvider from '../libraries/configuration-provider/index';
+
 const deleteFile = (filePath: string) => {
   logger.warn(filePath);
   fs.unlink(filePath, (err) => {
