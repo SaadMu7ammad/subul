@@ -33,4 +33,8 @@ const updateNestedProperties = (target:any, updateObject:any) => {//target store
 function getValueByKey(obj: any, key: string): any {
                 return obj[key];
             }
-export { checkValueEquality, updateNestedProperties ,getValueByKey};
+
+const isDefined = <T>(x:T|undefined):x is T =>{
+  return typeof x !== 'undefined'
+}
+export { checkValueEquality, updateNestedProperties ,getValueByKey,isDefined};
