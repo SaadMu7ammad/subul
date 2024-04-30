@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { HydratedDocument, InferSchemaType } from "mongoose";
 
 const usedSchema = new mongoose.Schema({
     user:{
@@ -31,5 +31,7 @@ const usedSchema = new mongoose.Schema({
 });
 
 const Used = mongoose.model('Used', usedSchema);
+
+export type IUsed = HydratedDocument<InferSchemaType<typeof usedSchema>>;
 
 export default Used;
