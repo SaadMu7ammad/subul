@@ -37,7 +37,24 @@ export default function defineRoutes(expressApp: Application) {
       }
     }
   );
-
+  router.post(
+    '/addBloodCase',
+    auth,
+    isConfirmed,
+    postCaseValidation,
+    validate,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        console.log(req.body);
+        logger.info(`Case API was called to Add blood Case`);
+        const addCaseResponse = await caseUseCase.addCase(req, res, next);
+        return res.json(addCaseResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
   router.get(
     '/allCases',
     auth,

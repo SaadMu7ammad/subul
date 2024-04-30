@@ -75,6 +75,11 @@ const caseSchema = new mongoose.Schema(
       enum: ['male', 'female', 'none'],
       default: 'none',
     },
+    privateNumber: {
+      type: String,
+      required: true,
+      default: 'none',
+    },
     finished: {
       type: Boolean,
       required: false,
