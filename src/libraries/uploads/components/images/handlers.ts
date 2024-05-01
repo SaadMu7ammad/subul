@@ -39,7 +39,7 @@ const resizeImg = async (
     let { destinationFolder, suffix } = getImageConfiguration(req.path);
     
     const uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
-    const fileName = `${uniqueSuffix}--${req.body.name}.jpeg`;
+    const fileName = `${uniqueSuffix}--${req.body.name || res.locals.charity.name}.jpeg`;
     // storeImgsTempOnReq(req, fileName);
     const sharpPromise = sharp(req.file.buffer)
       .resize(320, 240)

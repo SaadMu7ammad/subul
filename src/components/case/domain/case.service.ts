@@ -91,6 +91,10 @@ const editCase = async (
   caseData: ICase & { coverImage: string; image: string[] },
   caseId: string
 ): Promise<EditCaseResponse> => {
+
+  const isFinishedCase = await caseUtils.getCaseByIdFromDB(caseId);
+  if (isFinishedCase.finished) throw new BadRequestError('cant edit completed case')
+
   caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
   let deleteOldImg: (() => void) | null = null;
