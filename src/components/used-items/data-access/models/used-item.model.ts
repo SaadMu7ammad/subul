@@ -1,6 +1,6 @@
 import mongoose, { HydratedDocument, InferSchemaType } from "mongoose";
 
-const usedSchema = new mongoose.Schema({
+const usedItemSchema = new mongoose.Schema({
     user:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -30,8 +30,8 @@ const usedSchema = new mongoose.Schema({
     }
 });
 
-const Used = mongoose.model('Used', usedSchema);
+const UsedItem = mongoose.model('UsedItem', usedItemSchema);
 
-export type IUsed = HydratedDocument<InferSchemaType<typeof usedSchema>>;
+export type IUsedItem = HydratedDocument<InferSchemaType<typeof usedItemSchema>>;
 
-export default Used;
+export default UsedItem;
