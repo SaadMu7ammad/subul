@@ -108,7 +108,25 @@ export default function defineRoutes(expressApp: Application) {
       }
     }
   );
-
+  router.get(
+    '/bloodContribution/:id',
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to blood Contribution `);
+        const bloodContributionResponse = await userUseCase.bloodContribution(
+          req,
+          res,
+          next
+        );
+        return res.json(bloodContributionResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
   router.get(
     '/profile',
     auth,

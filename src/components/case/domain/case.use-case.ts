@@ -19,7 +19,7 @@ const addCase = async (
   next: NextFunction
 ): Promise<AddCaseResponse> => {
   const caseData: ICase = req.body;
-  const caseImage: string = req.body.image[0];
+  const caseImage: string = req.body?.image?.[0] || 'noImg';
   const charity: ICharity = res.locals.charity;
 
   const responseData = await caseService.addCase(caseData, caseImage, charity);

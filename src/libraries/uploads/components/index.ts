@@ -39,7 +39,7 @@ const getImageConfiguration = (path: string) => {
   if (path === '/register' || path === '/edit-profileImg') {
     (destinationFolder = 'charityLogos'), (suffix = 'charityLogo');
   } else {
-    (destinationFolder = 'caseCoverImages'), (suffix = 'caseCoveImage');
+    (destinationFolder = 'caseCoverImages'), (suffix = 'caseCoverImage');
   }
 
   return { destinationFolder, suffix };
