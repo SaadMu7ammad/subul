@@ -12,8 +12,30 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Create Used Item`);
-        const logOutResponse = await usedItemUseCase.addUsedItem(req, res, next);
+        const logOutResponse = await usedItemUseCase.addUsedItem(
+          req,
+          res,
+          next
+        );
         return res.json(logOutResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
+  router.get(
+    '/getAllUsedItems',
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Used Items API was called to Get All Used Items`);
+        const getAllUsedItemsResponse = await usedItemUseCase.getAllUsedItems(
+          req,
+          res,
+          next
+        );
+        return res.json(getAllUsedItemsResponse);
       } catch (error) {
         next(error);
         return undefined;
