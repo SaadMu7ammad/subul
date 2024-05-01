@@ -11,7 +11,7 @@ export class CharityRepository implements CharityDao {
 
   async findCharityById(id: string): Promise<ICharity | null> {
     const charity: ICharity | null = await CharityModel.findOne({
-      id: id,
+      _id: id,
     });
     return charity;
   }

@@ -127,6 +127,25 @@ export default function defineRoutes(expressApp: Application) {
       }
     }
   );
+  router.post(
+    '/requestFundraisingCampaign',
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to request Fundraising Campaign`);
+        const requestFundraisingCampaignResponse = await userUseCase.requestFundraisingCampaign(
+          req,
+          res,
+          next
+        );
+        return res.json(requestFundraisingCampaignResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
   router.get(
     '/profile',
     auth,

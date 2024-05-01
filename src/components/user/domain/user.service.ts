@@ -20,6 +20,10 @@ import {
   User
 } from '../data-access/interfaces/';
 import { caseUtils } from '../../case/domain/case.utils';
+import { ICase } from '../../case/data-access/interfaces';
+import { ICharity } from '../../charity/data-access/interfaces';
+import { CharityRepository } from '../../charity/data-access/charity.repository';
+import { caseService } from '../../case/domain/case.service';
 
 const resetUser = async (reqBody: dataForResetEmail) => {
   const email = reqBody.email;
@@ -141,6 +145,31 @@ const bloodContribution = async (user: User, id: string | undefined) => {
     `<h3>here is the number to get contact with the case immediate</h3> <h2>${isCaseExist.privateNumber}</h2>`
   );
 }
+const requestFundraisingCampaign = async (caseData: ICase, image: string, charityId: string, storedUser: User) => {
+  const _CharityRepository = new CharityRepository();
+
+  const chosenCharity: ICharity | null = await _CharityRepository.findCharityById(charityId);
+  if (!chosenCharity) throw new BadRequestError('no charity found')
+
+  if (
+    !chosenCharity.isConfirmed ||
+    !chosenCharity.isEnabled ||
+    (!chosenCharity?.emailVerification?.isVerified &&
+      !chosenCharity?.phoneVerification?.isVerified)
+  ) {
+    throw new UnauthenticatedError('cant choose this charity');
+  }
+
+  caseData.freezed = true;//till the charity accept it will be false
+  caseData.user = storedUser._id;
+
+
+  const responseData = await caseService.addCase(caseData, 'none', chosenCharity, storedUser);
+  
+  return {
+    case: responseData.case,
+  };
+};
 const logoutUser = (res: Response) => {
   userUtils.logout(res);
   return { message: 'logout' };
@@ -219,5 +248,6 @@ export const userService = {
   logoutUser,
   getUserProfileData,
   editUserProfile,
-  bloodContribution
+  bloodContribution,
+  requestFundraisingCampaign
 };

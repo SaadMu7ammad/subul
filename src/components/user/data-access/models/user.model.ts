@@ -18,7 +18,12 @@ const userSchema = new Schema(
       },
       required: true,
     },
-
+    //for both used Items and fundraising campaigns
+    contributions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    ],
     // If you want the entire name object to be required, meaning both firstName and lastName must be provided,
     // you can use a custom validator.
 

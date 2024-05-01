@@ -16,10 +16,12 @@ import {
   NotFoundError,
 } from '../../../libraries/errors/components';
 import { ICharity } from '../../charity/data-access/interfaces/';
+import { User } from '../../user/data-access/interfaces';
 const addCase = async (
   caseData:ICase,
   image: string,
-  charity: ICharity
+  charity: ICharity,
+  user: User | undefined = undefined
 ): Promise<AddCaseResponse> => {
   caseData.coverImage = image;
   caseData.charity = charity._id;
@@ -30,6 +32,11 @@ const addCase = async (
   charity.cases.push(newCase._id);
 
   await charity.save();
+
+  if (user) {
+    user.contributions.push(newCase._id)
+    await user.save();
+  }
 
   return { case: newCase };
 };

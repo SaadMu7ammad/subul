@@ -1,3 +1,4 @@
+import { ICase } from '../../case/data-access/interfaces';
 import { bloodContributionResponse } from '../data-access/interfaces';
 import {
   EditUserProfileResponse,
@@ -122,7 +123,24 @@ const bloodContribution = async (
     message: 'an email had been sent to your mail address with detailed info',
   };
 };
+//@desc  user create a fundraising campiagn
+//@route  Post /api/users/bloodContribution
+//@access private
+const requestFundraisingCampaign = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
 
+  const caseData: ICase = req.body;
+  const storedUser: User = res.locals.user;
+  const charityId: string = req.body.charity;
+
+  const responseData = await userService.requestFundraisingCampaign(caseData, 'none', charityId, storedUser);
+  return {
+    case: responseData.case,
+  };
+};
 //@desc   logout user
 //@route  POST /api/users/logout
 //@access private
@@ -195,5 +213,6 @@ export const userUseCase = {
   activateAccount,
   editUserProfile,
   getUserProfileData,
-  bloodContribution
+  bloodContribution,
+  requestFundraisingCampaign
 };

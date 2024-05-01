@@ -8,6 +8,11 @@ const caseSchema = new mongoose.Schema(
       ref: 'Charity',
       required: [true, 'charity must be provided'],
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
     title: {
       type: String,
       required: [true, 'title must be provided'],
