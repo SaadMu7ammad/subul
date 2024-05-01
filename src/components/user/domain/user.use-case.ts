@@ -1,3 +1,4 @@
+import { bloodContributionResponse } from '../data-access/interfaces';
 import {
   EditUserProfileResponse,
   IUserModified,
@@ -104,6 +105,23 @@ const activateAccount = async (
     message: responseData.message,
   };
 };
+//@desc  user blood Contribution
+//@route  POST /api/users/bloodContribution
+//@access private
+const bloodContribution = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<bloodContributionResponse> => {
+
+  const storedUser: User = res.locals.user;
+  const caseId: string | undefined = req.params.id;
+  
+  await userService.bloodContribution(storedUser, caseId);
+  return {
+    message: 'an email had been sent to your mail address with detailed info',
+  };
+};
 
 //@desc   logout user
 //@route  POST /api/users/logout
@@ -177,4 +195,5 @@ export const userUseCase = {
   activateAccount,
   editUserProfile,
   getUserProfileData,
+  bloodContribution
 };
