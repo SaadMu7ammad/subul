@@ -1,3 +1,4 @@
+import { BadRequestError } from '../../../libraries/errors/components';
 import { PlainIUsedItem } from '../data-access/interfaces';
 import { usedItemUtils } from './used-item.utils';
 
@@ -25,7 +26,19 @@ const findAllUsedItems = async () => {
   };
 };
 
+const bookUsedItem = async (usedItemId: string) => {
+  const usedItems = await usedItemUtils.bookUsedItem(usedItemId);
+
+  if (!usedItems) throw new BadRequestError('This Item Is Already Booked');
+
+  return {
+    usedItems: usedItems,
+    message: 'Used Items Booked Successfully',
+  };
+};
+
 export const usedItemService = {
   addUsedItem,
   findAllUsedItems,
+  bookUsedItem,
 };

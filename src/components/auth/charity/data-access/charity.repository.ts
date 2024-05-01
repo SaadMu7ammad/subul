@@ -2,9 +2,9 @@ import { ICharity } from '../../../charity/data-access/interfaces';
 import Charity from '../../../charity/data-access/models/charity.model';
 
 const findCharity = async (email: string): Promise<ICharity | null> => {
-  const charity = (await Charity.findOne({
+  const charity = await Charity.findOne({
     email: email,
-  })) as ICharity | null;
+  });
   return charity;
 };
 

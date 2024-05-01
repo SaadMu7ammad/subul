@@ -1,5 +1,5 @@
-import { IUsedItem, PlainIUsedItem } from ".";
+import { IUsedItem, PlainIUsedItem } from '.';
 
 export interface UsedItemDao {
-    addUsedItem: (usedItem: PlainIUsedItem) => Promise<IUsedItem>;
+  addUsedItem: (usedItem: PlainIUsedItem) => Promise<IUsedItem>;
 }

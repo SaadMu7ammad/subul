@@ -13,7 +13,13 @@ const findAllUsedItems = async () => {
   return usedItems;
 };
 
+const bookUsedItem = async (usedItemId: string) => {
+  const usedItems = await usedItemRepository.bookUsedItem(usedItemId);
+  return usedItems;
+};
+
 export const usedItemUtils = {
   addUsedItem,
   findAllUsedItems,
+  bookUsedItem,
 };

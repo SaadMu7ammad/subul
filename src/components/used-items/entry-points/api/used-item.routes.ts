@@ -27,6 +27,8 @@ export default function defineRoutes(expressApp: Application) {
 
   router.get(
     '/getAllUsedItems',
+    auth,
+    isActivated,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Get All Used Items`);

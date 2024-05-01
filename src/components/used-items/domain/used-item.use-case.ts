@@ -5,6 +5,7 @@ import {
   AddUsedItemResponse,
 } from '../data-access/interfaces/used-item.api';
 import { usedItemService } from './used-item.service';
+import { NotFoundError } from '../../../libraries/errors/components';
 
 const addUsedItem = async (
   req: Request,
@@ -20,6 +21,7 @@ const addUsedItem = async (
     images,
     amount,
     user: user._id,
+    booked: false,
   };
 
   const responseData = await usedItemService.addUsedItem(usedItemData);
@@ -38,7 +40,22 @@ const getAllUsedItems = async (
   const usedItemsResponse = await usedItemService.findAllUsedItems();
 
   return {
-    UsedItems: usedItemsResponse.usedItems,
+    usedItems: usedItemsResponse.usedItems,
+    message: usedItemsResponse.message,
+  };
+};
+
+const bookUsedItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id }: { id?: string } = req.params;
+
+  if (!id) throw new NotFoundError('Used Item Id Not Found');
+  const usedItemsResponse = await usedItemService.bookUsedItem(id);
+  return {
+    usedItems: usedItemsResponse.usedItems,
     message: usedItemsResponse.message,
   };
 };
@@ -46,4 +63,5 @@ const getAllUsedItems = async (
 export const usedItemUseCase = {
   addUsedItem,
   getAllUsedItems,
+  bookUsedItem,
 };
