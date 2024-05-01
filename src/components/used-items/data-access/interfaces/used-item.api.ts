@@ -1,4 +1,6 @@
-import { IUsedItem } from '../models/used-item.model';
+import { IUsedItem, PlainIUsedItem} from '.';
+
+export type AddUsedItemRequest = PlainIUsedItem;
 
 export type AddUsedItemResponse = {
   usedItem: IUsedItem;

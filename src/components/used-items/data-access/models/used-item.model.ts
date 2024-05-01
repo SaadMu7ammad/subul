@@ -32,6 +32,10 @@ const usedItemSchema = new mongoose.Schema({
 
 const UsedItem = mongoose.model('UsedItem', usedItemSchema);
 
-export type IUsedItem = HydratedDocument<InferSchemaType<typeof usedItemSchema>>;
+declare module '../interfaces' {
+    export type IUsedItem = HydratedDocument<InferSchemaType<typeof usedItemSchema>>;
+
+    export type PlainIUsedItem = InferSchemaType<typeof usedItemSchema>;
+}
 
 export default UsedItem;
