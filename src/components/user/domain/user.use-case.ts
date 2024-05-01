@@ -106,7 +106,7 @@ const activateAccount = async (
   };
 };
 //@desc  user blood Contribution
-//@route  POST /api/users/bloodContribution
+//@route  Get /api/users/bloodContribution
 //@access private
 const bloodContribution = async (
   req: Request,
