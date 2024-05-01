@@ -67,6 +67,11 @@ const deleteCase = async (
   charity: ICharity,
   caseId: string
 ): Promise<DeleteCaseResponse> => {
+
+  const isCaseFinished = await caseUtils.getCaseByIdFromDB(caseId);
+  if (isCaseFinished.finished) throw new BadRequestError('you dont have access to delete a completed case')
+  if (isCaseFinished.currentDonationAmount > 0) throw new BadRequestError('you dont have access to delete a case in progress')
+
   const idx: number = caseUtils.checkIfCaseBelongsToCharity(
     charity.cases,
     caseId

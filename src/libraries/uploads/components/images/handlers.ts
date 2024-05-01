@@ -37,9 +37,9 @@ const resizeImg = async (
     if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
 
     let { destinationFolder, suffix } = getImageConfiguration(req.path);
-
+    
     const uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
-    const fileName = uniqueSuffix + '.jpeg';
+    const fileName = `${uniqueSuffix}--${req.body.name}.jpeg`;
     // storeImgsTempOnReq(req, fileName);
     const sharpPromise = sharp(req.file.buffer)
       .resize(320, 240)
