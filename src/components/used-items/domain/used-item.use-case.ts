@@ -3,7 +3,6 @@ import { User } from '../../user/data-access/interfaces';
 import {
   AddUsedItemRequest,
   AddUsedItemResponse,
-  GetAllUsedItemsResponse,
 } from '../data-access/interfaces/used-item.api';
 import { usedItemService } from './used-item.service';
 
@@ -35,39 +34,12 @@ const getAllUsedItems = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<GetAllUsedItemsResponse> => {
-  const usedItems = await UsedItem.find().select('-__v').exec();
-
-  if (!usedItems.length) {
-    return {
-      usedItems: usedItems,
-      message: 'No Used Items Found',
-    };
-  }
+) => {
+  const usedItemsResponse = await usedItemService.findAllUsedItems();
 
   return {
-    usedItems: usedItems,
-    message: 'All Used Items Retrieved Successfully',
-  };
-};
-
-const getAllUsedItems = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<GetAllUsedItemsResponse> => {
-  const usedItems = await UsedItem.find().select('-__v').exec();
-
-  if (!usedItems.length) {
-    return {
-      usedItems: usedItems,
-      message: 'No Used Items Found',
-    };
-  }
-
-  return {
-    usedItems: usedItems,
-    message: 'All Used Items Retrieved Successfully',
+    UsedItems: usedItemsResponse.usedItems,
+    message: usedItemsResponse.message,
   };
 };
 
