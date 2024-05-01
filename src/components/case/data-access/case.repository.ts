@@ -8,7 +8,7 @@ import { CaseDao } from './interfaces/case.dao';
 
 export class CaseRepository implements CaseDao {
   createCase = async (caseData: ICase): Promise<ICase| null> => {
-    const newCase = (await CaseModel.create(caseData)) as ICase| null;
+    const newCase = (await CaseModel.create(caseData));
     return newCase;
   };
 
@@ -45,19 +45,19 @@ export class CaseRepository implements CaseDao {
   };
 
   getCaseById = async (id: string): Promise<ICase| null> => {
-    const _case = (await CaseModel.findById(id)) as ICase| null;
+    const _case = (await CaseModel.findById(id));
     return _case;
   };
 
   deleteCaseById = async (id: string): Promise<ICase| null> => {
     const _case = (await CaseModel.findByIdAndDelete(
       id
-    )) as ICase| null;
+    ));
     return _case;
   };
 
   editCase = async (
-    caseData: ICase,
+    caseData: ICase | { finished: boolean },
     id: string
   ): Promise<ICase | null> => {
     const updatedCase = (await CaseModel.findByIdAndUpdate(
@@ -69,7 +69,7 @@ export class CaseRepository implements CaseDao {
         new: true,
         runValidators: true,
       }
-    )) as ICase | null;
+    ));
 
     return updatedCase;
   };
