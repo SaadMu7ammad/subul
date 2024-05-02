@@ -244,7 +244,7 @@ export default function defineRoutes(expressApp: Application) {
   );
 
   router.post(
-    '/bookUsedItem',
+    '/bookUsedItem/:id',
     auth,
     isActivated,
     isConfirmed,
@@ -266,7 +266,7 @@ export default function defineRoutes(expressApp: Application) {
   );
 
   router.post(
-    '/cancelBookingOfUsedItem',
+    '/cancelBookingOfUsedItem/:id',
     auth,
     isActivated,
     isConfirmed,
