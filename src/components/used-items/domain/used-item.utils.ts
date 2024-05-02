@@ -31,8 +31,12 @@ const checkIfUsedItemBelongsToUser = (usedItem:IUsedItem, userId:string) => {
 }
 
 const deleteUsedItem = async (id:string) => {
-    const deletedUsedItem = await usedItemRepository.deleteUsedItem(id);
-    return deletedUsedItem;
+    await usedItemRepository.deleteUsedItem(id);
+}
+
+const updateUsedItem = async (usedItem:IUsedItem, usedItemData:PlainIUsedItem) => {
+    const updatedUsedItem = await usedItemRepository.updateUsedItem(usedItem, usedItemData);
+    return updatedUsedItem;
 }
 
 export const usedItemUtils = {
@@ -40,5 +44,6 @@ export const usedItemUtils = {
     getUsedItem,
     validateIdParam,
     checkIfUsedItemBelongsToUser, 
-    deleteUsedItem
+    deleteUsedItem,
+    updateUsedItem
 };

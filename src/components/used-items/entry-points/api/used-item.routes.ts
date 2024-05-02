@@ -37,20 +37,20 @@ export default function defineRoutes(expressApp: Application) {
       }
     }
   )
-  // .put(
-  //   auth,
-  //   isActivated,
-  //   async (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-  //       logger.info(`Used Items API was called to Update Used Item`);
-  //       const updateUsedItemResponse = await usedItemUseCase.updateUsedItem(req, res, next);
-  //       return res.json(updateUsedItemResponse);
-  //     } catch (error) {
-  //       next(error);
-  //       return undefined;
-  //     }
-  //   }
-  // )
+  .put(
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Used Items API was called to Update Used Item`);
+        const updateUsedItemResponse = await usedItemUseCase.updateUsedItem(req, res, next);
+        return res.json(updateUsedItemResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  )
   .get(
     auth,
     isActivated,

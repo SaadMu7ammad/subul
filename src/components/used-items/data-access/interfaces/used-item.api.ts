@@ -7,7 +7,7 @@ export type AddUsedItemResponse = {
   message: string;
 };
 
-export type deletedUsedItemResponse = {
+export type DeletedUsedItemResponse = {
   usedItem: IUsedItem;
   message: string;
 };
