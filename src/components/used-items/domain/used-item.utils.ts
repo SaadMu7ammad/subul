@@ -25,9 +25,15 @@ const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   return usedItems;
 };
 
+const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemRepository.ConfirmBookingReceipt(bookItemData);
+  return usedItem;
+};
+
 export const usedItemUtils = {
   addUsedItem,
   findAllUsedItems,
   bookUsedItem,
   cancelBookingOfUsedItem,
+  ConfirmBookingReceipt,
 };

@@ -1,5 +1,6 @@
 import {
   BadRequestError,
+  NotFoundError,
   UnauthenticatedError,
 } from '../../../libraries/errors/components';
 import { BookItemRequest, PlainIUsedItem } from '../data-access/interfaces';
@@ -44,7 +45,7 @@ const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   const usedItems = await usedItemUtils.cancelBookingOfUsedItem(bookItemData);
 
   if (!usedItems) {
-    throw new BadRequestError('This Item Is Not Booked');
+    throw new BadRequestError('This Item Already Cancelled Or Confirmed');
   }
 
   // If not null and charity is not the same as the one in the request should handle that though
@@ -64,9 +65,30 @@ const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   };
 };
 
+const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemUtils.ConfirmBookingReceipt(bookItemData);
+
+  if (!usedItem) throw new NotFoundError('Used Item Not Found');
+
+  // If not null and charity is not the same as the one in the request should handle that though
+  if (usedItem && usedItem.charity?.toString() !== bookItemData.charity) {
+    throw new UnauthenticatedError(
+      `You are not allowed to confirm this action, because it is not booked by charity with id: ${bookItemData.charity}`
+    );
+  }
+
+  usedItem.confirmed = true;
+  await usedItem.save();
+  return {
+    usedItem: usedItem,
+    message: 'Used Item Confirmed Successfully',
+  };
+};
+
 export const usedItemService = {
   addUsedItem,
   findAllUsedItems,
   bookUsedItem,
   cancelBookingOfUsedItem,
+  ConfirmBookingReceipt,
 };

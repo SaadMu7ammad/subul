@@ -36,6 +36,11 @@ const usedItemSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  // Confirm Booking Receipt
+  confirmed: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const UsedItem = mongoose.model('UsedItem', usedItemSchema);

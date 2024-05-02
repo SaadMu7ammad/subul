@@ -286,5 +286,24 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
+  router.post(
+    '/confirmBookingReceipt/:id',
+    auth,
+    isActivated,
+    isConfirmed,
+    validate,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Used Items API was called to Confirm Booking Receipt`);
+        const confirmBookingReceiptResponse =
+          await usedItemUseCase.ConfirmBookingReceipt(req, res, next);
+        return res.json(confirmBookingReceiptResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
   expressApp.use('/api/charities', router);
 }

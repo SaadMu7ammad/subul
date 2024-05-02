@@ -27,6 +27,7 @@ const addUsedItem = async (
     amount,
     user: user._id,
     booked: false,
+    confirmed: false,
   };
 
   const responseData = await usedItemService.addUsedItem(usedItemData);
@@ -56,7 +57,7 @@ const bookUsedItem = async (
   next: NextFunction
 ) => {
   const charity: ICharity = res.locals.charity;
-  if (!charity) throw new NotFoundError('Charity Must Login First!');
+  // if (!charity) throw new NotFoundError('Charity Must Login First!');
   const { id: itemId } = req.params;
   if (!itemId) throw new NotFoundError('Used Item Id Not Found');
 
@@ -78,7 +79,7 @@ const cancelBookingOfUsedItem = async (
   next: NextFunction
 ) => {
   const charity: ICharity = res.locals.charity;
-  if (!charity) throw new NotFoundError('Charity Must Login First!');
+  // if (!charity) throw new NotFoundError('Charity Must Login First!');
   const { id: itemId } = req.params;
   if (!itemId) throw new NotFoundError('Used Item Id Not Found');
 
@@ -86,8 +87,6 @@ const cancelBookingOfUsedItem = async (
     charity: charity._id.toString(),
     itemId,
   };
-
-  if (!itemId) throw new NotFoundError('Used Item Id Not Found');
 
   const usedItemsResponse = await usedItemService.cancelBookingOfUsedItem(
     bookItemData
@@ -99,24 +98,36 @@ const cancelBookingOfUsedItem = async (
   };
 };
 
-// const ConfirmBookingReceipt = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const { receipt }: { receipt: string } = req.body;
-//   const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(
-//     receipt
-//   );
-//   return {
-//     usedItems: usedItemsResponse.usedItems,
-//     message: usedItemsResponse.message,
-//   };
-// }
+const ConfirmBookingReceipt = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const charity: ICharity = res.locals.charity;
+  // if (!charity) throw new NotFoundError('Charity Must Login First!');
+
+  const { id: itemId } = req.params;
+  if (!itemId) throw new NotFoundError('Used Item Id Not Found');
+
+  const bookItemData: BookItemRequest = {
+    charity: charity._id.toString(),
+    itemId,
+  };
+
+  const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(
+    bookItemData
+  );
+
+  return {
+    usedItem: usedItemsResponse.usedItem,
+    message: usedItemsResponse.message,
+  };
+};
 
 export const usedItemUseCase = {
   addUsedItem,
   getAllUsedItems,
   bookUsedItem,
   cancelBookingOfUsedItem,
+  ConfirmBookingReceipt,
 };

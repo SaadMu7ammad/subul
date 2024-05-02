@@ -34,7 +34,17 @@ export class UsedItemRepository implements UsedItemDao {
     const usedItem = await UsedItem.findOne({
       _id: bookItemData.itemId,
       booked: true,
-    }).select('-__v');
+      confirmed: false,
+    });
+
+    return usedItem;
+  }
+
+  async ConfirmBookingReceipt(bookItemData: BookItemRequest) {
+    const usedItem = await UsedItem.findOne({
+      _id: bookItemData.itemId,
+      booked: true,
+    });
 
     return usedItem;
   }
