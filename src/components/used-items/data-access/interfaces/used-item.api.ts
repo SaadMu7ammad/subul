@@ -6,3 +6,8 @@ export type AddUsedItemResponse = {
   usedItem: IUsedItem;
   message: string;
 };
+
+export type deletedUsedItemResponse = {
+  usedItem: IUsedItem;
+  message: string;
+};

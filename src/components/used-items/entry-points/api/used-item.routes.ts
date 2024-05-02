@@ -12,7 +12,23 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Create Used Item`);
-        const logOutResponse = await usedItemUseCase.addUsedItem(req, res, next);
+        const createUsedItemResponse= await usedItemUseCase.addUsedItem(req, res, next);
+        return res.json(createUsedItemResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
+  router.delete(
+    '/:id',
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Used Items API was called to Delete Used Item`);
+        const logOutResponse = await usedItemUseCase.deleteUsedItem(req, res, next);
         return res.json(logOutResponse);
       } catch (error) {
         next(error);
