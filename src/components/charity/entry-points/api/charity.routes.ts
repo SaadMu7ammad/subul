@@ -244,9 +244,11 @@ export default function defineRoutes(expressApp: Application) {
   );
 
   router.post(
-    '/bookUsedItem/:id',
+    '/bookUsedItem',
     auth,
     isActivated,
+    isConfirmed,
+    validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Get All Used Items`);
@@ -256,6 +258,27 @@ export default function defineRoutes(expressApp: Application) {
           next
         );
         return res.json(bookUsedItemResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
+  router.post(
+    '/cancelBookingOfUsedItem',
+    auth,
+    isActivated,
+    isConfirmed,
+    validate,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(
+          `Used Items API was called to Cancel Booking Of Used Items`
+        );
+        const cancelBookingOfUsedItemResponse =
+          await usedItemUseCase.cancelBookingOfUsedItem(req, res, next);
+        return res.json(cancelBookingOfUsedItemResponse);
       } catch (error) {
         next(error);
         return undefined;

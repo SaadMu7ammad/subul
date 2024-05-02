@@ -1,4 +1,4 @@
-import { PlainIUsedItem } from '../data-access/interfaces';
+import { BookItemRequest, PlainIUsedItem } from '../data-access/interfaces';
 import { UsedItemRepository } from '../data-access/used-item.repository';
 
 const usedItemRepository = new UsedItemRepository();
@@ -13,8 +13,15 @@ const findAllUsedItems = async () => {
   return usedItems;
 };
 
-const bookUsedItem = async (usedItemId: string) => {
-  const usedItems = await usedItemRepository.bookUsedItem(usedItemId);
+const bookUsedItem = async (bookItemData: BookItemRequest) => {
+  const usedItems = await usedItemRepository.bookUsedItem(bookItemData);
+  return usedItems;
+};
+
+const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
+  const usedItems = await usedItemRepository.cancelBookingOfUsedItem(
+    bookItemData
+  );
   return usedItems;
 };
 
@@ -22,4 +29,5 @@ export const usedItemUtils = {
   addUsedItem,
   findAllUsedItems,
   bookUsedItem,
+  cancelBookingOfUsedItem,
 };

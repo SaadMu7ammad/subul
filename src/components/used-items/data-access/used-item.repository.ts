@@ -1,4 +1,4 @@
-import { PlainIUsedItem, UsedItemDao } from './interfaces';
+import { BookItemRequest, PlainIUsedItem, UsedItemDao } from './interfaces';
 import UsedItem from './models/used-item.model';
 
 export class UsedItemRepository implements UsedItemDao {
@@ -12,19 +12,29 @@ export class UsedItemRepository implements UsedItemDao {
     return usedItems;
   }
 
-  async bookUsedItem(usedItemId: string) {
+  async bookUsedItem(bookItemData: BookItemRequest) {
     const usedItem = await UsedItem.findOneAndUpdate(
       {
-        _id: usedItemId,
+        _id: bookItemData.itemId,
         booked: false,
       },
       {
         $set: {
           booked: true,
+          charity: bookItemData.charity,
         },
       },
       { new: true }
     );
+
+    return usedItem;
+  }
+
+  async cancelBookingOfUsedItem(bookItemData: BookItemRequest) {
+    const usedItem = await UsedItem.findOne({
+      _id: bookItemData.itemId,
+      booked: true,
+    }).select('-__v');
 
     return usedItem;
   }

@@ -6,6 +6,10 @@ const usedItemSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  charity: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Charity',
+  },
   title: {
     type: String,
     required: true,
