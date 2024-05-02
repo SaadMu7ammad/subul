@@ -35,7 +35,7 @@ export class CaseRepository implements CaseDao {
         dateFinished: 0,
         donationNumbers: 0,
         helpedNumbers: 0,
-        freezed: 0,
+        // freezed: ,
         createdAt: 0,
         updatedAt: 0,
         __v: 0,
