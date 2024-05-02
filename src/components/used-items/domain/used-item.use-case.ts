@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../../user/data-access/interfaces';
-import { AddUsedItemRequest, AddUsedItemResponse, deletedUsedItemResponse } from '../data-access/interfaces/used-item.api';
+import { AddUsedItemRequest, AddUsedItemResponse, GetUsedItemResponse, deletedUsedItemResponse } from '../data-access/interfaces/used-item.api';
 import { usedItemService } from './used-item.service';
 
 const addUsedItem = async (
@@ -21,6 +21,21 @@ const addUsedItem = async (
   };
 };
 
+//public route
+const getUsedItem = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<GetUsedItemResponse> => {
+  const { id } = req.params;
+  const responseData = await usedItemService.getUsedItem(id);
+
+  return {
+    usedItem: responseData.usedItem,
+    message: responseData.message,
+  };
+}
+
 const deleteUsedItem = async (
   req: Request,
   res: Response,
@@ -39,4 +54,5 @@ const deleteUsedItem = async (
 export const usedItemUseCase = {
   addUsedItem,
   deleteUsedItem,
+  getUsedItem
 };

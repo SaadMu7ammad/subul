@@ -21,8 +21,9 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  router.delete(
-    '/:id',
+  router.route(
+    '/:id')
+    .delete(
     auth,
     isActivated,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -35,7 +36,37 @@ export default function defineRoutes(expressApp: Application) {
         return undefined;
       }
     }
+  )
+  // .put(
+  //   auth,
+  //   isActivated,
+  //   async (req: Request, res: Response, next: NextFunction) => {
+  //     try {
+  //       logger.info(`Used Items API was called to Update Used Item`);
+  //       const updateUsedItemResponse = await usedItemUseCase.updateUsedItem(req, res, next);
+  //       return res.json(updateUsedItemResponse);
+  //     } catch (error) {
+  //       next(error);
+  //       return undefined;
+  //     }
+  //   }
+  // )
+  .get(
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Used Items API was called to Get Used Item`);
+        const getUsedItemResponse = await usedItemUseCase.getUsedItem(req, res, next);
+        return res.json(getUsedItemResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
   );
+  
+  
 
   expressApp.use('/api/usedItem', router);
 }

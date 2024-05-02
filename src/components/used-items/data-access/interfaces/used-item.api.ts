@@ -11,3 +11,8 @@ export type deletedUsedItemResponse = {
   usedItem: IUsedItem;
   message: string;
 };
+
+export type GetUsedItemResponse = {
+  usedItem: IUsedItem;
+  message: string;
+};
