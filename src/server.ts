@@ -19,6 +19,7 @@ import charityRoutes from './components/charity/entry-points/api/charity.routes'
 import casesRoutes from './components/case/entry-points/api/case.routes';
 import adminRoutes from './components/admin/entry-points/api/admin.routes';
 import usedRoutes from './components/used-items/entry-points/api/used-item.routes';
+import chatRoutes from './components/chat/entry-points/api/chat.routes'
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ adminRoutes(app);
 userRoutes(app);
 casesRoutes(app);
 usedRoutes(app);
+chatRoutes(app);
 
 app.get('/', (req, res) => {
   res.send('Welcome To Subul API 👋');
