@@ -35,7 +35,7 @@ const updateUsedItem = async (id:string|undefined, userId:string, usedItemData:P
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
     //update the used item
-    const updatedUsedItem = await usedItemUtils.updateUsedItem(usedItem, usedItemData);
+    const updatedUsedItem = await usedItemUtils.updateUsedItem(id, usedItemData);
 
     return{
         usedItem: updatedUsedItem,

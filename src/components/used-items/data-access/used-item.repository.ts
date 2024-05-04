@@ -16,8 +16,17 @@ export class UsedItemRepository implements UsedItemDao{
     await UsedItem.deleteOne({_id:id});
     }
 
-    async updateUsedItem(usedItem:PlainIUsedItem, usedItemData:PlainIUsedItem){
-        const updatedUsedItem= await UsedItem.updateOne(usedItem, usedItemData);
+    async updateUsedItem(id:string, usedItemData:PlainIUsedItem){
+        const updatedUsedItem = await UsedItem.findByIdAndUpdate(
+      id,
+      {
+        $set: { ...usedItemData },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ) 
         return updatedUsedItem;
     }
 }

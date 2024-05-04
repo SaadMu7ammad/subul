@@ -34,8 +34,11 @@ const deleteUsedItem = async (id:string) => {
     await usedItemRepository.deleteUsedItem(id);
 }
 
-const updateUsedItem = async (usedItem:IUsedItem, usedItemData:PlainIUsedItem) => {
-    const updatedUsedItem = await usedItemRepository.updateUsedItem(usedItem, usedItemData);
+const updateUsedItem = async (id:string, usedItemData:PlainIUsedItem) => {
+    const updatedUsedItem = await usedItemRepository.updateUsedItem(id, usedItemData);
+    if(!updatedUsedItem){
+        throw new NotFoundError('No such UsedItem with this ID');
+    }
     return updatedUsedItem;
 }
 
