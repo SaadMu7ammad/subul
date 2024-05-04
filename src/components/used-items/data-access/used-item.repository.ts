@@ -13,7 +13,8 @@ export class UsedItemRepository implements UsedItemDao{
     }
 
     async deleteUsedItem(id: string){
-    await UsedItem.deleteOne({_id:id});
+      const deletedUsedItem = await UsedItem.findByIdAndDelete(id);
+      return deletedUsedItem;
     }
 
     async updateUsedItem(id:string, usedItemData:PlainIUsedItem){

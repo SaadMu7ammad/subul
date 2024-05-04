@@ -57,10 +57,10 @@ const deleteUsedItem = async (id:string | undefined, userId:string) => {
     //TODO:check if the usedItem is booked or not
 
     //delete the used item
-    await usedItemUtils.deleteUsedItem(usedItem.id);
+    const deletedUsedItem = await usedItemUtils.deleteUsedItem(usedItem.id);
 
     return{
-        usedItem: usedItem,
+        usedItem: deletedUsedItem,
         message:'Used Item Deleted Successfully' ,
     }
 }
