@@ -3,7 +3,7 @@ import {
   NotFoundError,
 } from '../../../libraries/errors/components';
 import { IUsedItem, PlainIUsedItem } from '../data-access/interfaces';
-import { UsedItemRepository } from '../data-access/UsedItemRepository';
+import { UsedItemRepository } from '../data-access/used-item.repository';
 
 const usedItemRepository = new UsedItemRepository();
 

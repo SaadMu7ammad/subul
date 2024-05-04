@@ -2,6 +2,10 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import logger from '../../../../utils/logger';
 import { usedItemUseCase } from '../../domain/used-item.use-case';
 import { auth, isActivated, isUser } from '../../../auth/shared';
+import { addUsedItemValidation } from '../../../../libraries/validation/components/used-items/addUsedItemValidation';
+import { validate } from '../../../../libraries/validation';
+import { editUsedItemValidation } from '../../../../libraries/validation/components/used-items/editUsedItemValidation';
+
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
 
@@ -10,6 +14,8 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     isUser,
+    addUsedItemValidation,
+    validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Create Used Item`);
@@ -43,7 +49,7 @@ export default function defineRoutes(expressApp: Application) {
         return undefined;
       }
     })
-    .put(async (req: Request, res: Response, next: NextFunction) => {
+    .put(editUsedItemValidation,validate,async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Update Used Item`);
         const updateUsedItemResponse = await usedItemUseCase.updateUsedItem(
