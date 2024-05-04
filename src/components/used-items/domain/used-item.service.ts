@@ -1,3 +1,4 @@
+import { deleteOldImgs } from "../../../utils/deleteFile";
 import { PlainIUsedItem } from "../data-access/interfaces";
 import { usedItemUtils } from "./used-item.utils";
 
@@ -58,6 +59,9 @@ const deleteUsedItem = async (id:string | undefined, userId:string) => {
 
     //delete the used item
     const deletedUsedItem = await usedItemUtils.deleteUsedItem(usedItem.id);
+
+    //Delete the imgs
+    deleteOldImgs('usedItemsImages',usedItem.images);
 
     return{
         usedItem: deletedUsedItem,
