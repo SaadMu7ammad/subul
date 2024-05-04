@@ -5,6 +5,7 @@ import { auth, isActivated, isUser } from '../../../auth/shared';
 import { addUsedItemValidation } from '../../../../libraries/validation/components/used-items/addUsedItemValidation';
 import { validate } from '../../../../libraries/validation';
 import { editUsedItemValidation } from '../../../../libraries/validation/components/used-items/editUsedItemValidation';
+import { imageAssertion, resizeImg } from '../../../../libraries/uploads/components/images/usedItemImageHandler';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -14,6 +15,8 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     isUser,
+    imageAssertion,
+    resizeImg,
     addUsedItemValidation,
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
