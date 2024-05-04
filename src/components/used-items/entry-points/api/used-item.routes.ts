@@ -6,6 +6,7 @@ import { addUsedItemValidation } from '../../../../libraries/validation/componen
 import { validate } from '../../../../libraries/validation';
 import { editUsedItemValidation } from '../../../../libraries/validation/components/used-items/editUsedItemValidation';
 import { imageAssertion, resizeImg } from '../../../../libraries/uploads/components/images/usedItemImageHandler';
+import { deleteOldImgs } from '../../../../utils/deleteFile';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -29,6 +30,7 @@ export default function defineRoutes(expressApp: Application) {
         );
         return res.json(createUsedItemResponse);
       } catch (error) {
+        deleteOldImgs('usedItemsImages',req.body.images);
         next(error);
         return undefined;
       }
