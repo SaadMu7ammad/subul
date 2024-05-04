@@ -7,14 +7,19 @@ import { auth, isActivated } from '../../../auth/shared';
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
 
-
   //notice reset and /reset/confirm without isActivated coz the if the user didn't activate his account and want to reset the pass
   router.post(
-    '/send-message', auth, isActivated,
+    '/send-message',
+    auth,
+    isActivated,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`send message in a conversation`);
-        const sendMessageResponse = await chatUseCase.sendMessage(req, res, next);
+        const sendMessageResponse = await chatUseCase.sendMessage(
+          req,
+          res,
+          next
+        );
         return res.json(sendMessageResponse);
       } catch (error) {
         next(error);
