@@ -28,5 +28,25 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
+  router.get(
+    '/get-conversation/:id',
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`get conversation`);
+        const getConversationResponse = await chatUseCase.getConversation(
+          req,
+          res,
+          next
+        );
+        return res.json(getConversationResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
   expressApp.use('/api/chats', router);
 }

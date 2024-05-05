@@ -1,7 +1,6 @@
 import mongoose, { Schema, InferSchemaType, HydratedDocument } from 'mongoose';
 
 const conversationSchema = new Schema(
-
   {
     participants: [
       {
@@ -11,7 +10,7 @@ const conversationSchema = new Schema(
     messages: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Message",
+        ref: 'Message',
         default: [],
       },
     ],
@@ -19,9 +18,12 @@ const conversationSchema = new Schema(
   { timestamps: true }
 );
 declare module '../interfaces/chat.interface' {
-  export type IConversation = HydratedDocument<InferSchemaType<typeof conversationSchema>>;
-}
+  export type IConversation = HydratedDocument<
+    InferSchemaType<typeof conversationSchema>
+  >;
 
+  export type PlainIConversation = InferSchemaType<typeof conversationSchema>;
+}
 
 const conversationModel = mongoose.model('Conversation', conversationSchema);
 
