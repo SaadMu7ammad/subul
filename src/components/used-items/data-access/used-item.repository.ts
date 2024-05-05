@@ -17,7 +17,7 @@ export class UsedItemRepository implements UsedItemDao{
       return deletedUsedItem;
     }
 
-    async updateUsedItem(id:string, usedItemData:PlainIUsedItem){
+    async updateUsedItem(id:string, usedItemData:Partial<PlainIUsedItem>){
         const updatedUsedItem = await UsedItem.findByIdAndUpdate(
       id,
       {

@@ -69,9 +69,29 @@ const deleteUsedItem = async (id:string | undefined, userId:string) => {
     }
 }
 
+const addUsedItemImages = async (id:string | undefined, userId:string, images:string[]) => {
+    //check if the id was sent in the request
+    const validate: (id:string|undefined) => asserts id is string =  usedItemUtils.validateIdParam;
+    validate(id); //it gives an error if I executed the function directly 🤕
+
+    //check if the used item exists
+    const usedItem = await usedItemUtils.getUsedItem(id);
+
+    //check if the user is the owner of the used item
+    usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
+
+    //add the images
+    const updatedUsedItem = await usedItemUtils.addUsedItemImages(id, images);
+
+    return{
+        usedItem: updatedUsedItem,
+        message:'Used Item Images Added Successfully',
+    }
+}
 export const usedItemService = {
     addUsedItem,
     deleteUsedItem,
     getUsedItem,
-    updateUsedItem
+    updateUsedItem,
+    addUsedItemImages
 };

@@ -66,9 +66,26 @@ const updateUsedItem = async (
   };
 }
 
+const addUsedItemImages = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<AddUsedItemResponse> => {
+  const { id } = req.params;
+  const userId = res.locals.user._id.toString();
+  const images = req.body.images;
+  const responseData = await usedItemService.addUsedItemImages(id, userId, images);
+
+  return {
+    usedItem: responseData.usedItem,
+    message: responseData.message,
+  };
+}
+
 export const usedItemUseCase = {
   addUsedItem,
   deleteUsedItem,
   getUsedItem,
-  updateUsedItem
+  updateUsedItem,
+  addUsedItemImages
 };

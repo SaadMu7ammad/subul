@@ -5,7 +5,10 @@ import { auth, isActivated, isUser } from '../../../auth/shared';
 import { addUsedItemValidation } from '../../../../libraries/validation/components/used-items/addUsedItemValidation';
 import { validate } from '../../../../libraries/validation';
 import { editUsedItemValidation } from '../../../../libraries/validation/components/used-items/editUsedItemValidation';
-import { imageAssertion, resizeImg } from '../../../../libraries/uploads/components/images/usedItemImageHandler';
+import {
+  imageAssertion,
+  resizeImg,
+} from '../../../../libraries/uploads/components/images/usedItemImageHandler';
 import { deleteOldImgs } from '../../../../utils/deleteFile';
 
 export default function defineRoutes(expressApp: Application) {
@@ -30,7 +33,7 @@ export default function defineRoutes(expressApp: Application) {
         );
         return res.json(createUsedItemResponse);
       } catch (error) {
-        deleteOldImgs('usedItemsImages',req.body.images);
+        deleteOldImgs('usedItemsImages', req.body.images);
         next(error);
         return undefined;
       }
@@ -43,31 +46,35 @@ export default function defineRoutes(expressApp: Application) {
     .delete(async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Delete Used Item`);
-        const logOutResponse = await usedItemUseCase.deleteUsedItem(
+        const deleteUsedItemResponse = await usedItemUseCase.deleteUsedItem(
           req,
           res,
           next
         );
-        return res.json(logOutResponse);
+        return res.json(deleteUsedItemResponse);
       } catch (error) {
         next(error);
         return undefined;
       }
     })
-    .put(editUsedItemValidation,validate,async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        logger.info(`Used Items API was called to Update Used Item`);
-        const updateUsedItemResponse = await usedItemUseCase.updateUsedItem(
-          req,
-          res,
-          next
-        );
-        return res.json(updateUsedItemResponse);
-      } catch (error) {
-        next(error);
-        return undefined;
+    .put(
+      editUsedItemValidation,
+      validate,
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          logger.info(`Used Items API was called to Update Used Item`);
+          const updateUsedItemResponse = await usedItemUseCase.updateUsedItem(
+            req,
+            res,
+            next
+          );
+          return res.json(updateUsedItemResponse);
+        } catch (error) {
+          next(error);
+          return undefined;
+        }
       }
-    })
+    )
     .get(async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Get Used Item`);
@@ -82,6 +89,28 @@ export default function defineRoutes(expressApp: Application) {
         return undefined;
       }
     });
+
+  router
+    .route('/:id/images')
+    .post(
+      auth,
+      isActivated,
+      isUser,
+      imageAssertion,
+      resizeImg,
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          logger.info(`Used Items API was called to Add Used Item Images`);
+          const updateUsedItemImagesResponse =
+            await usedItemUseCase.addUsedItemImages(req, res, next);
+          return res.json(updateUsedItemImagesResponse);
+        } catch (error) {
+          deleteOldImgs('usedItemsImages', req.body.images);
+          next(error);
+          return undefined;
+        }
+      }
+    );
 
   expressApp.use('/api/usedItem', router);
 }

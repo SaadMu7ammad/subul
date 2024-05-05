@@ -2,6 +2,8 @@ import {
   BadRequestError,
   NotFoundError,
 } from '../../../libraries/errors/components';
+import { deleteOldImgs } from '../../../utils/deleteFile';
+import { isDefined } from '../../../utils/shared';
 import { IUsedItem, PlainIUsedItem } from '../data-access/interfaces';
 import { UsedItemRepository } from '../data-access/used-item.repository';
 
@@ -52,6 +54,26 @@ const updateUsedItem = async (id: string, usedItemData: PlainIUsedItem) => {
   return updatedUsedItem;
 };
 
+const addUsedItemImages = async (id: string, images: string[]) => {
+  const usedItem = await getUsedItem(id);
+
+  while(usedItem.images.length<5 && images.length>0){
+    if(isDefined(images[0])) usedItem.images.push(images[0]);
+    images.shift();
+  }
+
+  const updatedUsedItem = await usedItem.save();
+
+  //if usedItem.images.length + images.length > 5
+  deleteOldImgs('usedItemsImages',images)
+
+  if (!updatedUsedItem) {
+    throw new NotFoundError('No such UsedItem with this ID');
+  }
+
+  return updatedUsedItem;
+}
+
 export const usedItemUtils = {
   addUsedItem,
   getUsedItem,
@@ -59,4 +81,5 @@ export const usedItemUtils = {
   checkIfUsedItemBelongsToUser,
   deleteUsedItem,
   updateUsedItem,
+  addUsedItemImages
 };
