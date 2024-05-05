@@ -10,5 +10,5 @@ export interface chatDao {
     receiverId: string,
     content: string
   ): Promise<IMessage>;
-  getCoversation(receiverId: string, senderId: string): Promise<IConversation>;
+  getConversation(receiverId: string, senderId: string): Promise<IConversation>;
 }

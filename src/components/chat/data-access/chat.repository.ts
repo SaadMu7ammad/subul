@@ -33,7 +33,7 @@ export class chatRepository implements chatDao {
     return createdMessage;
   }
 
-  async getCoversation(
+  async getConversation(
     receiverId: string,
     senderId: string
   ): Promise<IConversation> {

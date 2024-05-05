@@ -6,10 +6,6 @@ import { BadRequestError } from '../../../libraries/errors/components';
 // @route  POST /api/chat/send-message
 // @access private
 const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
-  if (res.locals.charity && !res.locals.charity.isConfirmed)
-    throw new BadRequestError(
-      'Charity Account is not Completed to start chatting'
-    );
 
   let typeSender;
   if (res.locals.charity) {
@@ -18,16 +14,15 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
     typeSender = 'user';
   }
 
-  const { receiverId, message }: { receiverId: string; message: string } =
-    req.body;
+  const { receiverId, message }: { receiverId: string; message: string } = req.body;
 
-  const responseData = await chatService.sendMessage(
-    typeSender,
-    message,
+  const responseData = await chatService.sendMessage(typeSender, message,
     typeSender === 'user'
       ? res.locals.user._id.toString()
       : res.locals.charity._id.toString(),
-    receiverId
+    receiverId,
+    typeSender === 'charity'
+      ? res.locals.charity : undefined
   );
 
   return {
@@ -35,6 +30,9 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
   };
 };
 
+// @desc   get conversation
+// @route  GET /api/chat/get-conversation/:id
+// @access private
 const getConversation = async (
   req: Request,
   res: Response,
