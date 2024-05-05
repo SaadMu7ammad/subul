@@ -82,10 +82,28 @@ const addUsedItemImages = async (
   };
 }
 
+const deleteUsedItemImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<AddUsedItemResponse> => {
+  const { id } = req.params;
+  const userId = res.locals.user._id.toString();
+  const imageName = req.body.imageName;
+
+  const responseData = await usedItemService.deleteUsedItemImage(id, userId, imageName);
+
+  return {
+    usedItem: responseData.usedItem,
+    message: responseData.message,
+  };
+}
+
 export const usedItemUseCase = {
   addUsedItem,
   deleteUsedItem,
   getUsedItem,
   updateUsedItem,
-  addUsedItemImages
+  addUsedItemImages,
+  deleteUsedItemImage
 };

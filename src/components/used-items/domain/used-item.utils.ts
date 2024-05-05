@@ -29,7 +29,6 @@ const validateIdParam = (id: string | undefined): asserts id is string => {
 };
 
 const checkIfUsedItemBelongsToUser = (usedItem: IUsedItem, userId: string) => {
-  console.log(usedItem.user.toString(), userId);
   if (usedItem.user.toString() !== userId) {
     throw new BadRequestError('You are not the owner of this Used Item');
   }
@@ -67,9 +66,22 @@ const addUsedItemImages = async (id: string, images: string[]) => {
   //if usedItem.images.length + images.length > 5
   deleteOldImgs('usedItemsImages',images)
 
-  if (!updatedUsedItem) {
-    throw new NotFoundError('No such UsedItem with this ID');
+  return updatedUsedItem;
+}
+
+const deleteUsedItemImage = async (id: string, imageName: string) => {
+  const usedItem = await getUsedItem(id);
+
+  const imageIndex = usedItem.images.findIndex((image:string) => image === imageName);
+  if (imageIndex === -1) {
+    throw new NotFoundError('No such Image with this name');
   }
+
+  const deletedImage = usedItem.images.splice(imageIndex, 1);
+
+  deleteOldImgs('usedItemsImages',deletedImage);
+
+  const updatedUsedItem = await usedItem.save();
 
   return updatedUsedItem;
 }
@@ -81,5 +93,6 @@ export const usedItemUtils = {
   checkIfUsedItemBelongsToUser,
   deleteUsedItem,
   updateUsedItem,
-  addUsedItemImages
+  addUsedItemImages,
+  deleteUsedItemImage
 };

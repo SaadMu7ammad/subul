@@ -92,10 +92,8 @@ export default function defineRoutes(expressApp: Application) {
 
   router
     .route('/:id/images')
+    .all(auth, isActivated, isUser)
     .post(
-      auth,
-      isActivated,
-      isUser,
       imageAssertion,
       resizeImg,
       async (req: Request, res: Response, next: NextFunction) => {
@@ -110,7 +108,18 @@ export default function defineRoutes(expressApp: Application) {
           return undefined;
         }
       }
-    );
+    )
+    .delete(async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Used Items API was called to Delete a Used Item Image`);
+        const deleteUsedItemImageResponse =
+          await usedItemUseCase.deleteUsedItemImage(req, res, next);
+        return res.json(deleteUsedItemImageResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    });
 
   expressApp.use('/api/usedItem', router);
 }
