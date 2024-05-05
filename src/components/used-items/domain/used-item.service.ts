@@ -24,7 +24,7 @@ const getUsedItem = async (id:string|undefined) => {
     }
 }
 
-const updateUsedItem = async (id:string|undefined, userId:string, usedItemData:PlainIUsedItem) => {
+const updateUsedItem = async (id:string|undefined, userId:string, usedItemData:Partial<PlainIUsedItem>) => {
     //check if the id was sent in the request
     const validate: (id:string|undefined) => asserts id is string =  usedItemUtils.validateIdParam;
     validate(id); //it gives an error if I executed the function directly 🤕
@@ -35,8 +35,10 @@ const updateUsedItem = async (id:string|undefined, userId:string, usedItemData:P
     //check if the user is the owner of the used item
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
+    const filteredUsedItemData = usedItemUtils.removeUndefinedAttributesFromUsedItemData(usedItemData);
+
     //update the used item
-    const updatedUsedItem = await usedItemUtils.updateUsedItem(id, usedItemData);
+    const updatedUsedItem = await usedItemUtils.updateUsedItem(id, filteredUsedItemData);
 
     return{
         usedItem: updatedUsedItem,

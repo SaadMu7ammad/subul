@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../../user/data-access/interfaces';
-import { AddUsedItemRequest, AddUsedItemResponse, GetUsedItemResponse, DeletedUsedItemResponse } from '../data-access/interfaces/used-item.api';
+import { AddUsedItemRequest, AddUsedItemResponse, GetUsedItemResponse, DeletedUsedItemResponse, UpdateUsedItemRequest, AddUsedItemImageResponse, UpdateUsedItemResponse, AddUsedItemImageRequest, DeleteUsedItemImageRequest } from '../data-access/interfaces/used-item.api';
 import { usedItemService } from './used-item.service';
 
 const addUsedItem = async (
@@ -9,8 +9,15 @@ const addUsedItem = async (
   next: NextFunction
 ): Promise<AddUsedItemResponse> => {
   const user: User = res.locals.user;
-  const usedItemData: AddUsedItemRequest = req.body;
-  usedItemData.user = user._id;
+  const { title, description, category,amount,images} = req.body;
+  const usedItemData: AddUsedItemRequest = {
+    title,
+    description,
+    category,
+    amount,
+    images,
+    user: user._id,
+  };
 
   const responseData = await usedItemService.addUsedItem(usedItemData);
 
@@ -54,10 +61,19 @@ const updateUsedItem = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<AddUsedItemResponse> => {
+): Promise<UpdateUsedItemResponse> => {
   const { id } = req.params;
   const userId = res.locals.user._id.toString();
-  const usedItemData: AddUsedItemRequest = req.body;
+
+  const { title, description, category,amount} = req.body;
+  const usedItemData: UpdateUsedItemRequest = {
+    title,
+    description,
+    category,
+    amount,
+  };
+
+
   const responseData = await usedItemService.updateUsedItem(id, userId, usedItemData);
 
   return {
@@ -70,10 +86,10 @@ const addUsedItemImages = async (
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<AddUsedItemResponse> => {
+): Promise<AddUsedItemImageResponse> => {
   const { id } = req.params;
   const userId = res.locals.user._id.toString();
-  const images = req.body.images;
+  const {images}:AddUsedItemImageRequest = req.body;
   const responseData = await usedItemService.addUsedItemImages(id, userId, images);
 
   return {
@@ -89,7 +105,7 @@ const deleteUsedItemImage = async (
 ): Promise<AddUsedItemResponse> => {
   const { id } = req.params;
   const userId = res.locals.user._id.toString();
-  const imageName = req.body.imageName;
+  const {imageName}:DeleteUsedItemImageRequest = req.body;
 
   const responseData = await usedItemService.deleteUsedItemImage(id, userId, imageName);
 

@@ -4,7 +4,7 @@ import {
 } from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import { isDefined } from '../../../utils/shared';
-import { IUsedItem, PlainIUsedItem } from '../data-access/interfaces';
+import { IUsedItem, PlainIUsedItem, UpdateUsedItemRequest } from '../data-access/interfaces';
 import { UsedItemRepository } from '../data-access/used-item.repository';
 
 const usedItemRepository = new UsedItemRepository();
@@ -42,7 +42,7 @@ const deleteUsedItem = async (id: string) => {
   return deletedUsedItem;
 };
 
-const updateUsedItem = async (id: string, usedItemData: PlainIUsedItem) => {
+const updateUsedItem = async (id: string, usedItemData: UpdateUsedItemRequest) => {
   const updatedUsedItem = await usedItemRepository.updateUsedItem(
     id,
     usedItemData
@@ -86,6 +86,14 @@ const deleteUsedItemImage = async (id: string, imageName: string) => {
   return updatedUsedItem;
 }
 
+const removeUndefinedAttributesFromUsedItemData = (usedItemData: Partial<PlainIUsedItem>) => {
+  const filteredUsedItemData = Object.fromEntries(
+  Object.entries(usedItemData).filter(([key, value]) => value !== undefined)
+  );
+
+  return filteredUsedItemData;
+}
+
 export const usedItemUtils = {
   addUsedItem,
   getUsedItem,
@@ -94,5 +102,6 @@ export const usedItemUtils = {
   deleteUsedItem,
   updateUsedItem,
   addUsedItemImages,
-  deleteUsedItemImage
+  deleteUsedItemImage,
+  removeUndefinedAttributesFromUsedItemData,
 };
