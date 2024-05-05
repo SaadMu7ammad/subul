@@ -10,6 +10,7 @@ import {
   resizeImg,
 } from '../../../../libraries/uploads/components/images/usedItemImageHandler';
 import { deleteOldImgs } from '../../../../utils/deleteFile';
+import { deleteUsedItemImageValidation } from '../../../../libraries/validation/components/used-items/deleteUsedItemImageValidation';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -99,9 +100,9 @@ export default function defineRoutes(expressApp: Application) {
       async (req: Request, res: Response, next: NextFunction) => {
         try {
           logger.info(`Used Items API was called to Add Used Item Images`);
-          const updateUsedItemImagesResponse =
+          const addUsedItemImagesResponse =
             await usedItemUseCase.addUsedItemImages(req, res, next);
-          return res.json(updateUsedItemImagesResponse);
+          return res.json(addUsedItemImagesResponse);
         } catch (error) {
           deleteOldImgs('usedItemsImages', req.body.images);
           next(error);
@@ -109,7 +110,7 @@ export default function defineRoutes(expressApp: Application) {
         }
       }
     )
-    .delete(async (req: Request, res: Response, next: NextFunction) => {
+    .delete(deleteUsedItemImageValidation,validate,async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Delete a Used Item Image`);
         const deleteUsedItemImageResponse =
