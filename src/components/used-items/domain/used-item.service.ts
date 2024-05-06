@@ -20,16 +20,16 @@ const findAllUsedItems = async () => {
 };
 
 const bookUsedItem = async (bookItemData: BookItemRequest) => {
-  const usedItems = await usedItemUtils.bookUsedItem(bookItemData);
+  const usedItem = await usedItemUtils.bookUsedItem(bookItemData);
 
   return {
-    usedItems: usedItems,
+    usedItem: usedItem,
     message: 'Used Item Booked Successfully',
   };
 };
 
 const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
-  const usedItems = await usedItemUtils.cancelBookingOfUsedItem(bookItemData);
+  const usedItem = await usedItemUtils.cancelBookingOfUsedItem(bookItemData);
   // // If not null and charity is not the same as the one in the request should handle that though
   // if (usedItems && usedItems.charity?.toString() !== bookItemData.charity) {
   //   throw new UnauthenticatedError(
@@ -37,7 +37,7 @@ const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   //   );
   // }
   return {
-    usedItems: usedItems,
+    usedItem: usedItem,
     message: 'Used Item Cancelled Successfully',
   };
 };

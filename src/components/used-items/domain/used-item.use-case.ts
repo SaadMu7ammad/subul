@@ -25,8 +25,6 @@ const addUsedItem = async (
     images,
     amount,
     user: user._id,
-    booked: false,
-    confirmed: false,
   };
 
   const responseData = await usedItemService.addUsedItem(usedItemData);
@@ -51,7 +49,7 @@ const bookUsedItem = async (req: Request, res: Response) => {
 
   const usedItemResponse = await usedItemService.bookUsedItem(bookItemData);
   return {
-    usedItems: usedItemResponse.usedItems,
+    usedItem: usedItemResponse.usedItem,
     message: usedItemResponse.message,
   };
 };
@@ -64,7 +62,7 @@ const cancelBookingOfUsedItem = async (req: Request, res: Response) => {
   );
 
   return {
-    usedItems: usedItemsResponse.usedItems,
+    usedItem: usedItemsResponse.usedItem,
     message: usedItemsResponse.message,
   };
 };

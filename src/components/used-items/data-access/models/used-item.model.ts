@@ -35,11 +35,13 @@ const usedItemSchema = new mongoose.Schema({
   booked: {
     type: Boolean,
     default: false,
+    required: false,
   },
   // Confirm Booking Receipt
   confirmed: {
     type: Boolean,
     default: false,
+    required: false,
   },
 });
 

@@ -40,22 +40,20 @@ const createBookItemData = async (
 };
 
 const bookUsedItem = async (bookItemData: BookItemRequest) => {
-  const usedItems = await usedItemRepository.findAndUpdateToBooked(
-    bookItemData
-  );
-  if (!usedItems) throw new BadRequestError('This Item Is Already Booked');
-  return usedItems;
+  const usedItem = await usedItemRepository.findAndUpdateToBooked(bookItemData);
+  if (!usedItem) throw new BadRequestError('This Item Is Already Booked');
+  return usedItem;
 };
 
 const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
-  const usedItems = await usedItemRepository.findBookedItem(bookItemData);
-  if (!usedItems)
+  const usedItem = await usedItemRepository.findBookedItem(bookItemData);
+  if (!usedItem)
     throw new BadRequestError('This Item Already Cancelled Or Confirmed');
-  usedItems.booked = false;
-  usedItems.charity = undefined;
-  await usedItems.save();
+  usedItem.booked = false;
+  usedItem.charity = undefined;
+  await usedItem.save();
 
-  return usedItems;
+  return usedItem;
 };
 
 const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
