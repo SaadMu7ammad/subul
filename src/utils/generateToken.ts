@@ -24,7 +24,7 @@ const generateToken = (res: Response, id: string, payloadType: string) => {
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
   }else if (configurationProvider.getValue('environment.nodeEnv') === 'production'){
-    res.setHeader('Set-Cookie',[`token=${token};  Path=/;HttpOnly; maxAge=86400000;SameSite=None;Secure=true;`]);
+    res.setHeader('Set-Cookie',[`jwt=${token};  Path=/;HttpOnly; maxAge=86400000;SameSite=None;Secure=true;`]);
   }
 
   return token;
