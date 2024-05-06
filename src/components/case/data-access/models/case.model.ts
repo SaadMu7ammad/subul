@@ -8,6 +8,11 @@ const caseSchema = new mongoose.Schema(
       ref: 'Charity',
       required: [true, 'charity must be provided'],
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
     title: {
       type: String,
       required: [true, 'title must be provided'],
@@ -24,7 +29,8 @@ const caseSchema = new mongoose.Schema(
         'BloodDonation',
         'kafarat',
         'Adahi',
-        'Campains',
+        'Campaigns',
+        "customizedCampaigns",
         'UsedProperties',
       ],
       required: [true, 'maintype for that case must be provided'],
@@ -43,7 +49,8 @@ const caseSchema = new mongoose.Schema(
       enum: [
         'Aqeeqa',
         'BloodDonation',
-        'Campains',
+        'Campaigns',
+        'customizedCampaigns',
         'Yameen',
         'Fediat Siam',
         'Foqaraa',

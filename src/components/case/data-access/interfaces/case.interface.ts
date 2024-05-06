@@ -4,13 +4,14 @@ export type GetAllCasesQueryParams = {
   offset?: number;
   sort?: string;
   mainType?: string;
+  freezed?: boolean;
   subType?: string;
   nestedSubType?: string;
 };
 
 export type FilterQueryParams = Pick<
   GetAllCasesQueryParams,
-  'mainType' | 'subType' | 'nestedSubType'
+  'mainType' | 'subType' | 'nestedSubType'|'freezed'
 >;
 export type FilterObj = FilterQueryParams & { charity: string };
 export type SortObj = { [key: string]: 1 | -1 };
