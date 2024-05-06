@@ -8,11 +8,11 @@ export class UsedItemRepository implements UsedItemDao {
   }
 
   async findAllUsedItems() {
-    const usedItems = await UsedItem.find().select('-__v').exec();
+    const usedItems = await UsedItem.find();
     return usedItems;
   }
 
-  async bookUsedItem(bookItemData: BookItemRequest) {
+  async findAndUpdateToBooked(bookItemData: BookItemRequest) {
     const usedItem = await UsedItem.findOneAndUpdate(
       {
         _id: bookItemData.itemId,
@@ -30,22 +30,23 @@ export class UsedItemRepository implements UsedItemDao {
     return usedItem;
   }
 
-  async cancelBookingOfUsedItem(bookItemData: BookItemRequest) {
+  async findBookedItem(bookItemData: BookItemRequest) {
     const usedItem = await UsedItem.findOne({
       _id: bookItemData.itemId,
       booked: true,
       confirmed: false,
+      charity: bookItemData.charity,
     });
 
     return usedItem;
   }
+  // async findBooked(bookItemData: BookItemRequest) {
+  //   const usedItem = await UsedItem.findOne({
+  //     _id: bookItemData.itemId,
+  //     booked: true,
+  //     charity: bookItemData.charity,
+  //   });
 
-  async ConfirmBookingReceipt(bookItemData: BookItemRequest) {
-    const usedItem = await UsedItem.findOne({
-      _id: bookItemData.itemId,
-      booked: true,
-    });
-
-    return usedItem;
-  }
+  //   return usedItem;
+  // }
 }

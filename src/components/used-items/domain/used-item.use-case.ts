@@ -3,11 +3,10 @@ import { User } from '../../user/data-access/interfaces';
 import {
   AddUsedItemRequest,
   AddUsedItemResponse,
-  BookItemRequest,
 } from '../data-access/interfaces/used-item.api';
 import { usedItemService } from './used-item.service';
 import { NotFoundError } from '../../../libraries/errors/components';
-import { ICharity } from '../../charity/data-access/interfaces';
+import { usedItemUtils } from './used-item.utils';
 
 const addUsedItem = async (
   req: Request,
@@ -38,11 +37,7 @@ const addUsedItem = async (
   };
 };
 
-const getAllUsedItems = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const getAllUsedItems = async () => {
   const usedItemsResponse = await usedItemService.findAllUsedItems();
 
   return {
@@ -51,42 +46,18 @@ const getAllUsedItems = async (
   };
 };
 
-const bookUsedItem = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const charity: ICharity = res.locals.charity;
-  // if (!charity) throw new NotFoundError('Charity Must Login First!');
-  const { id: itemId } = req.params;
-  if (!itemId) throw new NotFoundError('Used Item Id Not Found');
+const bookUsedItem = async (req: Request, res: Response) => {
+  const bookItemData = await usedItemUtils.createBookItemData(req, res);
 
-  const bookItemData: BookItemRequest = {
-    charity: charity._id.toString(),
-    itemId,
-  };
-
-  const usedItemsResponse = await usedItemService.bookUsedItem(bookItemData);
+  const usedItemResponse = await usedItemService.bookUsedItem(bookItemData);
   return {
-    usedItems: usedItemsResponse.usedItems,
-    message: usedItemsResponse.message,
+    usedItems: usedItemResponse.usedItems,
+    message: usedItemResponse.message,
   };
 };
 
-const cancelBookingOfUsedItem = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const charity: ICharity = res.locals.charity;
-  // if (!charity) throw new NotFoundError('Charity Must Login First!');
-  const { id: itemId } = req.params;
-  if (!itemId) throw new NotFoundError('Used Item Id Not Found');
-
-  const bookItemData: BookItemRequest = {
-    charity: charity._id.toString(),
-    itemId,
-  };
+const cancelBookingOfUsedItem = async (req: Request, res: Response) => {
+  const bookItemData = await usedItemUtils.createBookItemData(req, res);
 
   const usedItemsResponse = await usedItemService.cancelBookingOfUsedItem(
     bookItemData
@@ -98,21 +69,8 @@ const cancelBookingOfUsedItem = async (
   };
 };
 
-const ConfirmBookingReceipt = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const charity: ICharity = res.locals.charity;
-  // if (!charity) throw new NotFoundError('Charity Must Login First!');
-
-  const { id: itemId } = req.params;
-  if (!itemId) throw new NotFoundError('Used Item Id Not Found');
-
-  const bookItemData: BookItemRequest = {
-    charity: charity._id.toString(),
-    itemId,
-  };
+const ConfirmBookingReceipt = async (req: Request, res: Response) => {
+  const bookItemData = await usedItemUtils.createBookItemData(req, res);
 
   const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(
     bookItemData

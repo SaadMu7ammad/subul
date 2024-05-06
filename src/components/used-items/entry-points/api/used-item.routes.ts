@@ -32,11 +32,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Get All Used Items`);
-        const getAllUsedItemsResponse = await usedItemUseCase.getAllUsedItems(
-          req,
-          res,
-          next
-        );
+        const getAllUsedItemsResponse = await usedItemUseCase.getAllUsedItems();
         return res.json(getAllUsedItemsResponse);
       } catch (error) {
         next(error);

@@ -248,14 +248,12 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     isConfirmed,
-    validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Get All Used Items`);
         const bookUsedItemResponse = await usedItemUseCase.bookUsedItem(
           req,
-          res,
-          next
+          res
         );
         return res.json(bookUsedItemResponse);
       } catch (error) {
@@ -270,14 +268,13 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     isConfirmed,
-    validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(
           `Used Items API was called to Cancel Booking Of Used Items`
         );
         const cancelBookingOfUsedItemResponse =
-          await usedItemUseCase.cancelBookingOfUsedItem(req, res, next);
+          await usedItemUseCase.cancelBookingOfUsedItem(req, res);
         return res.json(cancelBookingOfUsedItemResponse);
       } catch (error) {
         next(error);
@@ -291,12 +288,11 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     isConfirmed,
-    validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Confirm Booking Receipt`);
         const confirmBookingReceiptResponse =
-          await usedItemUseCase.ConfirmBookingReceipt(req, res, next);
+          await usedItemUseCase.ConfirmBookingReceipt(req, res);
         return res.json(confirmBookingReceiptResponse);
       } catch (error) {
         next(error);
