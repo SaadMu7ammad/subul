@@ -5,6 +5,7 @@ const usedItemSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+    immutable: true,
   },
   charity: {
     type: mongoose.Schema.Types.ObjectId,
@@ -48,9 +49,7 @@ const usedItemSchema = new mongoose.Schema({
 const UsedItem = mongoose.model('UsedItem', usedItemSchema);
 
 declare module '../interfaces' {
-  export type IUsedItem = HydratedDocument<
-    InferSchemaType<typeof usedItemSchema>
-  >;
+  export type IUsedItem = HydratedDocument<InferSchemaType<typeof usedItemSchema>>;
 
   export type PlainIUsedItem = InferSchemaType<typeof usedItemSchema>;
 }
