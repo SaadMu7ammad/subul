@@ -6,4 +6,28 @@ export class UsedItemRepository implements UsedItemDao{
         const usedItem = await UsedItem.create(usedItemData);
         return usedItem;
     }
+
+    async getUsedItem(id: string) {
+        const usedItem = await UsedItem.findOne({_id:id});
+        return usedItem;
+    }
+
+    async deleteUsedItem(id: string){
+      const deletedUsedItem = await UsedItem.findByIdAndDelete(id);
+      return deletedUsedItem;
+    }
+
+    async updateUsedItem(id:string, usedItemData:Partial<PlainIUsedItem>){
+        const updatedUsedItem = await UsedItem.findByIdAndUpdate(
+      id,
+      {
+        $set: { ...usedItemData },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ) 
+        return updatedUsedItem;
+    }
 }
