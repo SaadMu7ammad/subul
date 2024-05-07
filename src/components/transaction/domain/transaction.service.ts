@@ -1,25 +1,29 @@
 import {
   BadRequestError,
   NotFoundError,
-} from '../../../libraries/errors/components/index.js';
-import { checkValueEquality } from '../../../utils/shared.js';
-import { TransactionRepository } from '../data-access/transaction.repository.js';
-import { transactionUtils } from './transaction.utils.js';
-import TransactionModel from '../data-access/models/transaction.model.js';
-import { ITransaction } from '../data-access/interfaces/transaction.interface.js';
+} from '../../../libraries/errors/components/index';
+import { checkValueEquality } from '../../../utils/shared';
+import { TransactionRepository } from '../data-access/transaction.repository';
+import { transactionUtils } from './transaction.utils';
+import {
+  IDataPreCreateTransaction,
+  IDataUpdateCaseInfo,
+  TransactionPaymentInfo,
+} from '../data-access/interfaces';
+import { ITransaction } from '../data-access/interfaces';
+import { User } from '../../user/data-access/interfaces';
+
 const transactionRepository = new TransactionRepository();
-const preCreateTransaction = async (data, user) => {
+
+const preCreateTransaction = async (
+  data: IDataPreCreateTransaction,
+  user: User
+): Promise<boolean> => {
   //must check the account for the charity is valid or not
   const {
     charityId,
     caseId,
     amount,
-    mainTypePayment,
-  }: {
-    charityId: string;
-    caseId: string;
-    amount: number;
-    mainTypePayment: string;
   } = data;
   //pre processing
   transactionUtils.checkPreCreateTransaction(data);
@@ -38,7 +42,7 @@ const preCreateTransaction = async (data, user) => {
   transactionUtils.checkCharityIsValidToDonate(charityIsExist);
 
   //to check that the case is related to the charity id in the database
-  const isMatch: boolean = checkValueEquality(
+  const isMatch = checkValueEquality(
     caseIsExist.charity.toString(),
     charityId.toString()
   );
@@ -48,13 +52,16 @@ const preCreateTransaction = async (data, user) => {
   //check the case is finished or being freezed by the website admin
   transactionUtils.checkCaseIsValidToDonate(caseIsExist);
   //check that donor only donates with the remain part of money and not exceed the target amount
-  const checker: boolean = transactionUtils.donationAmountAssertion(
+  const checker = transactionUtils.donationAmountAssertion(
     caseIsExist,
     amount
   );
   return checker;
 };
-const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
+
+const updateCaseInfo = async (
+  data: IDataUpdateCaseInfo
+): Promise<ITransaction | null> => {
   //start updating
   const {
     user,
@@ -68,6 +75,9 @@ const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
     currency,
     secretInfoPayment,
   } = data;
+  if (!items?.[0]?.name) throw new NotFoundError('case not found');
+  if (!user.email) throw new NotFoundError('user not found');
+
   //check case is stored or not in the case table
   let caseIsExist = await transactionRepository.findCaseById(items[0].name); //the id of the case
   if (!caseIsExist) {
@@ -105,7 +115,8 @@ const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
   //now everything is ready for creating the transaction
 
   // to know the type of payment method that donor paid with
-  let paymentMethod; //TODO: should be typed but I can't get it now.
+  let paymentMethod: TransactionPaymentInfo = {};
+
   if (paymentMethodType === 'card') {
     paymentMethod = {
       onlineCard: {
@@ -120,13 +131,14 @@ const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
     };
   }
   //what if the payment happened but the transaction not stored in the db??i think must make a report or something like that to alert that to support
-  const transactionData = {
+  const transactionData: Partial<ITransaction> = {
     case: caseIsExist._id,
     user: userIsExist._id,
     moneyPaid: +amount,
     paidAt: date,
     externalTransactionId: externalTransactionId,
     orderId: orderId,
+    paymentGateway: 'Paymob',
     paymentInfo: paymentMethod,
     status,
     currency,
@@ -138,7 +150,7 @@ const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
   //add the transaction id to the user
   await transactionUtils.addTransactionIdToUserTransactionIds(
     userIsExist,
-    newTransaction._id.toString()
+    newTransaction._id
   );
   if (status == 'failed') {
     return newTransaction;
@@ -149,8 +161,8 @@ const updateCaseInfo = async (data): Promise<ITransaction | undefined> => {
   return newTransaction;
 };
 const getAllTransactions = async (
-  user
-): Promise<{ allTransactions: (ITransaction|null)[] }> => {
+  user: User
+): Promise<{ allTransactions: (ITransaction | null)[] }> => {
   const allTransactionsPromised =
     await transactionUtils.getAllTransactionsPromised(user);
   return { allTransactions: allTransactionsPromised };

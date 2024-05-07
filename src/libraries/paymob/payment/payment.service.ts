@@ -1,7 +1,7 @@
-import { IUser } from '../../../components/user/data-access/interfaces/user.interface.js';
-import * as configurationProvider from '../../configuration-provider/index.js';
-import { NotFoundError } from '../../errors/components/index.js';
-import { paymentUtils } from './payment.utils.js';
+import { User } from '../../../components/user/data-access/interfaces';
+import * as configurationProvider from '../../configuration-provider/index';
+import { NotFoundError } from '../../errors/components/index';
+import { paymentUtils } from './payment.utils';
 const CreateAuthenticationRequest = async () => {
   try {
     const request = await fetch('https://accept.paymob.com/api/auth/tokens', {
@@ -54,9 +54,9 @@ const OrderRegistrationAPI = async (
 const generatePaymentKey = async (
   token:string,
   order_id:string,
-  user:IUser,
+  user:User,
   amount:number,
-  integration_id
+  integration_id:string
 ) => {
   try {
     let request = await fetch(
@@ -75,13 +75,13 @@ const generatePaymentKey = async (
             apartment: 'NA',//user.address?.apartment ? user.address.apartment : 'NA',
             floor: 'NA',//user.address ? user.address.floor : 'NA',
             building:'NA',// user.address ? user.address.building : 'NA',
-            street: user.locationUser ? user.locationUser.street : 'NA',
-            city: user.locationUser ? user.locationUser.city : 'NA',
+            street: user.userLocation ? user.userLocation.street : 'NA',
+            city: user.userLocation ? user.userLocation.city : 'NA',
             country: 'Egypt', //"user.address ? user.address.country ": 'NA',
-            first_name: user.name.firstName,
-            last_name: user.name.lastName,
-            state: user.locationUser ? user.locationUser.governorate : 'NA',
-            zip_code:'NA',// user.locationUser ? user.locationUser.zip_code : 'NA',
+            first_name: user.name?.firstName,
+            last_name: user.name?.lastName,
+            state: user.userLocation ? user.userLocation.governorate : 'NA',
+            zip_code:'NA',// user.userLocation ? user.userLocation.zip_code : 'NA',
           },
           currency: 'EGP',
           integration_id: +integration_id,
@@ -96,12 +96,12 @@ const generatePaymentKey = async (
   }
 };
 const createPayment = async (
-  user:IUser,
+  user:User,
   amount:number,
   charityId:string,
   caseId:string,
   caseTitle:string,
-  integration_id
+  integration_id:string
 ) => {
   paymentUtils.checkBeforeCreateLinkForPayment(
     user,

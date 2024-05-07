@@ -1,7 +1,8 @@
-import { IUser } from './user.interface';
+import { User } from '.';
+// import { IUser, IUserDocument } from './user.interface';
 
-export interface userDataStore {
-  findUser(email: string): Promise<IUser | undefined>;
-  findUserById(id: string): Promise<IUser | undefined>;
-  createUser(dataInputs: Partial<IUser>): Promise<Partial<IUser> | undefined>;
+export interface UserDao {
+  findUser(email: string): Promise<User | null>;
+  findUserById(id: string): Promise<User | null>;
+  createUser(dataInputs: User): Promise<User>;
 }

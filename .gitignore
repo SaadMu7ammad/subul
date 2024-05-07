@@ -1,8 +1,7 @@
-node_modules
+node_modules/*
 .env
-uploads/charityLogos/*
-uploads/charityDocs/*
-uploads/caseCoverImages/*
+uploads/*
 .gitattributes
 dist
 .vscode
+tsconfig.tsbuildinfo

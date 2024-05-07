@@ -1,19 +1,19 @@
-import { RequestHandler,Router,Application } from 'express';
-import logger from '../../../../../utils/logger.js';
+import { Router, Application, NextFunction, Request, Response } from 'express';
+import logger from '../../../../../utils/logger';
 
-import { validate } from '../../../../../libraries/validation/index.js';
+import { validate } from '../../../../../libraries/validation/index';
 import {
   resizeImg,
   imageAssertion,
-} from '../../../../../libraries/uploads/components/images/handlers.js';
+} from '../../../../../libraries/uploads/components/images/handlers';
 import {
   registerCharityValidation,
   loginCharityValidation,
-} from '../../../../../libraries/validation/components/charity/charityAuthValidation.js';
-import { authUseCase } from '../../domain/auth.use-case.js';
-import { deleteOldImgs } from '../../../../../utils/deleteFile.js';
+} from '../../../../../libraries/validation/components/charity/charityAuthValidation';
+import { authUseCase } from '../../domain/auth.use-case';
+import { deleteOldImgs } from '../../../../../utils/deleteFile';
 
-export default function defineRoutes(expressApp:Application) {
+export default function defineRoutes(expressApp: Application) {
   const router = Router();
 
   router.post(
@@ -22,7 +22,7 @@ export default function defineRoutes(expressApp:Application) {
     registerCharityValidation,
     validate,
     resizeImg,
-    async (req, res, next) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Auth API was called to Register charity`);
         const registerCharityResponse = await authUseCase.registerCharity(
@@ -30,6 +30,7 @@ export default function defineRoutes(expressApp:Application) {
           res,
           next
         );
+
         return res.json(registerCharityResponse);
       } catch (error) {
         deleteOldImgs('charityLogos', req.body.image);
@@ -38,11 +39,12 @@ export default function defineRoutes(expressApp:Application) {
       }
     }
   );
+
   router.post(
     '/auth',
     loginCharityValidation,
     validate,
-    async (req, res, next) => {
+    async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Auth API was called to Auth charity`);
         const authCharityResponse = await authUseCase.authCharity(

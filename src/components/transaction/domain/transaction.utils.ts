@@ -1,25 +1,23 @@
+import { Types } from 'mongoose';
 import {
   BadRequestError,
   NotFoundError,
-} from '../../../libraries/errors/components/index.js';
-import { ICaseDocument } from '../../case/data-access/interfaces/case.interface.js';
-import { IUser } from '../../user/data-access/interfaces/user.interface.js';
-import { ITransaction } from '../data-access/interfaces/transaction.interface.js';
-import { TransactionRepository } from '../data-access/transaction.repository.js';
+} from '../../../libraries/errors/components/index';
+import { ICase } from '../../case/data-access/interfaces/case.interface';
+import { ICharity} from '../../charity/data-access/interfaces/';
+import { User } from '../../user/data-access/interfaces';
+import { IDataPreCreateTransaction } from '../data-access/interfaces';
+import { ITransaction } from '../data-access/interfaces';
+import { TransactionRepository } from '../data-access/transaction.repository';
 
 const transactionRepository = new TransactionRepository();
 
-const checkPreCreateTransaction = (data) => {
+const checkPreCreateTransaction = (data:IDataPreCreateTransaction) => {
   const {
     charityId,
     caseId,
     amount,
     mainTypePayment,
-  }: {
-    charityId: string;
-    caseId: string;
-    amount: number;
-    mainTypePayment: string;
   } = data;
   if (!charityId) {
     throw new NotFoundError('charity is not found');
@@ -34,7 +32,7 @@ const checkPreCreateTransaction = (data) => {
     throw new NotFoundError('no payment method has been chosen');
   }
 };
-const checkCharityIsValidToDonate = (charity) => {
+const checkCharityIsValidToDonate = (charity:ICharity) => {
   if (
     charity.isConfirmed === false ||
     charity.isPending === true ||
@@ -45,22 +43,22 @@ const checkCharityIsValidToDonate = (charity) => {
     );
   }
   if (
-    charity.emailVerification.isVerified === false &&
-    charity.phoneVerification.isVerified === false
+    charity.emailVerification && charity.emailVerification.isVerified === false &&
+    charity.phoneVerification && charity.phoneVerification.isVerified === false
   ) {
     throw new BadRequestError(
       'charity is not verified..must verify the account by email or phone number'
     );
   }
 };
-const checkCaseIsValidToDonate = (cause) => {
+const checkCaseIsValidToDonate = (cause:ICase) => {
   if (cause.finished === true || cause.freezed === true) {
     throw new BadRequestError(
       'this case is finished...choose case not completed'
     );
   }
 };
-const donationAmountAssertion = (cause, amount: number) => {
+const donationAmountAssertion = (cause: ICase, amount: number) => {
   const currentAmount: number = +cause.currentDonationAmount + +amount;
   if (
     +cause.targetDonationAmount < currentAmount &&
@@ -73,46 +71,46 @@ const donationAmountAssertion = (cause, amount: number) => {
   }
   return true;
 };
-const updateTransactionAfterRefund = async (transaction) => {
+const updateTransactionAfterRefund = async (transaction:ITransaction) => {
   transaction.status = 'refunded';
   await transaction.save();
 };
-const updateCaseAfterRefund = async (cause, amount: number) => {
+const updateCaseAfterRefund = async (cause:ICase, amount: number) => {
   if (cause.finished) cause.finished = false; //re open the case again
   if (cause.currentDonationAmount >= amount)
     cause.currentDonationAmount -= amount;
   if (cause.donationNumbers >= 1) cause.donationNumbers -= 1;
-  if (cause.dateFinished) cause.dateFinished = null;
+  if (cause.dateFinished) cause.dateFinished = undefined;
   await cause.save();
 };
-const checkIsLastDonation = (cause:ICaseDocument, amount: number) => {
+const checkIsLastDonation = (cause:ICase, amount: number) => {
   const currentAmount: number = +cause.currentDonationAmount! + +amount;
   if (+cause.targetDonationAmount === currentAmount) {
-    cause.dateFinished = Date.now();
+    cause.dateFinished = Date.now().toString();
     cause.finished = true;
-  }
+  } 
   return cause;
 };
-const updateCaseAfterDonation = (cause: ICaseDocument, amount: number) => {
+const updateCaseAfterDonation = (cause: ICase, amount: number) => {
   +cause.donationNumbers!++;
   cause.currentDonationAmount! += +amount;
   return cause;
 };
 const addTransactionIdToUserTransactionIds = async (
-  user,
-  newTransactionId: string
+  user:User,
+  newTransactionId: Types.ObjectId
 ) => {
   user.transactions.push(newTransactionId);
   await user.save();
   return user;
 };
-const confirmSavingCase = async (cause) => {
+const confirmSavingCase = async (cause:ICase) => {
   await cause.save();
 };
-const confirmSavingUser = async (user) => {
+const confirmSavingUser = async (user:User) => {
   await user.save();
 };
-const getAllTransactionsPromised = async (user:IUser): Promise<(ITransaction|null)[]>  => {
+const getAllTransactionsPromised = async (user:User): Promise<(ITransaction|null)[]>  => {
   const transactionPromises: Promise<ITransaction|null>[] = user.transactions.map(
     async (itemId, index) => {
       const myTransaction = await transactionRepository.findTransactionById(

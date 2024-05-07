@@ -1,5 +1,4 @@
-import { body, validationResult } from 'express-validator';
-import { registerUserValidation } from './userAuthValidation.js';
+import { registerUserValidation } from './userAuthValidation';
 const editUserProfileValidation = registerUserValidation.map((validator) =>
   validator.optional()
 );

@@ -1,14 +1,15 @@
-import { ITransaction } from './transaction.interface';
-import { ICaseDocument } from '../../../case/data-access/interfaces/case.interface';
-import { ICharityDocument } from '../../../charity/data-access/interfaces/charity.interface';
-import { IUser } from '../../../user/data-access/interfaces/user.interface';
+import { ICase } from '../../../case/data-access/interfaces/case.interface';
+import { ICharity } from '../../../charity/data-access/interfaces/charity.interface';
+import { User } from '../../../user/data-access/interfaces';
+import { ITransaction } from '.';
+
 export interface TransactionDataStore {
-    findCaseById(id: string): Promise<ICaseDocument | null>;
-    findCharityById(id: string): Promise<ICharityDocument | null>;
-    findTransactionByQuery(queryObj): Promise<ITransaction | null>;
-    findTransactionById(id: string): Promise<ITransaction | null>;
-    findUserByEmail(email: string): Promise<IUser | null>;
-    createTransaction(
-        transaction: Partial<ITransaction>
-    ): Promise<ITransaction | null>;
+  findCaseById(id: string): Promise<ICase | null>;
+  findCharityById(id: string): Promise<ICharity | null>;
+  findTransactionByQuery(queryObj: any): Promise<ITransaction | null>;
+  findTransactionById(id: string): Promise<ITransaction | null>;
+  findUserByEmail(email: string): Promise<User | null>;
+  createTransaction(
+    transaction: ITransaction
+  ): Promise<ITransaction | null>;
 }

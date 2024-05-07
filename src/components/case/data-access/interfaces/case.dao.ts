@@ -1,14 +1,14 @@
-import { ICase, ICaseDocument,FilterObj, SortObj } from './case.interface';
+import { ICase,FilterObj, SortObj } from './case.interface';
 
 export interface CaseDao {
-    createCase: (caseData:ICase) => Promise<ICaseDocument>;
+    createCase: (caseData:ICase) => Promise<ICase|null>;
     getAllCases: (
         sortObj:SortObj,
         filterObj:FilterObj,
         page: number,
         limit: number
-    ) => Promise<ICaseDocument[]>;
-    getCaseById: (id: string) => Promise<ICaseDocument|null>;
-    deleteCaseById: (id: string) => Promise<ICaseDocument|null>;
-    editCase: (caseData:ICase, id: string) => Promise<ICaseDocument|null>;
+    ) => Promise<ICase[]|null>;
+    getCaseById: (id: string) => Promise<ICase|null>;
+    deleteCaseById: (id: string) => Promise<ICase|null>;
+    editCase: (caseData:ICase, id: string) => Promise<ICase|null>;
 }

@@ -1,8 +1,7 @@
-import { NextFunction, Response } from 'express';
-import { mobileWalletService } from './mobileWallets.service.js';
-import { AuthedRequest } from '../../../../components/auth/user/data-access/auth.interface.js';
+import { NextFunction, Request, Response } from 'express';
+import { mobileWalletService } from './mobileWallets.service';
 const paywithMobileWallet = async (
-    req: AuthedRequest,
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
@@ -17,7 +16,7 @@ const paywithMobileWallet = async (
         caseId: string;
         caseTitle: string;
     } = req.body;
-    const storedUser = req.user;
+    const storedUser = res.locals.user;
     const data = {
         amount,
         charityId,

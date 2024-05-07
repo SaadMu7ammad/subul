@@ -9,7 +9,8 @@ import {
     genderValidtion,
     helpedNumbersValidation,
     targetDonationAmountValidation,
-} from './allCaseValidation.js';
+    privateNumberValidation,
+} from './allCaseValidation';
 const postCaseValidation = [
     titleValidation,
     descriptionValidation,
@@ -21,6 +22,7 @@ const postCaseValidation = [
     genderValidtion,
     helpedNumbersValidation,
     targetDonationAmountValidation,
+    privateNumberValidation
 ];
 
 export { postCaseValidation };

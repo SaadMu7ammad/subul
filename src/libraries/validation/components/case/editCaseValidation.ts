@@ -1,4 +1,3 @@
-import { param } from 'express-validator';
 import {
     titleValidation,
     descriptionValidation,
@@ -10,7 +9,7 @@ import {
     genderValidtion,
     helpedNumbersValidation,
     targetDonationAmountValidation,
-} from './allCaseValidation.js';
+} from './allCaseValidation';
 const editCaseValidation = [
     titleValidation.optional(),
     descriptionValidation.optional(),

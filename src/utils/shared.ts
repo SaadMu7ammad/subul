@@ -1,4 +1,4 @@
-const checkValueEquality = (inputOne:any, inputTwo:any) => {
+const checkValueEquality = (inputOne:string, inputTwo:string) => {
   if (inputOne == inputTwo) {
     return true;
   }
@@ -30,4 +30,11 @@ const updateNestedProperties = (target:any, updateObject:any) => {//target store
     }
   }
 };
-export { checkValueEquality, updateNestedProperties };
+function getValueByKey(obj: any, key: string): any {
+                return obj[key];
+            }
+
+const isDefined = <T>(x:T|undefined):x is T =>{
+  return typeof x !== 'undefined'
+}
+export { checkValueEquality, updateNestedProperties ,getValueByKey,isDefined};

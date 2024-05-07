@@ -1,19 +1,25 @@
-import Charity from './models/charity.model.js';
-import { CharityDao } from './interfaces/charity.dao.js';
-import { ICharityDocument } from './interfaces/charity.interface.js';
+import CharityModel from './models/charity.model';
+import { CharityDao ,ICharity } from './interfaces/';
+
 export class CharityRepository implements CharityDao {
-    findCharity = async (email: string) => {
-        const charity = await Charity.findOne({ email: email });
-        return charity;
-    };
+  async findCharity(email: string): Promise<ICharity | null> {
+    const charity : ICharity | null= await CharityModel.findOne({
+      email: email,
+    });
+    return charity;
+  }
 
-    findCharityById = async (id: string) => {
-        const charity = await Charity.findOne({ id: id });
-        return charity;
-    };
+  async findCharityById(id: string): Promise<ICharity | null> {
+    const charity: ICharity | null = await CharityModel.findOne({
+      _id: id,
+    });
+    return charity;
+  }
 
-    createCharity = async (dataInputs:ICharityDocument) => {
-        const charity = await Charity.create(dataInputs);
-        return charity;
-    };
-};
+  async createCharity(dataInputs: ICharity): Promise<ICharity | null> {
+    const charity: ICharity = await CharityModel.create(dataInputs);
+    charity.save();
+    return charity;
+  }
+}
+

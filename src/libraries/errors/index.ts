@@ -1,15 +1,17 @@
-import { CustomAPIError } from './components/custom-api.js';
-import logger from '../../utils/logger.js';
-import * as configurationProvider from '../configuration-provider/index.js';
+import { CustomAPIError } from './components/custom-api';
+import logger from '../../utils/logger';
+import * as configurationProvider from '../configuration-provider/index';
+import { NextFunction, Request, Response } from 'express';
+import { IError } from './components/error.interface';
 
-const NotFound = (req, res, next) => {
+const NotFound = (req:Request, res:Response, next:NextFunction) => {
   logger.error('Not Found Error');
   res.status(404); 
   next(new Error(`${req.originalUrl}  Route Is Not Found `));
 };
 
 //global error handling middleware
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err:IError, req:Request, res:Response, next:NextFunction) => {
   const environment = configurationProvider.getValue('environment.nodeEnv');
 
   const stack = environment === 'development' ? err.stack : null;

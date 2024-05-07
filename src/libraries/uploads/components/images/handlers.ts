@@ -1,12 +1,18 @@
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import sharp from 'sharp';
-import { BadRequestError } from '../../../errors/components/index.js';
-import { getImageConfiguration, saveImg } from '../index.js';
+import { BadRequestError } from '../../../errors/components/index';
+import { getImageConfiguration, saveImg } from '../index';
+import { NextFunction, Response,Request } from 'express';
 
 const multerStorage = multer.memoryStorage();
+// type MulterFileFilter = (req: Request, file: Express.Multer.File, cb: (error: Error | null, acceptFile?: boolean) => void) => void;
 
-const multerFilterOnlyImgs = (req, file, cb) => {
+const multerFilterOnlyImgs = (
+  req:Request,
+  file:Express.Multer.File,
+  cb:(error: Error | null, acceptFile?: boolean) => void
+): void => {
   if (file.mimetype.startsWith('image')) {
     //accepts imgs only
     cb(null, true);
@@ -15,21 +21,25 @@ const multerFilterOnlyImgs = (req, file, cb) => {
   }
 };
 
-const upload = multer({
+export const upload = multer({
   storage: multerStorage,
   fileFilter: multerFilterOnlyImgs,
 });
 
 const imageAssertion = upload.single('image');
 
-const resizeImg = async (req, res, next) => {
+const resizeImg = async (
+  req:Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
-    
-    let {destinationFolder, suffix} = getImageConfiguration(req.path);
+
+    let { destinationFolder, suffix } = getImageConfiguration(req.path);
     
     const uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
-    const fileName = uniqueSuffix + '.jpeg';
+    const fileName = `${uniqueSuffix}--${req.body.name || res.locals.charity.name}.jpeg`;
     // storeImgsTempOnReq(req, fileName);
     const sharpPromise = sharp(req.file.buffer)
       .resize(320, 240)
@@ -47,7 +57,7 @@ const resizeImg = async (req, res, next) => {
   }
 };
 
-const addImgsToReqBody = (req, fileName:string) => {
+const addImgsToReqBody = (req: Request, fileName: string) => {
   req.body.image = []; //container for deleting imgs
   req.body.image.push(fileName);
 };

@@ -1,23 +1,21 @@
-import { userDataStore } from './interfaces/user.dao.js';
-import {  IUserDocument } from './interfaces/user.interface.js';
-import UserModel from './models/user.model.js';
+import { UserDao,User } from './interfaces/';
+// import { IUser, IUserDocument } from './interfaces/user.interface';
+import UserModel from './models/user.model';
 
-export class userRepository implements userDataStore {
-  async findUser(email: string): Promise<IUserDocument | undefined> {
-    const user = await UserModel.findOne({ email: email });
-    if (!user) return undefined;
+export class userRepository implements UserDao {
+  async findUser(email: string): Promise<User | null> {
+    const user: User | null = await UserModel.findOne({
+      email: email,
+    });
     return user;
   }
-  async findUserById(id: string): Promise<IUserDocument | undefined> {
-    const user = await UserModel.findById(id);
-    if (!user) return undefined;
+  async findUserById(id: string): Promise<User | null> {
+    const user: User | null = await UserModel.findById(id);
     return user;
   }
-  async createUser(
-    dataInputs: Partial<IUserDocument>
-  ): Promise<Partial<IUserDocument> | undefined> {
-    const user = await UserModel.create(dataInputs);
-    if (!user) return undefined;
+  async createUser(dataInputs: User): Promise<User> {
+    const user: User = await UserModel.create(dataInputs);
+
     return user;
   }
 }

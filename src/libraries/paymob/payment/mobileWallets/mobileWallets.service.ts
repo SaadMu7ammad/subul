@@ -1,8 +1,9 @@
-import { createPayment } from '../payment.service.js';
-import * as configurationProvider from '../../../configuration-provider/index.js';
-import { IPaymentInfoData } from '../payment.interface.js';
-const paywithMobileWallet = async (reqBody:IPaymentInfoData, user) => {
-  const { amount, charityId, caseId, caseTitle }:{amount:number, charityId:string, caseId:string, caseTitle:string} = reqBody;
+import { createPayment } from '../payment.service';
+import * as configurationProvider from '../../../configuration-provider/index';
+import { IPaymentInfoData } from '../payment.interface';
+import { User } from '../../../../components/user/data-access/interfaces';
+const paywithMobileWallet = async (reqBody:IPaymentInfoData, user:User) => {
+  const { amount, charityId, caseId, caseTitle } = reqBody;
   const { tokenThirdStep } = await createPayment(
     user,
     +amount,

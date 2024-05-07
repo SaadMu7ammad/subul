@@ -1,12 +1,10 @@
 import {
   bankAccountValidation,
-  charityInfoValidation,
-  contactValidation,
   fawryValidation,
   paymentIdValidation,
   vodafoneCashValidation,
-} from './allCharityValidation.js';
-import { registerCharityValidation } from './charityAuthValidation.js';
+} from './allCharityValidation';
+import { registerCharityValidation } from './charityAuthValidation';
 
 const editCharityProfileValidation = [
   ...registerCharityValidation,

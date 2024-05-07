@@ -1,4 +1,4 @@
-import { param, query } from 'express-validator';
+import {  query } from 'express-validator';
 
 const getAllCasesValidation = [
     query('sort')
@@ -42,6 +42,7 @@ const getAllCasesValidation = [
             'Adahi',
             'Campains',
             'UsedProperties',
+            'customizedCampaigns'
         ])
         .withMessage('Invalid mainType!'),
     query('subType')
@@ -60,6 +61,7 @@ const getAllCasesValidation = [
             'General Support',
             'Adahy',
             'usedBefore',
+            'customizedCampaigns'
         ])
         .withMessage('Invalid subType!'),
     query('nestedSubType')

@@ -1,65 +1,76 @@
-import { ICaseDocument, ICase, SortObj } from './interfaces/case.interface.js';
-import Case from './models/case.model.js';
-import { CaseDao } from './interfaces/case.dao.js';
+import {
+  ICase,
+  FilterObj,
+  SortObj,
+} from './interfaces/case.interface';
+import CaseModel from './models/case.model';
+import { CaseDao } from './interfaces/case.dao';
 
 export class CaseRepository implements CaseDao {
-    createCase = async (caseData:ICase): Promise<ICaseDocument> => {
-        const newCase = new Case(caseData);
+  createCase = async (caseData: ICase): Promise<ICase| null> => {
+    const newCase = (await CaseModel.create(caseData));
+    return newCase;
+  };
 
-        await newCase.save();
+  getAllCases = async (
+    sortObj:SortObj,
+    filterObj: FilterObj,
+    page: number,
+    limit: number
+  ): Promise<ICase[] | null> => {
+    const charityCases = await CaseModel.aggregate([
+      {
+        $match: filterObj,
+      },
+      {
+          $sort: sortObj,
+      },
+    ])
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .project({
+        gender: 0,
+        upVotes: 0,
+        views: 0,
+        dateFinished: 0,
+        donationNumbers: 0,
+        helpedNumbers: 0,
+        // freezed: ,
+        createdAt: 0,
+        updatedAt: 0,
+        __v: 0,
+      });
 
-        return newCase;
-    };
+    return charityCases;
+  };
 
-    getAllCases = async (sortObj, filterObj, page: number, limit: number) => {
-        const charityCases = await Case.aggregate([
-            {
-                $match: filterObj,
-            },
-            {
-                $sort: sortObj,
-            },
-        ])
-            .skip((page - 1) * limit)
-            .limit(limit)
-            .project({
-                gender: 0,
-                upVotes: 0,
-                views: 0,
-                dateFinished: 0,
-                donationNumbers: 0,
-                helpedNumbers: 0,
-                freezed: 0,
-                createdAt: 0,
-                updatedAt: 0,
-                __v: 0,
-            });
+  getCaseById = async (id: string): Promise<ICase| null> => {
+    const _case = (await CaseModel.findById(id));
+    return _case;
+  };
 
-        return charityCases;
-    };
+  deleteCaseById = async (id: string): Promise<ICase| null> => {
+    const _case = (await CaseModel.findByIdAndDelete(
+      id
+    ));
+    return _case;
+  };
 
-    getCaseById = async (id: string) => {
-        const _case = await Case.findById(id);
-        return _case;
-    };
+  editCase = async (
+    caseData: ICase | { finished: boolean },
+    id: string
+  ): Promise<ICase | null> => {
+    const updatedCase = (await CaseModel.findByIdAndUpdate(
+      id,
+      {
+        $set: { ...caseData },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    ));
 
-    deleteCaseById = async (id: string) => {
-        const _case = await Case.findByIdAndDelete(id);
-        return _case;
-    };
-
-    editCase = async (caseData:ICase, id: string) => {
-        const updatedCase = await Case.findByIdAndUpdate(
-            id,
-            {
-                $set: { ...caseData },
-            },
-            {
-                new: true,
-                runValidators: true,
-            }
-        );
-
-        return updatedCase;
-    };
+    return updatedCase;
+  };
 }

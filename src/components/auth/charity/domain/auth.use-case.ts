@@ -1,24 +1,75 @@
-import { authCharityService } from './auth.service.js';
+import { RequestHandler } from 'express';
+
+import { authCharityService } from './auth.service';
+import { AuthCharity, AuthCharityObject } from '../data-access/interfaces';
+import { AuthCharityResponse, registerCharityResponse } from '../data-access/interfaces';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
-const registerCharity = async (req, res, next) => {
-  const data = {
-    email: req.body.email,
-    password: req.body.password,
-    name: req.body.name,
-    phone: req.body.phone,
-    contactInfo: req.body.contactInfo,
-    description: req.body.description,
-    currency: req.body.currency,
-    location: req.body.location,
-    charityInfo: req.body.charityInfo,
-    image: req.body.image[0],
+
+export interface CharityData {
+  email: string;
+  password: string;
+  name: string;
+  phone: string;
+  contactInfo: string;
+  description: string;
+  currency: string;
+  charityLocation: string;
+  charityInfo: string;
+  image: string;
+}
+
+const registerCharity: RequestHandler = async (
+  req,
+  _res,
+  _next
+): Promise<registerCharityResponse> => {
+  // // const data: CharityData = req.body as CharityData;
+  const {
+    email,
+    password,
+    name,
+    phone,
+    contactInfo,
+    description,
+    currency,
+    charityLocation,
+    charityInfo,
+    image: [firstImage],
+  }: CharityData = req.body;
+
+  const data: CharityData = {
+    email,
+    password,
+    name,
+    phone,
+    contactInfo,
+    description,
+    currency,
+    charityLocation,
+    charityInfo,
+    image: firstImage !== undefined ? firstImage : '', // [0]
   };
-  const responseData = await authCharityService.registerCharity(data, res);
+  // const data: CharityData = {
+  //   email: req.body.email,
+  //   password: req.body.password,
+  //   name: req.body.name,
+  //   phone: req.body.phone,
+  //   contactInfo: req.body.contactInfo,
+  //   description: req.body.description,
+  //   currency: req.body.currency,
+  //   location: req.body.location,
+  //   charityInfo: req.body.charityInfo,
+  //   image: req.body.image[0],
+  // };
+
+  const responseData = await authCharityService.registerCharity(data);
+
   const charityResponsed = {
     ...responseData.charity,
   };
+
   return {
     charity: {
       ...charityResponsed,
@@ -27,15 +78,24 @@ const registerCharity = async (req, res, next) => {
   };
 };
 
-const authCharity = async (req, res, next) => {
+const authCharity: RequestHandler = async (req, res, _next): Promise<AuthCharityResponse> => {
+  // Better to use different type for data here, not partial<CharityData>
+  const { email, password }: { email: string; password: string } = req.body;
   const data = {
-    email: req.body.email,
-    password: req.body.password,
+    email,
+    password,
   };
-  const responseData = await authCharityService.authCharity(data, res);
-  const charityResponsed = {
+  // const data = {
+  //   email: req.body.email,
+  //   password: req.body.password,
+  // };
+
+  const responseData:AuthCharityObject = await authCharityService.authCharity(data, res);
+
+  const charityResponsed: AuthCharity = {
     ...responseData.charity,
   };
+
   //first stage check if it verified or not
   if (responseData.emailAlert) {
     //token sent to ur email
@@ -44,12 +104,14 @@ const authCharity = async (req, res, next) => {
       message:
         'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
       token: responseData.token,
+      emailAlert:true
     };
   }
-  const returnedObj = {
+  const returnedObj: AuthCharityResponse = {
     charity: charityResponsed,
     message: '',
     token: responseData.token,
+    emailAlert: false
   };
   //second stage
   //isPending = true and isConfirmed= false
@@ -64,6 +126,7 @@ const authCharity = async (req, res, next) => {
   }
   return returnedObj;
 };
+
 export const authUseCase = {
   registerCharity,
   authCharity,

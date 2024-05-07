@@ -1,7 +1,14 @@
-import mongoose, { Document, Schema } from 'mongoose';
-import { ITransaction } from '../interfaces/transaction.interface';
+import mongoose, {  Schema } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
+import { InferSchemaType } from 'mongoose';
 
 const paymentMethodSchema = new Schema({
+  onlineCard: {
+    lastFourDigits: String,
+  },
+  mobileWallet: {
+    number: String,
+  },
   // name: {
   //   type: String,
   //   required: true,
@@ -11,21 +18,15 @@ const paymentMethodSchema = new Schema({
   //   // iban: String,
   //   // swiftCode: String,
   // },
-  onlineCard: {
-    lastFourDigits: String,
-  },
   // fawry: {
   //   number: String,
   // },
   // vodafoneCash: {
   //   number: String,
   // },
-  mobileWallet: {
-    number: String,
-  },
 });
 
-const transactionSchema: Schema<ITransaction & Document> = new Schema(
+const transactionSchema= new Schema(
   {
     case: {
       type: mongoose.Schema.Types.ObjectId,
@@ -69,14 +70,11 @@ const transactionSchema: Schema<ITransaction & Document> = new Schema(
   },
   { timestamps: true }
 );
-const TransactionModel = mongoose.model<ITransaction>(
-  'Transaction',
-  transactionSchema
-);
 
-// const Transaction: TransactionModel = mongoose.model<
-//     TransactionDocument,
-//     TransactionModel
-// >('Transaction', transactionSchema);
+declare module '../interfaces/'{
+  export type ITransaction = HydratedDocument<InferSchemaType<typeof transactionSchema>>;
+}
+
+const TransactionModel = mongoose.model('Transaction', transactionSchema);
 
 export default TransactionModel;

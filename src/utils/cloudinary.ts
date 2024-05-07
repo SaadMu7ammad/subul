@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
-import logger from './logger.js';
+import logger from './logger';
 
-import * as configurationProvider from '../libraries/configuration-provider/index.js';
+import * as configurationProvider from '../libraries/configuration-provider/index';
 
 class Cloudinary {
   constructor() {

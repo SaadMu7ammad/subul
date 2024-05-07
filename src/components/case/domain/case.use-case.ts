@@ -1,79 +1,109 @@
-import { ICase, ICaseDocument, GetAllCasesQueryParams } from '../data-access/interfaces/case.interface.js';
-import { caseService } from './case.service.js';
+import { NextFunction,  Response ,Request} from 'express';
 
-const addCase = async (req, res, next) => {
-    const caseData:ICase = req.body;
-    const caseImage:string = req.body.image[0];
-    const charity = req.charity;
+import {
+  ICase,
+  GetAllCasesQueryParams,
+  AddCaseResponse,
+  GetAllCasesResponse,
+  GetCaseByIdResponse,
+  EditCaseResponse,
+  DeleteCaseResponse,
+} from '../data-access/interfaces/';
+import { caseService } from './case.service';
+import { NotFoundError } from '../../../libraries/errors/components';
+import { ICharity } from '../../charity/data-access/interfaces';
 
-    const responseData = await caseService.addCase(
-        caseData,
-        caseImage,
-        charity
-    );
+const addCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<AddCaseResponse> => {
+  const caseData: ICase = req.body;
+  const caseImage: string = req.body?.image?.[0] || 'noImg';
+  const charity: ICharity = res.locals.charity;
 
-    return {
-        case: responseData.case,
-        message: 'Case Created Successfully',
-    };
+  const responseData = await caseService.addCase(caseData, caseImage, charity);
+
+  return {
+    case: responseData.case,
+    message: 'Case Created Successfully',
+  };
 };
 
-const getAllCases = async (req, res, next) => {
-    const queryParams:GetAllCasesQueryParams = req.query;
-    const charityId :string = req.charity._id;
+const getAllCases = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<GetAllCasesResponse> => {
+  const queryParams: GetAllCasesQueryParams = req.query;
+  const charityId: string = res.locals.charity._id;
 
-    const responseData = await caseService.getAllCases(charityId, queryParams);
+  const responseData = await caseService.getAllCases(charityId, queryParams);
 
-    return {
-        cases: responseData.cases,
-        message: 'All Cases fetched Successfully',
-    };
+  return {
+    cases: responseData.cases,
+    message: 'All Cases fetched Successfully',
+  };
 };
 
-const getCaseById = async (req, res, next) => {
-    const charityCases:ICaseDocument[] = req.charity.cases;
-    const caseId:string = req.params.caseId;
+const getCaseById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<GetCaseByIdResponse> => {
+  const charityCases: ICase['id'][] = res.locals.charity.cases;
+  const caseId: string | undefined = req.params.caseId;
+  if (!caseId) throw new NotFoundError('no id exist for the case');
 
-    const responseData = await caseService.getCaseById(charityCases, caseId);
+  const responseData = await caseService.getCaseById(charityCases, caseId);
 
-    return {
-        case: responseData.case,
-        message: 'Case Fetched Successfully',
-    };
+  return {
+    case: responseData.case,
+    message: 'Case Fetched Successfully',
+  };
 };
 
-const deleteCase = async (req, res, next) => {
-    const charity = req.charity;
+const deleteCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<DeleteCaseResponse> => {
+  const charity = res.locals.charity;
 
-    const caseId:string = req.params.caseId;
+  const caseId: string | undefined = req.params.caseId;
+  if (!caseId) throw new NotFoundError('no id exist for the case');
 
-    const responseData = await caseService.deleteCase(charity, caseId);
+  const responseData = await caseService.deleteCase(charity, caseId);
 
-    return {
-        deletedCase: responseData.deletedCase,
-        message: 'Case Deleted Successfully',
-    };
+  return {
+    case: responseData.case,
+    message: 'Case Deleted Successfully',
+  };
 };
 
-const editCase = async (req, res, next) => {
-    const charity = req.charity;
+const editCase = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<EditCaseResponse> => {
+  const charity = res.locals.charity;
 
-    const caseId:string = req.params.caseId;
+  const caseId: string | undefined = req.params.caseId;
+  if (!caseId) throw new NotFoundError('no id exist for the case');
+  const caseData: ICase & { coverImage: string; image: string[] } = req.body;
 
-    const caseData:ICase & { image: string } = req.body;
+  const responseData = await caseService.editCase(charity, caseData, caseId);
 
-    const responseData = await caseService.editCase(charity,caseData, caseId);
-
-    return {
-        case: responseData.case,
-        message: 'Case Edited Successfully',
-    };
+  return {
+    case: responseData.case,
+    message: 'Case Edited Successfully',
+  };
 };
 
 export const caseUseCase = {
-    addCase,
-    getAllCases,
-    getCaseById,
-    deleteCase,
-    editCase,
+  addCase,
+  getAllCases,
+  getCaseById,
+  deleteCase,
+  editCase,
 };
