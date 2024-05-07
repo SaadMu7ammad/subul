@@ -41,6 +41,25 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
+  router.get(
+    '/getAllUsedItems',
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Used Items API was called to Get All Used Items`);
+        const getAllUsedItemsResponse = await usedItemUseCase.getAllUsedItems(
+          req,
+          res,
+          next
+        );
+        return res.json(getAllUsedItemsResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
   router
     .route('/:id')
     .all(auth, isActivated, isUser)
@@ -110,17 +129,21 @@ export default function defineRoutes(expressApp: Application) {
         }
       }
     )
-    .delete(deleteUsedItemImageValidation,validate,async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        logger.info(`Used Items API was called to Delete a Used Item Image`);
-        const deleteUsedItemImageResponse =
-          await usedItemUseCase.deleteUsedItemImage(req, res, next);
-        return res.json(deleteUsedItemImageResponse);
-      } catch (error) {
-        next(error);
-        return undefined;
+    .delete(
+      deleteUsedItemImageValidation,
+      validate,
+      async (req: Request, res: Response, next: NextFunction) => {
+        try {
+          logger.info(`Used Items API was called to Delete a Used Item Image`);
+          const deleteUsedItemImageResponse =
+            await usedItemUseCase.deleteUsedItemImage(req, res, next);
+          return res.json(deleteUsedItemImageResponse);
+        } catch (error) {
+          next(error);
+          return undefined;
+        }
       }
-    });
+    );
 
   expressApp.use('/api/usedItem', router);
 }

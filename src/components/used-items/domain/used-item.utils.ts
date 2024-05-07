@@ -4,13 +4,35 @@ import {
 } from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import { isDefined } from '../../../utils/shared';
-import { IUsedItem, PlainIUsedItem, UpdateUsedItemRequest } from '../data-access/interfaces';
+import { BookItemRequest,IUsedItem, PlainIUsedItem, UpdateUsedItemRequest } from '../data-access/interfaces';
 import { UsedItemRepository } from '../data-access/used-item.repository';
 
 const usedItemRepository = new UsedItemRepository();
 
 const addUsedItem = async (usedItemData: PlainIUsedItem) => {
   const usedItem = await usedItemRepository.addUsedItem(usedItemData);
+  return usedItem;
+};
+
+const findAllUsedItems = async () => {
+  const usedItems = await usedItemRepository.findAllUsedItems();
+  return usedItems;
+};
+
+const bookUsedItem = async (bookItemData: BookItemRequest) => {
+  const usedItems = await usedItemRepository.bookUsedItem(bookItemData);
+  return usedItems;
+};
+
+const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
+  const usedItems = await usedItemRepository.cancelBookingOfUsedItem(
+    bookItemData
+  );
+  return usedItems;
+};
+
+const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemRepository.ConfirmBookingReceipt(bookItemData);
   return usedItem;
 };
 
@@ -94,6 +116,12 @@ const removeUndefinedAttributesFromUsedItemData = (usedItemData: Partial<PlainIU
   return filteredUsedItemData;
 }
 
+const isUsedItemBooked = (usedItem: IUsedItem) => {
+  if (usedItem.booked) {
+    throw new BadRequestError('This Used Item is already booked');
+  }
+}
+
 export const usedItemUtils = {
   addUsedItem,
   getUsedItem,
@@ -104,4 +132,9 @@ export const usedItemUtils = {
   addUsedItemImages,
   deleteUsedItemImage,
   removeUndefinedAttributesFromUsedItemData,
+  findAllUsedItems,
+  bookUsedItem,
+  cancelBookingOfUsedItem,
+  ConfirmBookingReceipt,
+  isUsedItemBooked
 };
