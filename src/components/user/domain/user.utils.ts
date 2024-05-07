@@ -87,7 +87,33 @@ const verifyUserAccount = async (user: User) => {
   user.emailVerification.verificationDate = Date.now().toString();
   user = await user.save();
 };
+const checkIfCaseBelongsToUserContributions = (
+  userContributionsArray: User['_id'][],
+  caseId: string
+): number => {
+  const idx: number = userContributionsArray.findIndex(function (id) {
+    return id.toString() === caseId;
+  });
 
+  if (idx === -1) {
+    throw new NotFoundError('No Such Case With this Id!');
+  }
+
+  return idx;
+};
+
+const deleteCaseFromUserContributionsArray = async (
+  user: User,
+  idx: number
+) => {
+  const caseIdsArray = user.contributions;
+
+  caseIdsArray.splice(idx, 1);
+
+  user.contributions = caseIdsArray;
+
+  await user.save();
+};
 const resetSentToken = async (user: User) => {
   user.verificationCode = '';
   user = await user.save();
@@ -100,4 +126,6 @@ export const userUtils = {
   verifyUserAccount,
   resetSentToken,
   changeUserEmailWithMailAlert,
+  deleteCaseFromUserContributionsArray,
+  checkIfCaseBelongsToUserContributions
 };

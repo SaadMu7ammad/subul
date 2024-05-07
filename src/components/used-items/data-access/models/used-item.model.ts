@@ -1,10 +1,11 @@
 import mongoose, { HydratedDocument, InferSchemaType } from 'mongoose';
 
 const usedItemSchema = new mongoose.Schema({
-  user: {
+  user:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+    immutable: true,
   },
   charity: {
     type: mongoose.Schema.Types.ObjectId,

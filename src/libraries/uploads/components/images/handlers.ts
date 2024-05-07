@@ -21,7 +21,7 @@ const multerFilterOnlyImgs = (
   }
 };
 
-const upload = multer({
+export const upload = multer({
   storage: multerStorage,
   fileFilter: multerFilterOnlyImgs,
 });
