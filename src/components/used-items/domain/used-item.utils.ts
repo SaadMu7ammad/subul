@@ -116,6 +116,12 @@ const removeUndefinedAttributesFromUsedItemData = (usedItemData: Partial<PlainIU
   return filteredUsedItemData;
 }
 
+const isUsedItemBooked = (usedItem: IUsedItem) => {
+  if (usedItem.booked) {
+    throw new BadRequestError('This Used Item is already booked');
+  }
+}
+
 export const usedItemUtils = {
   addUsedItem,
   getUsedItem,
@@ -130,4 +136,5 @@ export const usedItemUtils = {
   bookUsedItem,
   cancelBookingOfUsedItem,
   ConfirmBookingReceipt,
+  isUsedItemBooked
 };

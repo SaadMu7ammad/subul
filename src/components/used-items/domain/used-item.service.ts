@@ -110,6 +110,9 @@ const updateUsedItem = async (id:string|undefined, userId:string, usedItemData:P
     //check if the user is the owner of the used item
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
+    //check if the used item is booked or not
+    usedItemUtils.isUsedItemBooked(usedItem);
+
     const filteredUsedItemData = usedItemUtils.removeUndefinedAttributesFromUsedItemData(usedItemData);
 
     //update the used item
@@ -132,7 +135,8 @@ const deleteUsedItem = async (id:string | undefined, userId:string) => {
     //check if the user is the owner of the used item
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
-    //TODO:check if the usedItem is booked or not
+    //check if the usedItem is booked or not
+    usedItemUtils.isUsedItemBooked(usedItem);
 
     //delete the used item
     const deletedUsedItem = await usedItemUtils.deleteUsedItem(usedItem.id);
@@ -157,6 +161,9 @@ const addUsedItemImages = async (id:string | undefined, userId:string, images:st
     //check if the user is the owner of the used item
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
+    //check if the usedItem is booked or not
+    usedItemUtils.isUsedItemBooked(usedItem);
+
     //add the images
     const updatedUsedItem = await usedItemUtils.addUsedItemImages(id, images);
 
@@ -177,6 +184,9 @@ const deleteUsedItemImage = async (id:string | undefined, userId:string, imageNa
     //check if the user is the owner of the used item
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
+    //check if the usedItem is booked or not
+    usedItemUtils.isUsedItemBooked(usedItem);
+
     //delete the image
     const updatedUsedItem = await usedItemUtils.deleteUsedItemImage(id, imageName);
 
@@ -185,6 +195,7 @@ const deleteUsedItemImage = async (id:string | undefined, userId:string, imageNa
         message:'Used Item Image Deleted Successfully',
     }
 }
+
 export const usedItemService = {
   addUsedItem,
   findAllUsedItems,
