@@ -1,5 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { INotificationModel, INotificationSchema,INotificationDocument } from '../interfaces/notification.interface';
+import mongoose, { HydratedDocument, InferSchemaType, Schema } from 'mongoose';
 
 const notificationReceiverSchema: Schema = new Schema(
     {
@@ -17,11 +16,7 @@ const notificationReceiverSchema: Schema = new Schema(
     { _id: false }
 );
 
-const notificationSchema: INotificationSchema = new Schema({
-    title: {
-        type: String,
-        required: true,
-    },
+const notificationSchema = new Schema({
     message: {
         type: String,
         required: true,
@@ -44,5 +39,9 @@ const notificationSchema: INotificationSchema = new Schema({
     }
 });
 
-const NotificationModel : INotificationModel =  mongoose.model<INotificationDocument,INotificationModel>('Notification', notificationSchema);
+const NotificationModel =  mongoose.model('Notification', notificationSchema);
+
+declare module '../interfaces/notification.interface' {
+    export type INotification = HydratedDocument<InferSchemaType<typeof notificationSchema>>;
+}
 export default NotificationModel;

@@ -1,10 +1,11 @@
-import { query } from 'express-validator';
+import { BadRequestError } from '../../../libraries/errors/components/bad-request.js';
 import { NotFoundError } from '../../../libraries/errors/components/not-found.js';
+import { INotification, SortObject } from '../data-access/interfaces/notification.interface.js';
 import { NotificationRepository } from '../data-access/notification.repository.js';
-import mongoose from 'mongoose';
+import mongoose, { get } from 'mongoose';
 const notificationRepository = new NotificationRepository();
 
-const getAllNotifications = async (filterObj, sortObj, paginationObj) => {
+const getAllNotifications = async (filterObj, sortObj:SortObject, paginationObj) => {
     const notifications = await notificationRepository.getAllNotifications(
         filterObj,
         sortObj,
@@ -16,15 +17,8 @@ const getAllNotifications = async (filterObj, sortObj, paginationObj) => {
 const markNotificationAsRead = async (
     receiverType: string,
     receiverId: string,
-    notificationId: string
+    notification:INotification
 ) => {
-    const notification = await notificationRepository.getNotificationById(
-        receiverType,
-        receiverId,
-        notificationId
-    );
-
-    if (!notification) throw new NotFoundError('Notification Not Found');
 
     notification.read = true;
 
@@ -36,21 +30,14 @@ const markNotificationAsRead = async (
 const deleteNotification = async (
     receiverType: string,
     receiverId: string,
-    notificationId: string
+    notification:INotification
 ) => {
-    const notification = await notificationRepository.getNotificationById(
-        receiverType,
-        receiverId,
-        notificationId
-    );
-
-    if (!notification) throw new NotFoundError('Notification Not Found');
 
     const deletedNotification =
         await notificationRepository.deleteNotificationById(
             receiverType,
             receiverId,
-            notificationId
+            notification._id.toString()
         );
 
     if (!deletedNotification) throw new NotFoundError('Notification Not Found');
@@ -59,11 +46,11 @@ const deleteNotification = async (
 };
 
 const getSortObj = (sortQueryParams: string | undefined) => {
-    const sortBy: string = sortQueryParams || 'createdAt';
+    const sortBy = sortQueryParams || 'createdAt';
 
-    const sortArray: string[] = sortBy.split(',');
+    const sortArray = sortBy.split(',');
 
-    const sortObj = {};
+    const sortObj:SortObject = {};
     sortArray.forEach(function (sort) {
         if (sort[0] === '-') {
             sortObj[sort.substring(1)] = -1;
@@ -93,7 +80,7 @@ const getFilterObj = (
         'receiver.receiverId': new mongoose.Types.ObjectId(receiverId),
     };
 
-    const filterQueryParameters: string[] = ['read'];
+    const filterQueryParameters = ['read'];
 
     if(queryParams.read) {
         queryParams.read = queryParams.read === 'true'; 
@@ -108,6 +95,24 @@ const getFilterObj = (
     return filterObject;
 };
 
+const getNotification = async (receiverType: string, receiverId: string, notificationId: string) => {
+    const notification = await notificationRepository.getNotificationById(
+        receiverType,
+        receiverId,
+        notificationId
+    );
+
+    if (!notification) throw new NotFoundError('Notification Not Found');
+
+    return notification;
+}
+
+const validateIdParam = (id: string | undefined): asserts id is string => {
+  if (!id) {
+    throw new BadRequestError('No id provided');
+  }
+};
+
 export const notificationUtils = {
     getAllNotifications,
     markNotificationAsRead,
@@ -115,4 +120,6 @@ export const notificationUtils = {
     getSortObj,
     getPaginationObj,
     getFilterObj,
+    getNotification,
+    validateIdParam
 };

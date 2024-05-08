@@ -1,10 +1,11 @@
-import mongoose from "mongoose";
+import { GetAllNotificationsQueryParams } from "../data-access/interfaces/notification.interface.js";
 import { notificationService } from "./notification.service.js";
+import { NextFunction, Request, Response } from "express";
 
-const getAllNotifications = async (req,res,next) => {
-    const receiverId:mongoose.Types.ObjectId = req.charity?._id || req.user?._id;
-    const receiverType : "Charity" | "User"  = req.charity ? "Charity" : "User";
-    const queryParams:{[key:string]:any} = req.query;
+const getAllNotifications = async (req:Request,res:Response,next:NextFunction) => {
+    const receiverId = res.locals.charity._id || res.locals.user._id;
+    const receiverType = res.locals.charity ? "Charity" : "User";
+    const queryParams:GetAllNotificationsQueryParams = req.query;
 
     const responseData = await notificationService.getAllNotifications(receiverType,receiverId.toString(),queryParams);
 
@@ -14,9 +15,9 @@ const getAllNotifications = async (req,res,next) => {
     };
 }
 
-const markNotificationAsRead = async (req,res,next) => {
-    const receiverId:mongoose.Types.ObjectId = req.charity?._id || req.user?._id;
-    const receiverType = req.charity ? "Charity" : "User";
+const markNotificationAsRead = async (req:Request,res:Response,next:NextFunction) => {
+    const receiverId = res.locals.charity._id || res.locals.user._id;
+    const receiverType = res.locals.charity ? "Charity" : "User";
 
     const notificationId = req.params.id;
 
@@ -28,9 +29,9 @@ const markNotificationAsRead = async (req,res,next) => {
     };
 }
 
-const deleteNotification = async (req,res,next) => {
-    const receiverId:mongoose.Types.ObjectId = req.charity?._id || req.user?._id;
-    const receiverType = req.charity ? "Charity" : "User";
+const deleteNotification = async (req:Request,res:Response,next:NextFunction) => {
+    const receiverId = res.locals.charity._id || res.locals.user._id;
+    const receiverType = res.locals.charity ? "Charity" : "User";
 
     const notificationId = req.params.id;
 

@@ -1,15 +1,15 @@
-import mongoose from 'mongoose';
 import { NotFoundError } from '../../../libraries/errors/components/not-found.js';
 import { CharityRepository } from '../../charity/data-access/charity.repository.js';
 import { userRepository } from '../../user/data-access/user.repository.js';
 import {
     INotification,
-    INotificationDocument,
-} from './interfaces/notification.interface.js';
+    SortObject,
+} from './interfaces';
+
 import NotificationModel from './models/notification.model.js';
 
 export class NotificationRepository {
-    async getAllNotifications(filterObj,sortObj,paginationObj) {
+    async getAllNotifications(filterObj,sortObj:SortObject,paginationObj) {
         const notifications  = await NotificationModel.aggregate([
             {
                 $match:filterObj
@@ -38,7 +38,7 @@ export class NotificationRepository {
         receiverId: string,
         notificationId: string
     ) {
-        const notification: INotificationDocument | null =
+        const notification =
             await NotificationModel.findOne({
                 _id: notificationId,
                 'receiver.receiverType': receiverType,
@@ -75,3 +75,4 @@ const checkIfReceiverExists = async (
         if (!user) throw new NotFoundError('User Not Found');
     }
 };
+
