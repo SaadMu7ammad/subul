@@ -17,7 +17,18 @@ const checkUserIsExist = async (email: string): Promise<{ user: User }> => {
     user: userIsExist,
   };
 };
+const checkUserIsExistById = async (id: string): Promise<{ user: User }> => {
+  //return user if it exists
+  const userIsExist = await userRepositoryObj.findUserById(id);
 
+  if (!userIsExist) {
+    throw new NotFoundError('user not found');
+  }
+
+  return {
+    user: userIsExist,
+  };
+};
 const logout = (res: Response): void => {
   res.cookie('jwt', '', {
     httpOnly: true,
@@ -120,6 +131,7 @@ const resetSentToken = async (user: User) => {
 };
 export const userUtils = {
   checkUserIsExist,
+  checkUserIsExistById,
   logout,
   //   getUser,
   checkIsEmailDuplicated,

@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../../user/data-access/interfaces';
 import {
-  BookItemRequest,
   AddUsedItemRequest,
   AddUsedItemResponse,
   GetUsedItemResponse,
@@ -13,8 +12,7 @@ import {
   DeleteUsedItemImageRequest,
 } from '../data-access/interfaces/used-item.api';
 import { usedItemService } from './used-item.service';
-import { NotFoundError } from '../../../libraries/errors/components';
-import { ICharity } from '../../charity/data-access/interfaces';
+import { usedItemUtils } from './used-item.utils';
 
 const addUsedItem = async (
   req: Request,
@@ -32,8 +30,6 @@ const addUsedItem = async (
     amount,
     images,
     user: user._id,
-    booked: false,
-    confirmed: false,
   };
 
   const responseData = await usedItemService.addUsedItem(usedItemData);
@@ -41,90 +37,6 @@ const addUsedItem = async (
   return {
     usedItem: responseData.usedItem,
     message: responseData.message,
-  };
-};
-
-const getAllUsedItems = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const usedItemsResponse = await usedItemService.findAllUsedItems();
-
-  return {
-    usedItems: usedItemsResponse.usedItems,
-    message: usedItemsResponse.message,
-  };
-};
-
-const bookUsedItem = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const charity: ICharity = res.locals.charity;
-  // if (!charity) throw new NotFoundError('Charity Must Login First!');
-  const { id: itemId } = req.params;
-  if (!itemId) throw new NotFoundError('Used Item Id Not Found');
-
-  const bookItemData: BookItemRequest = {
-    charity: charity._id.toString(),
-    itemId,
-  };
-
-  const usedItemsResponse = await usedItemService.bookUsedItem(bookItemData);
-  return {
-    usedItems: usedItemsResponse.usedItems,
-    message: usedItemsResponse.message,
-  };
-};
-
-const cancelBookingOfUsedItem = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const charity: ICharity = res.locals.charity;
-  // if (!charity) throw new NotFoundError('Charity Must Login First!');
-  const { id: itemId } = req.params;
-  if (!itemId) throw new NotFoundError('Used Item Id Not Found');
-
-  const bookItemData: BookItemRequest = {
-    charity: charity._id.toString(),
-    itemId,
-  };
-
-  const usedItemsResponse =
-    await usedItemService.cancelBookingOfUsedItem(bookItemData);
-
-  return {
-    usedItems: usedItemsResponse.usedItems,
-    message: usedItemsResponse.message,
-  };
-};
-
-const ConfirmBookingReceipt = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const charity: ICharity = res.locals.charity;
-  // if (!charity) throw new NotFoundError('Charity Must Login First!');
-
-  const { id: itemId } = req.params;
-  if (!itemId) throw new NotFoundError('Used Item Id Not Found');
-
-  const bookItemData: BookItemRequest = {
-    charity: charity._id.toString(),
-    itemId,
-  };
-
-  const usedItemsResponse =
-    await usedItemService.ConfirmBookingReceipt(bookItemData);
-
-  return {
-    usedItem: usedItemsResponse.usedItem,
-    message: usedItemsResponse.message,
   };
 };
 
@@ -224,6 +136,51 @@ const deleteUsedItemImage = async (
   return {
     usedItem: responseData.usedItem,
     message: responseData.message,
+  };
+};
+
+const getAllUsedItems = async () => {
+  const usedItemsResponse = await usedItemService.findAllUsedItems();
+
+  return {
+    usedItems: usedItemsResponse.usedItems,
+    message: usedItemsResponse.message,
+  };
+};
+
+const bookUsedItem = async (req: Request, res: Response) => {
+  const bookItemData = await usedItemUtils.createBookItemData(req, res);
+
+  const usedItemResponse = await usedItemService.bookUsedItem(bookItemData);
+  return {
+    usedItem: usedItemResponse.usedItem,
+    message: usedItemResponse.message,
+  };
+};
+
+const cancelBookingOfUsedItem = async (req: Request, res: Response) => {
+  const bookItemData = await usedItemUtils.createBookItemData(req, res);
+
+  const usedItemsResponse = await usedItemService.cancelBookingOfUsedItem(
+    bookItemData
+  );
+
+  return {
+    usedItem: usedItemsResponse.usedItem,
+    message: usedItemsResponse.message,
+  };
+};
+
+const ConfirmBookingReceipt = async (req: Request, res: Response) => {
+  const bookItemData = await usedItemUtils.createBookItemData(req, res);
+
+  const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(
+    bookItemData
+  );
+
+  return {
+    usedItem: usedItemsResponse.usedItem,
+    message: usedItemsResponse.message,
   };
 };
 
