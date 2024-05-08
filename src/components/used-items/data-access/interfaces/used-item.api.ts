@@ -16,6 +16,7 @@ export type BookItemRequest = {
   charity: string;
   itemId: string;
 };
+
 export type GetUsedItemRequest = {};
 
 export type GetUsedItemResponse = {

@@ -29,6 +29,19 @@ const checkCharityIsExist = async (
     charity: charityIsExist,
   };
 };
+
+const checkCharityIsExistById = async (
+  id: string
+): Promise<{ charity: ICharity }> => {
+  //return charity if it exists
+  const charityIsExist = await charityRepository.findCharityById(id);
+  if (!charityIsExist) {
+    throw new NotFoundError('charity not found');
+  }
+  return {
+    charity: charityIsExist,
+  };
+};
 const logout = (res: Response): void => {
   res.cookie('jwt', '', {
     httpOnly: true,
@@ -396,6 +409,7 @@ const checkCharityVerification = (charity: ICharity): boolean => {
 
 export const charityUtils = {
   checkCharityIsExist,
+  checkCharityIsExistById,
   logout,
   changeCharityPasswordWithMailAlert,
   getCharity,
