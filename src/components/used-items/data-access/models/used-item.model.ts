@@ -1,7 +1,7 @@
 import mongoose, { HydratedDocument, InferSchemaType } from 'mongoose';
 
 const usedItemSchema = new mongoose.Schema({
-  user:{
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
@@ -36,20 +36,20 @@ const usedItemSchema = new mongoose.Schema({
   booked: {
     type: Boolean,
     default: false,
+    required: false,
   },
   // Confirm Booking Receipt
   confirmed: {
     type: Boolean,
     default: false,
+    required: false,
   },
 });
 
 const UsedItem = mongoose.model('UsedItem', usedItemSchema);
 
 declare module '../interfaces' {
-  export type IUsedItem = HydratedDocument<
-    InferSchemaType<typeof usedItemSchema>
-  >;
+  export type IUsedItem = HydratedDocument<InferSchemaType<typeof usedItemSchema>>;
 
   export type PlainIUsedItem = InferSchemaType<typeof usedItemSchema>;
 }

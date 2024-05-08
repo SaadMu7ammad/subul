@@ -11,15 +11,16 @@ import configurationSchema from './config/config';
 //Errors ⛔️
 import { NotFound, errorHandler } from './libraries/errors/index';
 //Routes 🛤️
-import transactionRoutes from './components/transaction/entry-points/api/transaction.routes.js';
-import userRoutes from './components/user/entry-points/api/user.routes.js';
-import authUserRoutes from './components/auth/user/entry-points/api/auth.routes.js';
-import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes.js';
-import charityRoutes from './components/charity/entry-points/api/charity.routes.js';
-import casesRoutes from './components/case/entry-points/api/case.routes.js';
-import adminRoutes from './components/admin/entry-points/api/admin.routes.js';
-import notificationRoutes from './components/notification/entry-points/api/notification.routes.js';
-import usedRoutes from './components/used-items/entry-points/api/used-item.routes';
+import transactionRoutes from './components/transaction/entry-points/api/transaction.routes';
+import userRoutes from './components/user/entry-points/api/user.routes';
+import authUserRoutes from './components/auth/user/entry-points/api/auth.routes';
+import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes';
+import charityRoutes from './components/charity/entry-points/api/charity.routes';
+import casesRoutes from './components/case/entry-points/api/case.routes';
+import adminRoutes from './components/admin/entry-points/api/admin.routes';
+import notificationRoutes from './components/notification/entry-points/api/notification.routes';
+import usedItemRoutes from './components/used-items/entry-points/api/used-item.routes';
+import chatRoutes from './components/chat/entry-points/api/chat.routes'
 
 dotenv.config();
 
@@ -52,7 +53,8 @@ adminRoutes(app);
 userRoutes(app);
 casesRoutes(app);
 notificationRoutes(app);
-usedRoutes(app);
+usedItemRoutes(app);
+chatRoutes(app);
 
 app.get('/', (req, res) => {
   res.send('Welcome To Subul API 👋');

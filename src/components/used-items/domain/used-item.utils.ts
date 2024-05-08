@@ -4,37 +4,12 @@ import {
 } from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import { isDefined } from '../../../utils/shared';
-import { BookItemRequest,IUsedItem, PlainIUsedItem, UpdateUsedItemRequest } from '../data-access/interfaces';
+import { BookItemRequest, IUsedItem, PlainIUsedItem,UpdateUsedItemRequest } from '../data-access/interfaces';
 import { UsedItemRepository } from '../data-access/used-item.repository';
+import { Request, Response } from 'express';
+import { ICharity } from '../../charity/data-access/interfaces';
 
 const usedItemRepository = new UsedItemRepository();
-
-const addUsedItem = async (usedItemData: PlainIUsedItem) => {
-  const usedItem = await usedItemRepository.addUsedItem(usedItemData);
-  return usedItem;
-};
-
-const findAllUsedItems = async () => {
-  const usedItems = await usedItemRepository.findAllUsedItems();
-  return usedItems;
-};
-
-const bookUsedItem = async (bookItemData: BookItemRequest) => {
-  const usedItems = await usedItemRepository.bookUsedItem(bookItemData);
-  return usedItems;
-};
-
-const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
-  const usedItems = await usedItemRepository.cancelBookingOfUsedItem(
-    bookItemData
-  );
-  return usedItems;
-};
-
-const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
-  const usedItem = await usedItemRepository.ConfirmBookingReceipt(bookItemData);
-  return usedItem;
-};
 
 const getUsedItem = async (id: string) => {
   const usedItem = await usedItemRepository.getUsedItem(id);
@@ -115,6 +90,61 @@ const removeUndefinedAttributesFromUsedItemData = (usedItemData: Partial<PlainIU
 
   return filteredUsedItemData;
 }
+const addUsedItem = async (usedItemData: PlainIUsedItem) => {
+  const usedItem = await usedItemRepository.addUsedItem(usedItemData);
+  return usedItem;
+};
+
+const findAllUsedItems = async () => {
+  const usedItems = await usedItemRepository.findAllUsedItems();
+  if (!usedItems.length) {
+    return {
+      usedItems: usedItems,
+      message: 'No Used Items Found',
+    };
+  }
+  return usedItems;
+};
+
+const createBookItemData = async (
+  req: Request,
+  res: Response
+): Promise<BookItemRequest> => {
+  const charity: ICharity = res.locals.charity;
+  const { id: itemId } = req.params;
+
+  if (!itemId) throw new NotFoundError('Used Item Id Not Found');
+  return {
+    charity: charity._id.toString(),
+    itemId,
+  };
+};
+
+const bookUsedItem = async (bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemRepository.findAndUpdateToBooked(bookItemData);
+  if (!usedItem) throw new BadRequestError('This Item Is Already Booked');
+  return usedItem;
+};
+
+const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemRepository.findBookedItem(bookItemData);
+  if (!usedItem)
+    throw new BadRequestError('This Item Already Cancelled Or Confirmed');
+  usedItem.booked = false;
+  usedItem.charity = undefined;
+  await usedItem.save();
+
+  return usedItem;
+};
+
+const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemRepository.findBookedItem(bookItemData);
+  if (!usedItem) throw new NotFoundError('Used Item Not Found');
+  usedItem.confirmed = true;
+  await usedItem.save();
+
+  return usedItem;
+};
 
 const isUsedItemBooked = (usedItem: IUsedItem) => {
   if (usedItem.booked) {
@@ -136,5 +166,6 @@ export const usedItemUtils = {
   bookUsedItem,
   cancelBookingOfUsedItem,
   ConfirmBookingReceipt,
-  isUsedItemBooked
+  isUsedItemBooked,
+  createBookItemData
 };

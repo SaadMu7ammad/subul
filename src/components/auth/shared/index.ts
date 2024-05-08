@@ -74,10 +74,12 @@ const isActivated = (req: Request, res: Response, next: NextFunction) => {
   if (
     (res.locals.charity &&
       (res.locals.charity.emailVerification.isVerified ||
-        res.locals.charity.phoneVerification.isVerified)) ||
+        res.locals.charity.phoneVerification.isVerified)
+      && res.locals.charity.isEnabled) ||
     (res.locals.user &&
       (res.locals.user.emailVerification.isVerified ||
-        res.locals.user.phoneVerification.isVerified))
+        res.locals.user.phoneVerification.isVerified)
+      && res.locals.user.isEnabled)
   ) {
     next();
   } else {

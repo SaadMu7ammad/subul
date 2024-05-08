@@ -1,49 +1,73 @@
-import { GetAllNotificationsQueryParams } from "../data-access/interfaces/notification.interface.js";
-import { notificationService } from "./notification.service.js";
-import { NextFunction, Request, Response } from "express";
+import { GetAllNotificationsQueryParams } from '../data-access/interfaces/notification.interface';
+import { notificationService } from './notification.service';
+import { NextFunction, Request, Response } from 'express';
 
-const getAllNotifications = async (req:Request,res:Response,next:NextFunction) => {
-    const receiverId = res.locals.charity._id || res.locals.user._id;
-    const receiverType = res.locals.charity ? "Charity" : "User";
-    const queryParams:GetAllNotificationsQueryParams = req.query;
+const getAllNotifications = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const receiverId = res.locals.charity?._id || res.locals.user?._id;
+  const receiverType = res.locals.charity ? 'Charity' : 'User';
+  const queryParams: GetAllNotificationsQueryParams = req.query;
 
-    const responseData = await notificationService.getAllNotifications(receiverType,receiverId.toString(),queryParams);
+  const responseData = await notificationService.getAllNotifications(
+    receiverType,
+    receiverId.toString(),
+    queryParams
+  );
 
-    return {
-        message: responseData.message,
-        notifications: responseData.notifications,
-    };
-}
+  return {
+    message: responseData.message,
+    notifications: responseData.notifications,
+  };
+};
 
-const markNotificationAsRead = async (req:Request,res:Response,next:NextFunction) => {
-    const receiverId = res.locals.charity._id || res.locals.user._id;
-    const receiverType = res.locals.charity ? "Charity" : "User";
+const markNotificationAsRead = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const receiverId = res.locals.charity?._id || res.locals.user?._id;
+  const receiverType = res.locals.charity ? 'Charity' : 'User';
 
-    const notificationId = req.params.id;
+  const notificationId = req.params.id;
 
-    const responseData = await notificationService.markNotificationAsRead(receiverType,receiverId.toString(),notificationId);
+  const responseData = await notificationService.markNotificationAsRead(
+    receiverType,
+    receiverId.toString(),
+    notificationId
+  );
 
-    return {
-        message: responseData.message,
-        notification: responseData.notification,
-    };
-}
+  return {
+    message: responseData.message,
+    notification: responseData.notification,
+  };
+};
 
-const deleteNotification = async (req:Request,res:Response,next:NextFunction) => {
-    const receiverId = res.locals.charity._id || res.locals.user._id;
-    const receiverType = res.locals.charity ? "Charity" : "User";
+const deleteNotification = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const receiverId = res.locals.charity?._id || res.locals.user?._id;
+  const receiverType = res.locals.charity ? 'Charity' : 'User';
 
-    const notificationId = req.params.id;
+  const notificationId = req.params.id;
 
-    const responseData = await notificationService.deleteNotification(receiverType,receiverId.toString(),notificationId);
+  const responseData = await notificationService.deleteNotification(
+    receiverType,
+    receiverId.toString(),
+    notificationId
+  );
 
-    return {
-        message: responseData.message,
-        notification: responseData.notification,
-    };
-}
+  return {
+    message: responseData.message,
+    notification: responseData.notification,
+  };
+};
 export const notificationUseCase = {
-    getAllNotifications,
-    markNotificationAsRead,
-    deleteNotification,
+  getAllNotifications,
+  markNotificationAsRead,
+  deleteNotification,
 };
