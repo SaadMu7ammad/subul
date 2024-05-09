@@ -16,29 +16,28 @@ const notificationReceiverSchema: Schema = new Schema(
   { _id: false }
 );
 
-const notificationSchema = new Schema({
-  message: {
-    type: String,
-    required: true,
+const notificationSchema = new Schema(
+  {
+    message: {
+      type: String,
+      required: true,
+    },
+    read: {
+      type: Boolean,
+      default: false,
+    },
+    receiver: {
+      type: notificationReceiverSchema,
+      required: true,
+    },
+    maxAge: {
+      //Expiry Date in MS
+      type: Number,
+      required: false,
+    },
   },
-  read: {
-    type: Boolean,
-    default: false,
-  },
-  receiver: {
-    type: notificationReceiverSchema,
-    required: true,
-  },
-  createdAt: {
-    type: String,
-    required: true,
-  },
-  maxAge: {
-    //Expiry Date in MS
-    type: Number,
-    required: false,
-  },
-});
+  { timestamps: true }
+);
 
 const NotificationModel = mongoose.model('Notification', notificationSchema);
 
