@@ -42,7 +42,13 @@ const notificationSchema = new Schema(
 const NotificationModel = mongoose.model('Notification', notificationSchema);
 
 declare module '../interfaces/notification.interface' {
-  export type PlainNotification = InferSchemaType<typeof notificationSchema>;
-  export type INotification = HydratedDocument<PlainNotification>;
+  export type PlainNotification = Omit<
+    InferSchemaType<typeof notificationSchema>,
+    'createdAt' | 'updatedAt'
+  >;
+
+  export type INotification = HydratedDocument<
+    InferSchemaType<typeof notificationSchema>
+  >;
 }
 export default NotificationModel;

@@ -16,7 +16,6 @@ export const sendNotification = async (
       receiverId: receiverId,
     },
     message: message,
-    createdAt: Date.now().toString(),
     read: false,
   };
 

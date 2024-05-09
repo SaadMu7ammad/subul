@@ -6,6 +6,7 @@ import { UnauthenticatedError } from '../../../libraries/errors/components/index
 import * as configurationProvider from '../../../libraries/configuration-provider/index';
 import { Decoded } from './interface';
 import { NextFunction, Request, Response } from 'express';
+import { sendNotification } from '../../../utils/sendNotification';
 // import * as core from "express-serve-static-core";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
@@ -44,6 +45,8 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
 
         res.locals.charity = IsCharityExist;
       }
+      if(res.locals.charity)sendNotification('Charity',res.locals.charity._id,'You Have Logged In')
+      else if (res.locals.user)sendNotification('User',res.locals.user._id,'You Have Logged In')
       next();
     } else {
       throw new UnauthenticatedError('No Header Sent');
