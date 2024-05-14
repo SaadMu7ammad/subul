@@ -126,7 +126,7 @@ const bookUsedItem = async (bookItemData: BookItemRequest) => {
 
   if (!usedItem) throw new BadRequestError('This Item Is Already Booked');
 
-  sendNotification('User', usedItem.user, `Your item ${usedItem.title} has been booked`,undefined, 'usedItem', usedItem._id)
+  await notifyUserThatItemIsBooked(usedItem);
 
   return usedItem;
 };
@@ -155,6 +155,20 @@ const isUsedItemBooked = (usedItem: IUsedItem) => {
   if (usedItem.booked) {
     throw new BadRequestError('This Used Item is already booked');
   }
+}
+
+const notifyUserThatItemIsBooked = async (usedItem: IUsedItem) => {
+  if(!usedItem.charity)throw new BadRequestError('Item is not booked by any charity yet');
+
+  await usedItem.populate<{charity:ICharity}>('charity');
+
+  // TODO: Fix this , IDK why ts can't infer that charity is populated
+  //@ts-expect-error
+  const charityName = usedItem.charity?.name;
+
+  sendNotification('User', usedItem.user, `Your item ${usedItem.title} has been booked by ${charityName} charity`,undefined, 'usedItem', usedItem._id)
+
+  usedItem.depopulate('charity');
 }
 
 export const usedItemUtils = {
