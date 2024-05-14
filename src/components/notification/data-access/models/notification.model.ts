@@ -16,6 +16,22 @@ const notificationReceiverSchema: Schema = new Schema(
   { _id: false }
 );
 
+const resourceSchema: Schema = new Schema(
+  {
+    type: {
+      type: String,
+      required: true,
+      enum: ['case', 'usedItem'],
+    },
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: 'resource.type',
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const notificationSchema = new Schema(
   {
     message: {
@@ -29,6 +45,10 @@ const notificationSchema = new Schema(
     receiver: {
       type: notificationReceiverSchema,
       required: true,
+    },
+    resource:{
+      type: resourceSchema,
+      required: false,
     },
     maxAge: {
       //Expiry Date in MS

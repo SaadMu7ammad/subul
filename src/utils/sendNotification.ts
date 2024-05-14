@@ -9,6 +9,8 @@ export const sendNotification = async (
   receiverId: mongoose.Types.ObjectId,
   message: string,
   maxAge?: number,
+  resourceType?:string,
+  resourceId?:mongoose.Types.ObjectId,
 ) => {
   const notificationData: PlainNotification = {
     receiver: {
@@ -20,6 +22,13 @@ export const sendNotification = async (
   };
 
   if (maxAge) notificationData.maxAge = maxAge;
+
+  if(resourceType && resourceId){
+    notificationData.resource = {
+      type: resourceType,
+      id: resourceId
+    }
+  }
 
   const notification =
     await notificationRepository.createNotification(notificationData);

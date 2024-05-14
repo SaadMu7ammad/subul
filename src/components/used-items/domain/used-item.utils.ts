@@ -8,6 +8,7 @@ import { BookItemRequest, IUsedItem, PlainIUsedItem,UpdateUsedItemRequest } from
 import { UsedItemRepository } from '../data-access/used-item.repository';
 import { Request, Response } from 'express';
 import { ICharity } from '../../charity/data-access/interfaces';
+import { sendNotification } from '../../../utils/sendNotification';
 
 const usedItemRepository = new UsedItemRepository();
 
@@ -122,7 +123,11 @@ const createBookItemData = async (
 
 const bookUsedItem = async (bookItemData: BookItemRequest) => {
   const usedItem = await usedItemRepository.findAndUpdateToBooked(bookItemData);
+
   if (!usedItem) throw new BadRequestError('This Item Is Already Booked');
+
+  sendNotification('User', usedItem.user, `Your item ${usedItem.title} has been booked`,undefined, 'usedItem', usedItem._id)
+
   return usedItem;
 };
 
