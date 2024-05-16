@@ -24,6 +24,7 @@ import { ICase } from '../../case/data-access/interfaces';
 import { ICharity } from '../../charity/data-access/interfaces';
 import { CharityRepository } from '../../charity/data-access/charity.repository';
 import { caseService } from '../../case/domain/case.service';
+import { sendNotification } from '../../../utils/sendNotification';
 
 const resetUser = async (reqBody: dataForResetEmail) => {
   const email = reqBody.email;
@@ -131,18 +132,27 @@ const activateAccount = async (
 //we must limit the amount of sending emails as each time user click to contribute to the same case will send an email to him
 //we store nothing in the db
 const bloodContribution = async (user: User, id: string | undefined) => {
-
-  if (!id) throw new BadRequestError('no id provided')
+  if (!id) throw new BadRequestError('no id provided');
   const isCaseExist = await caseUtils.getCaseByIdFromDB(id);
 
-  if (!isCaseExist.privateNumber) throw new BadRequestError('sorry no number is added')
-  if (isCaseExist.finished) throw new BadRequestError('the case had been finished')
+  if (!isCaseExist.privateNumber)
+    throw new BadRequestError('sorry no number is added');
+  if (isCaseExist.finished)
+    throw new BadRequestError('the case had been finished');
 
   await setupMailSender(
     user.email,
     'bloodContribution',
     'thanks for your caring' +
-    `<h3>here is the number to get contact with the case immediate</h3> <h2>${isCaseExist.privateNumber}</h2>`
+      `<h3>here is the number to get contact with the case immediate</h3> <h2>${isCaseExist.privateNumber}</h2>`
+  );
+  sendNotification(
+    'Charity',
+    isCaseExist.charity,
+    `User ${user.name.firstName} ${user.name.lastName} offered to donate blood to your case ${isCaseExist.title}`,
+    undefined,
+    'usedItem',
+    isCaseExist._id
   );
 }
 const requestFundraisingCampaign = async (caseData: ICase, image: string, charityId: string, storedUser: User) => {
