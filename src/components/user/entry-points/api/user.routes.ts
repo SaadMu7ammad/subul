@@ -98,8 +98,7 @@ export default function defineRoutes(expressApp: Application) {
         logger.info(`User API was called to activate user Account`);
         const activateAccountResponse = await userUseCase.activateAccount(
           req,
-          res,
-          next
+          res
         );
         return res.json(activateAccountResponse);
       } catch (error) {
@@ -134,11 +133,8 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`User API was called to request Fundraising Campaign`);
-        const requestFundraisingCampaignResponse = await userUseCase.requestFundraisingCampaign(
-          req,
-          res,
-          next
-        );
+        const requestFundraisingCampaignResponse =
+          await userUseCase.requestFundraisingCampaign(req, res, next);
         return res.json(requestFundraisingCampaignResponse);
       } catch (error) {
         next(error);

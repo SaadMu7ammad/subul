@@ -1,3 +1,4 @@
+import { authUserResponse } from '../../auth/user/data-access/interfaces';
 import { ICase } from '../../case/data-access/interfaces';
 import { bloodContributionResponse } from '../data-access/interfaces';
 import {
@@ -10,7 +11,6 @@ import {
   dataForResetEmail,
   ConfirmResetResponse,
   ChangePasswordResponse,
-  ActivateAccountResponse,
   LogoutUserResponse,
   getUserProfileDataResponse,
   User,
@@ -87,15 +87,14 @@ const changePassword = async (
 //@access private
 const activateAccount = async (
   req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<ActivateAccountResponse> => {
+  res: Response
+): Promise<authUserResponse> => {
   const { token } = req.body;
 
   const activateAccountInputsData: dataForActivateAccount = { token };
-  
+
   const storedUser: User = res.locals.user;
-  
+
   const responseData = await userService.activateAccount(
     activateAccountInputsData,
     storedUser,
@@ -103,7 +102,9 @@ const activateAccount = async (
   );
 
   return {
-    message: responseData.message,
+    user: responseData.user,
+    msg: responseData.msg,
+    isVerified: responseData.isVerified,
   };
 };
 //@desc  user blood Contribution
@@ -114,10 +115,9 @@ const bloodContribution = async (
   res: Response,
   next: NextFunction
 ): Promise<bloodContributionResponse> => {
-
   const storedUser: User = res.locals.user;
   const caseId: string | undefined = req.params.id;
-  
+
   await userService.bloodContribution(storedUser, caseId);
   return {
     message: 'an email had been sent to your mail address with detailed info',
@@ -131,12 +131,16 @@ const requestFundraisingCampaign = async (
   res: Response,
   next: NextFunction
 ) => {
-
   const caseData: ICase = req.body;
   const storedUser: User = res.locals.user;
   const charityId: string = req.body.charity;
 
-  const responseData = await userService.requestFundraisingCampaign(caseData, 'none', charityId, storedUser);
+  const responseData = await userService.requestFundraisingCampaign(
+    caseData,
+    'none',
+    charityId,
+    storedUser
+  );
   return {
     case: responseData.case,
   };
@@ -158,7 +162,6 @@ const editUserProfile = async (
   res: Response,
   next: NextFunction
 ): Promise<EditUserProfileResponse> => {
-
   const editUserProfileInputsData: IUserModified = req.body;
 
   //❌ Code below causes an error: `Cannot read prop of undefined`
@@ -214,5 +217,5 @@ export const userUseCase = {
   editUserProfile,
   getUserProfileData,
   bloodContribution,
-  requestFundraisingCampaign
+  requestFundraisingCampaign,
 };
