@@ -40,7 +40,7 @@ const confirmingCharity = async (charity: PendingCharities) => {
   }
   await charity.save();
 
-  sendNotification("Charity",charity._id,"Your charity has been confirmed",undefined);
+  sendNotification("Charity",charity._id,"Your charity Account has been confirmed",undefined);
 };
 
 // const rejectingCharity = async (charity: ICharity) => {
@@ -104,7 +104,7 @@ const rejectingCharity = async (charity: PendingCharities) => {
   await charity.save();
 
 
-  sendNotification("Charity",charity._id,"Your charity has been rejected",undefined);
+  sendNotification("Charity",charity._id,"Your charity Account has been rejected",undefined);
 };
 
 const checkPaymentMethodAvailability = (
