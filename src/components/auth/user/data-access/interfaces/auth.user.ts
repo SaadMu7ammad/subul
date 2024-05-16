@@ -5,7 +5,7 @@
 //     user: IUserDocument;
 //     charity: ICharityDocument;
 
-import { User } from "../../../../user/data-access/interfaces";
+import { User } from '../../../../user/data-access/interfaces';
 
 export interface IloginData {
   email: User['email'];
@@ -48,4 +48,5 @@ export type UserResponseBasedOnUserVerification = {
   user: UserObject;
   emailAlert: boolean;
   token?: string;
+  isVerified: boolean;
 };

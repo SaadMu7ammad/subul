@@ -38,6 +38,7 @@ const authUser = async (
       user: userObj,
       emailAlert: false,
       token: token,
+      isVerified: true,
     };
   } else {
     //not verified(not activated)
@@ -57,6 +58,7 @@ const authUser = async (
     return {
       user: userObj,
       emailAlert: true,
+      isVerified: false,
     };
   }
 };
