@@ -3,6 +3,7 @@ import {
   NotFoundError,
 } from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
+import { sendNotification } from '../../../utils/sendNotification';
 import {
   AccType,
   ConfirmedCharities,
@@ -38,6 +39,8 @@ const confirmingCharity = async (charity: PendingCharities) => {
     });
   }
   await charity.save();
+
+  sendNotification("Charity",charity._id,"Your charity has been confirmed",undefined);
 };
 
 // const rejectingCharity = async (charity: ICharity) => {
@@ -99,6 +102,9 @@ const rejectingCharity = async (charity: PendingCharities) => {
     }
   }
   await charity.save();
+
+
+  sendNotification("Charity",charity._id,"Your charity has been rejected",undefined);
 };
 
 const checkPaymentMethodAvailability = (
@@ -174,6 +180,8 @@ const confirmingPaymentAccount = async (
   }
 
   await charity.save();
+  
+  sendNotification("Charity",charity._id,"Your payment account has been confirmed",undefined);
 };
 
 const rejectingPaymentAccount = async (
@@ -227,6 +235,8 @@ const rejectingPaymentAccount = async (
     throw new BadRequestError('No docs found for that account');
   }
   await charity.save();
+
+  sendNotification("Charity",charity._id,"Your payment account has been rejected",undefined);
 
   // if (charity.paymentMethods[paymentMethod][idx].enable === true)
   //   throw new BadRequestError('Already this payment account is enabled');
