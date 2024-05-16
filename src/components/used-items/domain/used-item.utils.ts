@@ -4,7 +4,12 @@ import {
 } from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import { isDefined } from '../../../utils/shared';
-import { BookItemRequest, IUsedItem, PlainIUsedItem,UpdateUsedItemRequest } from '../data-access/interfaces';
+import {
+  BookItemRequest,
+  IUsedItem,
+  PlainIUsedItem,
+  UpdateUsedItemRequest,
+} from '../data-access/interfaces';
 import { UsedItemRepository } from '../data-access/used-item.repository';
 import { Request, Response } from 'express';
 import { ICharity } from '../../charity/data-access/interfaces';
@@ -34,13 +39,16 @@ const checkIfUsedItemBelongsToUser = (usedItem: IUsedItem, userId: string) => {
 
 const deleteUsedItem = async (id: string) => {
   const deletedUsedItem = await usedItemRepository.deleteUsedItem(id);
-  if(!deletedUsedItem){
+  if (!deletedUsedItem) {
     throw new NotFoundError('No such UsedItem with this ID');
   }
   return deletedUsedItem;
 };
 
-const updateUsedItem = async (id: string, usedItemData: UpdateUsedItemRequest) => {
+const updateUsedItem = async (
+  id: string,
+  usedItemData: UpdateUsedItemRequest
+) => {
   const updatedUsedItem = await usedItemRepository.updateUsedItem(
     id,
     usedItemData
@@ -54,43 +62,47 @@ const updateUsedItem = async (id: string, usedItemData: UpdateUsedItemRequest) =
 const addUsedItemImages = async (id: string, images: string[]) => {
   const usedItem = await getUsedItem(id);
 
-  while(usedItem.images.length<5 && images.length>0){
-    if(isDefined(images[0])) usedItem.images.push(images[0]);
+  while (usedItem.images.length < 5 && images.length > 0) {
+    if (isDefined(images[0])) usedItem.images.push(images[0]);
     images.shift();
   }
 
   const updatedUsedItem = await usedItem.save();
 
   //if usedItem.images.length + images.length > 5
-  deleteOldImgs('usedItemsImages',images)
+  deleteOldImgs('usedItemsImages', images);
 
   return updatedUsedItem;
-}
+};
 
 const deleteUsedItemImage = async (id: string, imageName: string) => {
   const usedItem = await getUsedItem(id);
 
-  const imageIndex = usedItem.images.findIndex((image:string) => image === imageName);
+  const imageIndex = usedItem.images.findIndex(
+    (image: string) => image === imageName
+  );
   if (imageIndex === -1) {
     throw new NotFoundError('No such Image with this name');
   }
 
   const deletedImage = usedItem.images.splice(imageIndex, 1);
 
-  deleteOldImgs('usedItemsImages',deletedImage);
+  deleteOldImgs('usedItemsImages', deletedImage);
 
   const updatedUsedItem = await usedItem.save();
 
   return updatedUsedItem;
-}
+};
 
-const removeUndefinedAttributesFromUsedItemData = (usedItemData: Partial<PlainIUsedItem>) => {
+const removeUndefinedAttributesFromUsedItemData = (
+  usedItemData: Partial<PlainIUsedItem>
+) => {
   const filteredUsedItemData = Object.fromEntries(
-  Object.entries(usedItemData).filter(([key, value]) => value !== undefined)
+    Object.entries(usedItemData).filter(([key, value]) => value !== undefined)
   );
 
   return filteredUsedItemData;
-}
+};
 const addUsedItem = async (usedItemData: PlainIUsedItem) => {
   const usedItem = await usedItemRepository.addUsedItem(usedItemData);
   return usedItem;
@@ -126,7 +138,7 @@ const bookUsedItem = async (bookItemData: BookItemRequest) => {
 
   if (!usedItem) throw new BadRequestError('This Item Is Already Booked');
 
-  await notifyUserThatItemIsBooked(usedItem);
+  await notifyUserAboutUsedItemBooking(usedItem,'booking');
 
   return usedItem;
 };
@@ -139,6 +151,8 @@ const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   usedItem.charity = undefined;
   await usedItem.save();
 
+  await notifyUserAboutUsedItemBooking(usedItem,'bookingCancelation');
+
   return usedItem;
 };
 
@@ -148,6 +162,8 @@ const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
   usedItem.confirmed = true;
   await usedItem.save();
 
+  await notifyUserAboutUsedItemBooking(usedItem,'bookingConfirmation');
+
   return usedItem;
 };
 
@@ -155,21 +171,39 @@ const isUsedItemBooked = (usedItem: IUsedItem) => {
   if (usedItem.booked) {
     throw new BadRequestError('This Used Item is already booked');
   }
-}
+};
 
-const notifyUserThatItemIsBooked = async (usedItem: IUsedItem) => {
-  if(!usedItem.charity)throw new BadRequestError('Item is not booked by any charity yet');
+const notifyUserAboutUsedItemBooking = async (
+  usedItem: IUsedItem,
+  notificationType: 'booking' | 'bookingConfirmation' | 'bookingCancelation',
+  maxAge:number|undefined=undefined
+) => {
+  if (notificationType !== 'bookingCancelation' && !usedItem.charity)
+    throw new BadRequestError('Item is not booked by any charity yet');
 
-  await usedItem.populate<{charity:ICharity}>('charity');
+  await usedItem.populate<{ charity: ICharity }>('charity');
 
   // TODO: Fix this , IDK why ts can't infer that charity is populated
   //@ts-expect-error
   const charityName = usedItem.charity?.name;
 
-  sendNotification('User', usedItem.user, `Your item ${usedItem.title} has been booked by ${charityName} charity`,undefined, 'usedItem', usedItem._id)
+  const notificationMessage = {
+    booking: `Your item ${usedItem.title} has been booked by ${charityName} charity`,
+    bookingConfirmation: `Your item ${usedItem.title} booking has been confirmed by ${charityName} charity`,
+    bookingCancelation: `Your item ${usedItem.title} booking has been cancelled by ${charityName} charity`,
+  };
+
+  sendNotification(
+    'User',
+    usedItem.user,
+    notificationMessage[notificationType],
+    maxAge,
+    'usedItem',
+    usedItem._id
+  );
 
   usedItem.depopulate('charity');
-}
+};
 
 export const usedItemUtils = {
   addUsedItem,
@@ -186,5 +220,5 @@ export const usedItemUtils = {
   cancelBookingOfUsedItem,
   ConfirmBookingReceipt,
   isUsedItemBooked,
-  createBookItemData
+  createBookItemData,
 };
