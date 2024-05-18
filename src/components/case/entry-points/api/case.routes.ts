@@ -25,7 +25,6 @@ export default function defineRoutes(expressApp: Application) {
     validate,
     resizeImg,
     async (req: Request, res: Response, next: NextFunction) => {
-
       try {
         logger.info(`Case API was called to Add Case`);
         const addCaseResponse = await caseUseCase.addCase(req, res, next);
@@ -62,10 +61,31 @@ export default function defineRoutes(expressApp: Application) {
     getAllCasesValidation,
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
-
       try {
         logger.info(`Case API was called to Get All Cases`);
         const getAllCasesResponse = await caseUseCase.getAllCases(
+          req,
+          res,
+          next
+        );
+        return res.json(getAllCasesResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
+  // get all cases from all charities in the DB to user
+  router.get(
+    '/allCasesForUser',
+    auth,
+    getAllCasesValidation,
+    validate,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Case API was called to Get All Cases For User`);
+        const getAllCasesResponse = await caseUseCase.getAllCasesForUser(
           req,
           res,
           next
@@ -84,7 +104,6 @@ export default function defineRoutes(expressApp: Application) {
       auth,
       isConfirmed,
       async (req: Request, res: Response, next: NextFunction) => {
-
         try {
           logger.info(`Case API was called to Get Case By Id`);
           const getCaseByIdResponse = await caseUseCase.getCaseById(
@@ -103,7 +122,6 @@ export default function defineRoutes(expressApp: Application) {
       auth,
       isConfirmed,
       async (req: Request, res: Response, next: NextFunction) => {
-
         try {
           logger.info(`Case API was called to Delete Case By Id`);
           const deleteCaseResponse = await caseUseCase.deleteCase(
@@ -136,23 +154,24 @@ export default function defineRoutes(expressApp: Application) {
         }
       }
     );
-    router.put('/caseCoverImg/:caseId',
-      auth,
-      isConfirmed,
-      imageAssertion,
-      resizeImg,
-      async (req: Request, res: Response, next: NextFunction) => {
-        try {
-          logger.info(`Case API was called to update coverImage Case`);
-          const editCaseResponse = await caseUseCase.editCase(req, res, next);
-          return res.json(editCaseResponse);
-        } catch (error) {
-          const image = req.body.coverImage || req.body.image;
-          if (image) deleteOldImgs('caseCoverImages', image);
-          next(error);
-          return undefined;
-        }
+  router.put(
+    '/caseCoverImg/:caseId',
+    auth,
+    isConfirmed,
+    imageAssertion,
+    resizeImg,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Case API was called to update coverImage Case`);
+        const editCaseResponse = await caseUseCase.editCase(req, res, next);
+        return res.json(editCaseResponse);
+      } catch (error) {
+        const image = req.body.coverImage || req.body.image;
+        if (image) deleteOldImgs('caseCoverImages', image);
+        next(error);
+        return undefined;
       }
-    );
+    }
+  );
   expressApp.use('/api/charities', router);
 }

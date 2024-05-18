@@ -1,4 +1,4 @@
-import { NextFunction,  Response ,Request} from 'express';
+import { NextFunction, Response, Request } from 'express';
 
 import {
   ICase,
@@ -39,6 +39,21 @@ const getAllCases = async (
   const charityId: string = res.locals.charity._id;
 
   const responseData = await caseService.getAllCases(charityId, queryParams);
+
+  return {
+    cases: responseData.cases,
+    message: 'All Cases fetched Successfully',
+  };
+};
+
+const getAllCasesForUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const queryParams: GetAllCasesQueryParams = req.query;
+
+  const responseData = await caseService.getAllCasesForUser(queryParams);
 
   return {
     cases: responseData.cases,
@@ -106,4 +121,5 @@ export const caseUseCase = {
   getCaseById,
   deleteCase,
   editCase,
+  getAllCasesForUser,
 };

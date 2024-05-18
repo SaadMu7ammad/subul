@@ -50,12 +50,15 @@ const getFilterObj = (
     if (queryParams[param]) {
       if (param === 'freezed') {
         // console.log(typeof queryParams[param]);//string
-        filterObject[param] = true// queryParams[param];
-        filterObject['mainType'] = 'customizedCampaigns'
+        filterObject[param] = true; // queryParams[param];
+        filterObject['mainType'] = 'customizedCampaigns';
 
         // console.log(typeof filterObject[param]);//string if we assign queryParams[param] not explicit value
-      }
-      else if (param == 'mainType' || param == 'subType' || param == 'nestedSubType') {
+      } else if (
+        param == 'mainType' ||
+        param == 'subType' ||
+        param == 'nestedSubType'
+      ) {
         filterObject[param] = queryParams[param];
       }
     }
@@ -90,6 +93,16 @@ const getAllCases = async (
   return cases;
 };
 
+const getAllCasesForUser = async (
+  sortObj: SortObj,
+  page: number,
+  limit: number
+): Promise<ICase[] | null> => {
+  const cases = await caseRepository.getAllCasesForUser(sortObj, page, limit);
+
+  return cases;
+};
+
 const getCaseByIdFromDB = async (caseId: string): Promise<ICase> => {
   const _case: ICase | null = await caseRepository.getCaseById(caseId);
 
@@ -114,9 +127,7 @@ const checkIfCaseBelongsToCharity = (
 };
 
 const deleteCaseFromDB = async (id: string) => {
-  const deletedCase: ICase | null = await caseRepository.deleteCaseById(
-    id
-  );
+  const deletedCase: ICase | null = await caseRepository.deleteCaseById(id);
 
   if (!deletedCase) {
     throw new NotFoundError('No Such Case With this Id!');
@@ -145,19 +156,14 @@ const editCase = async (caseData: ICase, caseId: string) => {
   // const temp = {
   //   finished: caseData?.finished || false
   // }
-  if (caseData?.finished?.toString() === 'true') {//Only make it finished manually and dont change anything else
-    updatedCase = await caseRepository.editCase(
-      {finished:true},
-      caseId
-    );
+  if (caseData?.finished?.toString() === 'true') {
+    //Only make it finished manually and dont change anything else
+    updatedCase = await caseRepository.editCase({ finished: true }, caseId);
     if (!updatedCase) throw new NotFoundError('No Such Case With this Id!');
 
     return updatedCase;
   }
-  updatedCase = await caseRepository.editCase(
-    caseData,
-    caseId
-  );
+  updatedCase = await caseRepository.editCase(caseData, caseId);
 
   if (!updatedCase) throw new NotFoundError('No Such Case With this Id!');
 
@@ -170,9 +176,7 @@ const replaceCaseImg = async (
 ) => {
   if (caseData.image[0]) caseData.coverImage = caseData.image[0];
 
-  const caseObject: ICase | null = await caseRepository.getCaseById(
-    caseId
-  );
+  const caseObject: ICase | null = await caseRepository.getCaseById(caseId);
 
   if (!caseObject) throw new NotFoundError('No Such Case With this Id!');
 
@@ -193,4 +197,5 @@ export const caseUtils = {
   deleteCaseFromDB,
   editCase,
   replaceCaseImg,
+  getAllCasesForUser,
 };
