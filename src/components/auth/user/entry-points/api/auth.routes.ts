@@ -1,11 +1,12 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
-import logger from '../../../../../utils/logger';
-import { authUseCase } from '../../domain/auth.use-case';
+
 import {
   loginUserValidation,
   registerUserValidation,
 } from '../../../../../libraries/validation/components/user/userAuthValidation';
 import { validate } from '../../../../../libraries/validation/index';
+import logger from '../../../../../utils/logger';
+import { authUseCase } from '../../domain/auth.use-case';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();

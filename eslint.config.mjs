@@ -1,9 +1,10 @@
-import globals from 'globals';
 import pluginJs from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import parser from '@typescript-eslint/parser';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import pluginSecurity from 'eslint-plugin-security';
-import parser from '@typescript-eslint/parser';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+
 export default [
   {
     languageOptions: {
@@ -21,8 +22,8 @@ export default [
   eslintConfigPrettier,
   pluginSecurity.configs.recommended,
   {
-    rules:{
-      "@typescript-eslint/no-unused-vars": "off",
-    }
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
   },
 ];

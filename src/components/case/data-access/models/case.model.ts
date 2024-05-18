@@ -1,4 +1,5 @@
 import mongoose, { HydratedDocument, InferSchemaType } from 'mongoose';
+
 import locationSchema from './location.model';
 
 const caseSchema = new mongoose.Schema(
@@ -30,7 +31,7 @@ const caseSchema = new mongoose.Schema(
         'kafarat',
         'Adahi',
         'Campaigns',
-        "customizedCampaigns",
+        'customizedCampaigns',
         'UsedProperties',
       ],
       required: [true, 'maintype for that case must be provided'],

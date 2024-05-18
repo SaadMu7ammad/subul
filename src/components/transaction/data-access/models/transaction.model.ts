@@ -1,4 +1,4 @@
-import mongoose, {  Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 import { HydratedDocument } from 'mongoose';
 import { InferSchemaType } from 'mongoose';
 
@@ -26,7 +26,7 @@ const paymentMethodSchema = new Schema({
   // },
 });
 
-const transactionSchema= new Schema(
+const transactionSchema = new Schema(
   {
     case: {
       type: mongoose.Schema.Types.ObjectId,
@@ -71,7 +71,7 @@ const transactionSchema= new Schema(
   { timestamps: true }
 );
 
-declare module '../interfaces/'{
+declare module '../interfaces/' {
   export type ITransaction = HydratedDocument<InferSchemaType<typeof transactionSchema>>;
 }
 

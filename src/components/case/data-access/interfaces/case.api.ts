@@ -1,26 +1,26 @@
 import { ICase } from './';
 
-export interface AddCaseResponse{
+export interface AddCaseResponse {
   case: ICase;
   message?: string;
 }
 
-export interface GetAllCasesResponse{
+export interface GetAllCasesResponse {
   cases: ICase[];
   message?: string;
 }
 
-export interface GetCaseByIdResponse{
+export interface GetCaseByIdResponse {
   case: ICase;
   message?: string;
 }
 
-export interface DeleteCaseResponse{
+export interface DeleteCaseResponse {
   case: ICase;
   message?: string;
 }
 
-export interface EditCaseResponse{
+export interface EditCaseResponse {
   case: ICase;
   message?: string;
 }

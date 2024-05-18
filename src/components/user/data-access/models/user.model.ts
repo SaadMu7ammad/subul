@@ -1,8 +1,10 @@
-import mongoose, { Schema, InferSchemaType, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import mongoose, { HydratedDocument, InferSchemaType, Schema } from 'mongoose';
+
 import * as configurationProvider from '../../../../libraries/configuration-provider/index';
-import locationSchema from './location.model';
 import { User } from '../interfaces';
+import locationSchema from './location.model';
+
 const userSchema = new Schema(
   {
     name: {
@@ -137,9 +139,7 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    transactions: [
-      { type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' },
-    ],
+    transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' }],
   },
   { timestamps: true }
 );
@@ -150,9 +150,7 @@ userSchema.pre('save', async function (next) {
     console.log('password not change');
     return next();
   }
-  const salt = await bcrypt.genSalt(
-    configurationProvider.getValue('hashing.salt')
-  );
+  const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
   this.password = await bcrypt.hash(this.password, salt);
   console.log('password has been changed');
 });
@@ -170,7 +168,7 @@ userSchema.pre('save', async function (next) {
 
 // });
 // export type User = InferSchemaType<typeof userSchema>;
-declare module '../interfaces/'{
+declare module '../interfaces/' {
   export type User = HydratedDocument<InferSchemaType<typeof userSchema>>;
 }
 // InferSchemaType will determine the type as follows:

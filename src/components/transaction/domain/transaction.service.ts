@@ -1,17 +1,14 @@
-import {
-  BadRequestError,
-  NotFoundError,
-} from '../../../libraries/errors/components/index';
+import { BadRequestError, NotFoundError } from '../../../libraries/errors/components/index';
 import { checkValueEquality } from '../../../utils/shared';
-import { TransactionRepository } from '../data-access/transaction.repository';
-import { transactionUtils } from './transaction.utils';
+import { User } from '../../user/data-access/interfaces';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
   TransactionPaymentInfo,
 } from '../data-access/interfaces';
 import { ITransaction } from '../data-access/interfaces';
-import { User } from '../../user/data-access/interfaces';
+import { TransactionRepository } from '../data-access/transaction.repository';
+import { transactionUtils } from './transaction.utils';
 
 const transactionRepository = new TransactionRepository();
 
@@ -20,11 +17,7 @@ const preCreateTransaction = async (
   user: User
 ): Promise<boolean> => {
   //must check the account for the charity is valid or not
-  const {
-    charityId,
-    caseId,
-    amount,
-  } = data;
+  const { charityId, caseId, amount } = data;
   //pre processing
   transactionUtils.checkPreCreateTransaction(data);
 
@@ -42,26 +35,17 @@ const preCreateTransaction = async (
   transactionUtils.checkCharityIsValidToDonate(charityIsExist);
 
   //to check that the case is related to the charity id in the database
-  const isMatch = checkValueEquality(
-    caseIsExist.charity.toString(),
-    charityId.toString()
-  );
-  if (!isMatch)
-    throw new BadRequestError('mismatching while donating ...please try again');
+  const isMatch = checkValueEquality(caseIsExist.charity.toString(), charityId.toString());
+  if (!isMatch) throw new BadRequestError('mismatching while donating ...please try again');
 
   //check the case is finished or being freezed by the website admin
   transactionUtils.checkCaseIsValidToDonate(caseIsExist);
   //check that donor only donates with the remain part of money and not exceed the target amount
-  const checker = transactionUtils.donationAmountAssertion(
-    caseIsExist,
-    amount
-  );
+  const checker = transactionUtils.donationAmountAssertion(caseIsExist, amount);
   return checker;
 };
 
-const updateCaseInfo = async (
-  data: IDataUpdateCaseInfo
-): Promise<ITransaction | null> => {
+const updateCaseInfo = async (data: IDataUpdateCaseInfo): Promise<ITransaction | null> => {
   //start updating
   const {
     user,
@@ -97,10 +81,7 @@ const updateCaseInfo = async (
     await transactionRepository.findTransactionByQuery(queryObj);
   if (transactionIsExist) {
     //transaction must updated not created again
-    transactionIsExist = await transactionUtils.refundUtility(
-      transactionIsExist,
-      amount
-    );
+    transactionIsExist = await transactionUtils.refundUtility(transactionIsExist, amount);
     //in the next middleware will update the externalTransactionId with the new refund transaction
     return transactionIsExist;
   } //else  console.log('no transaction found for refund so will create new one');
@@ -143,15 +124,10 @@ const updateCaseInfo = async (
     status,
     currency,
   };
-  const newTransaction = await transactionRepository.createTransaction(
-    transactionData
-  );
+  const newTransaction = await transactionRepository.createTransaction(transactionData);
   if (!newTransaction) throw new BadRequestError('no transaction found');
   //add the transaction id to the user
-  await transactionUtils.addTransactionIdToUserTransactionIds(
-    userIsExist,
-    newTransaction._id
-  );
+  await transactionUtils.addTransactionIdToUserTransactionIds(userIsExist, newTransaction._id);
   if (status == 'failed') {
     return newTransaction;
     // throw new BadRequestError('transaction failed please try again');
@@ -163,8 +139,7 @@ const updateCaseInfo = async (
 const getAllTransactions = async (
   user: User
 ): Promise<{ allTransactions: (ITransaction | null)[] }> => {
-  const allTransactionsPromised =
-    await transactionUtils.getAllTransactionsPromised(user);
+  const allTransactionsPromised = await transactionUtils.getAllTransactionsPromised(user);
   return { allTransactions: allTransactionsPromised };
 };
 export const transactionService = {

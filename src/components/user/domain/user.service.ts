@@ -1,30 +1,28 @@
-import { userUtils } from './user.utils';
 import { Response } from 'express';
-import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
+
 import {
   BadRequestError,
   NotFoundError,
   UnauthenticatedError,
 } from '../../../libraries/errors/components/index';
-import {
-  checkValueEquality,
-  updateNestedProperties,
-} from '../../../utils/shared';
+import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
+import { checkValueEquality, updateNestedProperties } from '../../../utils/shared';
+import { authUserResponse } from '../../auth/user/data-access/interfaces';
+import { ICase } from '../../case/data-access/interfaces';
+import { caseService } from '../../case/domain/case.service';
+import { caseUtils } from '../../case/domain/case.utils';
+import { CharityRepository } from '../../charity/data-access/charity.repository';
+import { ICharity } from '../../charity/data-access/interfaces';
 import {
   EditProfile,
   IUserModified,
+  User,
   dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
-  User,
 } from '../data-access/interfaces/';
-import { caseUtils } from '../../case/domain/case.utils';
-import { ICase } from '../../case/data-access/interfaces';
-import { ICharity } from '../../charity/data-access/interfaces';
-import { CharityRepository } from '../../charity/data-access/charity.repository';
-import { caseService } from '../../case/domain/case.service';
-import { authUserResponse } from '../../auth/user/data-access/interfaces';
+import { userUtils } from './user.utils';
 
 const resetUser = async (reqBody: dataForResetEmail) => {
   const email = reqBody.email;
@@ -48,20 +46,14 @@ const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
   let updatedUser = await userUtils.checkUserIsExist(reqBody.email);
   // { user: { } }
 
-  if (!updatedUser.user.verificationCode)
-    throw new NotFoundError('code not exist');
+  if (!updatedUser.user.verificationCode) throw new NotFoundError('code not exist');
 
-  const isEqual = checkValueEquality(
-    updatedUser.user.verificationCode,
-    reqBody.token
-  );
+  const isEqual = checkValueEquality(updatedUser.user.verificationCode, reqBody.token);
 
   if (!isEqual) {
     updatedUser.user.verificationCode = '';
     await updatedUser.user.save();
-    throw new UnauthenticatedError(
-      'invalid token send request again to reset a password'
-    );
+    throw new UnauthenticatedError('invalid token send request again to reset a password');
   }
 
   updatedUser.user.password = reqBody.password;
@@ -110,12 +102,8 @@ const activateAccount = async (
       isVerified: true,
     };
   }
-  if (!storedUser.verificationCode)
-    throw new NotFoundError('verificationCode not found');
-  const isMatch = checkValueEquality(
-    storedUser.verificationCode,
-    reqBody.token
-  );
+  if (!storedUser.verificationCode) throw new NotFoundError('verificationCode not found');
+  const isMatch = checkValueEquality(storedUser.verificationCode, reqBody.token);
   if (!isMatch) {
     await userUtils.resetSentToken(storedUser);
     userUtils.logout(res);
@@ -141,10 +129,8 @@ const bloodContribution = async (user: User, id: string | undefined) => {
   if (!id) throw new BadRequestError('no id provided');
   const isCaseExist = await caseUtils.getCaseByIdFromDB(id);
 
-  if (!isCaseExist.privateNumber)
-    throw new BadRequestError('sorry no number is added');
-  if (isCaseExist.finished)
-    throw new BadRequestError('the case had been finished');
+  if (!isCaseExist.privateNumber) throw new BadRequestError('sorry no number is added');
+  if (isCaseExist.finished) throw new BadRequestError('the case had been finished');
 
   await setupMailSender(
     user.email,
@@ -161,15 +147,13 @@ const requestFundraisingCampaign = async (
 ) => {
   const _CharityRepository = new CharityRepository();
 
-  const chosenCharity: ICharity | null =
-    await _CharityRepository.findCharityById(charityId);
+  const chosenCharity: ICharity | null = await _CharityRepository.findCharityById(charityId);
   if (!chosenCharity) throw new BadRequestError('no charity found');
 
   if (
     !chosenCharity.isConfirmed ||
     !chosenCharity.isEnabled ||
-    (!chosenCharity?.emailVerification?.isVerified &&
-      !chosenCharity?.phoneVerification?.isVerified)
+    (!chosenCharity?.emailVerification?.isVerified && !chosenCharity?.phoneVerification?.isVerified)
   ) {
     throw new UnauthenticatedError('cant choose this charity');
   }
@@ -177,12 +161,7 @@ const requestFundraisingCampaign = async (
   caseData.freezed = true; //till the charity accept it will be false
   caseData.user = storedUser._id;
 
-  const responseData = await caseService.addCase(
-    caseData,
-    'none',
-    chosenCharity,
-    storedUser
-  );
+  const responseData = await caseService.addCase(caseData, 'none', chosenCharity, storedUser);
 
   return {
     case: responseData.case,
@@ -197,10 +176,7 @@ const getUserProfileData = (user: User) => {
   return { user: user, message: 'User Profile Fetched Successfully' };
 };
 
-const editUserProfile = async (
-  reqBody: IUserModified,
-  user: User
-): Promise<EditProfile> => {
+const editUserProfile = async (reqBody: IUserModified, user: User): Promise<EditProfile> => {
   if (!reqBody) throw new BadRequestError('no data sent');
   if (
     //put restriction  on the edit elements
@@ -221,8 +197,10 @@ const editUserProfile = async (
 
     if (isDupliacated) throw new BadRequestError('Email is already taken!');
 
-    const userWithEmailUpdated: { user: User } =
-      await userUtils.changeUserEmailWithMailAlert(user, email); //email is the NewEmail
+    const userWithEmailUpdated: { user: User } = await userUtils.changeUserEmailWithMailAlert(
+      user,
+      email
+    ); //email is the NewEmail
 
     const userObj: IUserModified = {
       name: userWithEmailUpdated.user.name,

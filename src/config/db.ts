@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
-import logger from '../utils/logger';
+
 import * as configurationProvider from '../libraries/configuration-provider/index';
+import logger from '../utils/logger';
+
 const connectDB = async () => {
   try {
     await mongoose.connect(configurationProvider.getValue('DB.url'));

@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
+
 import {
+  CharityPaymentMethodBankAccount,
+  CharityPaymentMethodFawry,
+  CharityPaymentMethodVodafoneCash,
+  ICharity,
+  ICharityDocs,
   ICharityLocation,
   ICharityPaymentMethod,
   ICharityPaymentMethods,
-  ICharityDocs,
-  ICharity,
-  CharityPaymentMethodBankAccount,
-  CharityPaymentMethodVodafoneCash,
-  CharityPaymentMethodFawry
-
 } from '.';
 
 export type DataForPaymentRequestsForConfirmedCharity = {
@@ -92,4 +92,3 @@ export type RequestEditCharityPaymentsResponse = Promise<{
 export type logoutResponse = {
   message: string;
 };
-

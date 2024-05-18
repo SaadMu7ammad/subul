@@ -1,9 +1,9 @@
+import { CharityDao, ICharity } from './interfaces/';
 import CharityModel from './models/charity.model';
-import { CharityDao ,ICharity } from './interfaces/';
 
 export class CharityRepository implements CharityDao {
   async findCharity(email: string): Promise<ICharity | null> {
-    const charity : ICharity | null= await CharityModel.findOne({
+    const charity: ICharity | null = await CharityModel.findOne({
       email: email,
     });
     return charity;
@@ -22,4 +22,3 @@ export class CharityRepository implements CharityDao {
     return charity;
   }
 }
-

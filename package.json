@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.3.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/convict": "^6.1.6",
     "@types/cookie-parser": "^1.4.6",
@@ -59,6 +60,7 @@
     "globals": "^15.2.0",
     "mongoose-tsgen": "^9.2.10",
     "nodemon": "^3.0.1",
+    "prettier": "3.2.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript-eslint": "^7.9.0"
