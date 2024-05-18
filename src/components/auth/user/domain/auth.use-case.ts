@@ -7,7 +7,10 @@ import {
   UserObject,
   UserResponseBasedOnUserVerification,
 } from '../data-access/interfaces';
-import { authUserResponse, registerUserResponse } from '../data-access/interfaces';
+import {
+  authUserResponse,
+  registerUserResponse,
+} from '../data-access/interfaces';
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -35,11 +38,13 @@ const authUser: RequestHandler = async (
       user: userResponsed,
       msg: 'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
       token: responseData.token,
+      isVerified: responseData.isVerified,
     };
   } else {
     return {
       user: userResponsed,
       token: responseData.token,
+      isVerified: responseData.isVerified,
     };
   }
 };

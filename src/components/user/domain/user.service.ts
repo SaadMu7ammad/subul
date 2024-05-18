@@ -17,7 +17,7 @@ import {
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
-  User
+  User,
 } from '../data-access/interfaces/';
 import { caseUtils } from '../../case/domain/case.utils';
 import { ICase } from '../../case/data-access/interfaces';
@@ -25,6 +25,7 @@ import { ICharity } from '../../charity/data-access/interfaces';
 import { CharityRepository } from '../../charity/data-access/charity.repository';
 import { caseService } from '../../case/domain/case.service';
 import { sendNotification } from '../../../utils/sendNotification';
+import { authUserResponse } from '../../auth/user/data-access/interfaces';
 
 const resetUser = async (reqBody: dataForResetEmail) => {
   const email = reqBody.email;
@@ -45,9 +46,7 @@ const resetUser = async (reqBody: dataForResetEmail) => {
 };
 
 const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
-  let updatedUser = await userUtils.checkUserIsExist(
-    reqBody.email
-  );
+  let updatedUser = await userUtils.checkUserIsExist(reqBody.email);
   // { user: { } }
 
   if (!updatedUser.user.verificationCode)
@@ -102,10 +101,15 @@ const activateAccount = async (
   reqBody: dataForActivateAccount,
   user: User,
   res: Response
-) => {
+): Promise<authUserResponse> => {
   let storedUser = user;
   if (storedUser.emailVerification?.isVerified) {
-    return { message: 'account already is activated' };
+    return {
+      // message: 'account already is activated'
+      user: storedUser,
+      msg: 'account already is activated',
+      isVerified: true,
+    };
   }
   if (!storedUser.verificationCode)
     throw new NotFoundError('verificationCode not found');
@@ -126,7 +130,10 @@ const activateAccount = async (
   );
 
   return {
-    message: 'account has been activated successfully',
+    // message: 'account has been activated successfully',
+    user: storedUser,
+    msg: 'account has been activated successfully',
+    isVerified: true,
   };
 };
 //we must limit the amount of sending emails as each time user click to contribute to the same case will send an email to him
@@ -154,12 +161,18 @@ const bloodContribution = async (user: User, id: string | undefined) => {
     'usedItem',
     isCaseExist._id
   );
-}
-const requestFundraisingCampaign = async (caseData: ICase, image: string, charityId: string, storedUser: User) => {
+};
+const requestFundraisingCampaign = async (
+  caseData: ICase,
+  image: string,
+  charityId: string,
+  storedUser: User
+) => {
   const _CharityRepository = new CharityRepository();
 
-  const chosenCharity: ICharity | null = await _CharityRepository.findCharityById(charityId);
-  if (!chosenCharity) throw new BadRequestError('no charity found')
+  const chosenCharity: ICharity | null =
+    await _CharityRepository.findCharityById(charityId);
+  if (!chosenCharity) throw new BadRequestError('no charity found');
 
   if (
     !chosenCharity.isConfirmed ||
@@ -170,12 +183,16 @@ const requestFundraisingCampaign = async (caseData: ICase, image: string, charit
     throw new UnauthenticatedError('cant choose this charity');
   }
 
-  caseData.freezed = true;//till the charity accept it will be false
+  caseData.freezed = true; //till the charity accept it will be false
   caseData.user = storedUser._id;
 
+  const responseData = await caseService.addCase(
+    caseData,
+    'none',
+    chosenCharity,
+    storedUser
+  );
 
-  const responseData = await caseService.addCase(caseData, 'none', chosenCharity, storedUser);
-  
   return {
     case: responseData.case,
   };
@@ -198,7 +215,7 @@ const editUserProfile = async (
     //put restriction  on the edit elements
     !reqBody.name &&
     !reqBody.email &&
-    !reqBody.userLocation&&
+    !reqBody.userLocation &&
     !reqBody.gender &&
     !reqBody.phone
   )
@@ -259,5 +276,5 @@ export const userService = {
   getUserProfileData,
   editUserProfile,
   bloodContribution,
-  requestFundraisingCampaign
+  requestFundraisingCampaign,
 };
