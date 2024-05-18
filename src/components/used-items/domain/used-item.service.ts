@@ -1,15 +1,61 @@
 import { deleteOldImgs } from "../../../utils/deleteFile";
-import { PlainIUsedItem } from "../data-access/interfaces";
 import { usedItemUtils } from "./used-item.utils";
+import {  BookItemRequest, PlainIUsedItem } from '../data-access/interfaces';
 
-const addUsedItem = async (usedItemData:PlainIUsedItem) => {
-    const usedItem = await usedItemUtils.addUsedItem(usedItemData);
+const addUsedItem = async (usedItemData: PlainIUsedItem) => {
+  const usedItem = await usedItemUtils.addUsedItem(usedItemData);
 
-    return{ 
-        usedItem,
-        message: 'Used Item Created Successfully',
-    }
-}
+  return {
+    usedItem,
+    message: 'Used Item Created Successfully',
+  };
+};
+
+const findAllUsedItems = async () => {
+  const usedItems = await usedItemUtils.findAllUsedItems();
+
+  return {
+    usedItems: usedItems,
+    message: 'All Used Items Retrieved Successfully',
+  };
+};
+
+const bookUsedItem = async (bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemUtils.bookUsedItem(bookItemData);
+
+  return {
+    usedItem: usedItem,
+    message: 'Used Item Booked Successfully',
+  };
+};
+
+const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemUtils.cancelBookingOfUsedItem(bookItemData);
+  // // If not null and charity is not the same as the one in the request should handle that though
+  // if (usedItems && usedItems.charity?.toString() !== bookItemData.charity) {
+  //   throw new UnauthenticatedError(
+  //     `You are not allowed to cancel the booking of this item, because it is not booked by charity with id: ${bookItemData.charity}`
+  //   );
+  // }
+  return {
+    usedItem: usedItem,
+    message: 'Used Item Cancelled Successfully',
+  };
+};
+
+const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemUtils.ConfirmBookingReceipt(bookItemData);
+  // // If not null and charity is not the same as the one in the request should handle that though
+  // if (usedItem && usedItem.charity?.toString() !== bookItemData.charity) {
+  //   throw new UnauthenticatedError(
+  //     `You are not allowed to confirm this action, because it is not booked by charity with id: ${bookItemData.charity}`
+  //   );
+  // }
+  return {
+    usedItem: usedItem,
+    message: 'Used Item Confirmed Successfully',
+  };
+};
 
 const getUsedItem = async (id:string|undefined) => {
     //check if the id was sent in the request
@@ -35,6 +81,9 @@ const updateUsedItem = async (id:string|undefined, userId:string, usedItemData:P
     //check if the user is the owner of the used item
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
+    //check if the used item is booked or not
+    usedItemUtils.isUsedItemBooked(usedItem);
+
     const filteredUsedItemData = usedItemUtils.removeUndefinedAttributesFromUsedItemData(usedItemData);
 
     //update the used item
@@ -57,7 +106,8 @@ const deleteUsedItem = async (id:string | undefined, userId:string) => {
     //check if the user is the owner of the used item
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
-    //TODO:check if the usedItem is booked or not
+    //check if the usedItem is booked or not
+    usedItemUtils.isUsedItemBooked(usedItem);
 
     //delete the used item
     const deletedUsedItem = await usedItemUtils.deleteUsedItem(usedItem.id);
@@ -82,6 +132,9 @@ const addUsedItemImages = async (id:string | undefined, userId:string, images:st
     //check if the user is the owner of the used item
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
+    //check if the usedItem is booked or not
+    usedItemUtils.isUsedItemBooked(usedItem);
+
     //add the images
     const updatedUsedItem = await usedItemUtils.addUsedItemImages(id, images);
 
@@ -102,6 +155,9 @@ const deleteUsedItemImage = async (id:string | undefined, userId:string, imageNa
     //check if the user is the owner of the used item
     usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
 
+    //check if the usedItem is booked or not
+    usedItemUtils.isUsedItemBooked(usedItem);
+
     //delete the image
     const updatedUsedItem = await usedItemUtils.deleteUsedItemImage(id, imageName);
 
@@ -110,11 +166,16 @@ const deleteUsedItemImage = async (id:string | undefined, userId:string, imageNa
         message:'Used Item Image Deleted Successfully',
     }
 }
+
 export const usedItemService = {
-    addUsedItem,
-    deleteUsedItem,
-    getUsedItem,
-    updateUsedItem,
-    addUsedItemImages,
-    deleteUsedItemImage,
+  addUsedItem,
+  findAllUsedItems,
+  bookUsedItem,
+  cancelBookingOfUsedItem,
+  ConfirmBookingReceipt,
+  deleteUsedItem,
+  getUsedItem,
+  updateUsedItem,
+  addUsedItemImages,
+  deleteUsedItemImage,
 };

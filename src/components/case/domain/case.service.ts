@@ -16,10 +16,15 @@ import {
   NotFoundError,
 } from '../../../libraries/errors/components';
 import { ICharity } from '../../charity/data-access/interfaces/';
+import { User } from '../../user/data-access/interfaces';
+import { setupMailSender } from '../../../utils/mailer';
+import { userRepository } from '../../user/data-access/user.repository';
+import { userUtils } from '../../user/domain/user.utils';
 const addCase = async (
   caseData:ICase,
   image: string,
-  charity: ICharity
+  charity: ICharity,
+  user: User | undefined = undefined
 ): Promise<AddCaseResponse> => {
   caseData.coverImage = image;
   caseData.charity = charity._id;
@@ -30,6 +35,11 @@ const addCase = async (
   charity.cases.push(newCase._id);
 
   await charity.save();
+
+  if (user) {
+    user.contributions.push(newCase._id)
+    await user.save();
+  }
 
   return { case: newCase };
 };
@@ -67,6 +77,11 @@ const deleteCase = async (
   charity: ICharity,
   caseId: string
 ): Promise<DeleteCaseResponse> => {
+
+  const isCaseFinished = await caseUtils.getCaseByIdFromDB(caseId);
+  if (isCaseFinished.finished) throw new BadRequestError('you dont have access to delete a completed case')
+  if (isCaseFinished.currentDonationAmount > 0) throw new BadRequestError('you dont have access to delete a case in progress')
+
   const idx: number = caseUtils.checkIfCaseBelongsToCharity(
     charity.cases,
     caseId
@@ -75,6 +90,23 @@ const deleteCase = async (
   const deletedCase: ICase = await caseUtils.deleteCaseFromDB(caseId);
 
   await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
+  
+  if (deletedCase.mainType === 'customizedCampaigns' && deletedCase.user) {//delete the id from the contributions arr of user and send email
+    const _userRepository = new userRepository()
+
+    const userOwner = await _userRepository.findUserById(deletedCase.user.toString());
+    if (!userOwner) throw new BadRequestError('no user found')
+
+    const idx = userUtils.checkIfCaseBelongsToUserContributions(userOwner.contributions, deletedCase._id.toString())
+    await userUtils.deleteCaseFromUserContributionsArray(userOwner, idx)
+
+    await setupMailSender(
+      userOwner.email,
+      `request Fundraising campaign`,
+      `hello ${userOwner.name.firstName} ${userOwner.name.lastName} -- we ${charity.name} charity are sorry that your fundraising request had been rejected`,
+    );
+  }
+
 
   return {
     case: deletedCase,
@@ -86,6 +118,10 @@ const editCase = async (
   caseData: ICase & { coverImage: string; image: string[] },
   caseId: string
 ): Promise<EditCaseResponse> => {
+
+  const isFinishedCase = await caseUtils.getCaseByIdFromDB(caseId);
+  if (isFinishedCase.finished) throw new BadRequestError('cant edit completed case')
+
   caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
   let deleteOldImg: (() => void) | null = null;

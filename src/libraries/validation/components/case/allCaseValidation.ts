@@ -100,21 +100,30 @@ const helpedNumbersValidation = body('helpedNumbers')
     .notEmpty()
     .isNumeric()
     .withMessage('Helped Numbers should be at least 1 !');
+const privateNumberValidation = body('privateNumber')
+    .trim()
+    .optional()
+    .notEmpty()
+    .isMobilePhone('any')
+    .withMessage('Invalid PhoneNumber')
+    .isLength({ min: 11, max: 11 })
+    .withMessage('Invalid PhoneNumber');
 const targetDonationAmountValidation = body('targetDonationAmount')
     .trim()
     .notEmpty()
     .isNumeric()
     .withMessage('Target Donation Amount must be Provided!');
 
-    export {
-        titleValidation,
-        descriptionValidation,
-        mainTypeValidation,
-        subTypeValidation,
-        nestedSubTypeValidation,
-        governorateValidation,
-        cityValidation,
-        genderValidtion,
-        helpedNumbersValidation,
-        targetDonationAmountValidation,
-    }
+export {
+    titleValidation,
+    descriptionValidation,
+    mainTypeValidation,
+    subTypeValidation,
+    nestedSubTypeValidation,
+    governorateValidation,
+    cityValidation,
+    genderValidtion,
+    helpedNumbersValidation,
+    targetDonationAmountValidation,
+    privateNumberValidation
+}

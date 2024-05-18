@@ -1,7 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 import { User } from '../../user/data-access/interfaces';
-import { AddUsedItemRequest, AddUsedItemResponse, GetUsedItemResponse, DeletedUsedItemResponse, UpdateUsedItemRequest, AddUsedItemImageResponse, UpdateUsedItemResponse, AddUsedItemImageRequest, DeleteUsedItemImageRequest } from '../data-access/interfaces/used-item.api';
+import {
+  AddUsedItemRequest,
+  AddUsedItemResponse,
+  GetUsedItemResponse,
+  DeletedUsedItemResponse,
+  UpdateUsedItemRequest,
+  AddUsedItemImageResponse,
+  UpdateUsedItemResponse,
+  AddUsedItemImageRequest,
+  DeleteUsedItemImageRequest,
+} from '../data-access/interfaces/used-item.api';
 import { usedItemService } from './used-item.service';
+import { usedItemUtils } from './used-item.utils';
 
 const addUsedItem = async (
   req: Request,
@@ -9,7 +20,9 @@ const addUsedItem = async (
   next: NextFunction
 ): Promise<AddUsedItemResponse> => {
   const user: User = res.locals.user;
-  const { title, description, category,amount,images} = req.body;
+
+  const { title, description, category, amount, images } = req.body;
+
   const usedItemData: AddUsedItemRequest = {
     title,
     description,
@@ -40,7 +53,7 @@ const getUsedItem = async (
     usedItem: responseData.usedItem,
     message: responseData.message,
   };
-}
+};
 
 const deleteUsedItem = async (
   req: Request,
@@ -55,7 +68,7 @@ const deleteUsedItem = async (
     usedItem: responseData.usedItem,
     message: responseData.message,
   };
-}
+};
 
 const updateUsedItem = async (
   req: Request,
@@ -65,7 +78,7 @@ const updateUsedItem = async (
   const { id } = req.params;
   const userId = res.locals.user._id.toString();
 
-  const { title, description, category,amount} = req.body;
+  const { title, description, category, amount } = req.body;
   const usedItemData: UpdateUsedItemRequest = {
     title,
     description,
@@ -73,14 +86,17 @@ const updateUsedItem = async (
     amount,
   };
 
-
-  const responseData = await usedItemService.updateUsedItem(id, userId, usedItemData);
+  const responseData = await usedItemService.updateUsedItem(
+    id,
+    userId,
+    usedItemData
+  );
 
   return {
     usedItem: responseData.usedItem,
     message: responseData.message,
   };
-}
+};
 
 const addUsedItemImages = async (
   req: Request,
@@ -89,14 +105,18 @@ const addUsedItemImages = async (
 ): Promise<AddUsedItemImageResponse> => {
   const { id } = req.params;
   const userId = res.locals.user._id.toString();
-  const {images}:AddUsedItemImageRequest = req.body;
-  const responseData = await usedItemService.addUsedItemImages(id, userId, images);
+  const { images }: AddUsedItemImageRequest = req.body;
+  const responseData = await usedItemService.addUsedItemImages(
+    id,
+    userId,
+    images
+  );
 
   return {
     usedItem: responseData.usedItem,
     message: responseData.message,
   };
-}
+};
 
 const deleteUsedItemImage = async (
   req: Request,
@@ -105,15 +125,64 @@ const deleteUsedItemImage = async (
 ): Promise<AddUsedItemResponse> => {
   const { id } = req.params;
   const userId = res.locals.user._id.toString();
-  const {imageName}:DeleteUsedItemImageRequest = req.body;
+  const { imageName }: DeleteUsedItemImageRequest = req.body;
 
-  const responseData = await usedItemService.deleteUsedItemImage(id, userId, imageName);
+  const responseData = await usedItemService.deleteUsedItemImage(
+    id,
+    userId,
+    imageName
+  );
 
   return {
     usedItem: responseData.usedItem,
     message: responseData.message,
   };
-}
+};
+
+const getAllUsedItems = async () => {
+  const usedItemsResponse = await usedItemService.findAllUsedItems();
+
+  return {
+    usedItems: usedItemsResponse.usedItems,
+    message: usedItemsResponse.message,
+  };
+};
+
+const bookUsedItem = async (req: Request, res: Response) => {
+  const bookItemData = await usedItemUtils.createBookItemData(req, res);
+
+  const usedItemResponse = await usedItemService.bookUsedItem(bookItemData);
+  return {
+    usedItem: usedItemResponse.usedItem,
+    message: usedItemResponse.message,
+  };
+};
+
+const cancelBookingOfUsedItem = async (req: Request, res: Response) => {
+  const bookItemData = await usedItemUtils.createBookItemData(req, res);
+
+  const usedItemsResponse = await usedItemService.cancelBookingOfUsedItem(
+    bookItemData
+  );
+
+  return {
+    usedItem: usedItemsResponse.usedItem,
+    message: usedItemsResponse.message,
+  };
+};
+
+const ConfirmBookingReceipt = async (req: Request, res: Response) => {
+  const bookItemData = await usedItemUtils.createBookItemData(req, res);
+
+  const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(
+    bookItemData
+  );
+
+  return {
+    usedItem: usedItemsResponse.usedItem,
+    message: usedItemsResponse.message,
+  };
+};
 
 export const usedItemUseCase = {
   addUsedItem,
@@ -121,5 +190,9 @@ export const usedItemUseCase = {
   getUsedItem,
   updateUsedItem,
   addUsedItemImages,
-  deleteUsedItemImage
+  deleteUsedItemImage,
+  getAllUsedItems,
+  bookUsedItem,
+  cancelBookingOfUsedItem,
+  ConfirmBookingReceipt,
 };

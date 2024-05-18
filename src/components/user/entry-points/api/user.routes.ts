@@ -98,8 +98,7 @@ export default function defineRoutes(expressApp: Application) {
         logger.info(`User API was called to activate user Account`);
         const activateAccountResponse = await userUseCase.activateAccount(
           req,
-          res,
-          next
+          res
         );
         return res.json(activateAccountResponse);
       } catch (error) {
@@ -108,7 +107,41 @@ export default function defineRoutes(expressApp: Application) {
       }
     }
   );
-
+  router.get(
+    '/bloodContribution/:id',
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to blood Contribution `);
+        const bloodContributionResponse = await userUseCase.bloodContribution(
+          req,
+          res,
+          next
+        );
+        return res.json(bloodContributionResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+  router.post(
+    '/requestFundraisingCampaign',
+    auth,
+    isActivated,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`User API was called to request Fundraising Campaign`);
+        const requestFundraisingCampaignResponse =
+          await userUseCase.requestFundraisingCampaign(req, res, next);
+        return res.json(requestFundraisingCampaignResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
   router.get(
     '/profile',
     auth,

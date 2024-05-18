@@ -43,11 +43,21 @@ const getFilterObj = (
     'mainType',
     'subType',
     'nestedSubType',
+    'freezed',
   ];
   // filterQueryParameters[0]='mainType'//just for remove the code temp
   for (const param of filterQueryParameters) {
     if (queryParams[param]) {
-      filterObject[param as keyof FilterObj] = queryParams[param] as string;
+      if (param === 'freezed') {
+        // console.log(typeof queryParams[param]);//string
+        filterObject[param] = true// queryParams[param];
+        filterObject['mainType'] = 'customizedCampaigns'
+
+        // console.log(typeof filterObject[param]);//string if we assign queryParams[param] not explicit value
+      }
+      else if (param == 'mainType' || param == 'subType' || param == 'nestedSubType') {
+        filterObject[param] = queryParams[param];
+      }
     }
   }
 
@@ -131,7 +141,20 @@ const deleteCaseFromCharityCasesArray = async (
 };
 
 const editCase = async (caseData: ICase, caseId: string) => {
-  const updatedCase: ICase | null = await caseRepository.editCase(
+  let updatedCase: ICase | null;
+  // const temp = {
+  //   finished: caseData?.finished || false
+  // }
+  if (caseData?.finished?.toString() === 'true') {//Only make it finished manually and dont change anything else
+    updatedCase = await caseRepository.editCase(
+      {finished:true},
+      caseId
+    );
+    if (!updatedCase) throw new NotFoundError('No Such Case With this Id!');
+
+    return updatedCase;
+  }
+  updatedCase = await caseRepository.editCase(
     caseData,
     caseId
   );

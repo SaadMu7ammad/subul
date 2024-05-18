@@ -24,7 +24,9 @@ export type ChangePasswordResponse = {
 export type ActivateAccountResponse = {
   message: string;
 };
-
+export type bloodContributionResponse = {
+  message: string;
+};
 export type LogoutUserResponse = {
   message: string;
 };
