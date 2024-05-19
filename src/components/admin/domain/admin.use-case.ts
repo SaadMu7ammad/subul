@@ -5,6 +5,12 @@ import {
   ConfirmPendingCharity,
   ICharityDocs,
 } from '../../charity/data-access/interfaces';
+
+const getAllCharities = async () => {
+  const charities = await adminService.getAllChariteis();
+  return { charities: charities };
+};
+
 const getAllPendingRequestsCharities = async (
   _req: Request,
   _res: Response,
@@ -137,6 +143,7 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
   };
 };
 export const adminUseCase = {
+  getAllCharities,
   getAllPendingRequestsCharities,
   getPendingRequestCharityById,
   confirmCharity,

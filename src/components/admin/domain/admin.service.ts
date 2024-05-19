@@ -30,6 +30,14 @@ export type QueryObject = {
   }[];
 };
 
+const getAllChariteis = async () => {
+  const charities = await adminRepository.findAllCharities(
+    'name email isPending isConfirmed'
+  );
+
+  return { charities: charities };
+};
+
 const getAllOrOnePendingRequestsCharities = async (
   id: string | null = null
 ) => {
@@ -270,6 +278,7 @@ const rejectCharity = async (id: string): Promise<ConfirmPendingCharity> => {
 };
 
 export const adminService = {
+  getAllChariteis,
   getAllOrOnePendingRequestsCharities,
   confirmCharity,
   rejectCharity,

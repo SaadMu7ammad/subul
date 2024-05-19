@@ -10,6 +10,22 @@ export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
 
   router.get(
+    '/AllCharities',
+    auth,
+    isAdmin,
+    async (_req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Admin API was called to get All Charities`);
+        const allCharitiesResponse = await adminUseCase.getAllCharities();
+        return res.json(allCharitiesResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
+  router.get(
     '/AllRequestsCharities',
     auth,
     isAdmin,

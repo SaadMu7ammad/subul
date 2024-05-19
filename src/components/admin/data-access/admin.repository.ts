@@ -1,10 +1,16 @@
 import {
+  AllCharities,
   CharitiesAccountsByAggregation,
   DataForForConfirmedCharity,
   PendingCharities,
 } from '../../charity/data-access/interfaces';
 import Charity from '../../charity/data-access/models/charity.model';
 import { QueryObject } from '../domain/admin.service';
+
+const findAllCharities = async (selection: string): Promise<AllCharities[]> => {
+  const charities = await Charity.find().select(selection);
+  return charities;
+};
 
 const findAllPendingCharities = async (
   queryObject: QueryObject,
@@ -75,6 +81,7 @@ const getPendingPaymentAccountByAggregation = async (paymentMethod: string) => {
   return charity;
 };
 export const adminRepository = {
+  findAllCharities,
   findAllPendingCharities,
   findConfirmedCharityById,
   getPendingPaymentAccountByAggregation,

@@ -35,6 +35,11 @@ export interface PendingRequestCharityResponse {
 //   [P in K]: T[P];
 // };
 
+export type AllCharities = Pick<
+  ICharity,
+  'name' | 'email' | '_id' | 'isConfirmed' | 'isPending'
+>;
+
 export type PendingCharities = HydratedDocument<
   Pick<
     ICharity,
