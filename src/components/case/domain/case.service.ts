@@ -53,6 +53,20 @@ const getAllCases = async (
   const { page, limit }: PaginationObj = caseUtils.getCasesPagination(queryParams);
 
   const cases = await caseUtils.getAllCases(sortObj, filterObj, page, limit);
+
+  if (!cases) throw new NotFoundError('no cases found');
+  return { cases: cases };
+};
+
+const getAllCasesForUser = async (
+  queryParams: GetAllCasesQueryParams
+): Promise<GetAllCasesResponse> => {
+  const sortObj: SortObj = caseUtils.getSortObj(queryParams.sort);
+
+  const { page, limit }: PaginationObj = caseUtils.getCasesPagination(queryParams);
+
+  const cases = await caseUtils.getAllCasesForUser(sortObj, page, limit);
+
   if (!cases) throw new NotFoundError('no cases found');
   return { cases: cases };
 };
@@ -138,4 +152,5 @@ export const caseService = {
   getCaseById,
   deleteCase,
   editCase,
+  getAllCasesForUser,
 };

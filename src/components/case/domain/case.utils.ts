@@ -74,6 +74,16 @@ const getAllCases = async (sortObj: SortObj, filterObj: FilterObj, page: number,
   return cases;
 };
 
+const getAllCasesForUser = async (
+  sortObj: SortObj,
+  page: number,
+  limit: number
+): Promise<ICase[] | null> => {
+  const cases = await caseRepository.getAllCasesForUser(sortObj, page, limit);
+
+  return cases;
+};
+
 const getCaseByIdFromDB = async (caseId: string): Promise<ICase> => {
   const _case: ICase | null = await caseRepository.getCaseById(caseId);
 
@@ -162,4 +172,5 @@ export const caseUtils = {
   deleteCaseFromDB,
   editCase,
   replaceCaseImg,
+  getAllCasesForUser,
 };

@@ -46,6 +46,17 @@ const getAllCases = async (
   };
 };
 
+const getAllCasesForUser = async (req: Request, res: Response, next: NextFunction) => {
+  const queryParams: GetAllCasesQueryParams = req.query;
+
+  const responseData = await caseService.getAllCasesForUser(queryParams);
+
+  return {
+    cases: responseData.cases,
+    message: 'All Cases fetched Successfully',
+  };
+};
+
 const getCaseById = async (
   req: Request,
   res: Response,
@@ -106,4 +117,5 @@ export const caseUseCase = {
   getCaseById,
   deleteCase,
   editCase,
+  getAllCasesForUser,
 };

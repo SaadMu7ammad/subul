@@ -40,6 +40,18 @@ export class CaseRepository implements CaseDao {
     return charityCases;
   };
 
+  getAllCasesForUser = async (
+    sortObj: SortObj,
+    page: number,
+    limit: number
+  ): Promise<ICase[] | null> => {
+    const allCases = await CaseModel.find()
+      .sort(sortObj)
+      .skip((page - 1) * limit)
+      .limit(limit);
+    return allCases;
+  };
+
   getCaseById = async (id: string): Promise<ICase | null> => {
     const _case = await CaseModel.findById(id);
     return _case;

@@ -72,6 +72,24 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
+  // get all cases from all charities in the DB to user
+  router.get(
+    '/allCasesForUser',
+    auth,
+    getAllCasesValidation,
+    validate,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Case API was called to Get All Cases For User`);
+        const getAllCasesResponse = await caseUseCase.getAllCasesForUser(req, res, next);
+        return res.json(getAllCasesResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
   router
     .route('/cases/:caseId')
     .get(auth, isConfirmed, async (req: Request, res: Response, next: NextFunction) => {
