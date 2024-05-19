@@ -34,7 +34,7 @@ const getAllChariteis = async () => {
     'name email isPending isConfirmed'
   );
 
-  return { charities: charities };
+  return {charities: charities};
 };
 const getAllOrOnePendingRequestsCharities = async (id: string | null = null) => {
   const queryObject: QueryObject = {

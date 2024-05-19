@@ -7,7 +7,7 @@ import { adminService } from './admin.service';
 
 const getAllCharities = async () => {
   const charities = await adminService.getAllChariteis();
-  return { charities: charities };
+  return charities;
 };
 
 const getAllPendingRequestsCharities = async (
