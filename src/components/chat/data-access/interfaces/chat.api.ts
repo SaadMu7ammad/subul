@@ -1,6 +1,5 @@
-import { IMessage } from ".";
-
+import { IMessage } from '.';
 
 export type sendMessageResponse = {
-  message: IMessage;  
+  message: IMessage;
 };

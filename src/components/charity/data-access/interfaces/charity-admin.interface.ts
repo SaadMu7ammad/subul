@@ -1,5 +1,7 @@
 import { HydratedDocument } from 'mongoose';
+
 import { ICharity, IPaymentMethods } from './';
+
 export interface AllPendingRequestsPaymentMethods {
   allPendingRequestedPaymentAccounts: CharitiesAccounts;
 }
@@ -38,13 +40,7 @@ export interface PendingRequestCharityResponse {
 export type PendingCharities = HydratedDocument<
   Pick<
     ICharity,
-    | 'name'
-    | 'email'
-    | '_id'
-    | 'charityDocs'
-    | 'paymentMethods'
-    | 'isConfirmed'
-    | 'isPending'
+    'name' | 'email' | '_id' | 'charityDocs' | 'paymentMethods' | 'isConfirmed' | 'isPending'
   >
 >;
 
@@ -53,12 +49,8 @@ export type PendingCharities = HydratedDocument<
 //   isConfirmed: ICharity['isConfirmed'];
 // }
 
-export type DataForForConfirmedCharity = Pick<
-  ICharity,
-  '_id' | 'paymentMethods'
->;
-export interface CharitiesAccountsByAggregation
-  extends DataForForConfirmedCharity {
+export type DataForForConfirmedCharity = Pick<ICharity, '_id' | 'paymentMethods'>;
+export interface CharitiesAccountsByAggregation extends DataForForConfirmedCharity {
   name: string;
 }
 

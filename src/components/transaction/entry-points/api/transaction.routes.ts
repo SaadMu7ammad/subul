@@ -1,18 +1,15 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 
-import { auth, isActivated } from '../../../auth/shared/index';
-import { isAdmin } from '../../../admin/index';
-import {
-  preCreateTransaction,
-  updateCaseInfo,
-} from '../../domain/transaction.use-case';
-
-import { hmacSetting } from '../../../../libraries/paymob/hmac/hmac.controller';
-import { payWithOnlineCard } from '../../../../libraries/paymob/payment/onlineCards/onlineCards.controller';
-import { paywithMobileWallet } from '../../../../libraries/paymob/payment/mobileWallets/mobileWallets.controller';
 import { getTransactionById } from '../../../../libraries/paymob/admin/getTransactionById.controller';
+import { hmacSetting } from '../../../../libraries/paymob/hmac/hmac.controller';
+import { paywithMobileWallet } from '../../../../libraries/paymob/payment/mobileWallets/mobileWallets.controller';
+import { payWithOnlineCard } from '../../../../libraries/paymob/payment/onlineCards/onlineCards.controller';
 import { refund } from '../../../../libraries/paymob/refund/refund.controller';
 import logger from '../../../../utils/logger';
+import { isAdmin } from '../../../admin/index';
+import { auth, isActivated } from '../../../auth/shared/index';
+import { preCreateTransaction, updateCaseInfo } from '../../domain/transaction.use-case';
+
 // import { AuthedRequest } from '../../../auth/user/data-access/auth.interface';
 
 export default function defineRoutes(expressApp: Application) {
@@ -28,11 +25,7 @@ export default function defineRoutes(expressApp: Application) {
       try {
         // const req=_req as AuthedRequest
         logger.info(`transaction API was called to pay With OnlineCard`);
-        const payWithOnlineCardResponse = await payWithOnlineCard(
-          req,
-          res,
-          next
-        );
+        const payWithOnlineCardResponse = await payWithOnlineCard(req, res, next);
         return res.json(payWithOnlineCardResponse);
       } catch (error) {
         next(error);
@@ -49,11 +42,7 @@ export default function defineRoutes(expressApp: Application) {
       try {
         // const req=_req as AuthedRequest
         logger.info(`transaction API was called to pay With MobileWallet`);
-        const payWithMobileWalletResponse = await paywithMobileWallet(
-          req,
-          res,
-          next
-        );
+        const payWithMobileWalletResponse = await paywithMobileWallet(req, res, next);
         return res.json(payWithMobileWalletResponse);
       } catch (error) {
         next(error);
@@ -101,11 +90,7 @@ export default function defineRoutes(expressApp: Application) {
         // const req=_req as AuthedRequest
 
         logger.info(`transaction API was called to getTransactionById`);
-        const getTransactionByIdResponse = await getTransactionById(
-          req,
-          res,
-          next
-        );
+        const getTransactionByIdResponse = await getTransactionById(req, res, next);
         return res.json(getTransactionByIdResponse);
       } catch (error) {
         next(error);

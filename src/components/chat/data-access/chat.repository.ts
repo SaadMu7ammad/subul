@@ -26,17 +26,12 @@ export class chatRepository implements chatDao {
     });
 
     if (!createdMessage)
-      throw new BadRequestError(
-        'error happened while sending the message,try again'
-      );
+      throw new BadRequestError('error happened while sending the message,try again');
 
     return createdMessage;
   }
 
-  async getConversation(
-    receiverId: string,
-    senderId: string
-  ): Promise<IConversation> {
+  async getConversation(receiverId: string, senderId: string): Promise<IConversation> {
     const conversation: IConversation | null = await conversationModel.findOne({
       participants: { $all: [senderId, receiverId] },
     });

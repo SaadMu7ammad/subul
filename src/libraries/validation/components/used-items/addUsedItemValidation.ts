@@ -1,8 +1,8 @@
-import { usedItemValidation } from "./allUsedItemValidation"
+import { usedItemValidation } from './allUsedItemValidation';
 
 export const addUsedItemValidation = [
-    usedItemValidation.titleValidation,
-    usedItemValidation.categoryValidation,
-    usedItemValidation.descriptionValidation,
-    usedItemValidation.amountValidation,
+  usedItemValidation.titleValidation,
+  usedItemValidation.categoryValidation,
+  usedItemValidation.descriptionValidation,
+  usedItemValidation.amountValidation,
 ];

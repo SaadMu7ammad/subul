@@ -1,12 +1,12 @@
 import {
+  charityInfoValidation,
+  contactValidation,
   currencyValidation,
   descriptionValidation,
   emailValidation,
   governorateValidation,
   nameValidation,
   passwordValidation,
-  contactValidation,
-  charityInfoValidation,
   phoneValidation,
 } from './allCharityValidation';
 

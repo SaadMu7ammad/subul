@@ -9,7 +9,8 @@
     "dev": "ts-node-dev ./src/server.ts",
     "watch": "tsc -w",
     "client": "npm run dev --prefix Frontend",
-    "start":"npx ts-node --transpile-only src/server.ts"
+    "start": "npx ts-node --transpile-only src/server.ts",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -39,19 +40,36 @@
     "winston": "^3.13.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.3.0",
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/convict": "^6.1.6",
     "@types/cookie-parser": "^1.4.6",
     "@types/cors": "^2.8.17",
+    "@types/eslint__js": "^8.42.3",
+    "@types/eslint-config-prettier": "^6.11.3",
+    "@types/eslint-plugin-security": "^3.0.0",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/multer": "^1.4.11",
     "@types/nodemailer": "^6.4.14",
     "@types/uuid": "^9.0.8",
     "concurrently": "^8.2.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-security": "^3.0.0",
+    "globals": "^15.2.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "mongoose-tsgen": "^9.2.10",
     "nodemon": "^3.0.1",
+    "prettier": "3.2.5",
     "ts-node": "^10.9.2",
-    "ts-node-dev": "^2.0.0"
+    "ts-node-dev": "^2.0.0",
+    "typescript-eslint": "^7.9.0"
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix",
+    "*.{ts,css,md}": "prettier --write"
   }
 }

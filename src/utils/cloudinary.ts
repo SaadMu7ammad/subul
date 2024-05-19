@@ -1,7 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
-import logger from './logger';
 
 import * as configurationProvider from '../libraries/configuration-provider/index';
+import logger from './logger';
 
 class Cloudinary {
   constructor() {
@@ -11,21 +11,18 @@ class Cloudinary {
       api_secret: configurationProvider.getValue('cloudinary.apiSecret'),
     });
   }
-  uploadImg = (async (imgBuffer:Buffer, folder:string, publicId:string) => {
-    const uploadResult = await new Promise((resolve) => {
+  uploadImg = async (imgBuffer: Buffer, folder: string, publicId: string) => {
+    const uploadResult = await new Promise(resolve => {
       cloudinary.uploader
-        .upload_stream(
-          { folder, public_id: publicId },
-          (error, uploadResult) => {
-            return resolve(uploadResult);
-          }
-        )
+        .upload_stream({ folder, public_id: publicId }, (error, uploadResult) => {
+          return resolve(uploadResult);
+        })
         .end(imgBuffer);
     });
     return uploadResult;
-  });
+  };
 
-  deleteImg = (async (folder:string, publicId:string) => {
+  deleteImg = async (folder: string, publicId: string) => {
     try {
       const result = await cloudinary.uploader.destroy(`${folder}/${publicId}`);
 
@@ -39,7 +36,7 @@ class Cloudinary {
     } catch (error) {
       logger.error(error);
     }
-  });
+  };
 }
 
 export default Cloudinary;

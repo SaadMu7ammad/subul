@@ -1,8 +1,17 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 
-import { auth, isConfirmed, isActivated } from '../../../auth/shared/index';
-import { charityUseCase } from '../../domain/charity.use-case';
-import logger from '../../../../utils/logger';
+import {
+  resizeDoc,
+  uploadDocs,
+} from '../../../../libraries/uploads/components/docs/images/handler';
+import {
+  resizeDocReq,
+  uploadDocsReq,
+} from '../../../../libraries/uploads/components/docs/images/handler2';
+import {
+  imageAssertion,
+  resizeImg,
+} from '../../../../libraries/uploads/components/images/handlers';
 import {
   changePasswordCharityValidation,
   confirmResetCharityValidation,
@@ -14,20 +23,11 @@ import {
   reqEditPaymentMethodsValidation,
 } from '../../../../libraries/validation/components/charity/editCharityProfileValidation';
 import { validate } from '../../../../libraries/validation/index';
-import {
-  imageAssertion,
-  resizeImg,
-} from '../../../../libraries/uploads/components/images/handlers';
-import {
-  resizeDoc,
-  uploadDocs,
-} from '../../../../libraries/uploads/components/docs/images/handler';
 import { deleteOldImgs } from '../../../../utils/deleteFile';
-import {
-  resizeDocReq,
-  uploadDocsReq,
-} from '../../../../libraries/uploads/components/docs/images/handler2';
+import logger from '../../../../utils/logger';
+import { auth, isActivated, isConfirmed } from '../../../auth/shared/index';
 import { usedItemUseCase } from '../../../used-items/domain/used-item.use-case';
+import { charityUseCase } from '../../domain/charity.use-case';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -39,8 +39,11 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Activate Account`);
-        const activateCharityAccountResponse =
-          await charityUseCase.activateCharityAccount(req, res, next);
+        const activateCharityAccountResponse = await charityUseCase.activateCharityAccount(
+          req,
+          res,
+          next
+        );
         return res.json(activateCharityAccountResponse);
       } catch (error) {
         next(error);
@@ -55,8 +58,11 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Reset Password`);
-        const requestResetPasswordResponse =
-          await charityUseCase.requestResetPassword(req, res, next);
+        const requestResetPasswordResponse = await charityUseCase.requestResetPassword(
+          req,
+          res,
+          next
+        );
         return res.json(requestResetPasswordResponse);
       } catch (error) {
         next(error);
@@ -71,8 +77,11 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Confirm Reset Password`);
-        const confirmResetPasswordResponse =
-          await charityUseCase.confirmResetPassword(req, res, next);
+        const confirmResetPasswordResponse = await charityUseCase.confirmResetPassword(
+          req,
+          res,
+          next
+        );
         return res.json(confirmResetPasswordResponse);
       } catch (error) {
         next(error);
@@ -89,11 +98,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Change Password`);
-        const changePasswordResponse = await charityUseCase.changePassword(
-          req,
-          res,
-          next
-        );
+        const changePasswordResponse = await charityUseCase.changePassword(req, res, next);
         return res.json(changePasswordResponse);
       } catch (error) {
         next(error);
@@ -112,24 +117,16 @@ export default function defineRoutes(expressApp: Application) {
       return undefined;
     }
   });
-  router.get(
-    '/profile',
-    auth,
-    (req: Request, res: Response, next: NextFunction) => {
-      try {
-        logger.info(`Charity API was called to Show Profile`);
-        const showCharityProfileResponse = charityUseCase.showCharityProfile(
-          req,
-          res,
-          next
-        );
-        return res.json(showCharityProfileResponse);
-      } catch (error) {
-        next(error);
-        return undefined;
-      }
+  router.get('/profile', auth, (req: Request, res: Response, next: NextFunction) => {
+    try {
+      logger.info(`Charity API was called to Show Profile`);
+      const showCharityProfileResponse = charityUseCase.showCharityProfile(req, res, next);
+      return res.json(showCharityProfileResponse);
+    } catch (error) {
+      next(error);
+      return undefined;
     }
-  );
+  });
   //should add edit image in a separate api
   router.put(
     '/edit-profile',
@@ -141,11 +138,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Edit Profile`);
-        const changePasswordResponse = await charityUseCase.editCharityProfile(
-          req,
-          res,
-          next
-        );
+        const changePasswordResponse = await charityUseCase.editCharityProfile(req, res, next);
         return res.json(changePasswordResponse);
       } catch (error) {
         next(error);
@@ -163,8 +156,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Edit Profile Img`);
-        const changeProfileImageResponse =
-          await charityUseCase.changeProfileImage(req, res, next);
+        const changeProfileImageResponse = await charityUseCase.changeProfileImage(req, res, next);
         return res.json(changeProfileImageResponse);
       } catch (error) {
         next(error);
@@ -185,22 +177,16 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Request Edit Payments`);
-        const editCharityPaymentResponse =
-          await charityUseCase.requestEditCharityPayments(req, res, next);
+        const editCharityPaymentResponse = await charityUseCase.requestEditCharityPayments(
+          req,
+          res,
+          next
+        );
         return res.json(editCharityPaymentResponse);
       } catch (error) {
-        deleteOldImgs(
-          'charityDocs',
-          req?.body?.paymentMethods?.bankAccount?.bankDocs
-        );
-        deleteOldImgs(
-          'charityDocs',
-          req?.body?.paymentMethods?.fawry?.fawryDocs
-        );
-        deleteOldImgs(
-          'charityDocs',
-          req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs
-        );
+        deleteOldImgs('charityDocs', req?.body?.paymentMethods?.bankAccount?.bankDocs);
+        deleteOldImgs('charityDocs', req?.body?.paymentMethods?.fawry?.fawryDocs);
+        deleteOldImgs('charityDocs', req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs);
         next(error);
         return undefined;
       }
@@ -224,18 +210,9 @@ export default function defineRoutes(expressApp: Application) {
         deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs2);
         deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs3);
         deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs4);
-        deleteOldImgs(
-          'charityDocs',
-          req?.body?.paymentMethods?.bankAccount?.bankDocs
-        );
-        deleteOldImgs(
-          'charityDocs',
-          req?.body?.paymentMethods?.fawry?.fawryDocs
-        );
-        deleteOldImgs(
-          'charityDocs',
-          req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs
-        );
+        deleteOldImgs('charityDocs', req?.body?.paymentMethods?.bankAccount?.bankDocs);
+        deleteOldImgs('charityDocs', req?.body?.paymentMethods?.fawry?.fawryDocs);
+        deleteOldImgs('charityDocs', req?.body?.paymentMethods?.vodafoneCash?.vodafoneCashDocs);
 
         next(error);
         return undefined;
@@ -251,10 +228,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Get All Used Items`);
-        const bookUsedItemResponse = await usedItemUseCase.bookUsedItem(
-          req,
-          res
-        );
+        const bookUsedItemResponse = await usedItemUseCase.bookUsedItem(req, res);
         return res.json(bookUsedItemResponse);
       } catch (error) {
         next(error);
@@ -270,11 +244,11 @@ export default function defineRoutes(expressApp: Application) {
     isConfirmed,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        logger.info(
-          `Used Items API was called to Cancel Booking Of Used Items`
+        logger.info(`Used Items API was called to Cancel Booking Of Used Items`);
+        const cancelBookingOfUsedItemResponse = await usedItemUseCase.cancelBookingOfUsedItem(
+          req,
+          res
         );
-        const cancelBookingOfUsedItemResponse =
-          await usedItemUseCase.cancelBookingOfUsedItem(req, res);
         return res.json(cancelBookingOfUsedItemResponse);
       } catch (error) {
         next(error);
@@ -291,8 +265,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Confirm Booking Receipt`);
-        const confirmBookingReceiptResponse =
-          await usedItemUseCase.ConfirmBookingReceipt(req, res);
+        const confirmBookingReceiptResponse = await usedItemUseCase.ConfirmBookingReceipt(req, res);
         return res.json(confirmBookingReceiptResponse);
       } catch (error) {
         next(error);

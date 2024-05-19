@@ -1,6 +1,6 @@
 import { ITransaction } from '.';
 
-export type GetAllTransactionRequest= {}
+export type GetAllTransactionRequest = {};
 
 export type GetAllTransactionResponse = {
   status: string;
@@ -12,7 +12,7 @@ export type GetAllTransactionResponse = {
 export interface IDataUpdateCaseInfo {
   user: { email: string }; //user email
   items: {
-    name: string;//case id
+    name: string; //case id
   }[];
   externalTransactionId: string;
   orderId: string;
@@ -24,10 +24,12 @@ export interface IDataUpdateCaseInfo {
   secretInfoPayment: string;
 }
 
-export type UpdateCaseInfoResponse = {
-  status: string;
-  data: ITransaction;
-} | undefined;
+export type UpdateCaseInfoResponse =
+  | {
+      status: string;
+      data: ITransaction;
+    }
+  | undefined;
 
 export interface IDataPreCreateTransaction {
   charityId: string;

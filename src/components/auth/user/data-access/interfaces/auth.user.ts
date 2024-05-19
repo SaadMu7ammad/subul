@@ -4,7 +4,6 @@
 // export interface AuthedRequest extends Request {
 //     user: IUserDocument;
 //     charity: ICharityDocument;
-
 import { User } from '../../../../user/data-access/interfaces';
 
 export interface IloginData {

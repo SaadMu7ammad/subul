@@ -1,5 +1,6 @@
-import { NotFoundError } from '../../errors/components/index';
 import * as configurationProvider from '../../configuration-provider/index';
+import { NotFoundError } from '../../errors/components/index';
+
 const getTokenStepOne = async () => {
   const request = await fetch('https://accept.paymob.com/api/auth/tokens', {
     method: 'post',
@@ -13,7 +14,7 @@ const getTokenStepOne = async () => {
   console.log('get token first to refund');
   return response.token;
 };
-const getTransactionInfo = async (authToken:string, transaction_id:string) => {
+const getTransactionInfo = async (authToken: string, transaction_id: string) => {
   const request = await fetch(
     `https://accept.paymob.com/api/acceptance/transactions/${transaction_id}`,
     {

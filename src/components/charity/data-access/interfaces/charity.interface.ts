@@ -5,9 +5,6 @@ export type ICharityDocs = {
   paymentMethods: ICharityPaymentMethod;
 };
 
-export type ICharityDonorRequest = Exclude<
-  ICharity['donorRequests'][0],
-  undefined
->;
+export type ICharityDonorRequest = Exclude<ICharity['donorRequests'][0], undefined>;
 
 export type ICharityLocation = ICharity['charityLocation'][0];

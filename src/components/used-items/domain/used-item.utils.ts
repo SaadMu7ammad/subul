@@ -1,13 +1,16 @@
-import {
-  BadRequestError,
-  NotFoundError,
-} from '../../../libraries/errors/components';
+import { Request, Response } from 'express';
+
+import { BadRequestError, NotFoundError } from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import { isDefined } from '../../../utils/shared';
-import { BookItemRequest, IUsedItem, PlainIUsedItem,UpdateUsedItemRequest } from '../data-access/interfaces';
-import { UsedItemRepository } from '../data-access/used-item.repository';
-import { Request, Response } from 'express';
 import { ICharity } from '../../charity/data-access/interfaces';
+import {
+  BookItemRequest,
+  IUsedItem,
+  PlainIUsedItem,
+  UpdateUsedItemRequest,
+} from '../data-access/interfaces';
+import { UsedItemRepository } from '../data-access/used-item.repository';
 
 const usedItemRepository = new UsedItemRepository();
 
@@ -33,17 +36,14 @@ const checkIfUsedItemBelongsToUser = (usedItem: IUsedItem, userId: string) => {
 
 const deleteUsedItem = async (id: string) => {
   const deletedUsedItem = await usedItemRepository.deleteUsedItem(id);
-  if(!deletedUsedItem){
+  if (!deletedUsedItem) {
     throw new NotFoundError('No such UsedItem with this ID');
   }
   return deletedUsedItem;
 };
 
 const updateUsedItem = async (id: string, usedItemData: UpdateUsedItemRequest) => {
-  const updatedUsedItem = await usedItemRepository.updateUsedItem(
-    id,
-    usedItemData
-  );
+  const updatedUsedItem = await usedItemRepository.updateUsedItem(id, usedItemData);
   if (!updatedUsedItem) {
     throw new NotFoundError('No such UsedItem with this ID');
   }
@@ -53,43 +53,43 @@ const updateUsedItem = async (id: string, usedItemData: UpdateUsedItemRequest) =
 const addUsedItemImages = async (id: string, images: string[]) => {
   const usedItem = await getUsedItem(id);
 
-  while(usedItem.images.length<5 && images.length>0){
-    if(isDefined(images[0])) usedItem.images.push(images[0]);
+  while (usedItem.images.length < 5 && images.length > 0) {
+    if (isDefined(images[0])) usedItem.images.push(images[0]);
     images.shift();
   }
 
   const updatedUsedItem = await usedItem.save();
 
   //if usedItem.images.length + images.length > 5
-  deleteOldImgs('usedItemsImages',images)
+  deleteOldImgs('usedItemsImages', images);
 
   return updatedUsedItem;
-}
+};
 
 const deleteUsedItemImage = async (id: string, imageName: string) => {
   const usedItem = await getUsedItem(id);
 
-  const imageIndex = usedItem.images.findIndex((image:string) => image === imageName);
+  const imageIndex = usedItem.images.findIndex((image: string) => image === imageName);
   if (imageIndex === -1) {
     throw new NotFoundError('No such Image with this name');
   }
 
   const deletedImage = usedItem.images.splice(imageIndex, 1);
 
-  deleteOldImgs('usedItemsImages',deletedImage);
+  deleteOldImgs('usedItemsImages', deletedImage);
 
   const updatedUsedItem = await usedItem.save();
 
   return updatedUsedItem;
-}
+};
 
 const removeUndefinedAttributesFromUsedItemData = (usedItemData: Partial<PlainIUsedItem>) => {
   const filteredUsedItemData = Object.fromEntries(
-  Object.entries(usedItemData).filter(([key, value]) => value !== undefined)
+    Object.entries(usedItemData).filter(([key, value]) => value !== undefined)
   );
 
   return filteredUsedItemData;
-}
+};
 const addUsedItem = async (usedItemData: PlainIUsedItem) => {
   const usedItem = await usedItemRepository.addUsedItem(usedItemData);
   return usedItem;
@@ -106,10 +106,7 @@ const findAllUsedItems = async () => {
   return usedItems;
 };
 
-const createBookItemData = async (
-  req: Request,
-  res: Response
-): Promise<BookItemRequest> => {
+const createBookItemData = async (req: Request, res: Response): Promise<BookItemRequest> => {
   const charity: ICharity = res.locals.charity;
   const { id: itemId } = req.params;
 
@@ -128,8 +125,7 @@ const bookUsedItem = async (bookItemData: BookItemRequest) => {
 
 const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   const usedItem = await usedItemRepository.findBookedItem(bookItemData);
-  if (!usedItem)
-    throw new BadRequestError('This Item Already Cancelled Or Confirmed');
+  if (!usedItem) throw new BadRequestError('This Item Already Cancelled Or Confirmed');
   usedItem.booked = false;
   usedItem.charity = undefined;
   await usedItem.save();
@@ -150,7 +146,7 @@ const isUsedItemBooked = (usedItem: IUsedItem) => {
   if (usedItem.booked) {
     throw new BadRequestError('This Used Item is already booked');
   }
-}
+};
 
 export const usedItemUtils = {
   addUsedItem,
@@ -167,5 +163,5 @@ export const usedItemUtils = {
   cancelBookingOfUsedItem,
   ConfirmBookingReceipt,
   isUsedItemBooked,
-  createBookItemData
+  createBookItemData,
 };

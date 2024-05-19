@@ -1,7 +1,9 @@
-import * as configurationProvider from '../../configuration-provider/index';
-import Cloudinary from '../../../utils/cloudinary';
 import { Sharp } from 'sharp';
+
+import Cloudinary from '../../../utils/cloudinary';
+import * as configurationProvider from '../../configuration-provider/index';
 import { NotFoundError } from '../../errors/components/not-found';
+
 const saveImg = async (
   sharpPromise: Sharp,
   destinationFolder: string,
@@ -9,9 +11,7 @@ const saveImg = async (
 ) => {
   const cloudinaryObj = new Cloudinary();
 
-  const environment: string = configurationProvider.getValue(
-    'environment.nodeEnv'
-  );
+  const environment: string = configurationProvider.getValue('environment.nodeEnv');
   if (fileName && destinationFolder) {
     if (environment === 'development') {
       //saving locally

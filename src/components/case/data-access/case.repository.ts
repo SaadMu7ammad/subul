@@ -1,6 +1,6 @@
-import { ICase, FilterObj, SortObj } from './interfaces/case.interface';
-import CaseModel from './models/case.model';
 import { CaseDao } from './interfaces/case.dao';
+import { FilterObj, ICase, SortObj } from './interfaces/case.interface';
+import CaseModel from './models/case.model';
 
 export class CaseRepository implements CaseDao {
   createCase = async (caseData: ICase): Promise<ICase | null> => {
@@ -62,10 +62,7 @@ export class CaseRepository implements CaseDao {
     return _case;
   };
 
-  editCase = async (
-    caseData: ICase | { finished: boolean },
-    id: string
-  ): Promise<ICase | null> => {
+  editCase = async (caseData: ICase | { finished: boolean }, id: string): Promise<ICase | null> => {
     const updatedCase = await CaseModel.findByIdAndUpdate(
       id,
       {

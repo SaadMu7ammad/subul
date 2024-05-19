@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { UnauthenticatedError } from '../../libraries/errors/components/index';
+
 // import { AuthedRequest } from '../auth/user/data-access/auth.interface';
 
 const isAdmin = (req: Request, res: Response, next: NextFunction) => {

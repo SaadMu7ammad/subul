@@ -1,4 +1,4 @@
-import { UserDao,User } from './interfaces/';
+import { User, UserDao } from './interfaces/';
 // import { IUser, IUserDocument } from './interfaces/user.interface';
 import UserModel from './models/user.model';
 

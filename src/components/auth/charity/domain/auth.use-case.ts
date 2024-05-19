@@ -1,8 +1,9 @@
 import { RequestHandler } from 'express';
 
-import { authCharityService } from './auth.service';
 import { AuthCharity, AuthCharityObject } from '../data-access/interfaces';
 import { AuthCharityResponse, registerCharityResponse } from '../data-access/interfaces';
+import { authCharityService } from './auth.service';
+
 //@desc   submit login page
 //@route  POST /api/users/auth
 //@access public
@@ -90,7 +91,7 @@ const authCharity: RequestHandler = async (req, res, _next): Promise<AuthCharity
   //   password: req.body.password,
   // };
 
-  const responseData:AuthCharityObject = await authCharityService.authCharity(data, res);
+  const responseData: AuthCharityObject = await authCharityService.authCharity(data, res);
 
   const charityResponsed: AuthCharity = {
     ...responseData.charity,
@@ -101,17 +102,16 @@ const authCharity: RequestHandler = async (req, res, _next): Promise<AuthCharity
     //token sent to ur email
     return {
       charity: charityResponsed,
-      message:
-        'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
+      message: 'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
       token: responseData.token,
-      emailAlert:true
+      emailAlert: true,
     };
   }
   const returnedObj: AuthCharityResponse = {
     charity: charityResponsed,
     message: '',
     token: responseData.token,
-    emailAlert: false
+    emailAlert: false,
   };
   //second stage
   //isPending = true and isConfirmed= false

@@ -1,7 +1,6 @@
-import mongoose, { Schema, InferSchemaType, HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, InferSchemaType, Schema } from 'mongoose';
 
 const messageSchema = new Schema(
-
   {
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,7 +23,6 @@ const messageSchema = new Schema(
 declare module '../interfaces/chat.interface' {
   export type IMessage = HydratedDocument<InferSchemaType<typeof messageSchema>>;
 }
-
 
 const messageModel = mongoose.model('Message', messageSchema);
 

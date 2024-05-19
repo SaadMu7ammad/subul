@@ -1,8 +1,10 @@
-import { NotFoundError } from '../../../libraries/errors/components/index';
-import { userRepository } from '../data-access/user.repository';
-import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import { Response } from 'express';
+
+import { NotFoundError } from '../../../libraries/errors/components/index';
+import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
 import { User } from '../data-access/interfaces';
+import { userRepository } from '../data-access/user.repository';
+
 const userRepositoryObj = new userRepository();
 
 const checkUserIsExist = async (email: string): Promise<{ user: User }> => {
@@ -40,9 +42,7 @@ const logout = (res: Response): void => {
 // //   return { user: res.locals.user };
 // // };
 const checkIsEmailDuplicated = async (email: string): Promise<boolean> => {
-  const isDuplicatedEmail: User | null = await userRepositoryObj.findUser(
-    email
-  );
+  const isDuplicatedEmail: User | null = await userRepositoryObj.findUser(email);
   // if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
   return isDuplicatedEmail ? true : false;
 };
@@ -113,10 +113,7 @@ const checkIfCaseBelongsToUserContributions = (
   return idx;
 };
 
-const deleteCaseFromUserContributionsArray = async (
-  user: User,
-  idx: number
-) => {
+const deleteCaseFromUserContributionsArray = async (user: User, idx: number) => {
   const caseIdsArray = user.contributions;
 
   caseIdsArray.splice(idx, 1);
@@ -139,5 +136,5 @@ export const userUtils = {
   resetSentToken,
   changeUserEmailWithMailAlert,
   deleteCaseFromUserContributionsArray,
-  checkIfCaseBelongsToUserContributions
+  checkIfCaseBelongsToUserContributions,
 };

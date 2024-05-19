@@ -1,9 +1,7 @@
-import { adminRepository } from '../data-access/admin.repository';
-import {
-  BadRequestError,
-  NotFoundError,
-} from '../../../libraries/errors/components/index';
 import mongoose from 'mongoose';
+
+import { BadRequestError, NotFoundError } from '../../../libraries/errors/components/index';
+import { setupMailSender } from '../../../utils/mailer';
 import {
   AllPendingRequestsCharitiesResponse,
   CharitiesAccountsByAggregation,
@@ -16,8 +14,9 @@ import {
   ICharityDocs,
   PendingCharities,
 } from '../../charity/data-access/interfaces';
+import { adminRepository } from '../data-access/admin.repository';
 import { adminUtils } from './admin.utils';
-import { setupMailSender } from '../../../utils/mailer';
+
 // import { setupMailSender } from '../../../utils/mailer';
 
 export type QueryObject = {
@@ -30,34 +29,27 @@ export type QueryObject = {
   }[];
 };
 
-const getAllOrOnePendingRequestsCharities = async (
-  id: string | null = null
-) => {
+const getAllOrOnePendingRequestsCharities = async (id: string | null = null) => {
   const queryObject: QueryObject = {
     $and: [
       { isPending: true },
       { isEnabled: true },
       { isConfirmed: false },
       {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
+        $or: [{ 'emailVerification.isVerified': true }, { 'phoneVerification.isVerified': true }],
       },
       id ? { _id: id } : {}, // to find by Id only one
       // id ? { _id: new mongoose.Types.ObjectId(id) } : {},
     ],
   };
-  const allPendingCharities: PendingCharities[] =
-    await adminRepository.findAllPendingCharities(
-      queryObject,
-      'name email charityDocs paymentMethods'
-    );
+  const allPendingCharities: PendingCharities[] = await adminRepository.findAllPendingCharities(
+    queryObject,
+    'name email charityDocs paymentMethods'
+  );
 
   // console.log(allPendingCharities[0]); // { selection }
 
-  if (id && !allPendingCharities[0])
-    throw new BadRequestError('charity not found');
+  if (id && !allPendingCharities[0]) throw new BadRequestError('charity not found');
 
   return { allPendingCharities: allPendingCharities };
 };
@@ -74,17 +66,12 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
       { isEnabled: true },
       { isConfirmed: true },
       {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
+        $or: [{ 'emailVerification.isVerified': true }, { 'phoneVerification.isVerified': true }],
       },
       { _id: charityId },
     ],
   };
-  const charity: PendingCharities = await adminUtils.getConfirmedCharities(
-    queryObject
-  ); // charities[0]
+  const charity: PendingCharities = await adminUtils.getConfirmedCharities(queryObject); // charities[0]
 
   const idx: number = adminUtils.checkPaymentMethodAvailability(
     charity,
@@ -118,18 +105,13 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
       { isEnabled: true },
       { isConfirmed: true },
       {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
+        $or: [{ 'emailVerification.isVerified': true }, { 'phoneVerification.isVerified': true }],
       },
       { _id: charityId },
     ],
   };
 
-  const charity: ConfirmedCharities = await adminUtils.getConfirmedCharities(
-    queryObject
-  );
+  const charity: ConfirmedCharities = await adminUtils.getConfirmedCharities(queryObject);
 
   const idx: number = adminUtils.checkPaymentMethodAvailability(
     charity,
@@ -158,19 +140,13 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
       { isEnabled: true },
       { isConfirmed: true },
       {
-        $or: [
-          { 'emailVerification.isVerified': true },
-          { 'phoneVerification.isVerified': true },
-        ],
+        $or: [{ 'emailVerification.isVerified': true }, { 'phoneVerification.isVerified': true }],
       },
       id ? { _id: id } : {}, // to find by Id only one
     ],
   };
   const paymentRequests: DataForForConfirmedCharity =
-    await adminRepository.findConfirmedCharityById(
-      queryObject,
-      'paymentMethods _id'
-    );
+    await adminRepository.findConfirmedCharityById(queryObject, 'paymentMethods _id');
 
   if (!paymentRequests) throw new BadRequestError('charity not found');
 
@@ -179,10 +155,9 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
       (acc: CharityPaymentMethodBankAccount) => acc.enable === false
     );
 
-  let fawry: CharityPaymentMethodFawry[] | undefined =
-    paymentRequests.paymentMethods?.fawry.filter(
-      (acc: CharityPaymentMethodFawry) => acc.enable === false
-    );
+  let fawry: CharityPaymentMethodFawry[] | undefined = paymentRequests.paymentMethods?.fawry.filter(
+    (acc: CharityPaymentMethodFawry) => acc.enable === false
+  );
 
   let vodafoneCash: CharityPaymentMethodVodafoneCash[] | undefined =
     paymentRequests.paymentMethods?.vodafoneCash.filter(
@@ -195,19 +170,13 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
 
 const getAllRequestsPaymentMethodsForConfirmedCharities = async () => {
   const bankAccountRequests: CharitiesAccountsByAggregation[] =
-    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
-      'bankAccount'
-    ); // [ { _id, name, paymentMethods }, { }, ... ]
+    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity('bankAccount'); // [ { _id, name, paymentMethods }, { }, ... ]
 
   const fawryRequests: CharitiesAccountsByAggregation[] =
-    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
-      'fawry'
-    );
+    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity('fawry');
 
   const vodafoneCashRequests: CharitiesAccountsByAggregation[] =
-    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity(
-      'vodafoneCash'
-    );
+    await adminUtils.getAllPendingPaymentMethodsRequestsForConfirmedCharity('vodafoneCash');
 
   if (!bankAccountRequests && !fawryRequests && !vodafoneCashRequests)
     throw new BadRequestError('No paymentRequests found');
@@ -227,8 +196,7 @@ const confirmCharity = async (id: string): Promise<ConfirmPendingCharity> => {
   const charity = await getAllOrOnePendingRequestsCharities(id);
   // { allPendingCharities: allPendingCharities }
 
-  const pendingCharity: PendingCharities | undefined =
-    charity.allPendingCharities[0];
+  const pendingCharity: PendingCharities | undefined = charity.allPendingCharities[0];
 
   if (!pendingCharity) throw new NotFoundError('Charity not found');
 
@@ -250,8 +218,7 @@ const rejectCharity = async (id: string): Promise<ConfirmPendingCharity> => {
   const charity: AllPendingRequestsCharitiesResponse =
     await getAllOrOnePendingRequestsCharities(id);
 
-  const pendingCharity: PendingCharities | undefined =
-    charity.allPendingCharities[0];
+  const pendingCharity: PendingCharities | undefined = charity.allPendingCharities[0];
 
   if (!pendingCharity) throw new NotFoundError('Charity not found');
 
