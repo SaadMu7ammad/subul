@@ -3,5 +3,4 @@ node_modules/*
 uploads/*
 .gitattributes
 dist
-.vscode
 tsconfig.tsbuildinfo

@@ -7,6 +7,3 @@ export interface TransactionPaymentInfo {
   };
   // _id: mongoose.Types.ObjectId;
 }
-
-
-

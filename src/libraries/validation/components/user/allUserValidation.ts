@@ -5,9 +5,9 @@ const tokenUserValidation = body('token')
   .notEmpty()
   .isLength({ min: 60, max: 60 })
   .withMessage('Invalid Token!');
-const firstName=  body('name.firstName').trim().notEmpty().withMessage('firstName is required')
-const lastName=body('name.lastName').trim().notEmpty().withMessage('lastName is required')
-const nameUserValidation=[firstName,lastName]
+const firstName = body('name.firstName').trim().notEmpty().withMessage('firstName is required');
+const lastName = body('name.lastName').trim().notEmpty().withMessage('lastName is required');
+const nameUserValidation = [firstName, lastName];
 const emailValidation = body('email')
   .trim()
   .notEmpty()
@@ -30,9 +30,9 @@ const phoneValidation = body('phone')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
 
-const genderValidtion= body('gender')
-.isIn(['male', 'female'])
-  .withMessage('Gender must be "male" or "female"')
+const genderValidtion = body('gender')
+  .isIn(['male', 'female'])
+  .withMessage('Gender must be "male" or "female"');
 
 const governorateValidation = body('location.governorate')
   .isIn([
@@ -68,10 +68,7 @@ const governorateValidation = body('location.governorate')
   ])
   .withMessage('governorate Invalid');
 
-const nameValidation = body('name')
-  .trim()
-  .notEmpty()
-  .withMessage('Name Required');
+const nameValidation = body('name').trim().notEmpty().withMessage('Name Required');
 
 const descriptionValidation = body('description')
   .trim()
@@ -250,9 +247,7 @@ const currencyValidation = body('currency')
   ])
   .withMessage('Currency Invalid');
 
-const bankAccountNumberValidation = body(
-  'paymentMethods.bankAccount[0].accNumber'
-)
+const bankAccountNumberValidation = body('paymentMethods.bankAccount[0].accNumber')
   .trim()
   .notEmpty()
   .withMessage('Account Number is Required')
@@ -271,11 +266,7 @@ const switfCodeValidation = body('paymentMethods.bankAccount[0].swiftCode')
   .withMessage('Swift Code is Required')
   .isLength({ min: 8, max: 11 });
 
-const bankAccountValidation = [
-  bankAccountNumberValidation,
-  ibanValidation,
-  switfCodeValidation,
-];
+const bankAccountValidation = [bankAccountNumberValidation, ibanValidation, switfCodeValidation];
 
 const vodafoneCashValidation = body('paymentMethods.vodafoneCash[0].number')
   .trim()
@@ -296,11 +287,7 @@ const fawryValidation = body('paymentMethods.fawry[0].number')
 //for changing password
 const changePasswordUserValidation = [passwordValidation];
 //for confirming reset password for user
-const confirmResetUserValidation = [
-  emailValidation,
-  passwordValidation,
-  tokenUserValidation,
-];
+const confirmResetUserValidation = [emailValidation, passwordValidation, tokenUserValidation];
 //for requesting reset email for User
 const requestResetEmailUserValidation = [emailValidation];
 
@@ -320,5 +307,5 @@ export {
   changePasswordUserValidation,
   confirmResetUserValidation,
   requestResetEmailUserValidation,
-  genderValidtion
+  genderValidtion,
 };

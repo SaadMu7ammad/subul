@@ -1,4 +1,4 @@
-import mongoose, { Schema, InferSchemaType, HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, InferSchemaType, Schema } from 'mongoose';
 
 const conversationSchema = new Schema(
   {
@@ -18,9 +18,7 @@ const conversationSchema = new Schema(
   { timestamps: true }
 );
 declare module '../interfaces/chat.interface' {
-  export type IConversation = HydratedDocument<
-    InferSchemaType<typeof conversationSchema>
-  >;
+  export type IConversation = HydratedDocument<InferSchemaType<typeof conversationSchema>>;
 
   export type PlainIConversation = InferSchemaType<typeof conversationSchema>;
 }

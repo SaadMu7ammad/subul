@@ -1,7 +1,4 @@
-import {
-  BadRequestError,
-  NotFoundError,
-} from '../../../libraries/errors/components';
+import { BadRequestError, NotFoundError } from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import {
   AccType,
@@ -11,6 +8,7 @@ import {
 } from '../../charity/data-access/interfaces';
 import { adminRepository } from '../data-access/admin.repository';
 import { QueryObject } from './admin.service';
+
 // import { QueryObject } from './admin.service';
 
 const getAllPendingPaymentMethodsRequestsForConfirmedCharity = async (
@@ -27,13 +25,13 @@ const confirmingCharity = async (charity: PendingCharities) => {
   charity.isConfirmed = true;
   //enable all paymentMethods when first time the charity send the docs
   if (charity && charity.paymentMethods) {
-    charity.paymentMethods.bankAccount.forEach((item) => {
+    charity.paymentMethods.bankAccount.forEach(item => {
       item.enable = true;
     });
-    charity.paymentMethods.fawry.forEach((item) => {
+    charity.paymentMethods.fawry.forEach(item => {
       item.enable = true;
     });
-    charity.paymentMethods.vodafoneCash.forEach((item) => {
+    charity.paymentMethods.vodafoneCash.forEach(item => {
       item.enable = true;
     });
   }
@@ -115,11 +113,10 @@ const checkPaymentMethodAvailability = (
     throw new BadRequestError('Invalid Payment Method type');
   }
 
-  if (!charity.paymentMethods)
-    throw new NotFoundError('Not found any payment methods');
+  if (!charity.paymentMethods) throw new NotFoundError('Not found any payment methods');
 
   const idx: number = charity.paymentMethods[paymentMethod].findIndex(
-    (item) => item._id == paymentAccountID
+    item => item._id == paymentAccountID
   );
 
   if (idx === -1) throw new BadRequestError('not found Payment Method account');
@@ -129,11 +126,10 @@ const checkPaymentMethodAvailability = (
 
 const getConfirmedCharities = async (queryObject: QueryObject) => {
   // [ { name email paymentMethods _id } ]
-  const charities: PendingCharities[] =
-    await adminRepository.findCharitiesByQueryWithOptionalId(
-      queryObject,
-      'name email paymentMethods'
-    );
+  const charities: PendingCharities[] = await adminRepository.findCharitiesByQueryWithOptionalId(
+    queryObject,
+    'name email paymentMethods'
+  );
 
   if (!charities[0]) throw new BadRequestError('charity not found');
 
@@ -146,8 +142,7 @@ const confirmingPaymentAccount = async (
   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
   idx: number
 ): Promise<void> => {
-  if (!charity.paymentMethods)
-    throw new NotFoundError('Not found any payment methods');
+  if (!charity.paymentMethods) throw new NotFoundError('Not found any payment methods');
 
   // if (charity.paymentMethods[paymentMethod][idx].enable === false) {
   // charity.paymentMethods[paymentMethod][idx].enable = true;
@@ -164,8 +159,7 @@ const confirmingPaymentAccount = async (
 
   const paymentAccount: AccType | undefined = paymentMethodData[idx]; // { }
 
-  if (!paymentAccount)
-    throw new NotFoundError('This payment account not found');
+  if (!paymentAccount) throw new NotFoundError('This payment account not found');
 
   if (paymentAccount.enable === false) {
     paymentAccount.enable = true;
@@ -182,8 +176,7 @@ const rejectingPaymentAccount = async (
   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
   idx: number
 ): Promise<void> => {
-  if (!charity.paymentMethods)
-    throw new NotFoundError('Not found any payment methods');
+  if (!charity.paymentMethods) throw new NotFoundError('Not found any payment methods');
 
   // type PaymentMethod =
   //   | CharityPaymentMethodBankAccount
@@ -194,8 +187,7 @@ const rejectingPaymentAccount = async (
 
   const paymentAccount: AccType | undefined = paymentMethodData[idx]; // { }
 
-  if (!paymentAccount)
-    throw new NotFoundError('This payment account not found');
+  if (!paymentAccount) throw new NotFoundError('This payment account not found');
 
   if (paymentAccount.enable === false) {
     throw new BadRequestError('This payment account is already not enabled');

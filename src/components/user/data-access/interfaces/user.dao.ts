@@ -1,4 +1,5 @@
 import { User } from '.';
+
 // import { IUser, IUserDocument } from './user.interface';
 
 export interface UserDao {

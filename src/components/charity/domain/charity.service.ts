@@ -1,27 +1,25 @@
+import { Response } from 'express';
+
 import {
   BadRequestError,
   NotFoundError,
   UnauthenticatedError,
 } from '../../../libraries/errors/components/index';
-import {
-  checkValueEquality,
-  updateNestedProperties,
-} from '../../../utils/shared';
-import { charityUtils } from './charity.utils';
 import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
+import { checkValueEquality, updateNestedProperties } from '../../../utils/shared';
 import {
-  ICharity,
-  DataForEditCharityProfile,
   DataForActivateCharityAccount,
-  DataForRequestResetPassword,
-  DataForConfirmResetPassword,
   DataForChangePassword,
   DataForChangeProfileImage,
+  DataForConfirmResetPassword,
+  DataForEditCharityProfile,
   DataForRequestEditCharityPayments,
+  DataForRequestResetPassword,
+  ICharity,
   ICharityDocs,
   IRequestPaymentCharityDocumentResponse,
 } from '../data-access/interfaces';
-import { Response } from 'express';
+import { charityUtils } from './charity.utils';
 
 const requestResetPassword = async (reqBody: DataForRequestResetPassword) => {
   const charityResponse = await charityUtils.checkCharityIsExist(reqBody.email);
@@ -45,30 +43,19 @@ const confirmResetPassword = async (
   let updatedCharity = await charityUtils.checkCharityIsExist(reqBody.email);
   if (!updatedCharity.charity.verificationCode)
     throw new NotFoundError('verificationCode not found');
-  const isEqual = checkValueEquality(
-    updatedCharity.charity.verificationCode,
-    reqBody.token
-  );
+  const isEqual = checkValueEquality(updatedCharity.charity.verificationCode, reqBody.token);
   if (!isEqual) {
     await charityUtils.resetSentToken(updatedCharity.charity);
-    throw new UnauthenticatedError(
-      'invalid token send request again to reset a password'
-    );
+    throw new UnauthenticatedError('invalid token send request again to reset a password');
   }
-  await charityUtils.changeCharityPasswordWithMailAlert(
-    updatedCharity.charity,
-    reqBody.password
-  );
+  await charityUtils.changeCharityPasswordWithMailAlert(updatedCharity.charity, reqBody.password);
   return { message: 'charity password changed successfully' };
 };
 const changePassword = async (
   reqBody: DataForChangePassword,
   charity: ICharity
 ): Promise<{ message: string }> => {
-  await charityUtils.changeCharityPasswordWithMailAlert(
-    charity,
-    reqBody.password
-  );
+  await charityUtils.changeCharityPasswordWithMailAlert(charity, reqBody.password);
   return { message: 'Charity password changed successfully' };
 };
 const activateAccount = async (
@@ -77,17 +64,11 @@ const activateAccount = async (
   res: Response
 ): Promise<{ message: string }> => {
   let storedCharity = charity;
-  if (
-    charityUtils.checkCharityVerification(storedCharity) 
-  ) {
+  if (charityUtils.checkCharityVerification(storedCharity)) {
     return { message: 'account already is activated' };
   }
-  if (!storedCharity.verificationCode)
-    throw new NotFoundError('verificationCode not found');
-  const isMatch = checkValueEquality(
-    storedCharity.verificationCode,
-    reqBody.token
-  );
+  if (!storedCharity.verificationCode) throw new NotFoundError('verificationCode not found');
+  const isMatch = checkValueEquality(storedCharity.verificationCode, reqBody.token);
   if (!isMatch) {
     await charityUtils.resetSentToken(charity);
     charityUtils.logout(res);
@@ -111,10 +92,7 @@ const logoutCharity = (res: Response): { message: string } => {
 const getCharityProfileData = (charity: ICharity) => {
   return { charity: charity };
 };
-const editCharityProfile = async (
-  reqBody: DataForEditCharityProfile,
-  charity: ICharity
-) => {
+const editCharityProfile = async (reqBody: DataForEditCharityProfile, charity: ICharity) => {
   if (!reqBody) throw new BadRequestError('no data sent');
   const { email, charityLocation, locationId } = reqBody;
   let storedCharity = charity;
@@ -146,11 +124,7 @@ const editCharityProfile = async (
     //edit
     if (locationId) {
       const updatedCharity = (
-        await charityUtils.editCharityProfileAddress(
-          storedCharity,
-          locationId,
-          charityLocation
-        )
+        await charityUtils.editCharityProfileAddress(storedCharity, locationId, charityLocation)
       ).charity;
       storedCharity = updatedCharity;
     } else {
@@ -175,9 +149,7 @@ const changeProfileImage = async (
 ): Promise<{ image: string; message: string }> => {
   const oldImg = charity.image;
   const newImg = reqBody.image;
-  const updatedImg = (
-    await charityUtils.replaceProfileImage(charity, oldImg, newImg)
-  ).image;
+  const updatedImg = (await charityUtils.replaceProfileImage(charity, oldImg, newImg)).image;
   return { image: updatedImg, message: 'image changed successfully' };
 };
 const sendDocs = async (reqBody: ICharityDocs, charity: ICharity) => {
@@ -207,8 +179,8 @@ const requestEditCharityPayments = async (
   storedCharity: ICharity,
   reqPaymentMethodsObj: DataForRequestEditCharityPayments
 ): Promise<IRequestPaymentCharityDocumentResponse> => {
-  let created= false;
-  let edited= false;
+  let created = false;
+  let edited = false;
 
   type paymentType = 'bankAccount' | 'vodafoneCash' | 'fawry' | undefined;
   let paymentTypeSelected: paymentType;
@@ -237,30 +209,21 @@ const requestEditCharityPayments = async (
       reqPaymentMethodsObj.paymentMethods.bankAccount.accNumber &&
       reqPaymentMethodsObj.paymentMethods.bankAccount.swiftCode
     ) {
-      const isUpdated = await charityUtils.editBankAccount(
-        storedCharity,
-        reqPaymentMethodsObj
-      );
+      const isUpdated = await charityUtils.editBankAccount(storedCharity, reqPaymentMethodsObj);
       if (isUpdated) {
         paymentTypeSelected = 'bankAccount';
         edited = true;
         created = false;
       }
     } else if (reqPaymentMethodsObj.paymentMethods.fawry.number) {
-      const isUpdated = await charityUtils.editFawryAccount(
-        storedCharity,
-        reqPaymentMethodsObj
-      );
+      const isUpdated = await charityUtils.editFawryAccount(storedCharity, reqPaymentMethodsObj);
       if (isUpdated) {
         paymentTypeSelected = 'fawry';
         edited = true;
         created = false;
       }
     } else if (reqPaymentMethodsObj.paymentMethods.vodafoneCash.number) {
-      const isUpdated = await charityUtils.editVodafoneAccount(
-        storedCharity,
-        reqPaymentMethodsObj
-      );
+      const isUpdated = await charityUtils.editVodafoneAccount(storedCharity, reqPaymentMethodsObj);
 
       if (isUpdated) {
         paymentTypeSelected = 'vodafoneCash';
@@ -275,10 +238,7 @@ const requestEditCharityPayments = async (
         reqPaymentMethodsObj.paymentMethods.bankAccount.accNumber &&
         reqPaymentMethodsObj.paymentMethods.bankAccount.swiftCode
       ) {
-        await charityUtils.createBankAccount(
-          storedCharity,
-          reqPaymentMethodsObj
-        );
+        await charityUtils.createBankAccount(storedCharity, reqPaymentMethodsObj);
         paymentTypeSelected = 'bankAccount';
         edited = false;
         created = true;
@@ -289,10 +249,7 @@ const requestEditCharityPayments = async (
         edited = false;
         created = true;
       }
-    } else if (
-      reqPaymentMethodsObj.paymentMethods.vodafoneCash.vodafoneCashDocs.length >
-      0
-    ) {
+    } else if (reqPaymentMethodsObj.paymentMethods.vodafoneCash.vodafoneCashDocs.length > 0) {
       if (reqPaymentMethodsObj.paymentMethods.vodafoneCash.number) {
         paymentTypeSelected = 'vodafoneCash';
         edited = false;

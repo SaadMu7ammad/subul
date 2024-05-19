@@ -1,16 +1,11 @@
-import { getTransactionByIdService } from '../admin/getTransactionById.service';
-import {
-  BadRequestError,
-  NotFoundError,
-} from '../../errors/components/index';
 import { TransactionRepository } from '../../../components/transaction/data-access/transaction.repository';
-const refund = async (transaction_id:string) => {
+import { BadRequestError, NotFoundError } from '../../errors/components/index';
+import { getTransactionByIdService } from '../admin/getTransactionById.service';
+
+const refund = async (transaction_id: string) => {
   const stepOneToken = await getTransactionByIdService.getTokenStepOne();
   if (!stepOneToken) throw new NotFoundError('no token provided');
-  const data = await getTransactionByIdService.getTransactionInfo(
-    stepOneToken,
-    transaction_id
-  );
+  const data = await getTransactionByIdService.getTransactionInfo(stepOneToken, transaction_id);
   if (!data) throw new NotFoundError('no transaction found');
   const { id, amount_cents, success, pending } = data;
   const orderId = data.order.id;
@@ -20,8 +15,7 @@ const refund = async (transaction_id:string) => {
     externalTransactionId: transaction_id,
   });
   console.log('transaction in refund service');
-  if (!transactionIsExist)
-    throw new NotFoundError('transaction not stored in db');
+  if (!transactionIsExist) throw new NotFoundError('transaction not stored in db');
 
   if (orderId.toString() !== transactionIsExist.orderId) {
     throw new BadRequestError('conflict in the order id !');
@@ -32,30 +26,21 @@ const refund = async (transaction_id:string) => {
   if (transactionIsExist.status === 'refunded') {
     throw new BadRequestError('status is already refunded ');
   }
-  if (
-    transactionIsExist.status !== 'success' ||
-    success !== true ||
-    pending === true
-  ) {
+  if (transactionIsExist.status !== 'success' || success !== true || pending === true) {
     throw new BadRequestError('status is not succedded or still pending ');
   }
   if (success !== true || pending === true) {
-    throw new BadRequestError(
-      'the transaction is not succedded ..cant refund it'
-    );
+    throw new BadRequestError('the transaction is not succedded ..cant refund it');
   }
-  const request = await fetch(
-    'https://accept.paymob.com/api/acceptance/void_refund/refund',
-    {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        auth_token: stepOneToken,
-        transaction_id: id,
-        amount_cents: amount_cents,
-      }),
-    }
-  );
+  const request = await fetch('https://accept.paymob.com/api/acceptance/void_refund/refund', {
+    method: 'post',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      auth_token: stepOneToken,
+      transaction_id: id,
+      amount_cents: amount_cents,
+    }),
+  });
   const response = await request.json();
   if (response) {
     transactionIsExist.externalTransactionId = response.id;

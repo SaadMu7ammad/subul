@@ -1,12 +1,13 @@
 import bcryptjs from 'bcryptjs';
+
 import {
   BadRequestError,
   NotFoundError,
   UnauthenticatedError,
 } from '../../../../libraries/errors/components/index';
-import { authUserRepository } from '../data-access/user.repository';
 import { User } from '../../../user/data-access/interfaces';
 import { RegisterUserInputData } from '../data-access/interfaces';
+import { authUserRepository } from '../data-access/user.repository';
 
 const checkUserPassword = async (
   email: string,
@@ -28,12 +29,8 @@ const checkUserIsVerified = (user: User): boolean => {
   return false;
 };
 
-const createUser = async (
-  dataInputs: RegisterUserInputData
-): Promise<{ user: User }> => {
-  const userExist: User | null = await authUserRepository.findUser(
-    dataInputs.email
-  );
+const createUser = async (dataInputs: RegisterUserInputData): Promise<{ user: User }> => {
+  const userExist: User | null = await authUserRepository.findUser(dataInputs.email);
   if (userExist) throw new BadRequestError('user is registered already');
   const user: User = await authUserRepository.createUser(dataInputs);
   if (!user) throw new BadRequestError('Error created while creaing the user');

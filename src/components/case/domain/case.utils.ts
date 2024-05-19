@@ -5,9 +5,9 @@ import { CaseRepository } from '../data-access/case.repository';
 import {
   FilterObj,
   GetAllCasesQueryParams,
-  SortObj,
   ICase,
   PaginationObj,
+  SortObj,
 } from '../data-access/interfaces';
 
 const caseRepository = new CaseRepository();
@@ -33,10 +33,7 @@ const getSortObj = (sortQueryParams: string | undefined): SortObj => {
   return sortObj;
 };
 
-const getFilterObj = (
-  charityId: string,
-  queryParams: GetAllCasesQueryParams
-): FilterObj => {
+const getFilterObj = (charityId: string, queryParams: GetAllCasesQueryParams): FilterObj => {
   const filterObject: FilterObj = { charity: charityId };
   //each element of the array should be a key of the GetAllCasesQueryParams type.
   const filterQueryParameters: (keyof GetAllCasesQueryParams)[] = [
@@ -54,11 +51,7 @@ const getFilterObj = (
         filterObject['mainType'] = 'customizedCampaigns';
 
         // console.log(typeof filterObject[param]);//string if we assign queryParams[param] not explicit value
-      } else if (
-        param == 'mainType' ||
-        param == 'subType' ||
-        param == 'nestedSubType'
-      ) {
+      } else if (param == 'mainType' || param == 'subType' || param == 'nestedSubType') {
         filterObject[param] = queryParams[param];
       }
     }
@@ -67,9 +60,7 @@ const getFilterObj = (
   return filterObject;
 };
 
-const getCasesPagination = (
-  queryParams: GetAllCasesQueryParams
-): PaginationObj => {
+const getCasesPagination = (queryParams: GetAllCasesQueryParams): PaginationObj => {
   const limit = queryParams?.limit ? +queryParams.limit : 10;
 
   const page = queryParams?.page ? +queryParams.page : 1;
@@ -77,18 +68,8 @@ const getCasesPagination = (
   return { limit, page };
 };
 
-const getAllCases = async (
-  sortObj: SortObj,
-  filterObj: FilterObj,
-  page: number,
-  limit: number
-) => {
-  const cases: ICase[] | null = await caseRepository.getAllCases(
-    sortObj,
-    filterObj,
-    page,
-    limit
-  );
+const getAllCases = async (sortObj: SortObj, filterObj: FilterObj, page: number, limit: number) => {
+  const cases: ICase[] | null = await caseRepository.getAllCases(sortObj, filterObj, page, limit);
 
   return cases;
 };
@@ -111,10 +92,7 @@ const getCaseByIdFromDB = async (caseId: string): Promise<ICase> => {
   return _case;
 };
 
-const checkIfCaseBelongsToCharity = (
-  charityCasesArray: ICase['_id'][],
-  caseId: string
-): number => {
+const checkIfCaseBelongsToCharity = (charityCasesArray: ICase['_id'][], caseId: string): number => {
   const idx: number = charityCasesArray.findIndex(function (id) {
     return id.toString() === caseId;
   });
@@ -138,10 +116,7 @@ const deleteCaseFromDB = async (id: string) => {
   return deletedCase;
 };
 
-const deleteCaseFromCharityCasesArray = async (
-  charity: ICharity,
-  idx: number
-) => {
+const deleteCaseFromCharityCasesArray = async (charity: ICharity, idx: number) => {
   const caseIdsArray = charity.cases;
 
   caseIdsArray.splice(idx, 1);
