@@ -9,7 +9,8 @@
     "dev": "ts-node-dev ./src/server.ts",
     "watch": "tsc -w",
     "client": "npm run dev --prefix Frontend",
-    "start": "npx ts-node --transpile-only src/server.ts"
+    "start": "npx ts-node --transpile-only src/server.ts",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -58,11 +59,17 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-security": "^3.0.0",
     "globals": "^15.2.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "mongoose-tsgen": "^9.2.10",
     "nodemon": "^3.0.1",
     "prettier": "3.2.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript-eslint": "^7.9.0"
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix",
+    "*.{ts,css,md}": "prettier --write"
   }
 }
