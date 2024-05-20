@@ -38,7 +38,12 @@ const confirmingCharity = async (charity: PendingCharities) => {
   }
   await charity.save();
 
-  sendNotification('Charity', charity._id, 'Your charity Account has been confirmed', undefined);
+  sendNotification(
+    'Charity',
+    charity._id,
+    'Your charity Account has been confirmed',
+    3 * 24 * 60 * 60 * 1000
+  );
 };
 
 // const rejectingCharity = async (charity: ICharity) => {

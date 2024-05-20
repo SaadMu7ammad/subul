@@ -1,16 +1,17 @@
-import { PlainNotification } from "../components/notification/data-access/interfaces/notification.interface";
-import { NotificationRepository } from "../components/notification/data-access/notification.repository";
-import mongoose from "mongoose";
-import { NotFoundError } from "../libraries/errors/components/not-found";
+import mongoose from 'mongoose';
+
+import { PlainNotification } from '../components/notification/data-access/interfaces/notification.interface';
+import { NotificationRepository } from '../components/notification/data-access/notification.repository';
+
 const notificationRepository = new NotificationRepository();
 
 export const sendNotification = async (
-  receiverType: "Charity" | "User",
+  receiverType: 'Charity' | 'User',
   receiverId: mongoose.Types.ObjectId,
   message: string,
   maxAge?: number,
-  resourceType?:string,
-  resourceId?:mongoose.Types.ObjectId,
+  resourceType?: string,
+  resourceId?: mongoose.Types.ObjectId
 ) => {
   const notificationData: PlainNotification = {
     receiver: {
@@ -23,54 +24,14 @@ export const sendNotification = async (
 
   if (maxAge) notificationData.maxAge = maxAge;
 
-  if(resourceType && resourceId){
+  if (resourceType && resourceId) {
     notificationData.resource = {
       type: resourceType,
-      id: resourceId
-    }
+      id: resourceId,
+    };
   }
 
-  const notification =
-    await notificationRepository.createNotification(notificationData);
-
-  if (maxAge) {
-    scheduleNotificationDeletion(
-      receiverType,
-      receiverId.toHexString(),
-      notification._id.toString(),
-      maxAge,
-    );
-  }
+  const notification = await notificationRepository.createNotification(notificationData);
 
   return notification;
 };
-
-const scheduleNotificationDeletion = (
-  receiverType: string,
-  receiverId: string,
-  notificationId: string,
-  maxAge: number,
-) => {
-  setTimeout(async () => {
-    try {
-      const notification = await notificationRepository.deleteNotificationById(
-        receiverType,
-        receiverId,
-        notificationId,
-      );
-      if (notification) {
-        console.log(`notification with ID ${notificationId} has been deleted.`);
-      } else {
-        throw new NotFoundError(
-          `notification with ID ${notificationId} not found.`,
-        );
-      }
-    } catch (error) {
-      console.error(
-        `Error deleting notification with ID ${notificationId}:`,
-        error,
-      );
-    }
-  }, maxAge);
-};
-

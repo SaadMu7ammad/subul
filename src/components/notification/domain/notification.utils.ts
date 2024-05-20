@@ -1,26 +1,28 @@
-import { BadRequestError } from "../../../libraries/errors/components/bad-request";
-import { NotFoundError } from "../../../libraries/errors/components/not-found";
+import mongoose from 'mongoose';
+
+import { BadRequestError } from '../../../libraries/errors/components/bad-request';
+import { NotFoundError } from '../../../libraries/errors/components/not-found';
 import {
   FilterObj,
   GetAllNotificationsQueryParams,
   INotification,
   PaginationObj,
+  ReceiverType,
   SortObj,
-} from "../data-access/interfaces/notification.interface";
-import { NotificationRepository } from "../data-access/notification.repository";
-import mongoose from "mongoose";
+} from '../data-access/interfaces/notification.interface';
+import { NotificationRepository } from '../data-access/notification.repository';
 
 const notificationRepository = new NotificationRepository();
 
 const getAllNotifications = async (
-  filterObj:FilterObj,
+  filterObj: FilterObj,
   sortObj: SortObj,
-  paginationObj: PaginationObj,
+  paginationObj: PaginationObj
 ) => {
   const notifications = await notificationRepository.getAllNotifications(
     filterObj,
     sortObj,
-    paginationObj,
+    paginationObj
   );
   return notifications;
 };
@@ -36,28 +38,27 @@ const markNotificationAsRead = async (notification: INotification) => {
 const deleteNotification = async (
   receiverType: string,
   receiverId: string,
-  notification: INotification,
+  notification: INotification
 ) => {
-  const deletedNotification =
-    await notificationRepository.deleteNotificationById(
-      receiverType,
-      receiverId,
-      notification._id.toString(),
-    );
+  const deletedNotification = await notificationRepository.deleteNotificationById(
+    receiverType,
+    receiverId,
+    notification._id.toString()
+  );
 
-  if (!deletedNotification) throw new NotFoundError("Notification Not Found");
+  if (!deletedNotification) throw new NotFoundError('Notification Not Found');
 
   return notification;
 };
 
 const getSortObj = (sortQueryParams: string | undefined) => {
-  const sortBy = sortQueryParams || "createdAt";
+  const sortBy = sortQueryParams || 'createdAt';
 
-  const sortArray = sortBy.split(",");
+  const sortArray = sortBy.split(',');
 
   const sortObj: SortObj = {};
   sortArray.forEach(function (sort) {
-    if (sort[0] === "-") {
+    if (sort[0] === '-') {
       sortObj[sort.substring(1)] = -1;
     } else {
       sortObj[sort] = 1;
@@ -80,7 +81,7 @@ const getPaginationObj = (queryParams: GetAllNotificationsQueryParams) => {
 const getFilterObj = (
   receiverType: string,
   receiverId: string,
-  queryParams: GetAllNotificationsQueryParams,
+  queryParams: GetAllNotificationsQueryParams
 ) => {
   const filterObject: FilterObj = {
     receiver: {
@@ -90,7 +91,7 @@ const getFilterObj = (
   };
 
   if (queryParams.read) {
-    filterObject["read"] = queryParams.read === "true";
+    filterObject['read'] = queryParams.read === 'true';
   }
 
   return filterObject;
@@ -99,23 +100,27 @@ const getFilterObj = (
 const getNotification = async (
   receiverType: string,
   receiverId: string,
-  notificationId: string,
+  notificationId: string
 ) => {
   const notification = await notificationRepository.getNotificationById(
     receiverType,
     receiverId,
-    notificationId,
+    notificationId
   );
 
-  if (!notification) throw new NotFoundError("Notification Not Found");
+  if (!notification) throw new NotFoundError('Notification Not Found');
 
   return notification;
 };
 
 const validateIdParam = (id: string | undefined): asserts id is string => {
   if (!id) {
-    throw new BadRequestError("No id provided");
+    throw new BadRequestError('No id provided');
   }
+};
+
+const deleteOutdatedNotifications = async (receiverType: ReceiverType, receiverId: string) => {
+  await notificationRepository.deleteOutdatedNotifications(receiverType, receiverId);
 };
 
 export const notificationUtils = {
@@ -127,4 +132,5 @@ export const notificationUtils = {
   getFilterObj,
   getNotification,
   validateIdParam,
+  deleteOutdatedNotifications,
 };

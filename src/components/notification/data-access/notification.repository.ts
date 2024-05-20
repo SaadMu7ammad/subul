@@ -1,13 +1,12 @@
 import { NotFoundError } from '../../../libraries/errors/components/not-found';
 import { CharityRepository } from '../../charity/data-access/charity.repository';
 import { userRepository as UserRepository } from '../../user/data-access/user.repository';
-import { FilterObj, PlainNotification, PaginationObj, SortObj} from './interfaces';
+import { FilterObj, PaginationObj, PlainNotification, SortObj } from './interfaces';
 import { NotificationDao } from './interfaces/';
-
 import NotificationModel from './models/notification.model';
 
-export class NotificationRepository implements NotificationDao{
-  async getAllNotifications(filterObj:FilterObj, sortObj: SortObj, paginationObj:PaginationObj) {
+export class NotificationRepository implements NotificationDao {
+  async getAllNotifications(filterObj: FilterObj, sortObj: SortObj, paginationObj: PaginationObj) {
     const notifications = await NotificationModel.aggregate([
       {
         $match: filterObj,
@@ -31,11 +30,7 @@ export class NotificationRepository implements NotificationDao{
     return notification;
   }
 
-  async getNotificationById(
-    receiverType: string,
-    receiverId: string,
-    notificationId: string
-  ) {
+  async getNotificationById(receiverType: string, receiverId: string, notificationId: string) {
     const notification = await NotificationModel.findOne({
       _id: notificationId,
       'receiver.receiverType': receiverType,
@@ -44,11 +39,7 @@ export class NotificationRepository implements NotificationDao{
     return notification;
   }
 
-  async deleteNotificationById(
-    receiverType: string,
-    receiverId: string,
-    notificationId: string
-  ) {
+  async deleteNotificationById(receiverType: string, receiverId: string, notificationId: string) {
     const notification = await NotificationModel.findByIdAndDelete({
       _id: notificationId,
       'receiver.receiverType': receiverType,
@@ -56,12 +47,25 @@ export class NotificationRepository implements NotificationDao{
     });
     return notification;
   }
+
+  async deleteOutdatedNotifications(receiverType: string, receiverId: string) {
+    const now = Date.now();
+    await NotificationModel.deleteMany({
+      receiver: {
+        receiverType,
+        receiverId,
+      },
+      $expr: {
+        $gte: [
+          { $subtract: [{ $toDate: now }, '$createdAt'] },
+          { $ifNull: ['$maxAge', Number.MAX_SAFE_INTEGER] },
+        ],
+      },
+    });
+  }
 }
 
-const checkIfReceiverExists = async (
-  receiverType: string,
-  receiverId: string
-) => {
+const checkIfReceiverExists = async (receiverType: string, receiverId: string) => {
   if (receiverType === 'Charity') {
     const charityRepository = new CharityRepository();
 

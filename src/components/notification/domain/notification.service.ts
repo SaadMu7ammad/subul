@@ -1,20 +1,18 @@
-import { GetAllNotificationsQueryParams } from '../data-access/interfaces';
+import { GetAllNotificationsQueryParams, ReceiverType } from '../data-access/interfaces';
 import { notificationUtils } from './notification.utils';
 
 const getAllNotifications = async (
-  receiverType: string,
+  receiverType: ReceiverType,
   receiverId: string,
   queryParams: GetAllNotificationsQueryParams
 ) => {
   const sortObj = notificationUtils.getSortObj(queryParams.sort);
 
-  const filterObj = notificationUtils.getFilterObj(
-    receiverType,
-    receiverId,
-    queryParams
-  );
+  const filterObj = notificationUtils.getFilterObj(receiverType, receiverId, queryParams);
 
   const paginationObj = notificationUtils.getPaginationObj(queryParams);
+
+  await notificationUtils.deleteOutdatedNotifications(receiverType, receiverId);
 
   const notifications = await notificationUtils.getAllNotifications(
     filterObj,
@@ -43,9 +41,7 @@ const markNotificationAsRead = async (
     notificationId
   );
 
-  const readNotification = await notificationUtils.markNotificationAsRead(
-    notification
-  );
+  const readNotification = await notificationUtils.markNotificationAsRead(notification);
 
   return {
     message: 'Notification Is Marked as Read Successfully',

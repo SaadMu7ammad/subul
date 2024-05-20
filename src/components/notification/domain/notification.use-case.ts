@@ -1,14 +1,14 @@
-import { GetAllNotificationsQueryParams } from '../data-access/interfaces/notification.interface';
-import { notificationService } from './notification.service';
 import { NextFunction, Request, Response } from 'express';
 
-const getAllNotifications = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+import {
+  GetAllNotificationsQueryParams,
+  ReceiverType,
+} from '../data-access/interfaces/notification.interface';
+import { notificationService } from './notification.service';
+
+const getAllNotifications = async (req: Request, res: Response, next: NextFunction) => {
   const receiverId = res.locals.charity?._id || res.locals.user?._id;
-  const receiverType = res.locals.charity ? 'Charity' : 'User';
+  const receiverType: ReceiverType = res.locals.charity ? 'Charity' : 'User';
   const queryParams: GetAllNotificationsQueryParams = req.query;
 
   const responseData = await notificationService.getAllNotifications(
@@ -23,13 +23,9 @@ const getAllNotifications = async (
   };
 };
 
-const markNotificationAsRead = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const markNotificationAsRead = async (req: Request, res: Response, next: NextFunction) => {
   const receiverId = res.locals.charity?._id || res.locals.user?._id;
-  const receiverType = res.locals.charity ? 'Charity' : 'User';
+  const receiverType: ReceiverType = res.locals.charity ? 'Charity' : 'User';
 
   const notificationId = req.params.id;
 
@@ -45,13 +41,9 @@ const markNotificationAsRead = async (
   };
 };
 
-const deleteNotification = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const deleteNotification = async (req: Request, res: Response, next: NextFunction) => {
   const receiverId = res.locals.charity?._id || res.locals.user?._id;
-  const receiverType = res.locals.charity ? 'Charity' : 'User';
+  const receiverType: ReceiverType = res.locals.charity ? 'Charity' : 'User';
 
   const notificationId = req.params.id;
 

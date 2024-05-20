@@ -25,3 +25,5 @@ export type PaginationObj = {
   limit: number;
   offset: number;
 };
+
+export type ReceiverType = 'Charity' | 'User';
