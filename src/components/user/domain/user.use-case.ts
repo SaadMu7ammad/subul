@@ -1,22 +1,23 @@
+import { NextFunction, Request, Response } from 'express';
+
 import { authUserResponse } from '../../auth/user/data-access/interfaces';
 import { ICase } from '../../case/data-access/interfaces';
 import { bloodContributionResponse } from '../data-access/interfaces';
 import {
+  ChangePasswordResponse,
+  ConfirmResetResponse,
   EditUserProfileResponse,
   IUserModified,
+  LogoutUserResponse,
   ResetUserResponse,
+  User,
   dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
-  ConfirmResetResponse,
-  ChangePasswordResponse,
-  LogoutUserResponse,
   getUserProfileDataResponse,
-  User,
 } from '../data-access/interfaces';
 import { userService } from './user.service';
-import { NextFunction, Request, Response } from 'express';
 
 //@desc   reset password
 //@route  POST /api/users/reset
@@ -72,10 +73,7 @@ const changePassword = async (
   //    *  and continue throughout the application's lifecycle.
   //    */
 
-  const responseData = await userService.changePassword(
-    changePasswordInputsData,
-    storedUser
-  );
+  const responseData = await userService.changePassword(changePasswordInputsData, storedUser);
 
   return {
     message: responseData.message,
@@ -85,10 +83,7 @@ const changePassword = async (
 //@desc   activate account email
 //@route  POST /api/users/activate
 //@access private
-const activateAccount = async (
-  req: Request,
-  res: Response
-): Promise<authUserResponse> => {
+const activateAccount = async (req: Request, res: Response): Promise<authUserResponse> => {
   const { token } = req.body;
 
   const activateAccountInputsData: dataForActivateAccount = { token };
@@ -126,11 +121,7 @@ const bloodContribution = async (
 //@desc  user create a fundraising campiagn
 //@route  Post /api/users/bloodContribution
 //@access private
-const requestFundraisingCampaign = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+const requestFundraisingCampaign = async (req: Request, res: Response, next: NextFunction) => {
   const caseData: ICase = req.body;
   const storedUser: User = res.locals.user;
   const charityId: string = req.body.charity;
@@ -179,10 +170,7 @@ const editUserProfile = async (
 
   const storedUser: User = res.locals.user;
 
-  const responseData = await userService.editUserProfile(
-    editUserProfileInputsData,
-    storedUser
-  );
+  const responseData = await userService.editUserProfile(editUserProfileInputsData, storedUser);
 
   return {
     user: responseData.user,

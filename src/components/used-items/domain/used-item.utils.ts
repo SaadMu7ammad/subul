@@ -1,9 +1,10 @@
-import {
-  BadRequestError,
-  NotFoundError,
-} from '../../../libraries/errors/components';
+import { Request, Response } from 'express';
+
+import { BadRequestError, NotFoundError } from '../../../libraries/errors/components';
 import { deleteOldImgs } from '../../../utils/deleteFile';
+import { sendNotification } from '../../../utils/sendNotification';
 import { isDefined } from '../../../utils/shared';
+import { ICharity } from '../../charity/data-access/interfaces';
 import {
   BookItemRequest,
   IUsedItem,
@@ -11,9 +12,6 @@ import {
   UpdateUsedItemRequest,
 } from '../data-access/interfaces';
 import { UsedItemRepository } from '../data-access/used-item.repository';
-import { Request, Response } from 'express';
-import { ICharity } from '../../charity/data-access/interfaces';
-import { sendNotification } from '../../../utils/sendNotification';
 
 const usedItemRepository = new UsedItemRepository();
 
@@ -45,14 +43,8 @@ const deleteUsedItem = async (id: string) => {
   return deletedUsedItem;
 };
 
-const updateUsedItem = async (
-  id: string,
-  usedItemData: UpdateUsedItemRequest
-) => {
-  const updatedUsedItem = await usedItemRepository.updateUsedItem(
-    id,
-    usedItemData
-  );
+const updateUsedItem = async (id: string, usedItemData: UpdateUsedItemRequest) => {
+  const updatedUsedItem = await usedItemRepository.updateUsedItem(id, usedItemData);
   if (!updatedUsedItem) {
     throw new NotFoundError('No such UsedItem with this ID');
   }
@@ -78,9 +70,7 @@ const addUsedItemImages = async (id: string, images: string[]) => {
 const deleteUsedItemImage = async (id: string, imageName: string) => {
   const usedItem = await getUsedItem(id);
 
-  const imageIndex = usedItem.images.findIndex(
-    (image: string) => image === imageName
-  );
+  const imageIndex = usedItem.images.findIndex((image: string) => image === imageName);
   if (imageIndex === -1) {
     throw new NotFoundError('No such Image with this name');
   }
@@ -94,9 +84,7 @@ const deleteUsedItemImage = async (id: string, imageName: string) => {
   return updatedUsedItem;
 };
 
-const removeUndefinedAttributesFromUsedItemData = (
-  usedItemData: Partial<PlainIUsedItem>
-) => {
+const removeUndefinedAttributesFromUsedItemData = (usedItemData: Partial<PlainIUsedItem>) => {
   const filteredUsedItemData = Object.fromEntries(
     Object.entries(usedItemData).filter(([key, value]) => value !== undefined)
   );
@@ -119,10 +107,7 @@ const findAllUsedItems = async () => {
   return usedItems;
 };
 
-const createBookItemData = async (
-  req: Request,
-  res: Response
-): Promise<BookItemRequest> => {
+const createBookItemData = async (req: Request, res: Response): Promise<BookItemRequest> => {
   const charity: ICharity = res.locals.charity;
   const { id: itemId } = req.params;
 
@@ -138,18 +123,17 @@ const bookUsedItem = async (bookItemData: BookItemRequest) => {
 
   if (!usedItem) throw new BadRequestError('This Item Is Already Booked');
 
-  await notifyUserAboutUsedItemBooking(usedItem,'booking');
+  await notifyUserAboutUsedItemBooking(usedItem, 'booking');
 
   return usedItem;
 };
 
 const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   const usedItem = await usedItemRepository.findBookedItem(bookItemData);
-  if (!usedItem)
-    throw new BadRequestError('This Item Already Cancelled Or Confirmed');
+  if (!usedItem) throw new BadRequestError('This Item Already Cancelled Or Confirmed');
 
   // TODO : this should be after saving the usedItem , don't notify the user if something wrong happened and the used Item is not saved
-  await notifyUserAboutUsedItemBooking(usedItem,'bookingCancelation');
+  await notifyUserAboutUsedItemBooking(usedItem, 'bookingCancelation');
 
   usedItem.booked = false;
   usedItem.charity = undefined;
@@ -165,7 +149,7 @@ const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
   usedItem.confirmed = true;
   await usedItem.save();
 
-  await notifyUserAboutUsedItemBooking(usedItem,'bookingConfirmation');
+  await notifyUserAboutUsedItemBooking(usedItem, 'bookingConfirmation');
 
   return usedItem;
 };
@@ -179,15 +163,14 @@ const isUsedItemBooked = (usedItem: IUsedItem) => {
 const notifyUserAboutUsedItemBooking = async (
   usedItem: IUsedItem,
   notificationType: 'booking' | 'bookingConfirmation' | 'bookingCancelation',
-  maxAge:number|undefined=undefined
+  maxAge: number | undefined = undefined
 ) => {
   if (notificationType !== 'bookingCancelation' && !usedItem.charity)
     throw new BadRequestError('Item is not booked by any charity yet');
 
   await usedItem.populate<{ charity: ICharity }>('charity');
 
-  // TODO: Fix this , IDK why ts can't infer that charity is populated
-  //@ts-expect-error
+  //@ts-expect-error TODO:Fix this , IDK why ts can't infer that charity is populated
   const charityName = usedItem.charity?.name;
 
   const notificationMessage = {

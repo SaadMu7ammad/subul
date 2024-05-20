@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
+
 import * as configurationProvider from '../libraries/configuration-provider/index';
 
 const generateToken = (res: Response, id: string, payloadType: string) => {
@@ -9,13 +10,9 @@ const generateToken = (res: Response, id: string, payloadType: string) => {
   } else if (payloadType === 'charity') {
     payload = { charityId: id };
   }
-  const token: string = jwt.sign(
-    payload,
-    configurationProvider.getValue('hashing.jwtSecret'),
-    {
-      expiresIn: '3d',
-    }
-  );
+  const token: string = jwt.sign(payload, configurationProvider.getValue('hashing.jwtSecret'), {
+    expiresIn: '3d',
+  });
   if (configurationProvider.getValue('environment.nodeEnv') === 'development') {
     res.cookie('jwt', token, {
       httpOnly: true,
@@ -23,8 +20,10 @@ const generateToken = (res: Response, id: string, payloadType: string) => {
       sameSite: 'strict',
       maxAge: 3 * 24 * 60 * 60 * 1000,
     });
-  }else if (configurationProvider.getValue('environment.nodeEnv') === 'production'){
-    res.setHeader('Set-Cookie',[`jwt=${token};  Path=/;HttpOnly; maxAge=86400000;SameSite=None;Secure=true;`]);
+  } else if (configurationProvider.getValue('environment.nodeEnv') === 'production') {
+    res.setHeader('Set-Cookie', [
+      `jwt=${token};  Path=/;HttpOnly; maxAge=86400000;SameSite=None;Secure=true;`,
+    ]);
   }
 
   return token;

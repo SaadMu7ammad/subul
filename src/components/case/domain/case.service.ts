@@ -1,27 +1,25 @@
-import { caseUtils } from './case.utils';
-import {
-  ICase,
-  FilterObj,
-  GetAllCasesQueryParams,
-  PaginationObj,
-  SortObj,
-  GetAllCasesResponse,
-  AddCaseResponse,
-  GetCaseByIdResponse,
-  DeleteCaseResponse,
-  EditCaseResponse
-} from '../data-access/interfaces';
-import {
-  BadRequestError,
-  NotFoundError,
-} from '../../../libraries/errors/components';
+import { BadRequestError, NotFoundError } from '../../../libraries/errors/components';
+import { setupMailSender } from '../../../utils/mailer';
 import { ICharity } from '../../charity/data-access/interfaces/';
 import { User } from '../../user/data-access/interfaces';
-import { setupMailSender } from '../../../utils/mailer';
 import { userRepository } from '../../user/data-access/user.repository';
 import { userUtils } from '../../user/domain/user.utils';
+import {
+  AddCaseResponse,
+  DeleteCaseResponse,
+  EditCaseResponse,
+  FilterObj,
+  GetAllCasesQueryParams,
+  GetAllCasesResponse,
+  GetCaseByIdResponse,
+  ICase,
+  PaginationObj,
+  SortObj,
+} from '../data-access/interfaces';
+import { caseUtils } from './case.utils';
+
 const addCase = async (
-  caseData:ICase,
+  caseData: ICase,
   image: string,
   charity: ICharity,
   user: User | undefined = undefined
@@ -37,7 +35,7 @@ const addCase = async (
   await charity.save();
 
   if (user) {
-    user.contributions.push(newCase._id)
+    user.contributions.push(newCase._id);
     await user.save();
   }
 
@@ -52,10 +50,23 @@ const getAllCases = async (
 
   const filterObj: FilterObj = caseUtils.getFilterObj(charityId, queryParams);
 
-  const { page, limit }: PaginationObj =
-    caseUtils.getCasesPagination(queryParams);
+  const { page, limit }: PaginationObj = caseUtils.getCasesPagination(queryParams);
 
   const cases = await caseUtils.getAllCases(sortObj, filterObj, page, limit);
+
+  if (!cases) throw new NotFoundError('no cases found');
+  return { cases: cases };
+};
+
+const getAllCasesForUser = async (
+  queryParams: GetAllCasesQueryParams
+): Promise<GetAllCasesResponse> => {
+  const sortObj: SortObj = caseUtils.getSortObj(queryParams.sort);
+
+  const { page, limit }: PaginationObj = caseUtils.getCasesPagination(queryParams);
+
+  const cases = await caseUtils.getAllCasesForUser(sortObj, page, limit);
+
   if (!cases) throw new NotFoundError('no cases found');
   return { cases: cases };
 };
@@ -73,40 +84,38 @@ const getCaseById = async (
   };
 };
 
-const deleteCase = async (
-  charity: ICharity,
-  caseId: string
-): Promise<DeleteCaseResponse> => {
-
+const deleteCase = async (charity: ICharity, caseId: string): Promise<DeleteCaseResponse> => {
   const isCaseFinished = await caseUtils.getCaseByIdFromDB(caseId);
-  if (isCaseFinished.finished) throw new BadRequestError('you dont have access to delete a completed case')
-  if (isCaseFinished.currentDonationAmount > 0) throw new BadRequestError('you dont have access to delete a case in progress')
+  if (isCaseFinished.finished)
+    throw new BadRequestError('you dont have access to delete a completed case');
+  if (isCaseFinished.currentDonationAmount > 0)
+    throw new BadRequestError('you dont have access to delete a case in progress');
 
-  const idx: number = caseUtils.checkIfCaseBelongsToCharity(
-    charity.cases,
-    caseId
-  );
+  const idx: number = caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
   const deletedCase: ICase = await caseUtils.deleteCaseFromDB(caseId);
 
   await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
-  
-  if (deletedCase.mainType === 'customizedCampaigns' && deletedCase.user) {//delete the id from the contributions arr of user and send email
-    const _userRepository = new userRepository()
+
+  if (deletedCase.mainType === 'customizedCampaigns' && deletedCase.user) {
+    //delete the id from the contributions arr of user and send email
+    const _userRepository = new userRepository();
 
     const userOwner = await _userRepository.findUserById(deletedCase.user.toString());
-    if (!userOwner) throw new BadRequestError('no user found')
+    if (!userOwner) throw new BadRequestError('no user found');
 
-    const idx = userUtils.checkIfCaseBelongsToUserContributions(userOwner.contributions, deletedCase._id.toString())
-    await userUtils.deleteCaseFromUserContributionsArray(userOwner, idx)
+    const idx = userUtils.checkIfCaseBelongsToUserContributions(
+      userOwner.contributions,
+      deletedCase._id.toString()
+    );
+    await userUtils.deleteCaseFromUserContributionsArray(userOwner, idx);
 
     await setupMailSender(
       userOwner.email,
       `request Fundraising campaign`,
-      `hello ${userOwner.name.firstName} ${userOwner.name.lastName} -- we ${charity.name} charity are sorry that your fundraising request had been rejected`,
+      `hello ${userOwner.name.firstName} ${userOwner.name.lastName} -- we ${charity.name} charity are sorry that your fundraising request had been rejected`
     );
   }
-
 
   return {
     case: deletedCase,
@@ -118,9 +127,8 @@ const editCase = async (
   caseData: ICase & { coverImage: string; image: string[] },
   caseId: string
 ): Promise<EditCaseResponse> => {
-
   const isFinishedCase = await caseUtils.getCaseByIdFromDB(caseId);
-  if (isFinishedCase.finished) throw new BadRequestError('cant edit completed case')
+  if (isFinishedCase.finished) throw new BadRequestError('cant edit completed case');
 
   caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
 
@@ -144,4 +152,5 @@ export const caseService = {
   getCaseById,
   deleteCase,
   editCase,
+  getAllCasesForUser,
 };

@@ -7,8 +7,6 @@ export interface UsedItemDao {
   deleteUsedItem: (id: string) => Promise<IUsedItem | null>;
   updateUsedItem: (id: string, usedItem: PlainIUsedItem) => Promise<IUsedItem | null>;
   findAllUsedItems: () => Promise<IUsedItem[]>;
-  findAndUpdateToBooked: (
-    bookItemData: BookItemRequest
-  ) => Promise<IUsedItem | null>;
+  findAndUpdateToBooked: (bookItemData: BookItemRequest) => Promise<IUsedItem | null>;
   findBookedItem: (bookItemData: BookItemRequest) => Promise<IUsedItem | null>;
 }

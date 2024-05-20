@@ -6,17 +6,20 @@ import {
 } from './allCharityValidation';
 import { registerCharityValidation } from './charityAuthValidation';
 
-const editCharityProfileValidation = [
-  ...registerCharityValidation,
+const editCharityProfileValidation = [...registerCharityValidation];
+const reqEditPaymentMethodsValidation = [
+  ...bankAccountValidation,
+  vodafoneCashValidation,
+  fawryValidation,
+  paymentIdValidation,
 ];
-const reqEditPaymentMethodsValidation=[...bankAccountValidation,vodafoneCashValidation,fawryValidation,paymentIdValidation];
 
-editCharityProfileValidation.forEach((validator) => {
+editCharityProfileValidation.forEach(validator => {
   validator.optional();
 });
 
-reqEditPaymentMethodsValidation.forEach((validator) => {
+reqEditPaymentMethodsValidation.forEach(validator => {
   validator.optional();
 });
 
-export { editCharityProfileValidation ,reqEditPaymentMethodsValidation};
+export { editCharityProfileValidation, reqEditPaymentMethodsValidation };

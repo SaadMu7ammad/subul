@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+
 const emailValidation = body('email')
   .trim()
   .notEmpty()
@@ -6,10 +7,7 @@ const emailValidation = body('email')
   .isEmail()
   .withMessage('Invalid email');
 
-const nameValidation = body('name')
-  .trim()
-  .notEmpty()
-  .withMessage('Name Required');
+const nameValidation = body('name').trim().notEmpty().withMessage('Name Required');
 
 const descriptionValidation = body('description')
   .trim()
@@ -18,9 +16,7 @@ const descriptionValidation = body('description')
   .isLength({ min: 10 })
   .withMessage('Description must be at least 10 characters long');
 
-const bankAccountNumberValidation = body(
-  'accNumber'
-)
+const bankAccountNumberValidation = body('accNumber')
   .trim()
   .notEmpty()
   .withMessage('Account Number is Required')
@@ -38,11 +34,7 @@ const switfCodeValidation = body('swiftCode')
   .withMessage('Swift Code is Required')
   .isLength({ min: 8, max: 11 });
 
-const bankAccountValidation = [
-  bankAccountNumberValidation,
-  ibanValidation,
-  switfCodeValidation,
-];
+const bankAccountValidation = [bankAccountNumberValidation, ibanValidation, switfCodeValidation];
 
 const charityInfoRegNumber = body('charityInfo.registeredNumber')
   .trim()
@@ -77,11 +69,7 @@ const contactInfoWebsiteUrl = body('contactInfo.websiteUrl')
   .notEmpty()
   .isURL()
   .withMessage('Invalid URL');
-const contactValidation = [
-  contactInfoEmail,
-  contactInfoPhone,
-  contactInfoWebsiteUrl,
-];
+const contactValidation = [contactInfoEmail, contactInfoPhone, contactInfoWebsiteUrl];
 
 const currencyValidation = body('currency')
   .trim()
@@ -340,11 +328,7 @@ const phoneValidation = body('phone')
 const changePasswordCharityValidation = [passwordValidation];
 
 //for confirming reset password for charity
-const confirmResetCharityValidation = [
-  emailValidation,
-  passwordValidation,
-  tokenCharityValidation,
-];
+const confirmResetCharityValidation = [emailValidation, passwordValidation, tokenCharityValidation];
 //for requesting reset email for charity
 const requestResetEmailCharityValidation = [emailValidation];
 
@@ -352,7 +336,7 @@ const paymentIdValidation = body('payment_id')
   .trim()
   .notEmpty()
   .isMongoId()
-  .withMessage('Invalid Id!')
+  .withMessage('Invalid Id!');
 
 export {
   tokenCharityValidation,
@@ -375,5 +359,5 @@ export {
   changePasswordCharityValidation,
   confirmResetCharityValidation,
   requestResetEmailCharityValidation,
-  paymentIdValidation
+  paymentIdValidation,
 };

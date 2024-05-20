@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { User } from '../../user/data-access/interfaces';
 import {
+  AddUsedItemImageRequest,
+  AddUsedItemImageResponse,
   AddUsedItemRequest,
   AddUsedItemResponse,
-  GetUsedItemResponse,
-  DeletedUsedItemResponse,
-  UpdateUsedItemRequest,
-  AddUsedItemImageResponse,
-  UpdateUsedItemResponse,
-  AddUsedItemImageRequest,
   DeleteUsedItemImageRequest,
+  DeletedUsedItemResponse,
+  GetUsedItemResponse,
+  UpdateUsedItemRequest,
+  UpdateUsedItemResponse,
 } from '../data-access/interfaces/used-item.api';
 import { usedItemService } from './used-item.service';
 import { usedItemUtils } from './used-item.utils';
@@ -86,11 +87,7 @@ const updateUsedItem = async (
     amount,
   };
 
-  const responseData = await usedItemService.updateUsedItem(
-    id,
-    userId,
-    usedItemData
-  );
+  const responseData = await usedItemService.updateUsedItem(id, userId, usedItemData);
 
   return {
     usedItem: responseData.usedItem,
@@ -106,11 +103,7 @@ const addUsedItemImages = async (
   const { id } = req.params;
   const userId = res.locals.user._id.toString();
   const { images }: AddUsedItemImageRequest = req.body;
-  const responseData = await usedItemService.addUsedItemImages(
-    id,
-    userId,
-    images
-  );
+  const responseData = await usedItemService.addUsedItemImages(id, userId, images);
 
   return {
     usedItem: responseData.usedItem,
@@ -127,11 +120,7 @@ const deleteUsedItemImage = async (
   const userId = res.locals.user._id.toString();
   const { imageName }: DeleteUsedItemImageRequest = req.body;
 
-  const responseData = await usedItemService.deleteUsedItemImage(
-    id,
-    userId,
-    imageName
-  );
+  const responseData = await usedItemService.deleteUsedItemImage(id, userId, imageName);
 
   return {
     usedItem: responseData.usedItem,
@@ -161,9 +150,7 @@ const bookUsedItem = async (req: Request, res: Response) => {
 const cancelBookingOfUsedItem = async (req: Request, res: Response) => {
   const bookItemData = await usedItemUtils.createBookItemData(req, res);
 
-  const usedItemsResponse = await usedItemService.cancelBookingOfUsedItem(
-    bookItemData
-  );
+  const usedItemsResponse = await usedItemService.cancelBookingOfUsedItem(bookItemData);
 
   return {
     usedItem: usedItemsResponse.usedItem,
@@ -174,9 +161,7 @@ const cancelBookingOfUsedItem = async (req: Request, res: Response) => {
 const ConfirmBookingReceipt = async (req: Request, res: Response) => {
   const bookItemData = await usedItemUtils.createBookItemData(req, res);
 
-  const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(
-    bookItemData
-  );
+  const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(bookItemData);
 
   return {
     usedItem: usedItemsResponse.usedItem,

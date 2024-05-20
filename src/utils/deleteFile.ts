@@ -1,24 +1,21 @@
+import { Request } from 'express';
 import fs from 'fs';
 import path from 'path';
-import logger from './logger';
-import Cloudinary from './cloudinary';
-import { Request } from 'express';
+
 import * as configurationProvider from '../libraries/configuration-provider/index';
+import Cloudinary from './cloudinary';
+import logger from './logger';
 
 const deleteFile = (filePath: string) => {
   logger.warn(filePath);
-  fs.unlink(filePath, (err) => {
+  fs.unlink(filePath, err => {
     if (err) logger.error(err);
     else logger.info('File is Deleted Successfully!');
   });
 };
 
-const deleteFiles = (
-  pathToFolder: string,
-  folderName: string,
-  ...filesNames: string[]
-) => {
-  filesNames.forEach((fileName) => {
+const deleteFiles = (pathToFolder: string, folderName: string, ...filesNames: string[]) => {
+  filesNames.forEach(fileName => {
     if (fileName) {
       const filePath = path.join(pathToFolder, folderName, fileName);
       if (fs.existsSync(filePath)) {
@@ -41,15 +38,10 @@ const deleteOldImgs = (imgsFolder: string, imgsNames: string | string[]) => {
 
   if (configurationProvider.getValue('environment.nodeEnv') === 'development') {
     deleteFiles('./uploads', imgsFolder, ...imgsNamesArray);
-  } else if (
-    configurationProvider.getValue('environment.nodeEnv') === 'production'
-  ) {
-    imgsNamesArray.forEach((imgName) => {
+  } else if (configurationProvider.getValue('environment.nodeEnv') === 'production') {
+    imgsNamesArray.forEach(imgName => {
       if (imgName?.split('.jpeg')[0])
-        cloudinaryObj.deleteImg(
-          imgsFolder,
-          imgName.split('.jpeg')[0] as string
-        );
+        cloudinaryObj.deleteImg(imgsFolder, imgName.split('.jpeg')[0] as string);
     });
   }
 
@@ -67,7 +59,7 @@ const deleteCharityDocs = (req: Request, type: string) => {
       ['bankAccount', 'bankDocs'],
       ['fawry', 'fawryDocs'],
       ['vodafoneCash', 'vodafoneCashDocs'],
-    ].forEach((pm) => {
+    ].forEach(pm => {
       let paymentMethod = pm[0];
       let paymentDocs = pm[1];
       if (paymentMethod && paymentDocs) {

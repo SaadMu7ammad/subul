@@ -1,5 +1,6 @@
-import mongoose, { InferSchemaType, Schema, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
+import mongoose, { HydratedDocument, InferSchemaType, Schema } from 'mongoose';
+
 import * as configurationProvider from '../../../../libraries/configuration-provider/index';
 import { ICharity } from '../interfaces/';
 
@@ -268,21 +269,15 @@ charitySchema.pre('save', async function (next) {
     //to not change password every time we edit the user data
     next();
   }
-  const salt = await bcrypt.genSalt(
-    configurationProvider.getValue('hashing.salt')
-  );
+  const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
   this.password = await bcrypt.hash(this.password, salt);
 });
 
 declare module '../interfaces/charity.interface' {
-  export type ICharity = HydratedDocument<
-    InferSchemaType<typeof charitySchema>
-  >;
+  export type ICharity = HydratedDocument<InferSchemaType<typeof charitySchema>>;
 }
 declare module '../interfaces/charity.interface' {
-  export type IPaymentMethods = HydratedDocument<
-    InferSchemaType<typeof paymentMethodSchema>
-  >;
+  export type IPaymentMethods = HydratedDocument<InferSchemaType<typeof paymentMethodSchema>>;
 }
 
 const Charity = mongoose.model<ICharity>('Charity', charitySchema);

@@ -1,13 +1,29 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 
-import { adminUseCase } from '../../domain/admin.use-case';
-import { auth } from '../../../auth/shared/index';
-import { isAdmin } from '../../index';
 import logger from '../../../../utils/logger';
+import { auth } from '../../../auth/shared/index';
 import { ConfirmPendingCharity } from '../../../charity/data-access/interfaces';
+import { adminUseCase } from '../../domain/admin.use-case';
+import { isAdmin } from '../../index';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
+
+  router.get(
+    '/AllCharities',
+    auth,
+    isAdmin,
+    async (_req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Admin API was called to get All Charities`);
+        const allCharitiesResponse = await adminUseCase.getAllCharities();
+        return res.json(allCharitiesResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
 
   router.get(
     '/AllRequestsCharities',
@@ -15,9 +31,7 @@ export default function defineRoutes(expressApp: Application) {
     isAdmin,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        logger.info(
-          `Admin API was called to get All Pending Requests Charities`
-        );
+        logger.info(`Admin API was called to get All Pending Requests Charities`);
         const getAllPendingRequestsCharitiesResponse =
           await adminUseCase.getAllPendingRequestsCharities(req, res, next);
         return res.json(getAllPendingRequestsCharitiesResponse);
@@ -34,11 +48,12 @@ export default function defineRoutes(expressApp: Application) {
     isAdmin,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        logger.info(
-          `Admin API was called to get a Pending Request for Charity by Id`
+        logger.info(`Admin API was called to get a Pending Request for Charity by Id`);
+        const pendingRequestCharityResponse = await adminUseCase.getPendingRequestCharityById(
+          req,
+          res,
+          next
         );
-        const pendingRequestCharityResponse =
-          await adminUseCase.getPendingRequestCharityById(req, res, next);
         return res.json(pendingRequestCharityResponse);
       } catch (error) {
         next(error);
@@ -53,13 +68,9 @@ export default function defineRoutes(expressApp: Application) {
     isAdmin,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        logger.info(
-          `Admin API was called to get Pending Requests payment account`
-        );
+        logger.info(`Admin API was called to get Pending Requests payment account`);
         const getCharityPaymentsRequestsByIdResponse =
-          await adminUseCase.getPendingPaymentRequestsForConfirmedCharityById(
-            req
-          );
+          await adminUseCase.getPendingPaymentRequestsForConfirmedCharityById(req);
         return res.json(getCharityPaymentsRequestsByIdResponse);
       } catch (error) {
         next(error);
@@ -74,9 +85,7 @@ export default function defineRoutes(expressApp: Application) {
     isAdmin,
     async (_req: Request, res: Response, next: NextFunction) => {
       try {
-        logger.info(
-          `Admin API was called to get all Pending Requests payment account`
-        );
+        logger.info(`Admin API was called to get all Pending Requests payment account`);
         const allRequestsPaymentMethodsResponse =
           await adminUseCase.getAllRequestsPaymentMethodsForConfirmedCharities();
         return res.json(allRequestsPaymentMethodsResponse);
@@ -111,8 +120,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Admin API was called to get reject a charity`);
-        const rejectCharityResponse: ConfirmPendingCharity =
-          await adminUseCase.rejectCharity(req);
+        const rejectCharityResponse: ConfirmPendingCharity = await adminUseCase.rejectCharity(req);
         return res.json(rejectCharityResponse);
       } catch (error) {
         next(error);
@@ -127,13 +135,9 @@ export default function defineRoutes(expressApp: Application) {
     isAdmin,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        logger.info(
-          `Admin API was called to get confirm a payment account for charity`
-        );
+        logger.info(`Admin API was called to get confirm a payment account for charity`);
         const confirmPaymentAccountResponse: ConfirmPendingCharity =
-          await adminUseCase.confirmPaymentAccountRequestForConfirmedCharities(
-            req
-          );
+          await adminUseCase.confirmPaymentAccountRequestForConfirmedCharities(req);
         return res.json(confirmPaymentAccountResponse);
       } catch (error) {
         next(error);
@@ -148,15 +152,9 @@ export default function defineRoutes(expressApp: Application) {
     isAdmin,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        logger.info(
-          `Admin API was called to get reject a payment account for charity`
-        );
+        logger.info(`Admin API was called to get reject a payment account for charity`);
         const rejectPaymentAccountResponse =
-          await adminUseCase.rejectPaymentAccountRequestForConfirmedCharities(
-            req,
-            res,
-            next
-          );
+          await adminUseCase.rejectPaymentAccountRequestForConfirmedCharities(req, res, next);
         return res.json(rejectPaymentAccountResponse);
       } catch (error) {
         next(error);

@@ -1,17 +1,17 @@
-import { Router, Application, NextFunction, Request, Response } from 'express';
-import logger from '../../../../../utils/logger';
+import { Application, NextFunction, Request, Response, Router } from 'express';
 
-import { validate } from '../../../../../libraries/validation/index';
 import {
-  resizeImg,
   imageAssertion,
+  resizeImg,
 } from '../../../../../libraries/uploads/components/images/handlers';
 import {
-  registerCharityValidation,
   loginCharityValidation,
+  registerCharityValidation,
 } from '../../../../../libraries/validation/components/charity/charityAuthValidation';
-import { authUseCase } from '../../domain/auth.use-case';
+import { validate } from '../../../../../libraries/validation/index';
 import { deleteOldImgs } from '../../../../../utils/deleteFile';
+import logger from '../../../../../utils/logger';
+import { authUseCase } from '../../domain/auth.use-case';
 
 export default function defineRoutes(expressApp: Application) {
   const router = Router();
@@ -25,11 +25,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Auth API was called to Register charity`);
-        const registerCharityResponse = await authUseCase.registerCharity(
-          req,
-          res,
-          next
-        );
+        const registerCharityResponse = await authUseCase.registerCharity(req, res, next);
 
         return res.json(registerCharityResponse);
       } catch (error) {
@@ -47,11 +43,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Auth API was called to Auth charity`);
-        const authCharityResponse = await authUseCase.authCharity(
-          req,
-          res,
-          next
-        );
+        const authCharityResponse = await authUseCase.authCharity(req, res, next);
         return res.json(authCharityResponse);
       } catch (error) {
         next(error);

@@ -1,19 +1,15 @@
-import {
-  ICase,
-  FilterObj,
-  SortObj,
-} from './interfaces/case.interface';
-import CaseModel from './models/case.model';
 import { CaseDao } from './interfaces/case.dao';
+import { FilterObj, ICase, SortObj } from './interfaces/case.interface';
+import CaseModel from './models/case.model';
 
 export class CaseRepository implements CaseDao {
-  createCase = async (caseData: ICase): Promise<ICase| null> => {
-    const newCase = (await CaseModel.create(caseData));
+  createCase = async (caseData: ICase): Promise<ICase | null> => {
+    const newCase = await CaseModel.create(caseData);
     return newCase;
   };
 
   getAllCases = async (
-    sortObj:SortObj,
+    sortObj: SortObj,
     filterObj: FilterObj,
     page: number,
     limit: number
@@ -23,7 +19,7 @@ export class CaseRepository implements CaseDao {
         $match: filterObj,
       },
       {
-          $sort: sortObj,
+        $sort: sortObj,
       },
     ])
       .skip((page - 1) * limit)
@@ -44,23 +40,30 @@ export class CaseRepository implements CaseDao {
     return charityCases;
   };
 
-  getCaseById = async (id: string): Promise<ICase| null> => {
-    const _case = (await CaseModel.findById(id));
+  getAllCasesForUser = async (
+    sortObj: SortObj,
+    page: number,
+    limit: number
+  ): Promise<ICase[] | null> => {
+    const allCases = await CaseModel.find()
+      .sort(sortObj)
+      .skip((page - 1) * limit)
+      .limit(limit);
+    return allCases;
+  };
+
+  getCaseById = async (id: string): Promise<ICase | null> => {
+    const _case = await CaseModel.findById(id);
     return _case;
   };
 
-  deleteCaseById = async (id: string): Promise<ICase| null> => {
-    const _case = (await CaseModel.findByIdAndDelete(
-      id
-    ));
+  deleteCaseById = async (id: string): Promise<ICase | null> => {
+    const _case = await CaseModel.findByIdAndDelete(id);
     return _case;
   };
 
-  editCase = async (
-    caseData: ICase | { finished: boolean },
-    id: string
-  ): Promise<ICase | null> => {
-    const updatedCase = (await CaseModel.findByIdAndUpdate(
+  editCase = async (caseData: ICase | { finished: boolean }, id: string): Promise<ICase | null> => {
+    const updatedCase = await CaseModel.findByIdAndUpdate(
       id,
       {
         $set: { ...caseData },
@@ -69,7 +72,7 @@ export class CaseRepository implements CaseDao {
         new: true,
         runValidators: true,
       }
-    ));
+    );
 
     return updatedCase;
   };
