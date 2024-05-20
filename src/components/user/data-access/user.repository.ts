@@ -18,4 +18,9 @@ export class userRepository implements UserDao {
 
     return user;
   }
+
+  async getAllUsers(): Promise<User[]> {
+    const users: User[] = await UserModel.find();
+    return users;
+  }
 }
