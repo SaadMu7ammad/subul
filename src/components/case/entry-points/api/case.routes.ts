@@ -55,7 +55,7 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
   router.get(
-    '/allCases',
+    '/allCasesOfCharity',
     auth,
     isConfirmed,
     getAllCasesValidation,
@@ -74,7 +74,7 @@ export default function defineRoutes(expressApp: Application) {
 
   // get all cases from all charities in the DB to user
   router.get(
-    '/allCasesForUser',
+    '/allCases',
     auth,
     getAllCasesValidation,
     validate,

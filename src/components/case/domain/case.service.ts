@@ -1,4 +1,5 @@
 import { BadRequestError, NotFoundError } from '../../../libraries/errors/components';
+import { Response } from 'express';
 import { setupMailSender } from '../../../utils/mailer';
 import { ICharity } from '../../charity/data-access/interfaces/';
 import { User } from '../../user/data-access/interfaces';
@@ -58,15 +59,17 @@ const getAllCases = async (
   return { cases: cases };
 };
 
-const getAllCasesForUser = async (
+const getAllCasesForUser = async (res:Response,
   queryParams: GetAllCasesQueryParams
 ): Promise<GetAllCasesResponse> => {
+
+
   const sortObj: SortObj = caseUtils.getSortObj(queryParams.sort);
-
+  
   const { page, limit }: PaginationObj = caseUtils.getCasesPagination(queryParams);
-
-  const cases = await caseUtils.getAllCasesForUser(sortObj, page, limit);
-
+  
+  const cases = await caseUtils.getAllCasesForUser(res, sortObj, page, limit);
+  
   if (!cases) throw new NotFoundError('no cases found');
   return { cases: cases };
 };

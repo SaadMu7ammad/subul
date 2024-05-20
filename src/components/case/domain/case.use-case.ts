@@ -49,7 +49,7 @@ const getAllCases = async (
 const getAllCasesForUser = async (req: Request, res: Response, next: NextFunction) => {
   const queryParams: GetAllCasesQueryParams = req.query;
 
-  const responseData = await caseService.getAllCasesForUser(queryParams);
+  const responseData = await caseService.getAllCasesForUser(res, queryParams);
 
   return {
     cases: responseData.cases,

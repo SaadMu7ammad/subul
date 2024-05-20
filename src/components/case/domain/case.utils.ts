@@ -1,4 +1,5 @@
 import { NotFoundError } from '../../../libraries/errors/components/not-found';
+import { Response } from 'express';
 import { deleteOldImgs } from '../../../utils/deleteFile';
 import { ICharity } from '../../charity/data-access/interfaces/';
 import { CaseRepository } from '../data-access/case.repository';
@@ -75,11 +76,12 @@ const getAllCases = async (sortObj: SortObj, filterObj: FilterObj, page: number,
 };
 
 const getAllCasesForUser = async (
+  res: Response,
   sortObj: SortObj,
   page: number,
   limit: number
 ): Promise<ICase[] | null> => {
-  const cases = await caseRepository.getAllCasesForUser(sortObj, page, limit);
+  const cases = await caseRepository.getAllCasesForUser(res, sortObj, page, limit);
 
   return cases;
 };
