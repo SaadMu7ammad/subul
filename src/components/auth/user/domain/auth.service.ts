@@ -11,7 +11,7 @@ import {
   UserResponseBasedOnUserVerification,
 } from '../data-access/interfaces';
 import { authUserUtils } from './auth.utils';
-
+import logger from '../../../../utils/logger';
 const authUser = async (
   reqBody: IloginData,
   res: Response
@@ -75,12 +75,16 @@ const registerUser = async (
 }> => {
   const newCreatedUser = await authUserUtils.createUser(reqBody);
   // generateToken(res, newCreatedUser.user._id, 'user');
-  await setupMailSender(
-    newCreatedUser.user.email,
-    'welcome alert',
-    `hi ${newCreatedUser.user.name?.firstName + ' ' + newCreatedUser.user.name?.lastName} ` +
+  try {
+    await setupMailSender(
+      newCreatedUser.user.email,
+      'welcome alert',
+      `hi ${newCreatedUser.user.name?.firstName + ' ' + newCreatedUser.user.name?.lastName} ` +
       ' we are happy that you joined our community ... keep spreading goodness with us'
-  );
+    );
+  } catch (err) {
+    logger.warn('error happened while sending welcome email');
+  }
   const userObj: UserObject = {
     _id: newCreatedUser.user._id,
     name: newCreatedUser.user.name,

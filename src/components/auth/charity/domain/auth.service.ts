@@ -5,7 +5,7 @@ import { generateResetTokenTemp, setupMailSender } from '../../../../utils/maile
 import { AuthCharityObject, CharityObject } from '../data-access/interfaces';
 import { CharityData } from './auth.use-case';
 import { authCharityUtils } from './auth.utils';
-
+import logger from '../../../../utils/logger';
 const authCharity = async (
   reqBody: { email: string; password: string },
   res: Response<any, Record<string, any>>
@@ -52,12 +52,17 @@ const authCharity = async (
 const registerCharity = async (reqBody: CharityData): Promise<{ charity: CharityObject }> => {
   const newCreatedCharity = await authCharityUtils.createCharity(reqBody);
   // generateToken(res, newCreatedCharity.charity._id, 'charity');
-  await setupMailSender(
-    newCreatedCharity.charity.email,
-    'welcome alert',
-    `hi ${newCreatedCharity.charity.name} ` +
+  try {
+    await setupMailSender(
+      newCreatedCharity.charity.email,
+      'welcome alert',
+      `hi ${newCreatedCharity.charity.name} ` +
       ' we are happy that you joined our community ... keep spreading goodness with us'
-  );
+    );
+  }
+  catch (err) {
+    logger.warn('error happened while sending welcome email');
+  }
   const charityObj: CharityObject = {
     _id: newCreatedCharity.charity._id,
     name: newCreatedCharity.charity.name,
