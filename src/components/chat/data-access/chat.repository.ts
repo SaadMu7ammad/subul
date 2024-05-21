@@ -1,4 +1,5 @@
-import { BadRequestError } from '../../../libraries/errors/components';
+import { BadRequestError } from '@libs/errors/components';
+
 import { IConversation, chatDao } from './interfaces';
 import conversationModel from './models/conversation.model';
 import messageModel from './models/message.model';

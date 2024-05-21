@@ -1,4 +1,4 @@
-import { ICharity } from '../interfaces/';
+import { ICharity } from '@components/charity/data-access/interfaces';
 
 export interface CharityDao {
   findCharity: (email: string) => Promise<ICharity | null>;

@@ -1,5 +1,5 @@
-import { chatRepository } from '../data-access/chat.repository';
-import { IConversation, IMessage } from '../data-access/interfaces';
+import { chatRepository } from '@components/chat/data-access/chat.repository';
+import { IConversation, IMessage } from '@components/chat/data-access/interfaces';
 
 const createConversationOrGetTheExist = async (senderId: string, receiverId: string) => {
   const _chatRepository = new chatRepository();

@@ -1,15 +1,15 @@
 // import { IUserResponse } from '../../../user/data-access/interfaces/user.interface';
-import { Response } from 'express';
-
-import generateToken from '../../../../utils/generateToken';
-import { generateResetTokenTemp, setupMailSender } from '../../../../utils/mailer';
-import { User } from '../../../user/data-access/interfaces';
 import {
   IloginData,
   RegisterUserInputData,
   UserObject,
   UserResponseBasedOnUserVerification,
-} from '../data-access/interfaces';
+} from '@components/auth/user/data-access/interfaces';
+import { User } from '@components/user/data-access/interfaces';
+import generateToken from '@utils/generateToken';
+import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { Response } from 'express';
+
 import { authUserUtils } from './auth.utils';
 
 const authUser = async (

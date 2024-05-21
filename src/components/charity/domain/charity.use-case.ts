@@ -1,5 +1,3 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-
 import {
   ActivateCharityAccountResponse,
   ChangePasswordResponse,
@@ -20,7 +18,9 @@ import {
   SendDocsResponse,
   ShowCharityProfileResponse,
   logoutResponse,
-} from '../data-access/interfaces/';
+} from '@components/charity/data-access/interfaces';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
+
 import { charityService } from './charity.service';
 
 const activateCharityAccount = async (

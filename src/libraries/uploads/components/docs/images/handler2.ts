@@ -1,8 +1,8 @@
+import { BadRequestError } from '@libs/errors/components/bad-request';
+import { deleteOldImgs } from '@utils/deleteFile';
 import { NextFunction, Request, Response } from 'express';
 import multer, { FileFilterCallback, Multer, StorageEngine } from 'multer';
 
-import { deleteOldImgs } from '../../../../../utils/deleteFile';
-import { BadRequestError } from '../../../../errors/components/bad-request';
 import { processDocs } from './handler';
 
 const multerFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {

@@ -6,10 +6,9 @@
   "scripts": {
     "server": "nodemon ./src/server.ts",
     "build": "tsc -p tsconfig.json",
-    "dev": "ts-node-dev ./src/server.ts",
-    "watch": "tsc -w",
-    "client": "npm run dev --prefix Frontend",
-    "start": "npx ts-node --transpile-only src/server.ts",
+    "dev": "ts-node-dev  -r tsconfig-paths/register ./src/server.ts",
+    "watch": "tsc -w ",
+    "start": "npx ts-node --transpile-only -r tsconfig-paths/register src/server.ts",
     "prepare": "husky install"
   },
   "repository": {
@@ -66,10 +65,10 @@
     "prettier": "3.2.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
     "typescript-eslint": "^7.9.0"
   },
   "lint-staged": {
-    "*.ts": "eslint --cache --fix",
     "*.{ts,css,md}": "prettier --write"
   }
 }

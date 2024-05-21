@@ -1,17 +1,16 @@
-import express, { Application, NextFunction, Request, Response } from 'express';
-
+import { auth, isActivated } from '@components/auth/shared/index';
+import { getAllTransactions } from '@components/transaction/domain/transaction.use-case';
+import { userUseCase } from '@components/user/domain/user.use-case';
 import {
   changePasswordUserValidation,
   confirmResetUserValidation,
   requestResetEmailUserValidation,
   tokenUserValidation,
-} from '../../../../libraries/validation/components/user/allUserValidation';
-import { editUserProfileValidation } from '../../../../libraries/validation/components/user/editUserProfileValidation';
-import { validate } from '../../../../libraries/validation/index';
-import logger from '../../../../utils/logger';
-import { auth, isActivated } from '../../../auth/shared/index';
-import { getAllTransactions } from '../../../transaction/domain/transaction.use-case';
-import { userUseCase } from '../../domain/user.use-case';
+} from '@libs/validation/components/user/allUserValidation';
+import { editUserProfileValidation } from '@libs/validation/components/user/editUserProfileValidation';
+import { validate } from '@libs/validation/index';
+import logger from '@utils/logger';
+import express, { Application, NextFunction, Request, Response } from 'express';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();

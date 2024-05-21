@@ -1,7 +1,6 @@
+import * as configurationProvider from '@libs/configuration-provider/index';
+import logger from '@utils/logger';
 import mongoose from 'mongoose';
-
-import * as configurationProvider from '../libraries/configuration-provider/index';
-import logger from '../utils/logger';
 
 const connectDB = async () => {
   try {

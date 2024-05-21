@@ -1,8 +1,8 @@
+import { User } from '@components/user/data-access/interfaces';
+import * as configurationProvider from '@libs/configuration-provider/index';
 import bcrypt from 'bcryptjs';
 import mongoose, { HydratedDocument, InferSchemaType, Schema } from 'mongoose';
 
-import * as configurationProvider from '../../../../libraries/configuration-provider/index';
-import { User } from '../interfaces';
 import locationSchema from './location.model';
 
 const userSchema = new Schema(

@@ -1,6 +1,6 @@
+import { IPaymentInfoData } from '@libs/paymob/payment/payment.interface';
 import { NextFunction, Request, Response } from 'express';
 
-import { IPaymentInfoData } from '../payment.interface';
 import { OnlineCardService } from './onlineCards.service';
 
 const payWithOnlineCard = async (req: Request, res: Response, next: NextFunction) => {

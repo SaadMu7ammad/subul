@@ -1,11 +1,11 @@
+import { QueryObject } from '@components/admin/domain/admin.service';
 import {
   AllCharities,
   CharitiesAccountsByAggregation,
   DataForForConfirmedCharity,
   PendingCharities,
-} from '../../charity/data-access/interfaces';
-import Charity from '../../charity/data-access/models/charity.model';
-import { QueryObject } from '../domain/admin.service';
+} from '@components/charity/data-access/interfaces';
+import Charity from '@components/charity/data-access/models/charity.model';
 
 const findAllCharities = async (selection: string): Promise<AllCharities[]> => {
   const charities = await Charity.find().select(selection);

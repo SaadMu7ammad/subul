@@ -1,12 +1,3 @@
-import { Response } from 'express';
-
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthenticatedError,
-} from '../../../libraries/errors/components/index';
-import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
-import { checkValueEquality, updateNestedProperties } from '../../../utils/shared';
 import {
   DataForActivateCharityAccount,
   DataForChangePassword,
@@ -18,7 +9,16 @@ import {
   ICharity,
   ICharityDocs,
   IRequestPaymentCharityDocumentResponse,
-} from '../data-access/interfaces';
+} from '@components/charity/data-access/interfaces';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthenticatedError,
+} from '@libs/errors/components/index';
+import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { checkValueEquality, updateNestedProperties } from '@utils/shared';
+import { Response } from 'express';
+
 import { charityUtils } from './charity.utils';
 
 const requestResetPassword = async (reqBody: DataForRequestResetPassword) => {
