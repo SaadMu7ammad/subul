@@ -3,9 +3,11 @@ import { deleteOldImgs } from '../../../utils/deleteFile';
 import {
   AccType,
   ConfirmedCharities,
+  ICharity,
   ICharityDocs,
   PendingCharities,
 } from '../../charity/data-access/interfaces';
+import { User } from '../../user/data-access/interfaces';
 import { adminRepository } from '../data-access/admin.repository';
 import { QueryObject } from './admin.service';
 
@@ -244,6 +246,19 @@ const rejectingPaymentAccount = async (
 
   // await charity.save();
 };
+const resetRegisterOperation = async (entity: ICharity | User) => {
+
+  if (entity && typeof entity === 'object' && "cases" in entity && "cases" in entity) {//to ensure the entity type using type guard
+      const res = await adminRepository.deleteCharityByEmail(entity.email);
+      if (!res) throw new BadRequestError('fatal error while regestering')
+      return true;
+  } else {
+      const res = await adminRepository.deleteUserByEmail(entity.email);
+      if (!res) throw new BadRequestError('fatal error while regestering')
+      return true;
+  }
+}
+
 export const adminUtils = {
   getAllPendingPaymentMethodsRequestsForConfirmedCharity,
   confirmingCharity,
@@ -252,4 +267,5 @@ export const adminUtils = {
   getConfirmedCharities,
   confirmingPaymentAccount,
   rejectingPaymentAccount,
+  resetRegisterOperation
 };

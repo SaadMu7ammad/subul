@@ -50,7 +50,7 @@ const createCharity = async (dataInputs: CharityData): Promise<{ charity: IChari
   }
 
   const newCharity = await authCharityRepository.createCharity(dataInputs);
-  console.log('New' + newCharity);
+
   if (!newCharity) {
     deleteOldImgs('charityLogos', dataInputs.image);
     throw new BadRequestError('Error while Creating the charity');
