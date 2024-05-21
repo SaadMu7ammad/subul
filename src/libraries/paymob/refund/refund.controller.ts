@@ -1,6 +1,6 @@
+import { NotFoundError } from '@libs/errors/components';
 import { NextFunction, Request, Response } from 'express';
 
-import { NotFoundError } from '../../errors/components';
 import { refundService } from './refund.service';
 
 const refund = async (req: Request, res: Response, next: NextFunction) => {

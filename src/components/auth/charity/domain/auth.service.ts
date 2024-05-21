@@ -1,8 +1,8 @@
+import { AuthCharityObject, CharityObject } from '@components/auth/charity/data-access/interfaces';
+import generateToken from '@utils/generateToken';
+import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
 
-import generateToken from '../../../../utils/generateToken';
-import { generateResetTokenTemp, setupMailSender } from '../../../../utils/mailer';
-import { AuthCharityObject, CharityObject } from '../data-access/interfaces';
 import { CharityData } from './auth.use-case';
 import { authCharityUtils } from './auth.utils';
 

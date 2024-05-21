@@ -1,9 +1,9 @@
+import { BadRequestError } from '@libs/errors/components';
+import { saveImg } from '@libs/uploads/components';
 import { NextFunction, Request, Response } from 'express';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 
-import { saveImg } from '..';
-import { BadRequestError } from '../../../errors/components';
 import { upload } from './handlers';
 
 const imageAssertion = upload.array('images', 5);

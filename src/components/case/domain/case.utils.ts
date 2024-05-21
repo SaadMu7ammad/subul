@@ -1,15 +1,15 @@
-import { NotFoundError } from '../../../libraries/errors/components/not-found';
-import { Response } from 'express';
-import { deleteOldImgs } from '../../../utils/deleteFile';
-import { ICharity } from '../../charity/data-access/interfaces/';
-import { CaseRepository } from '../data-access/case.repository';
+import { CaseRepository } from '@components/case/data-access/case.repository';
 import {
   FilterObj,
   GetAllCasesQueryParams,
   ICase,
   PaginationObj,
   SortObj,
-} from '../data-access/interfaces';
+} from '@components/case/data-access/interfaces';
+import { ICharity } from '@components/charity/data-access/interfaces';
+import { NotFoundError } from '@libs/errors/components/not-found';
+import { deleteOldImgs } from '@utils/deleteFile';
+import { Response } from 'express';
 
 const caseRepository = new CaseRepository();
 

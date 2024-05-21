@@ -1,8 +1,7 @@
+import { ConfirmPendingCharity, ICharityDocs } from '@components/charity/data-access/interfaces';
+import { NotFoundError } from '@libs/errors/components';
 import { NextFunction, Request, Response } from 'express';
 
-import { NotFoundError } from '../../../libraries/errors/components';
-
-import { ConfirmPendingCharity, ICharityDocs } from '../../charity/data-access/interfaces';
 import { adminService } from './admin.service';
 
 const getAllCharities = async () => {

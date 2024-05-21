@@ -1,8 +1,8 @@
+import * as configurationProvider from '@libs/configuration-provider/index';
 import { Request } from 'express';
 import fs from 'fs';
 import path from 'path';
 
-import * as configurationProvider from '../libraries/configuration-provider/index';
 import Cloudinary from './cloudinary';
 import logger from './logger';
 

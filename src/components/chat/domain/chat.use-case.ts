@@ -1,6 +1,6 @@
+import { BadRequestError } from '@libs/errors/components';
 import { NextFunction, Request, Response } from 'express';
 
-import { BadRequestError } from '../../../libraries/errors/components';
 import { chatService } from './chat.service';
 
 // @desc   send message

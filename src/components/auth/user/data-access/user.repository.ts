@@ -1,5 +1,6 @@
-import { User } from '../../../user/data-access/interfaces';
-import UserModel from '../../../user/data-access/models/user.model';
+import { User } from '@components/user/data-access/interfaces';
+import UserModel from '@components/user/data-access/models/user.model';
+
 import { RegisterUserInputData } from './interfaces';
 
 const findUser = async (email: string): Promise<User | null> => {

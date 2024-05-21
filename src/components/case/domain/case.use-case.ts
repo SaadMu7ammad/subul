@@ -1,7 +1,3 @@
-import { NextFunction, Request, Response } from 'express';
-
-import { NotFoundError } from '../../../libraries/errors/components';
-import { ICharity } from '../../charity/data-access/interfaces';
 import {
   AddCaseResponse,
   DeleteCaseResponse,
@@ -10,7 +6,11 @@ import {
   GetAllCasesResponse,
   GetCaseByIdResponse,
   ICase,
-} from '../data-access/interfaces/';
+} from '@components/case/data-access/interfaces';
+import { ICharity } from '@components/charity/data-access/interfaces';
+import { NotFoundError } from '@libs/errors/components';
+import { NextFunction, Request, Response } from 'express';
+
 import { caseService } from './case.service';
 
 const addCase = async (

@@ -1,7 +1,6 @@
+import * as configurationProvider from '@libs/configuration-provider/index';
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
-
-import * as configurationProvider from '../libraries/configuration-provider/index';
 
 const generateToken = (res: Response, id: string, payloadType: string) => {
   let payload: object | { charityId: string } | { userId: string } = {};

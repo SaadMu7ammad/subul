@@ -1,8 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
-
-import { authUserResponse } from '../../auth/user/data-access/interfaces';
-import { ICase } from '../../case/data-access/interfaces';
-import { bloodContributionResponse } from '../data-access/interfaces';
+import { authUserResponse } from '@components/auth/user/data-access/interfaces';
+import { ICase } from '@components/case/data-access/interfaces';
+import { bloodContributionResponse } from '@components/user/data-access/interfaces';
 import {
   ChangePasswordResponse,
   ConfirmResetResponse,
@@ -16,7 +14,9 @@ import {
   dataForConfirmResetEmail,
   dataForResetEmail,
   getUserProfileDataResponse,
-} from '../data-access/interfaces';
+} from '@components/user/data-access/interfaces';
+import { NextFunction, Request, Response } from 'express';
+
 import { userService } from './user.service';
 
 //@desc   reset password

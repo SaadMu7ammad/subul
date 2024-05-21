@@ -1,27 +1,26 @@
 //Packages 📦️
+//Routes 🛤️
+import adminRoutes from '@components/admin/entry-points/api/admin.routes';
+import authCharityRoutes from '@components/auth/charity/entry-points/api/auth.routes';
+import authUserRoutes from '@components/auth/user/entry-points/api/auth.routes';
+import casesRoutes from '@components/case/entry-points/api/case.routes';
+import charityRoutes from '@components/charity/entry-points/api/charity.routes';
+import chatRoutes from '@components/chat/entry-points/api/chat.routes';
+import transactionRoutes from '@components/transaction/entry-points/api/transaction.routes';
+import usedItemRoutes from '@components/used-items/entry-points/api/used-item.routes';
+import userRoutes from '@components/user/entry-points/api/user.routes';
+//Configuration ⚙️
+import configurationSchema from '@config/config';
+import connectDB from '@config/db';
+import * as configurationProvider from '@libs/configuration-provider/index';
+//Errors ⛔️
+import { NotFound, errorHandler } from '@libs/errors/index';
+//Logger 📝
+import logger from '@utils/logger';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Application } from 'express';
 import * as path from 'path';
-
-//Routes 🛤️
-import adminRoutes from './components/admin/entry-points/api/admin.routes';
-import authCharityRoutes from './components/auth/charity/entry-points/api/auth.routes';
-import authUserRoutes from './components/auth/user/entry-points/api/auth.routes';
-import casesRoutes from './components/case/entry-points/api/case.routes';
-import charityRoutes from './components/charity/entry-points/api/charity.routes';
-import chatRoutes from './components/chat/entry-points/api/chat.routes';
-import transactionRoutes from './components/transaction/entry-points/api/transaction.routes';
-import usedItemRoutes from './components/used-items/entry-points/api/used-item.routes';
-import userRoutes from './components/user/entry-points/api/user.routes';
-//Configuration ⚙️
-import configurationSchema from './config/config';
-import connectDB from './config/db';
-import * as configurationProvider from './libraries/configuration-provider/index';
-//Errors ⛔️
-import { NotFound, errorHandler } from './libraries/errors/index';
-//Logger 📝
-import logger from './utils/logger';
 
 dotenv.config();
 

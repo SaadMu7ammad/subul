@@ -1,12 +1,15 @@
-import { RequestHandler } from 'express';
-
 // import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
 import {
   RegisterUserInputData,
   UserObject,
   UserResponseBasedOnUserVerification,
-} from '../data-access/interfaces';
-import { authUserResponse, registerUserResponse } from '../data-access/interfaces';
+} from '@components/auth/user/data-access/interfaces';
+import {
+  authUserResponse,
+  registerUserResponse,
+} from '@components/auth/user/data-access/interfaces';
+import { RequestHandler } from 'express';
+
 import { authUserService } from './auth.service';
 
 //@desc   submit login page

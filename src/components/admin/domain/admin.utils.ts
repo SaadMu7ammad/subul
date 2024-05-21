@@ -1,12 +1,13 @@
-import { BadRequestError, NotFoundError } from '../../../libraries/errors/components';
-import { deleteOldImgs } from '../../../utils/deleteFile';
+import { adminRepository } from '@components/admin/data-access/admin.repository';
 import {
   AccType,
   ConfirmedCharities,
   ICharityDocs,
   PendingCharities,
-} from '../../charity/data-access/interfaces';
-import { adminRepository } from '../data-access/admin.repository';
+} from '@components/charity/data-access/interfaces';
+import { BadRequestError, NotFoundError } from '@libs/errors/components';
+import { deleteOldImgs } from '@utils/deleteFile';
+
 import { QueryObject } from './admin.service';
 
 // import { QueryObject } from './admin.service';

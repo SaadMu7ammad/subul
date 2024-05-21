@@ -1,7 +1,10 @@
+import { AuthCharity, AuthCharityObject } from '@components/auth/charity/data-access/interfaces';
+import {
+  AuthCharityResponse,
+  registerCharityResponse,
+} from '@components/auth/charity/data-access/interfaces';
 import { RequestHandler } from 'express';
 
-import { AuthCharity, AuthCharityObject } from '../data-access/interfaces';
-import { AuthCharityResponse, registerCharityResponse } from '../data-access/interfaces';
 import { authCharityService } from './auth.service';
 
 //@desc   submit login page

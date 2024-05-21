@@ -1,8 +1,7 @@
+import * as configurationProvider from '@libs/configuration-provider/index';
+import { NotFoundError } from '@libs/errors/components/not-found';
+import Cloudinary from '@utils/cloudinary';
 import { Sharp } from 'sharp';
-
-import Cloudinary from '../../../utils/cloudinary';
-import * as configurationProvider from '../../configuration-provider/index';
-import { NotFoundError } from '../../errors/components/not-found';
 
 const saveImg = async (
   sharpPromise: Sharp,

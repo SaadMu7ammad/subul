@@ -1,10 +1,9 @@
+import { adminUseCase } from '@components/admin/domain/admin.use-case';
+import { isAdmin } from '@components/admin/index';
+import { auth } from '@components/auth/shared/index';
+import { ConfirmPendingCharity } from '@components/charity/data-access/interfaces';
+import logger from '@utils/logger';
 import express, { Application, NextFunction, Request, Response } from 'express';
-
-import logger from '../../../../utils/logger';
-import { auth } from '../../../auth/shared/index';
-import { ConfirmPendingCharity } from '../../../charity/data-access/interfaces';
-import { adminUseCase } from '../../domain/admin.use-case';
-import { isAdmin } from '../../index';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();

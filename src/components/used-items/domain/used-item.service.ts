@@ -1,5 +1,6 @@
-import { deleteOldImgs } from '../../../utils/deleteFile';
-import { BookItemRequest, PlainIUsedItem } from '../data-access/interfaces';
+import { BookItemRequest, PlainIUsedItem } from '@components/used-items/data-access/interfaces';
+import { deleteOldImgs } from '@utils/deleteFile';
+
 import { usedItemUtils } from './used-item.utils';
 
 const addUsedItem = async (usedItemData: PlainIUsedItem) => {
