@@ -25,15 +25,10 @@ const authUser = async (
 
   const token = generateToken(res, userResponse.user.id, 'user');
 
-  const userObj: UserObject = {
-    _id: userResponse.user._id,
-    name: userResponse.user.name,
-    email: userResponse.user.email,
-  };
   const IsUserVerified: boolean = authUserUtils.checkUserIsVerified(userResponse.user);
   if (IsUserVerified) {
     return {
-      user: userObj,
+      user: userResponse.user,
       emailAlert: false,
       token: token,
       isVerified: true,
@@ -53,7 +48,7 @@ const authUser = async (
         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
     return {
-      user: userObj,
+      user: userResponse.user,
       emailAlert: true,
       isVerified: false,
     };

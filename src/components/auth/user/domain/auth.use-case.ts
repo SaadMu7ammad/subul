@@ -2,7 +2,6 @@
 import {
   RegisterUserInputData,
   UserObject,
-  UserResponseBasedOnUserVerification,
 } from '@components/auth/user/data-access/interfaces';
 import {
   authUserResponse,
@@ -19,18 +18,12 @@ import { authUserService } from './auth.service';
 const authUser: RequestHandler = async (req, res, _next): Promise<authUserResponse> => {
   const { email, password }: { email: string; password: string } = req.body;
   const data = { email, password };
-  // const data: { email: string; password: string } = {
-  //   email: req.body.email,
-  //   password: req.body.password,
-  // };
-  const responseData: UserResponseBasedOnUserVerification = await authUserService.authUser(
+  
+  const responseData = await authUserService.authUser( 
     data,
     res
   );
-
-  const userResponsed: UserObject = {
-    ...responseData.user,
-  };
+  const userResponsed = responseData.user ;
 
   if (responseData.emailAlert) {
     return {
