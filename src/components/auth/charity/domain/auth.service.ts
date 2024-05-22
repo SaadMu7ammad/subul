@@ -14,19 +14,12 @@ const authCharity = async (
 
   const charityResponse = await authCharityUtils.checkCharityPassword(email, password);
   const token = generateToken(res, charityResponse.charity._id.toString(), 'charity');
-  const charityObj = {
-    _id: charityResponse.charity._id,
-    name: charityResponse.charity.name,
-    email: charityResponse.charity.email,
-    isEnabled: charityResponse.charity.email,
-    isConfirmed: charityResponse.charity.isConfirmed,
-    isPending: charityResponse.charity.isPending,
-  };
+  
   const isCharityVerified = authCharityUtils.checkCharityIsVerified(charityResponse.charity);
   if (isCharityVerified) {
     //if verified no need to send token via email
     return {
-      charity: charityObj,
+      charity:charityResponse.charity,
       emailAlert: false,
       token: token,
     };
@@ -42,7 +35,7 @@ const authCharity = async (
         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
     return {
-      charity: charityObj,
+      charity: charityResponse.charity,
       emailAlert: true,
       token: token,
     };

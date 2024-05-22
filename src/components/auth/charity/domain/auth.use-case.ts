@@ -1,4 +1,4 @@
-import { AuthCharity, AuthCharityObject } from '@components/auth/charity/data-access/interfaces';
+import { AuthCharityObject } from '@components/auth/charity/data-access/interfaces';
 import {
   AuthCharityResponse,
   registerCharityResponse,
@@ -89,16 +89,10 @@ const authCharity: RequestHandler = async (req, res, _next): Promise<AuthCharity
     email,
     password,
   };
-  // const data = {
-  //   email: req.body.email,
-  //   password: req.body.password,
-  // };
 
   const responseData: AuthCharityObject = await authCharityService.authCharity(data, res);
 
-  const charityResponsed: AuthCharity = {
-    ...responseData.charity,
-  };
+  const charityResponsed = responseData.charity
 
   //first stage check if it verified or not
   if (responseData.emailAlert) {
