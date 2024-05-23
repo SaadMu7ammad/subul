@@ -10,6 +10,7 @@ import generateToken from '@utils/generateToken';
 import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
 
+import logger from '../../../../utils/logger';
 import { authUserUtils } from './auth.utils';
 
 const authUser = async (
@@ -70,12 +71,16 @@ const registerUser = async (
 }> => {
   const newCreatedUser = await authUserUtils.createUser(reqBody);
   // generateToken(res, newCreatedUser.user._id, 'user');
-  await setupMailSender(
-    newCreatedUser.user.email,
-    'welcome alert',
-    `hi ${newCreatedUser.user.name?.firstName + ' ' + newCreatedUser.user.name?.lastName} ` +
-      ' we are happy that you joined our community ... keep spreading goodness with us'
-  );
+  try {
+    await setupMailSender(
+      newCreatedUser.user.email,
+      'welcome alert',
+      `hi ${newCreatedUser.user.name?.firstName + ' ' + newCreatedUser.user.name?.lastName} ` +
+        ' we are happy that you joined our community ... keep spreading goodness with us'
+    );
+  } catch (err) {
+    logger.warn('error happened while sending welcome email');
+  }
   const userObj: UserObject = {
     _id: newCreatedUser.user._id,
     name: newCreatedUser.user.name,

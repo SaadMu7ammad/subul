@@ -1,5 +1,6 @@
 import { ICharity } from '@components/charity/data-access/interfaces';
-import {  CharityObject } from './auth.charity';
+
+import { CharityObject } from './auth.charity';
 
 export interface registerCharityResponse {
   charity: CharityObject;

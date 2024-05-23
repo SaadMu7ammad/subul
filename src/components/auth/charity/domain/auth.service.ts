@@ -3,6 +3,7 @@ import generateToken from '@utils/generateToken';
 import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
 
+import logger from '../../../../utils/logger';
 import { CharityData } from './auth.use-case';
 import { authCharityUtils } from './auth.utils';
 
@@ -14,12 +15,12 @@ const authCharity = async (
 
   const charityResponse = await authCharityUtils.checkCharityPassword(email, password);
   const token = generateToken(res, charityResponse.charity._id.toString(), 'charity');
-  
+
   const isCharityVerified = authCharityUtils.checkCharityIsVerified(charityResponse.charity);
   if (isCharityVerified) {
     //if verified no need to send token via email
     return {
-      charity:charityResponse.charity,
+      charity: charityResponse.charity,
       emailAlert: false,
       token: token,
     };
@@ -45,12 +46,16 @@ const authCharity = async (
 const registerCharity = async (reqBody: CharityData): Promise<{ charity: CharityObject }> => {
   const newCreatedCharity = await authCharityUtils.createCharity(reqBody);
   // generateToken(res, newCreatedCharity.charity._id, 'charity');
-  await setupMailSender(
-    newCreatedCharity.charity.email,
-    'welcome alert',
-    `hi ${newCreatedCharity.charity.name} ` +
-      ' we are happy that you joined our community ... keep spreading goodness with us'
-  );
+  try {
+    await setupMailSender(
+      newCreatedCharity.charity.email,
+      'welcome alert',
+      `hi ${newCreatedCharity.charity.name} ` +
+        ' we are happy that you joined our community ... keep spreading goodness with us'
+    );
+  } catch (err) {
+    logger.warn('error happened while sending welcome email');
+  }
   const charityObj: CharityObject = {
     _id: newCreatedCharity.charity._id,
     name: newCreatedCharity.charity.name,

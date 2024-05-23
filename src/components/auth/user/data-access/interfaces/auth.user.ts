@@ -21,7 +21,6 @@ export type RegisterUserInputData = {
   password: User['password'];
 };
 
-
 export interface UserObject {
   _id: User['_id'];
   name: User['name'];

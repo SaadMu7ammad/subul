@@ -1,8 +1,5 @@
 // import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
-import {
-  RegisterUserInputData,
-  UserObject,
-} from '@components/auth/user/data-access/interfaces';
+import { RegisterUserInputData, UserObject } from '@components/auth/user/data-access/interfaces';
 import {
   authUserResponse,
   registerUserResponse,
@@ -18,12 +15,9 @@ import { authUserService } from './auth.service';
 const authUser: RequestHandler = async (req, res, _next): Promise<authUserResponse> => {
   const { email, password }: { email: string; password: string } = req.body;
   const data = { email, password };
-  
-  const responseData = await authUserService.authUser( 
-    data,
-    res
-  );
-  const userResponsed = responseData.user ;
+
+  const responseData = await authUserService.authUser(data, res);
+  const userResponsed = responseData.user;
 
   if (responseData.emailAlert) {
     return {

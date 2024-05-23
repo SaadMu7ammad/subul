@@ -1,7 +1,9 @@
+import { Response } from 'express';
+
 import { CaseDao } from './interfaces/case.dao';
 import { FilterObj, ICase, SortObj } from './interfaces/case.interface';
 import CaseModel from './models/case.model';
-import {  Response } from 'express';
+
 export class CaseRepository implements CaseDao {
   createCase = async (caseData: ICase): Promise<ICase | null> => {
     const newCase = await CaseModel.create(caseData);
@@ -51,22 +53,22 @@ export class CaseRepository implements CaseDao {
       .skip((page - 1) * limit)
       .limit(limit);
 
-      if(res.locals.charity || (res.locals.user && !res.locals.user.isAdmin) ) { 
-          // remove freezed cases
-        allCases = allCases.filter((c) => !c.freezed);
-      }
+    if (res.locals.charity || (res.locals.user && !res.locals.user.isAdmin)) {
+      // remove freezed cases
+      allCases = allCases.filter(c => !c.freezed);
+    }
 
     // make finished cases come last
-      allCases.sort((a, b) => {
-        if (!a.finished && b.finished) {
-          return -1; // a comes before b
-        } else if (a.finished && !b.finished) {
-          return 1; // b comes before a
-        } else {
-          return 0; // no change in order
-        }
-      });
-    
+    allCases.sort((a, b) => {
+      if (!a.finished && b.finished) {
+        return -1; // a comes before b
+      } else if (a.finished && !b.finished) {
+        return 1; // b comes before a
+      } else {
+        return 0; // no change in order
+      }
+    });
+
     return allCases;
   };
 

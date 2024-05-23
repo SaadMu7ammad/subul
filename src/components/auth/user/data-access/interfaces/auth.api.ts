@@ -1,4 +1,5 @@
 import { User } from '@components/user/data-access/interfaces';
+
 import { UserObject } from './auth.user';
 
 export interface authUserResponse {

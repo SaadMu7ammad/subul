@@ -92,7 +92,7 @@ const authCharity: RequestHandler = async (req, res, _next): Promise<AuthCharity
 
   const responseData: AuthCharityObject = await authCharityService.authCharity(data, res);
 
-  const charityResponsed = responseData.charity
+  const charityResponsed = responseData.charity;
 
   //first stage check if it verified or not
   if (responseData.emailAlert) {
