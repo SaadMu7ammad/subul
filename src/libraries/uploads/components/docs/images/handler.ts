@@ -1,11 +1,10 @@
+import { BadRequestError } from '@libs/errors/components/index';
+import { saveImg } from '@libs/uploads/components/index';
+import { deleteOldImgs } from '@utils/deleteFile';
 import { NextFunction, Request, Response } from 'express';
 import multer, { FileFilterCallback } from 'multer';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
-
-import { deleteOldImgs } from '../../../../../utils/deleteFile';
-import { BadRequestError } from '../../../../errors/components/index';
-import { saveImg } from '../../index';
 
 //memoryStorage
 const multerStorage = multer.memoryStorage();

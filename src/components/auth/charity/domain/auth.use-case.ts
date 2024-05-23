@@ -1,7 +1,10 @@
+import { AuthCharityObject } from '@components/auth/charity/data-access/interfaces';
+import {
+  AuthCharityResponse,
+  registerCharityResponse,
+} from '@components/auth/charity/data-access/interfaces';
 import { RequestHandler } from 'express';
 
-import { AuthCharity, AuthCharityObject } from '../data-access/interfaces';
-import { AuthCharityResponse, registerCharityResponse } from '../data-access/interfaces';
 import { authCharityService } from './auth.service';
 
 //@desc   submit login page
@@ -86,16 +89,10 @@ const authCharity: RequestHandler = async (req, res, _next): Promise<AuthCharity
     email,
     password,
   };
-  // const data = {
-  //   email: req.body.email,
-  //   password: req.body.password,
-  // };
 
   const responseData: AuthCharityObject = await authCharityService.authCharity(data, res);
 
-  const charityResponsed: AuthCharity = {
-    ...responseData.charity,
-  };
+  const charityResponsed = responseData.charity;
 
   //first stage check if it verified or not
   if (responseData.emailAlert) {

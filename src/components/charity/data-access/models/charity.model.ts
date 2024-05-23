@@ -1,8 +1,7 @@
+import { ICharity } from '@components/charity/data-access/interfaces';
+import * as configurationProvider from '@libs/configuration-provider/index';
 import bcrypt from 'bcryptjs';
 import mongoose, { HydratedDocument, InferSchemaType, Schema } from 'mongoose';
-
-import * as configurationProvider from '../../../../libraries/configuration-provider/index';
-import { ICharity } from '../interfaces/';
 
 const locationSchema = new mongoose.Schema({
   governorate: {

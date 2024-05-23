@@ -1,17 +1,13 @@
+import { auth, isConfirmed } from '@components/auth/shared/index';
+import { caseUseCase } from '@components/case/domain/case.use-case';
+import { imageAssertion, resizeImg } from '@libs/uploads/components/images/handlers';
+import { editCaseValidation } from '@libs/validation/components/case/editCaseValidation';
+import { getAllCasesValidation } from '@libs/validation/components/case/getAllCasesValidation';
+import { postCaseValidation } from '@libs/validation/components/case/postCaseValidation';
+import { validate } from '@libs/validation/index';
+import { deleteOldImgs } from '@utils/deleteFile';
+import logger from '@utils/logger';
 import express, { Application, NextFunction, Request, Response } from 'express';
-
-import {
-  imageAssertion,
-  resizeImg,
-} from '../../../../libraries/uploads/components/images/handlers';
-import { editCaseValidation } from '../../../../libraries/validation/components/case/editCaseValidation';
-import { getAllCasesValidation } from '../../../../libraries/validation/components/case/getAllCasesValidation';
-import { postCaseValidation } from '../../../../libraries/validation/components/case/postCaseValidation';
-import { validate } from '../../../../libraries/validation/index';
-import { deleteOldImgs } from '../../../../utils/deleteFile';
-import logger from '../../../../utils/logger';
-import { auth, isConfirmed } from '../../../auth/shared/index';
-import { caseUseCase } from '../../domain/case.use-case';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
@@ -55,7 +51,7 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
   router.get(
-    '/allCases',
+    '/allCasesOfCharity',
     auth,
     isConfirmed,
     getAllCasesValidation,
@@ -74,7 +70,7 @@ export default function defineRoutes(expressApp: Application) {
 
   // get all cases from all charities in the DB to user
   router.get(
-    '/allCasesForUser',
+    '/allCases',
     auth,
     getAllCasesValidation,
     validate,

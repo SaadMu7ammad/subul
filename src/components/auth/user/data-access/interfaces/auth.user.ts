@@ -4,7 +4,7 @@
 // export interface AuthedRequest extends Request {
 //     user: IUserDocument;
 //     charity: ICharityDocument;
-import { User } from '../../../../user/data-access/interfaces';
+import { User } from '@components/user/data-access/interfaces';
 
 export interface IloginData {
   email: User['email'];
@@ -20,22 +20,6 @@ export type RegisterUserInputData = {
   phone: User['phone'];
   password: User['password'];
 };
-// export type RegisterUSerInputData = {
-//   name: {
-//     firstName: string;
-//     lastName: string;
-//   };
-//   email: string;
-//   locationUser: locationUser;
-//   gender: 'male' | 'female';
-//   phone: string;
-//   password: string;
-// };
-export type UserResponseBasedOnEmailAlert = {
-  user: UserObject;
-  msg?: string;
-  token?: string; // must be optional cuz it comes from responseData as optional
-};
 
 export interface UserObject {
   _id: User['_id'];
@@ -44,7 +28,7 @@ export interface UserObject {
 }
 
 export type UserResponseBasedOnUserVerification = {
-  user: UserObject;
+  user: User;
   emailAlert: boolean;
   token?: string;
   isVerified: boolean;

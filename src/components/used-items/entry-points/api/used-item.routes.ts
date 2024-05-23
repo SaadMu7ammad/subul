@@ -1,17 +1,13 @@
+import { auth, isActivated, isUser } from '@components/auth/shared';
+import { usedItemUseCase } from '@components/used-items/domain/used-item.use-case';
+import { imageAssertion, resizeImg } from '@libs/uploads/components/images/usedItemImageHandler';
+import { validate } from '@libs/validation';
+import { addUsedItemValidation } from '@libs/validation/components/used-items/addUsedItemValidation';
+import { deleteUsedItemImageValidation } from '@libs/validation/components/used-items/deleteUsedItemImageValidation';
+import { editUsedItemValidation } from '@libs/validation/components/used-items/editUsedItemValidation';
+import { deleteOldImgs } from '@utils/deleteFile';
+import logger from '@utils/logger';
 import express, { Application, NextFunction, Request, Response } from 'express';
-
-import {
-  imageAssertion,
-  resizeImg,
-} from '../../../../libraries/uploads/components/images/usedItemImageHandler';
-import { validate } from '../../../../libraries/validation';
-import { addUsedItemValidation } from '../../../../libraries/validation/components/used-items/addUsedItemValidation';
-import { deleteUsedItemImageValidation } from '../../../../libraries/validation/components/used-items/deleteUsedItemImageValidation';
-import { editUsedItemValidation } from '../../../../libraries/validation/components/used-items/editUsedItemValidation';
-import { deleteOldImgs } from '../../../../utils/deleteFile';
-import logger from '../../../../utils/logger';
-import { auth, isActivated, isUser } from '../../../auth/shared';
-import { usedItemUseCase } from '../../domain/used-item.use-case';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();

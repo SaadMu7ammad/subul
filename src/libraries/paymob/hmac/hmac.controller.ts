@@ -1,7 +1,7 @@
+import * as configurationProvider from '@libs/configuration-provider/index';
+import { BadRequestError } from '@libs/errors/components/index';
 import { RequestHandler } from 'express';
 
-import * as configurationProvider from '../../configuration-provider/index';
-import { BadRequestError } from '../../errors/components/index';
 import { Idata } from './hmac.interface';
 import { hmacService } from './hmac.service';
 

@@ -1,12 +1,11 @@
 import jwt from 'jsonwebtoken';
 
-import User from '../../user/data-access/models/user.model';
-import Charity from '../../charity/data-access/models/charity.model';
-import { UnauthenticatedError } from '../../../libraries/errors/components/index';
-import * as configurationProvider from '../../../libraries/configuration-provider/index';
+import User from "@components/user/data-access/models/user.model";
+import Charity from "@components/charity/data-access/models/charity.model";
+import { UnauthenticatedError } from "@libs/errors/components/index";
+import * as configurationProvider from "@libs/configuration-provider/index";
 import { Decoded } from './interface';
 import { NextFunction, Request, Response } from 'express';
-// import * as core from "express-serve-static-core";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -28,21 +27,18 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       );
       // attach the user to the job routes
       if (decoded.userId) {
-        // check first the user or chariy exists in the db
-        const IsUserExist = await User.findById(decoded.userId).select(
-          '-password'
-        );
-        if (!IsUserExist)
+        const isUserExist = await User.findById(decoded.userId).select('-password');
+        if (!isUserExist)
           throw new UnauthenticatedError('Authentication invalid');
-        res.locals.user = IsUserExist;
+        res.locals.user = isUserExist;
       } else if (decoded.charityId) {
-        const IsCharityExist = await Charity.findById(decoded.charityId).select(
+        const isCharityExist = await Charity.findById(decoded.charityId).select(
           '-password'
         );
-        if (!IsCharityExist)
+        if (!isCharityExist)
           throw new UnauthenticatedError('Authentication invalid');
 
-        res.locals.charity = IsCharityExist;
+        res.locals.charity = isCharityExist;
       }
       next();
     } else {

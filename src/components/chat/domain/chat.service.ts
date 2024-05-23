@@ -1,8 +1,9 @@
-import { BadRequestError } from '../../../libraries/errors/components';
-import { ICharity } from '../../charity/data-access/interfaces';
-import { charityUtils } from '../../charity/domain/charity.utils';
-import { userUtils } from '../../user/domain/user.utils';
-import { PlainIConversation, sendMessageResponse } from '../data-access/interfaces';
+import { ICharity } from '@components/charity/data-access/interfaces';
+import { charityUtils } from '@components/charity/domain/charity.utils';
+import { PlainIConversation, sendMessageResponse } from '@components/chat/data-access/interfaces';
+import { userUtils } from '@components/user/domain/user.utils';
+import { BadRequestError } from '@libs/errors/components';
+
 import { chatUtils } from './chat.utils';
 
 const sendMessage = async (

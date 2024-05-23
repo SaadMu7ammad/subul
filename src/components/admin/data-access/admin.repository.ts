@@ -1,12 +1,12 @@
+import { QueryObject } from '@components/admin/domain/admin.service';
 import {
   AllCharities,
   CharitiesAccountsByAggregation,
   DataForForConfirmedCharity,
   PendingCharities,
-} from '../../charity/data-access/interfaces';
-import CharityModel from '../../charity/data-access/models/charity.model';
-import UserModel from '../../user/data-access/models/user.model';
-import { QueryObject } from '../domain/admin.service';
+} from '@components/charity/data-access/interfaces';
+import CharityModel from '@components/charity/data-access/models/charity.model';
+import UserModel from '@components/user/data-access/models/user.model';
 
 const findAllCharities = async (selection: string): Promise<AllCharities[]> => {
   const charities = await CharityModel.find().select(selection);
@@ -17,7 +17,10 @@ const findAllPendingCharities = async (
   queryObject: QueryObject,
   selection: string
 ): Promise<PendingCharities[]> => {
-  const pendingCharities: PendingCharities[] = await CharityModel.find(queryObject, selection).exec();
+  const pendingCharities: PendingCharities[] = await CharityModel.find(
+    queryObject,
+    selection
+  ).exec();
 
   // .select('name email charityDocs paymentMethods')
   return pendingCharities;
@@ -28,14 +31,18 @@ const findCharitiesByQueryWithOptionalId = async (
   selection: string
 ): Promise<PendingCharities[]> => {
   // select => name email paymentMethods
-  const pendingCharities: PendingCharities[] = await CharityModel.find(queryObject, selection).exec();
+  const pendingCharities: PendingCharities[] = await CharityModel.find(
+    queryObject,
+    selection
+  ).exec();
   return pendingCharities; // [ { name email paymentMethods _id } ]
 };
 
 const findConfirmedCharityById = async (queryObject: QueryObject, selection: string) => {
-  const charity: DataForForConfirmedCharity = await CharityModel.findOne(queryObject, selection).select(
-    '-_id'
-  ); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
+  const charity: DataForForConfirmedCharity = await CharityModel.findOne(
+    queryObject,
+    selection
+  ).select('-_id'); //remove the extra useless id around the paymentMethods{_id,paymentMethods:{bank:[],fawry:[],vodafoneCash:[]}}
 
   return charity;
 };
@@ -86,5 +93,5 @@ export const adminRepository = {
   getPendingPaymentAccountByAggregation,
   findCharitiesByQueryWithOptionalId,
   deleteUserByEmail,
-  deleteCharityByEmail
+  deleteCharityByEmail,
 };

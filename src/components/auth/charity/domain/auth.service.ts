@@ -1,11 +1,12 @@
+import { AuthCharityObject, CharityObject } from '@components/auth/charity/data-access/interfaces';
+import generateToken from '@utils/generateToken';
+import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
 
-import generateToken from '../../../../utils/generateToken';
-import { generateResetTokenTemp, setupMailSender } from '../../../../utils/mailer';
-import { AuthCharityObject, CharityObject } from '../data-access/interfaces';
+import logger from '../../../../utils/logger';
 import { CharityData } from './auth.use-case';
 import { authCharityUtils } from './auth.utils';
-import logger from '../../../../utils/logger';
+
 const authCharity = async (
   reqBody: { email: string; password: string },
   res: Response<any, Record<string, any>>
@@ -14,19 +15,12 @@ const authCharity = async (
 
   const charityResponse = await authCharityUtils.checkCharityPassword(email, password);
   const token = generateToken(res, charityResponse.charity._id.toString(), 'charity');
-  const charityObj = {
-    _id: charityResponse.charity._id,
-    name: charityResponse.charity.name,
-    email: charityResponse.charity.email,
-    isEnabled: charityResponse.charity.email,
-    isConfirmed: charityResponse.charity.isConfirmed,
-    isPending: charityResponse.charity.isPending,
-  };
+
   const isCharityVerified = authCharityUtils.checkCharityIsVerified(charityResponse.charity);
   if (isCharityVerified) {
     //if verified no need to send token via email
     return {
-      charity: charityObj,
+      charity: charityResponse.charity,
       emailAlert: false,
       token: token,
     };
@@ -42,7 +36,7 @@ const authCharity = async (
         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
     return {
-      charity: charityObj,
+      charity: charityResponse.charity,
       emailAlert: true,
       token: token,
     };
@@ -57,10 +51,9 @@ const registerCharity = async (reqBody: CharityData): Promise<{ charity: Charity
       newCreatedCharity.charity.email,
       'welcome alert',
       `hi ${newCreatedCharity.charity.name} ` +
-      ' we are happy that you joined our community ... keep spreading goodness with us'
+        ' we are happy that you joined our community ... keep spreading goodness with us'
     );
-  }
-  catch (err) {
+  } catch (err) {
     logger.warn('error happened while sending welcome email');
   }
   const charityObj: CharityObject = {

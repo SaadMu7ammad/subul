@@ -1,10 +1,9 @@
+import { BadRequestError } from '@libs/errors/components/index';
+import { getImageConfiguration, saveImg } from '@libs/uploads/components/index';
 import { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
-
-import { BadRequestError } from '../../../errors/components/index';
-import { getImageConfiguration, saveImg } from '../index';
 
 const multerStorage = multer.memoryStorage();
 // type MulterFileFilter = (req: Request, file: Express.Multer.File, cb: (error: Error | null, acceptFile?: boolean) => void) => void;

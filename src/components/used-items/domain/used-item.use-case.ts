@@ -1,6 +1,3 @@
-import { NextFunction, Request, Response } from 'express';
-
-import { User } from '../../user/data-access/interfaces';
 import {
   AddUsedItemImageRequest,
   AddUsedItemImageResponse,
@@ -11,7 +8,10 @@ import {
   GetUsedItemResponse,
   UpdateUsedItemRequest,
   UpdateUsedItemResponse,
-} from '../data-access/interfaces/used-item.api';
+} from '@components/used-items/data-access/interfaces/used-item.api';
+import { User } from '@components/user/data-access/interfaces';
+import { NextFunction, Request, Response } from 'express';
+
 import { usedItemService } from './used-item.service';
 import { usedItemUtils } from './used-item.utils';
 

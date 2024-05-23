@@ -1,8 +1,7 @@
+import { BadRequestError } from '@libs/errors/components';
 import { Request } from 'express';
 import multer, { FileFilterCallback } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-
-import { BadRequestError } from '../../../../errors/components';
 
 const multerFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
   if (file.mimetype.split('/')[1] === 'pdf') {

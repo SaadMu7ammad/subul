@@ -1,7 +1,6 @@
+import * as configurationProvider from '@libs/configuration-provider/index';
+import logger from '@utils/logger';
 import { v2 as cloudinary } from 'cloudinary';
-
-import * as configurationProvider from '../libraries/configuration-provider/index';
-import logger from './logger';
 
 class Cloudinary {
   constructor() {

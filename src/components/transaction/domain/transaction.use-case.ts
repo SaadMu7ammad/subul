@@ -1,13 +1,16 @@
-import { NextFunction, Request, Response } from 'express';
-
-import { BadRequestError } from '../../../libraries/errors/components/index';
-import { User } from '../../user/data-access/interfaces';
-import { IDataPreCreateTransaction, IDataUpdateCaseInfo } from '../data-access/interfaces';
+import {
+  IDataPreCreateTransaction,
+  IDataUpdateCaseInfo,
+} from '@components/transaction/data-access/interfaces';
 import {
   GetAllTransactionResponse,
   ITransaction,
   UpdateCaseInfoResponse,
-} from '../data-access/interfaces';
+} from '@components/transaction/data-access/interfaces';
+import { User } from '@components/user/data-access/interfaces';
+import { BadRequestError } from '@libs/errors/components/index';
+import { NextFunction, Request, Response } from 'express';
+
 import { transactionService } from './transaction.service';
 
 const preCreateTransaction = async (req: Request, res: Response, next: NextFunction) => {

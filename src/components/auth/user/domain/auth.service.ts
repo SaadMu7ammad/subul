@@ -1,17 +1,18 @@
 // import { IUserResponse } from '../../../user/data-access/interfaces/user.interface';
-import { Response } from 'express';
-
-import generateToken from '../../../../utils/generateToken';
-import { generateResetTokenTemp, setupMailSender } from '../../../../utils/mailer';
-import { User } from '../../../user/data-access/interfaces';
 import {
   IloginData,
   RegisterUserInputData,
   UserObject,
   UserResponseBasedOnUserVerification,
-} from '../data-access/interfaces';
-import { authUserUtils } from './auth.utils';
+} from '@components/auth/user/data-access/interfaces';
+import { User } from '@components/user/data-access/interfaces';
+import generateToken from '@utils/generateToken';
+import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { Response } from 'express';
+
 import logger from '../../../../utils/logger';
+import { authUserUtils } from './auth.utils';
+
 const authUser = async (
   reqBody: IloginData,
   res: Response
@@ -25,15 +26,10 @@ const authUser = async (
 
   const token = generateToken(res, userResponse.user.id, 'user');
 
-  const userObj: UserObject = {
-    _id: userResponse.user._id,
-    name: userResponse.user.name,
-    email: userResponse.user.email,
-  };
   const IsUserVerified: boolean = authUserUtils.checkUserIsVerified(userResponse.user);
   if (IsUserVerified) {
     return {
-      user: userObj,
+      user: userResponse.user,
       emailAlert: false,
       token: token,
       isVerified: true,
@@ -53,7 +49,7 @@ const authUser = async (
         `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
     );
     return {
-      user: userObj,
+      user: userResponse.user,
       emailAlert: true,
       isVerified: false,
     };
@@ -80,7 +76,7 @@ const registerUser = async (
       newCreatedUser.user.email,
       'welcome alert',
       `hi ${newCreatedUser.user.name?.firstName + ' ' + newCreatedUser.user.name?.lastName} ` +
-      ' we are happy that you joined our community ... keep spreading goodness with us'
+        ' we are happy that you joined our community ... keep spreading goodness with us'
     );
   } catch (err) {
     logger.warn('error happened while sending welcome email');

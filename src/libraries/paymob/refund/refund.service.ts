@@ -1,6 +1,6 @@
-import { TransactionRepository } from '../../../components/transaction/data-access/transaction.repository';
-import { BadRequestError, NotFoundError } from '../../errors/components/index';
-import { getTransactionByIdService } from '../admin/getTransactionById.service';
+import { TransactionRepository } from '@components/transaction/data-access/transaction.repository';
+import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
+import { getTransactionByIdService } from '@libs/paymob/admin/getTransactionById.service';
 
 const refund = async (transaction_id: string) => {
   const stepOneToken = await getTransactionByIdService.getTokenStepOne();
