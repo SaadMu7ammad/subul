@@ -106,7 +106,12 @@ const rejectingCharity = async (charity: PendingCharities) => {
   }
   await charity.save();
 
-  sendNotification('Charity', charity._id, 'Your charity Account has been rejected', undefined);
+  sendNotification(
+    'Charity',
+    charity._id,
+    'Your charity Account has been rejected',
+    3 * 24 * 60 * 60 * 1000
+  );
 };
 
 const checkPaymentMethodAvailability = (
@@ -179,7 +184,12 @@ const confirmingPaymentAccount = async (
 
   await charity.save();
 
-  sendNotification('Charity', charity._id, 'Your payment account has been confirmed', undefined);
+  sendNotification(
+    'Charity',
+    charity._id,
+    'Your payment account has been confirmed',
+    3 * 24 * 60 * 60 * 1000
+  );
 };
 
 const rejectingPaymentAccount = async (
@@ -232,7 +242,12 @@ const rejectingPaymentAccount = async (
   }
   await charity.save();
 
-  sendNotification('Charity', charity._id, 'Your payment account has been rejected', undefined);
+  sendNotification(
+    'Charity',
+    charity._id,
+    'Your payment account has been rejected',
+    3 * 24 * 60 * 60 * 1000
+  );
 
   // if (charity.paymentMethods[paymentMethod][idx].enable === true)
   //   throw new BadRequestError('Already this payment account is enabled');

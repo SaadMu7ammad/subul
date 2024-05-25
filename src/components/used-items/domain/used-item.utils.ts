@@ -133,7 +133,7 @@ const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   if (!usedItem) throw new BadRequestError('This Item Already Cancelled Or Confirmed');
 
   // TODO : this should be after saving the usedItem , don't notify the user if something wrong happened and the used Item is not saved
-  await notifyUserAboutUsedItemBooking(usedItem, 'bookingCancelation');
+  await notifyUserAboutUsedItemBooking(usedItem, 'bookingCancelation', 3 * 24 * 60 * 60 * 1000);
 
   usedItem.booked = false;
   usedItem.charity = undefined;

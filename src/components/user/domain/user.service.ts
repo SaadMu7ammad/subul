@@ -143,7 +143,7 @@ const bloodContribution = async (user: User, id: string | undefined) => {
     'Charity',
     isCaseExist.charity,
     `User ${user.name.firstName} ${user.name.lastName} offered to donate blood to your case ${isCaseExist.title}`,
-    undefined,
+    3 * 24 * 60 * 60 * 1000,
     'usedItem',
     isCaseExist._id
   );
