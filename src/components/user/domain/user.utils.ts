@@ -1,9 +1,8 @@
+import { User } from '@components/user/data-access/interfaces';
+import { userRepository } from '@components/user/data-access/user.repository';
+import { NotFoundError } from '@libs/errors/components/index';
+import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
-
-import { NotFoundError } from '../../../libraries/errors/components/index';
-import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
-import { User } from '../data-access/interfaces';
-import { userRepository } from '../data-access/user.repository';
 
 const userRepositoryObj = new userRepository();
 

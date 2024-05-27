@@ -1,13 +1,13 @@
-import bcryptjs from 'bcryptjs';
-
+import { authCharityRepository } from '@components/auth/charity/data-access/charity.repository';
+import { ICharity } from '@components/charity/data-access/interfaces';
 import {
   BadRequestError,
   NotFoundError,
   UnauthenticatedError,
-} from '../../../../libraries/errors/components/index';
-import { deleteOldImgs } from '../../../../utils/deleteFile';
-import { ICharity } from '../../../charity/data-access/interfaces/';
-import { authCharityRepository } from '../data-access/charity.repository';
+} from '@libs/errors/components/index';
+import { deleteOldImgs } from '@utils/deleteFile';
+import bcryptjs from 'bcryptjs';
+
 import { CharityData } from './auth.use-case';
 
 const checkCharityPassword = async (email: string, password: string) => {
@@ -50,7 +50,7 @@ const createCharity = async (dataInputs: CharityData): Promise<{ charity: IChari
   }
 
   const newCharity = await authCharityRepository.createCharity(dataInputs);
-  console.log('New' + newCharity);
+
   if (!newCharity) {
     deleteOldImgs('charityLogos', dataInputs.image);
     throw new BadRequestError('Error while Creating the charity');

@@ -1,13 +1,16 @@
-import { BadRequestError, NotFoundError } from '../../../libraries/errors/components';
-import { deleteOldImgs } from '../../../utils/deleteFile';
-import { sendNotification } from '../../../utils/sendNotification';
+import { adminRepository } from '@components/admin/data-access/admin.repository';
 import {
   AccType,
   ConfirmedCharities,
+  ICharity,
   ICharityDocs,
   PendingCharities,
-} from '../../charity/data-access/interfaces';
-import { adminRepository } from '../data-access/admin.repository';
+} from '@components/charity/data-access/interfaces';
+import { User } from '@components/user/data-access/interfaces';
+import { BadRequestError, NotFoundError } from '@libs/errors/components';
+import { deleteOldImgs } from '@utils/deleteFile';
+import { sendNotification } from '@utils/sendNotification';
+
 import { QueryObject } from './admin.service';
 
 // import { QueryObject } from './admin.service';
@@ -85,7 +88,7 @@ const rejectingCharity = async (charity: PendingCharities) => {
   // vodafoneCash: vodafoneCashDocs
 
   if (charity.paymentMethods) {
-    for (let [method, docs] of paymentMethods) {
+    for (const [method, docs] of paymentMethods) {
       const methodKey = method as keyof typeof charity.paymentMethods;
 
       charity.paymentMethods[methodKey].forEach((acc: AccType) => {
@@ -273,6 +276,19 @@ const rejectingPaymentAccount = async (
 
   // await charity.save();
 };
+const resetRegisterOperation = async (entity: ICharity | User) => {
+  if (entity && typeof entity === 'object' && 'cases' in entity && 'cases' in entity) {
+    //to ensure the entity type using type guard
+    const res = await adminRepository.deleteCharityByEmail(entity.email);
+    if (!res) throw new BadRequestError('fatal error while regestering');
+    return true;
+  } else {
+    const res = await adminRepository.deleteUserByEmail(entity.email);
+    if (!res) throw new BadRequestError('fatal error while regestering');
+    return true;
+  }
+};
+
 export const adminUtils = {
   getAllPendingPaymentMethodsRequestsForConfirmedCharity,
   confirmingCharity,
@@ -281,4 +297,5 @@ export const adminUtils = {
   getConfirmedCharities,
   confirmingPaymentAccount,
   rejectingPaymentAccount,
+  resetRegisterOperation,
 };

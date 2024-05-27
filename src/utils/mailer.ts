@@ -1,9 +1,8 @@
+import * as configurationProvider from '@libs/configuration-provider/index';
+import logger from '@utils/logger';
 import bcryptjs from 'bcryptjs';
 import * as crypto from 'crypto';
 import nodemailer from 'nodemailer';
-
-import * as configurationProvider from '../libraries/configuration-provider/index';
-import logger from './logger';
 
 const generateResetTokenTemp = async () => {
   const token = crypto.randomBytes(32).toString('hex');

@@ -1,13 +1,12 @@
-import bcryptjs from 'bcryptjs';
-
+import { RegisterUserInputData } from '@components/auth/user/data-access/interfaces';
+import { authUserRepository } from '@components/auth/user/data-access/user.repository';
+import { User } from '@components/user/data-access/interfaces';
 import {
   BadRequestError,
   NotFoundError,
   UnauthenticatedError,
-} from '../../../../libraries/errors/components/index';
-import { User } from '../../../user/data-access/interfaces';
-import { RegisterUserInputData } from '../data-access/interfaces';
-import { authUserRepository } from '../data-access/user.repository';
+} from '@libs/errors/components/index';
+import bcryptjs from 'bcryptjs';
 
 const checkUserPassword = async (
   email: string,

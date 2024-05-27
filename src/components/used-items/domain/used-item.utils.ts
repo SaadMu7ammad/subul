@@ -1,17 +1,16 @@
-import { Request, Response } from 'express';
-
-import { BadRequestError, NotFoundError } from '../../../libraries/errors/components';
-import { deleteOldImgs } from '../../../utils/deleteFile';
-import { sendNotification } from '../../../utils/sendNotification';
-import { isDefined } from '../../../utils/shared';
-import { ICharity } from '../../charity/data-access/interfaces';
+import { ICharity } from '@components/charity/data-access/interfaces';
 import {
   BookItemRequest,
   IUsedItem,
   PlainIUsedItem,
   UpdateUsedItemRequest,
-} from '../data-access/interfaces';
-import { UsedItemRepository } from '../data-access/used-item.repository';
+} from '@components/used-items/data-access/interfaces';
+import { UsedItemRepository } from '@components/used-items/data-access/used-item.repository';
+import { BadRequestError, NotFoundError } from '@libs/errors/components';
+import { deleteOldImgs } from '@utils/deleteFile';
+import { sendNotification } from '@utils/sendNotification';
+import { isDefined } from '@utils/shared';
+import { Request, Response } from 'express';
 
 const usedItemRepository = new UsedItemRepository();
 

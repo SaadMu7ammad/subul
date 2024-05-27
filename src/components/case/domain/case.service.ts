@@ -1,10 +1,3 @@
-import { BadRequestError, NotFoundError } from '../../../libraries/errors/components';
-import { setupMailSender } from '../../../utils/mailer';
-import { notifyAllUsers } from '../../../utils/sendNotification';
-import { ICharity } from '../../charity/data-access/interfaces/';
-import { User } from '../../user/data-access/interfaces';
-import { userRepository } from '../../user/data-access/user.repository';
-import { userUtils } from '../../user/domain/user.utils';
 import {
   AddCaseResponse,
   DeleteCaseResponse,
@@ -16,7 +9,16 @@ import {
   ICase,
   PaginationObj,
   SortObj,
-} from '../data-access/interfaces';
+} from '@components/case/data-access/interfaces';
+import { ICharity } from '@components/charity/data-access/interfaces';
+import { User } from '@components/user/data-access/interfaces';
+import { userRepository } from '@components/user/data-access/user.repository';
+import { userUtils } from '@components/user/domain/user.utils';
+import { BadRequestError, NotFoundError } from '@libs/errors/components';
+import { setupMailSender } from '@utils/mailer';
+import { notifyAllUsers } from '@utils/sendNotification';
+import { Response } from 'express';
+
 import { caseUtils } from './case.utils';
 
 const addCase = async (
@@ -66,13 +68,14 @@ const getAllCases = async (
 };
 
 const getAllCasesForUser = async (
+  res: Response,
   queryParams: GetAllCasesQueryParams
 ): Promise<GetAllCasesResponse> => {
   const sortObj: SortObj = caseUtils.getSortObj(queryParams.sort);
 
   const { page, limit }: PaginationObj = caseUtils.getCasesPagination(queryParams);
 
-  const cases = await caseUtils.getAllCasesForUser(sortObj, page, limit);
+  const cases = await caseUtils.getAllCasesForUser(res, sortObj, page, limit);
 
   if (!cases) throw new NotFoundError('no cases found');
   return { cases: cases };

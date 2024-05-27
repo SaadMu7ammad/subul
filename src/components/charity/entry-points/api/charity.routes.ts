@@ -1,33 +1,23 @@
-import express, { Application, NextFunction, Request, Response } from 'express';
-
-import {
-  resizeDoc,
-  uploadDocs,
-} from '../../../../libraries/uploads/components/docs/images/handler';
-import {
-  resizeDocReq,
-  uploadDocsReq,
-} from '../../../../libraries/uploads/components/docs/images/handler2';
-import {
-  imageAssertion,
-  resizeImg,
-} from '../../../../libraries/uploads/components/images/handlers';
+import { auth, isActivated, isConfirmed } from '@components/auth/shared/index';
+import { charityUseCase } from '@components/charity/domain/charity.use-case';
+import { usedItemUseCase } from '@components/used-items/domain/used-item.use-case';
+import { resizeDoc, uploadDocs } from '@libs/uploads/components/docs/images/handler';
+import { resizeDocReq, uploadDocsReq } from '@libs/uploads/components/docs/images/handler2';
+import { imageAssertion, resizeImg } from '@libs/uploads/components/images/handlers';
 import {
   changePasswordCharityValidation,
   confirmResetCharityValidation,
   requestResetEmailCharityValidation,
   tokenCharityValidation,
-} from '../../../../libraries/validation/components/charity/allCharityValidation';
+} from '@libs/validation/components/charity/allCharityValidation';
 import {
   editCharityProfileValidation,
   reqEditPaymentMethodsValidation,
-} from '../../../../libraries/validation/components/charity/editCharityProfileValidation';
-import { validate } from '../../../../libraries/validation/index';
-import { deleteOldImgs } from '../../../../utils/deleteFile';
-import logger from '../../../../utils/logger';
-import { auth, isActivated, isConfirmed } from '../../../auth/shared/index';
-import { usedItemUseCase } from '../../../used-items/domain/used-item.use-case';
-import { charityUseCase } from '../../domain/charity.use-case';
+} from '@libs/validation/components/charity/editCharityProfileValidation';
+import { validate } from '@libs/validation/index';
+import { deleteOldImgs } from '@utils/deleteFile';
+import logger from '@utils/logger';
+import express, { Application, NextFunction, Request, Response } from 'express';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();

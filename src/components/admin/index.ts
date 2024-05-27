@@ -1,6 +1,5 @@
+import { UnauthenticatedError } from '@libs/errors/components/index';
 import { NextFunction, Request, Response } from 'express';
-
-import { UnauthenticatedError } from '../../libraries/errors/components/index';
 
 // import { AuthedRequest } from '../auth/user/data-access/auth.interface';
 

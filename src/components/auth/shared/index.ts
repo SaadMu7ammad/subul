@@ -1,12 +1,11 @@
+import Charity from '@components/charity/data-access/models/charity.model';
+import User from '@components/user/data-access/models/user.model';
+import * as configurationProvider from '@libs/configuration-provider/index';
+import { UnauthenticatedError } from '@libs/errors/components/index';
+import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-import User from '../../user/data-access/models/user.model';
-import Charity from '../../charity/data-access/models/charity.model';
-import { UnauthenticatedError } from '../../../libraries/errors/components/index';
-import * as configurationProvider from '../../../libraries/configuration-provider/index';
 import { Decoded } from './interface';
-import { NextFunction, Request, Response } from 'express';
-// import * as core from "express-serve-static-core";
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -20,29 +19,20 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
         throw new UnauthenticatedError('no token found');
       }
       // const authCookie = req.headers.jwt; //according to cookie parser
-      const decoded = <Decoded>(
-        jwt.verify(
-          jwtToken,
-          configurationProvider.getValue('hashing.jwtSecret')
-        )
-      );
+      const decoded = jwt.verify(
+        jwtToken,
+        configurationProvider.getValue('hashing.jwtSecret')
+      ) as Decoded;
       // attach the user to the job routes
       if (decoded.userId) {
-        // check first the user or chariy exists in the db
-        const IsUserExist = await User.findById(decoded.userId).select(
-          '-password'
-        );
-        if (!IsUserExist)
-          throw new UnauthenticatedError('Authentication invalid');
-        res.locals.user = IsUserExist;
+        const isUserExist = await User.findById(decoded.userId).select('-password');
+        if (!isUserExist) throw new UnauthenticatedError('Authentication invalid');
+        res.locals.user = isUserExist;
       } else if (decoded.charityId) {
-        const IsCharityExist = await Charity.findById(decoded.charityId).select(
-          '-password'
-        );
-        if (!IsCharityExist)
-          throw new UnauthenticatedError('Authentication invalid');
+        const isCharityExist = await Charity.findById(decoded.charityId).select('-password');
+        if (!isCharityExist) throw new UnauthenticatedError('Authentication invalid');
 
-        res.locals.charity = IsCharityExist;
+        res.locals.charity = isCharityExist;
       }
 
       next();
@@ -58,11 +48,7 @@ const isConfirmed = (req: Request, res: Response, next: NextFunction) => {
   if (res.locals.user) {
     throw new UnauthenticatedError('Users Are Not Allowed To Do This Action!');
   }
-  if (
-    res.locals.charity &&
-    res.locals.charity.isConfirmed &&
-    res.locals.charity.isEnabled
-  ) {
+  if (res.locals.charity && res.locals.charity.isConfirmed && res.locals.charity.isEnabled) {
     next();
   } else {
     throw new UnauthenticatedError(
@@ -75,12 +61,12 @@ const isActivated = (req: Request, res: Response, next: NextFunction) => {
   if (
     (res.locals.charity &&
       (res.locals.charity.emailVerification.isVerified ||
-        res.locals.charity.phoneVerification.isVerified)
-      && res.locals.charity.isEnabled) ||
+        res.locals.charity.phoneVerification.isVerified) &&
+      res.locals.charity.isEnabled) ||
     (res.locals.user &&
       (res.locals.user.emailVerification.isVerified ||
-        res.locals.user.phoneVerification.isVerified)
-      && res.locals.user.isEnabled)
+        res.locals.user.phoneVerification.isVerified) &&
+      res.locals.user.isEnabled)
   ) {
     next();
   } else {
@@ -102,6 +88,6 @@ const isUser = (req: Request, res: Response, next: NextFunction) => {
   } else {
     throw new UnauthenticatedError('Only Users Are Allowed To Do This Action!');
   }
-}
+};
 
-export { auth, isConfirmed, isActivated,isUser}
+export { auth, isConfirmed, isActivated, isUser };

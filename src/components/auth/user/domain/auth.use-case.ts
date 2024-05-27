@@ -1,12 +1,11 @@
+// import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
+import { RegisterUserInputData, UserObject } from '@components/auth/user/data-access/interfaces';
+import {
+  authUserResponse,
+  registerUserResponse,
+} from '@components/auth/user/data-access/interfaces';
 import { RequestHandler } from 'express';
 
-// import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
-import {
-  RegisterUserInputData,
-  UserObject,
-  UserResponseBasedOnUserVerification,
-} from '../data-access/interfaces';
-import { authUserResponse, registerUserResponse } from '../data-access/interfaces';
 import { authUserService } from './auth.service';
 
 //@desc   submit login page
@@ -16,18 +15,9 @@ import { authUserService } from './auth.service';
 const authUser: RequestHandler = async (req, res, _next): Promise<authUserResponse> => {
   const { email, password }: { email: string; password: string } = req.body;
   const data = { email, password };
-  // const data: { email: string; password: string } = {
-  //   email: req.body.email,
-  //   password: req.body.password,
-  // };
-  const responseData: UserResponseBasedOnUserVerification = await authUserService.authUser(
-    data,
-    res
-  );
 
-  const userResponsed: UserObject = {
-    ...responseData.user,
-  };
+  const responseData = await authUserService.authUser(data, res);
+  const userResponsed = responseData.user;
 
   if (responseData.emailAlert) {
     return {

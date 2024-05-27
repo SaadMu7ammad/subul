@@ -1,7 +1,4 @@
-import mongoose from 'mongoose';
-
-import { BadRequestError, NotFoundError } from '../../../libraries/errors/components/index';
-import { setupMailSender } from '../../../utils/mailer';
+import { adminRepository } from '@components/admin/data-access/admin.repository';
 import {
   AllPendingRequestsCharitiesResponse,
   CharitiesAccountsByAggregation,
@@ -13,8 +10,11 @@ import {
   DataForForConfirmedCharity,
   ICharityDocs,
   PendingCharities,
-} from '../../charity/data-access/interfaces';
-import { adminRepository } from '../data-access/admin.repository';
+} from '@components/charity/data-access/interfaces';
+import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
+import { setupMailSender } from '@utils/mailer';
+import mongoose from 'mongoose';
+
 import { adminUtils } from './admin.utils';
 
 // import { setupMailSender } from '../../../utils/mailer';

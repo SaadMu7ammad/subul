@@ -1,10 +1,4 @@
-import { Response } from 'express';
-
-import { BadRequestError, NotFoundError } from '../../../libraries/errors/components/index';
-import { deleteOldImgs } from '../../../utils/deleteFile';
-import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
-import { checkValueEquality } from '../../../utils/shared';
-import { CharityRepository } from '../data-access/charity.repository';
+import { CharityRepository } from '@components/charity/data-access/charity.repository';
 import {
   DataForRequestEditCharityPayments,
   ICharity,
@@ -13,7 +7,12 @@ import {
   ICharityPaymentMethods,
   IDataForSendDocs,
   PaymentMethodsNames,
-} from '../data-access/interfaces/';
+} from '@components/charity/data-access/interfaces';
+import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
+import { deleteOldImgs } from '@utils/deleteFile';
+import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { checkValueEquality } from '@utils/shared';
+import { Response } from 'express';
 
 const charityRepository = new CharityRepository();
 const checkCharityIsExist = async (email: string): Promise<{ charity: ICharity }> => {

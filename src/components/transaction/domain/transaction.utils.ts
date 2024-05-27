@@ -1,12 +1,11 @@
+import { ICase } from '@components/case/data-access/interfaces/case.interface';
+import { ICharity } from '@components/charity/data-access/interfaces';
+import { IDataPreCreateTransaction } from '@components/transaction/data-access/interfaces';
+import { ITransaction } from '@components/transaction/data-access/interfaces';
+import { TransactionRepository } from '@components/transaction/data-access/transaction.repository';
+import { User } from '@components/user/data-access/interfaces';
+import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { Types } from 'mongoose';
-
-import { BadRequestError, NotFoundError } from '../../../libraries/errors/components/index';
-import { ICase } from '../../case/data-access/interfaces/case.interface';
-import { ICharity } from '../../charity/data-access/interfaces/';
-import { User } from '../../user/data-access/interfaces';
-import { IDataPreCreateTransaction } from '../data-access/interfaces';
-import { ITransaction } from '../data-access/interfaces';
-import { TransactionRepository } from '../data-access/transaction.repository';
 
 const transactionRepository = new TransactionRepository();
 

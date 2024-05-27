@@ -1,19 +1,9 @@
-import { Response } from 'express';
-
-import {
-  BadRequestError,
-  NotFoundError,
-  UnauthenticatedError,
-} from '../../../libraries/errors/components/index';
-import { generateResetTokenTemp, setupMailSender } from '../../../utils/mailer';
-import { sendNotification } from '../../../utils/sendNotification';
-import { checkValueEquality, updateNestedProperties } from '../../../utils/shared';
-import { authUserResponse } from '../../auth/user/data-access/interfaces';
-import { ICase } from '../../case/data-access/interfaces';
-import { caseService } from '../../case/domain/case.service';
-import { caseUtils } from '../../case/domain/case.utils';
-import { CharityRepository } from '../../charity/data-access/charity.repository';
-import { ICharity } from '../../charity/data-access/interfaces';
+import { authUserResponse } from '@components/auth/user/data-access/interfaces';
+import { ICase } from '@components/case/data-access/interfaces';
+import { caseService } from '@components/case/domain/case.service';
+import { caseUtils } from '@components/case/domain/case.utils';
+import { CharityRepository } from '@components/charity/data-access/charity.repository';
+import { ICharity } from '@components/charity/data-access/interfaces';
 import {
   EditProfile,
   IUserModified,
@@ -22,7 +12,17 @@ import {
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
-} from '../data-access/interfaces/';
+} from '@components/user/data-access/interfaces';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthenticatedError,
+} from '@libs/errors/components/index';
+import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { sendNotification } from '@utils/sendNotification';
+import { checkValueEquality, updateNestedProperties } from '@utils/shared';
+import { Response } from 'express';
+
 import { userUtils } from './user.utils';
 
 const resetUser = async (reqBody: dataForResetEmail) => {

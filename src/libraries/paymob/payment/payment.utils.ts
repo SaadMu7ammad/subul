@@ -1,5 +1,5 @@
-import { User } from '../../../components/user/data-access/interfaces';
-import { NotFoundError } from '../../errors/components/index';
+import { User } from '@components/user/data-access/interfaces';
+import { NotFoundError } from '@libs/errors/components/index';
 
 const checkBeforeCreateLinkForPayment = (
   user: User,

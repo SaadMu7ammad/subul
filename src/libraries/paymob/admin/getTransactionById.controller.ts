@@ -1,6 +1,6 @@
+import { NotFoundError } from '@libs/errors/components';
 import { RequestHandler } from 'express';
 
-import { NotFoundError } from '../../errors/components';
 import { getTransactionByIdService } from './getTransactionById.service';
 
 const getTransactionById: RequestHandler = async (req, res, next) => {

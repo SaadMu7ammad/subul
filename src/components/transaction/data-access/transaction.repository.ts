@@ -1,11 +1,11 @@
+import { ICase } from '@components/case/data-access/interfaces/case.interface';
+import CaseModel from '@components/case/data-access/models/case.model';
+import { ICharity } from '@components/charity/data-access/interfaces';
+import CharityModel from '@components/charity/data-access/models/charity.model';
+import { User } from '@components/user/data-access/interfaces';
+import UserModel from '@components/user/data-access/models/user.model';
 import { FilterQuery } from 'mongoose';
 
-import { ICase } from '../../case/data-access/interfaces/case.interface';
-import CaseModel from '../../case/data-access/models/case.model';
-import { ICharity } from '../../charity/data-access/interfaces';
-import CharityModel from '../../charity/data-access/models/charity.model';
-import { User } from '../../user/data-access/interfaces';
-import UserModel from '../../user/data-access/models/user.model';
 import { ITransaction } from './interfaces';
 import { TransactionDataStore } from './interfaces/transaction.dao';
 import TransactionModel from './models/transaction.model';
