@@ -27,3 +27,5 @@ export type PaginationObj = {
 };
 
 export type ReceiverType = 'Charity' | 'User';
+
+export type ResourceType = 'case' | 'usedItem';

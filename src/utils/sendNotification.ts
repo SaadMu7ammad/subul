@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 
-import { PlainNotification } from '../components/notification/data-access/interfaces/notification.interface';
+import {
+  PlainNotification,
+  ResourceType,
+} from '../components/notification/data-access/interfaces/notification.interface';
 import { NotificationRepository } from '../components/notification/data-access/notification.repository';
 import { userRepository as UserRepository } from '../components/user/data-access/user.repository';
 
@@ -13,7 +16,7 @@ export const sendNotification = async (
   receiverId: mongoose.Types.ObjectId,
   message: string,
   maxAge?: number,
-  resourceType?: string,
+  resourceType?: ResourceType,
   resourceId?: mongoose.Types.ObjectId
 ) => {
   const notificationData: PlainNotification = {
@@ -42,7 +45,7 @@ export const sendNotification = async (
 export const notifyAllUsers = async (
   message: string,
   maxAge?: number,
-  resourceType?: string,
+  resourceType?: ResourceType,
   resourceId?: mongoose.Types.ObjectId
 ) => {
   const users = await userRepository.getAllUsers();
