@@ -62,6 +62,4 @@ export const notifyAllUsers = async (
     );
     notifications.push(notification);
   }
-
-  return notifications;
 };
