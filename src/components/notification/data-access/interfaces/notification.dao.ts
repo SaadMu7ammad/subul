@@ -1,10 +1,4 @@
-import {
-  FilterObj,
-  INotification,
-  PaginationObj,
-  PlainNotification,
-  SortObj,
-} from '.';
+import { FilterObj, INotification, PaginationObj, PlainNotification, SortObj } from '.';
 
 export type NotificationDao = {
   getAllNotifications: (
@@ -13,10 +7,8 @@ export type NotificationDao = {
     paginationObj: PaginationObj
   ) => Promise<INotification[]>;
 
-  createNotification: (
-    notificationData: PlainNotification
-  ) => Promise<INotification>;
-  
+  createNotification: (notificationData: PlainNotification) => Promise<INotification>;
+
   getNotificationById: (
     receiverType: string,
     receiverId: string,
@@ -28,4 +20,6 @@ export type NotificationDao = {
     receiverId: string,
     notificationId: string
   ) => Promise<INotification | null>;
+
+  deleteOutdatedNotifications: (receiverType: string, receiverId: string) => Promise<void>;
 };

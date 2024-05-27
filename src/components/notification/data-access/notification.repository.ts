@@ -17,6 +17,7 @@ export class NotificationRepository implements NotificationDao {
     ])
       .skip((paginationObj.page - 1) * paginationObj.limit)
       .limit(paginationObj.limit);
+
     return notifications;
   }
 
@@ -25,8 +26,11 @@ export class NotificationRepository implements NotificationDao {
       notificationData.receiver.receiverType,
       notificationData.receiver.receiverId.toString()
     );
+
     const notification = new NotificationModel(notificationData);
+
     await notification.save();
+
     return notification;
   }
 
@@ -36,6 +40,7 @@ export class NotificationRepository implements NotificationDao {
       'receiver.receiverType': receiverType,
       'receiver.receiverId': receiverId,
     });
+
     return notification;
   }
 
@@ -45,11 +50,13 @@ export class NotificationRepository implements NotificationDao {
       'receiver.receiverType': receiverType,
       'receiver.receiverId': receiverId,
     });
+
     return notification;
   }
 
   async deleteOutdatedNotifications(receiverType: string, receiverId: string) {
     const now = Date.now();
+
     await NotificationModel.deleteMany({
       receiver: {
         receiverType,
