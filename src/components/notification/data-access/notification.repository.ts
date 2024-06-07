@@ -58,10 +58,6 @@ export class NotificationRepository implements NotificationDao {
     const now = Date.now();
 
     await NotificationModel.deleteMany({
-      receiver: {
-        receiverType,
-        receiverId,
-      },
       $expr: {
         $gte: [
           { $subtract: [{ $toDate: now }, '$createdAt'] },
