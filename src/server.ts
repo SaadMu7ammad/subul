@@ -20,7 +20,26 @@ import logger from '@utils/logger';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Application } from 'express';
+import i18next from 'i18next';
+import FsBackend from 'i18next-fs-backend';
+// Imports the i18next HTTP middleware for use with Express.
+import i18nextHttpMiddleware from 'i18next-http-middleware';
 import * as path from 'path';
+
+i18next
+  .use(FsBackend) // Uses the file system backend to load translation files.
+  .use(i18nextHttpMiddleware.LanguageDetector) // Uses the language detector middleware to detect the user's language based on headers, cookies, or URL paths.
+  .init({
+    fallbackLng: 'en', // the default fallback language
+    preload: ['en', 'ar'], // Preload languages
+    backend: {
+      loadPath: './src/locales/{{lng}}/{{ns}}.json',
+    },
+    detection: {
+      order: ['header'], // Use the 'Accept-Language' header
+      lookupHeader: 'accept-language',
+    },
+  });
 
 dotenv.config();
 
@@ -39,6 +58,12 @@ app.use(
 );
 app.use(express.urlencoded({ extended: true })); //form data
 app.use(express.json());
+
+// Use i18next middleware
+app.use(i18nextHttpMiddleware.handle(i18next));
+// app.get('/test', (req, res) => {
+//   res.send(req.t('errors.notAdmin'));
+// });
 
 //to access the img as path http://localhost:5000/charityLogos/imgName_In_DB.jpeg
 //http://localhost:5000/charityDocs/docs1-sss--.jpeg
