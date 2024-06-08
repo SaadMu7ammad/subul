@@ -30,6 +30,13 @@ export default {
       nullable: false,
       env: 'MONGO_URL',
     },
+    testUrl: {
+      doc: 'The DB Testing cluster URL',
+      format: 'String',
+      default: 'localhost',
+      nullable: false,
+      env: 'MONGO_TEST_URL',
+    },
   },
   hashing: {
     salt: {
