@@ -5,13 +5,17 @@ import mongoose from 'mongoose';
 const connectDB = async () => {
   try {
     let dbUrl;
-    if (configurationProvider.getValue('environment.nodeEnv') === 'testing') {
+    const nodeEnv = configurationProvider.getValue('environment.nodeEnv');
+
+    if (nodeEnv === 'test') {
       dbUrl = configurationProvider.getValue('DB.testUrl');
     } else {
       dbUrl = configurationProvider.getValue('DB.url');
     }
+
     await mongoose.connect(dbUrl);
-    logger.info('mongoDB connected successfully');
+
+    logger.info(`mongoDB connected successfully to ${nodeEnv} DB`);
   } catch (err) {
     // throw new BadRequestError(err.message);
     logger.info(`DataBase Error: ${err}`);

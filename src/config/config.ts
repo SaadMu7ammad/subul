@@ -10,7 +10,7 @@ export default {
     port: {
       doc: 'The API listening port. By default is 5000',
       format: 'Number',
-      default: 5000,
+      default: 0,
       nullable: true,
       env: 'PORT',
     },
