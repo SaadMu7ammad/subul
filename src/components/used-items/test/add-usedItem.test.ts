@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
+import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import { startWebServer, stopWebServer } from '@utils/server';
 import axios, { AxiosInstance } from 'axios';
 import mongoose from 'mongoose';
@@ -30,6 +30,10 @@ beforeAll(async () => {
   nock.enableNetConnect('127.0.0.1');
 });
 
+beforeEach(async () => {
+  await clearUsedItemsDatabase();
+});
+
 afterAll(async () => {
   await clearUserDatabase();
   await clearUsedItemsDatabase();
@@ -58,5 +62,26 @@ describe('/api/usedItem', () => {
       expect(typeof data.usedItem._id).toBe('string');
       expect(data.usedItem._id).toBeDefined();
     });
+  });
+  test('When adding a new valid usedItem, Then should be able to retrieve it', async () => {
+    //Arrange
+    const usedItem = {
+      title: 'Used Item 1',
+      category: 'clothes',
+      description: 'This is a used item',
+      images: ['image1.png', 'image2.png'],
+      amount: 10,
+    };
+
+    //Act
+    const {
+      data: { usedItem: fetchedUsedItem },
+    } = await axiosAPIClient.post('/api/usedItem', usedItem);
+
+    //Assert
+    const { data, status } = await axiosAPIClient.get(`/api/usedItem/${fetchedUsedItem._id}`);
+    expect(status).toBe(200);
+    expect(data.usedItem._id).toBe(fetchedUsedItem._id);
+    expect(data.usedItem.title).toBe(fetchedUsedItem.title);
   });
 });
