@@ -11,9 +11,7 @@ import {
 } from './test-helpers';
 
 let axiosAPIClient: AxiosInstance;
-/*
-we need to spin up the server before running the tests. 
-*/
+
 beforeAll(async () => {
   const apiConnection = await startWebServer();
   const token = await createDummyUserAndReturnToken();
@@ -45,7 +43,10 @@ afterAll(async () => {
 describe('api/usedItem', () => {
   describe('GET /:id', () => {
     test('Should return 404 if No such UsedItem with this ID exists', async () => {
+      //Act
       const { status, data } = await axiosAPIClient.get('api/usedItem/60b1f1b1b4b4f3f1b4b4f3f1');
+
+      //Assert
       expect(status).toBe(404);
       expect(data.message).toMatch('No such UsedItem');
     });

@@ -11,9 +11,7 @@ import {
 } from './test-helpers';
 
 let axiosAPIClient: AxiosInstance;
-/*
-we need to spin up the server before running the tests. 
-*/
+
 beforeAll(async () => {
   const apiConnection = await startWebServer();
   const token = await createDummyUserAndReturnToken();
