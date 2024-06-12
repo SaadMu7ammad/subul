@@ -94,9 +94,10 @@ describe('/api/usedItem', () => {
     };
 
     //Act
-    const { status } = await axiosAPIClient.post('/api/usedItem', usedItem);
+    const { status, data } = await axiosAPIClient.post('/api/usedItem', usedItem);
 
     //Assert
     expect(status).toBe(500);
+    expect(data.message).toMatch('UsedItem validation failed');
   });
 });
