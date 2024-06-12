@@ -84,4 +84,19 @@ describe('/api/usedItem', () => {
     expect(data.usedItem._id).toBe(fetchedUsedItem._id);
     expect(data.usedItem.title).toBe(fetchedUsedItem.title);
   });
+  test('when adding a usedItem with missing required fields, then should get back a 500 response', async () => {
+    //Arrange
+    const usedItem = {
+      title: 'Used Item 1',
+      category: 'clothes',
+      description: 'This is a used item',
+      amount: 10,
+    };
+
+    //Act
+    const { status } = await axiosAPIClient.post('/api/usedItem', usedItem);
+
+    //Assert
+    expect(status).toBe(500);
+  });
 });
