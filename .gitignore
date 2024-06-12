@@ -131,3 +131,6 @@ dist
 
 # uploads
 uploads/*
+
+#ts cache
+tsconfig.tsbuildinfo

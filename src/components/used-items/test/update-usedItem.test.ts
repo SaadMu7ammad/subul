@@ -97,11 +97,10 @@ describe('api/usedItem', () => {
       amount: -10,
     };
     //Act
-    const { status, data } = await axiosAPIClient.put(
+    const { status } = await axiosAPIClient.put(
       `/api/usedItem/${createdUsedItem._id}`,
       updatedUsedItem
     );
-    console.log(data);
 
     //Assert
     expect(status).toBe(400);
