@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@utils/server';
+import { startWebServer, stopWebServer } from '@src/server';
 import axios, { AxiosInstance } from 'axios';
 import mongoose from 'mongoose';
 import nock from 'nock';

@@ -2,13 +2,13 @@
   "name": "Subul",
   "version": "1.0.0",
   "description": "Subul - Charity Website",
-  "main": "server.js",
+  "main": "start.js",
   "scripts": {
-    "server": "PORT=5000 nodemon ./src/server.ts",
+    "server": "PORT=5000 nodemon ./src/start.ts",
     "build": "tsc -p tsconfig.json",
-    "dev": "PORT=5000 ts-node-dev  -r tsconfig-paths/register ./src/server.ts",
+    "dev": "PORT=5000 ts-node-dev  -r tsconfig-paths/register ./src/start.ts",
     "watch": "tsc -w ",
-    "start": "PORT=5000 npx ts-node --transpile-only -r tsconfig-paths/register src/server.ts",
+    "start": "PORT=5000 npx ts-node --transpile-only -r tsconfig-paths/register src/start.ts",
     "prepare": "husky install",
     "test": "jest --runInBand"
   },

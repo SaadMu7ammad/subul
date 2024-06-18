@@ -15,7 +15,7 @@ const connectDB = async () => {
 
     await mongoose.connect(dbUrl);
 
-    logger.info(`mongoDB connected successfully to ${nodeEnv} DB`);
+    logger.info(`mongoDB: connected successfully to ${nodeEnv} DB`);
   } catch (err) {
     // throw new BadRequestError(err.message);
     logger.info(`DataBase Error: ${err}`);
