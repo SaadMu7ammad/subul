@@ -22,6 +22,8 @@ const findAllUsedItems = async () => {
 };
 
 const bookUsedItem = async (bookItemData: BookItemRequest) => {
+  await usedItemUtils.getUsedItem(bookItemData.itemId); //TODO : Delete this line and separate the logic : find the usedItem first , then book it
+
   const usedItem = await usedItemUtils.bookUsedItem(bookItemData);
 
   return {

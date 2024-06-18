@@ -43,8 +43,11 @@ afterAll(async () => {
 describe('api/usedItem', () => {
   describe('GET /:id', () => {
     test('Should return 404 if No such UsedItem with this ID exists', async () => {
+      //Arrange
+      const usedItemId = '60b1f1b1b4b4f3f1b4b4f3f1';
+
       //Act
-      const { status, data } = await axiosAPIClient.get('api/usedItem/60b1f1b1b4b4f3f1b4b4f3f1');
+      const { status, data } = await axiosAPIClient.get(`api/usedItem/${usedItemId}`);
 
       //Assert
       expect(status).toBe(404);

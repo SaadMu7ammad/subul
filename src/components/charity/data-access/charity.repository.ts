@@ -1,4 +1,4 @@
-import { CharityDao, ICharity } from './interfaces/';
+import { CharityDao, ICharity, PlainCharity } from './interfaces/';
 import CharityModel from './models/charity.model';
 
 export class CharityRepository implements CharityDao {
@@ -16,7 +16,7 @@ export class CharityRepository implements CharityDao {
     return charity;
   }
 
-  async createCharity(dataInputs: ICharity): Promise<ICharity | null> {
+  async createCharity(dataInputs: PlainCharity): Promise<ICharity | null> {
     const charity: ICharity = await CharityModel.create(dataInputs);
     charity.save();
     return charity;

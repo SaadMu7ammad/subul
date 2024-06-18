@@ -274,11 +274,13 @@ charitySchema.pre('save', async function (next) {
 
 declare module '../interfaces/charity.interface' {
   export type ICharity = HydratedDocument<InferSchemaType<typeof charitySchema>>;
-}
-declare module '../interfaces/charity.interface' {
+  export type PlainCharity = Exclude<
+    InferSchemaType<typeof charitySchema>,
+    'createdAt' | 'updatedAt'
+  >;
   export type IPaymentMethods = HydratedDocument<InferSchemaType<typeof paymentMethodSchema>>;
 }
 
-const Charity = mongoose.model<ICharity>('Charity', charitySchema);
+export const Charity = mongoose.model<ICharity>('Charity', charitySchema);
 
 export default Charity;
