@@ -101,7 +101,7 @@ export default function defineRoutes(expressApp: Application) {
         return undefined;
       }
     })
-    .delete(
+    .put(
       deleteUsedItemImageValidation,
       validate,
       async (req: Request, res: Response, next: NextFunction) => {
