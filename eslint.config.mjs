@@ -24,6 +24,7 @@ export default [
   {
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
+      'security/detect-object-injection': 'off',
     },
   },
   {

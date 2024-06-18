@@ -58,4 +58,5 @@ export const appendDummyImagesToFormData = (formData: FormData) => {
   formData.append('images', imageBuffer, 'test-image2.png');
   formData.append('images', imageBuffer, 'test-image3.png');
   formData.append('images', imageBuffer, 'test-image4.png');
+  formData.append('images', imageBuffer, 'test-image5.png');
 };
