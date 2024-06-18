@@ -2,6 +2,9 @@ import { PlainUser } from '@components/user/data-access/interfaces';
 import UserModel from '@components/user/data-access/models/user.model';
 import { userRepository as UserRepository } from '@components/user/data-access/user.repository';
 import { generateTokenForTesting } from '@utils/generateToken';
+import FormData from 'form-data';
+import fs from 'fs';
+import path from 'path';
 
 import UsedItem from '../data-access/models/used-item.model';
 
@@ -46,4 +49,13 @@ export const clearUserDatabase = async () => {
 
 export const clearUsedItemsDatabase = async () => {
   await UsedItem.deleteMany({});
+};
+
+export const appendDummyImagesToFormData = (formData: FormData) => {
+  const imagePath = path.resolve(__dirname, 'test-image.png');
+  const imageBuffer = fs.readFileSync(imagePath);
+  formData.append('images', imageBuffer, 'test-image1.png');
+  formData.append('images', imageBuffer, 'test-image2.png');
+  formData.append('images', imageBuffer, 'test-image3.png');
+  formData.append('images', imageBuffer, 'test-image4.png');
 };

@@ -1,10 +1,12 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import { startWebServer, stopWebServer } from '@src/server';
 import axios, { AxiosInstance } from 'axios';
+import FormData from 'form-data';
 import mongoose from 'mongoose';
 import nock from 'nock';
 
 import {
+  appendDummyImagesToFormData,
   clearUsedItemsDatabase,
   clearUserDatabase,
   createDummyUserAndReturnToken,
@@ -43,17 +45,28 @@ afterAll(async () => {
 describe('/api/usedItem', () => {
   describe('POST /', () => {
     test('When adding a new valid usedItem, Then should get back approval with 200 response', async () => {
+      //This test is the only test in which we will simulate the real scenario of uploading images
+
       //Arrange
-      const usedItem = {
+      const usedItem: { [key: string]: string | number } = {
         title: 'Used Item 1',
         category: 'clothes',
         description: 'This is a used item',
-        images: ['image1.png', 'image2.png'],
         amount: 10,
       };
 
+      const formData = new FormData();
+
+      for (const key in usedItem) {
+        formData.append(key, usedItem[key]);
+      }
+
+      appendDummyImagesToFormData(formData);
+
       //Act
-      const { data, status } = await axiosAPIClient.post('/api/usedItem', usedItem);
+      const { data, status } = await axiosAPIClient.post('/api/usedItem', formData, {
+        headers: formData.getHeaders(),
+      });
 
       //Assert
       expect(status).toBe(200);
