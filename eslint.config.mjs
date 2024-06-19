@@ -25,6 +25,7 @@ export default [
     rules: {
       '@typescript-eslint/no-unused-vars': 'off',
       'security/detect-object-injection': 'off',
+      '@typescript-eslint/naming-convention': 'error',
     },
   },
   {
