@@ -8,6 +8,7 @@ import {
 import { UsedItemRepository } from '@components/used-items/data-access/used-item.repository';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { deleteOldImgs } from '@utils/deleteFile';
+import { sendNotification } from '@utils/sendNotification';
 import { isDefined } from '@utils/shared';
 import { Request, Response } from 'express';
 
@@ -118,15 +119,24 @@ const createBookItemData = async (req: Request, res: Response): Promise<BookItem
 
 const bookUsedItem = async (bookItemData: BookItemRequest) => {
   const usedItem = await usedItemRepository.findAndUpdateToBooked(bookItemData);
+
   if (!usedItem) throw new BadRequestError('This Item Is Already Booked');
+
+  await notifyUserAboutUsedItemBooking(usedItem, 'booking');
+
   return usedItem;
 };
 
 const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   const usedItem = await usedItemRepository.findBookedItem(bookItemData);
   if (!usedItem) throw new BadRequestError('This Item Already Cancelled Or Confirmed');
+
+  // TODO : this should be after saving the usedItem , don't notify the user if something wrong happened and the used Item is not saved
+  await notifyUserAboutUsedItemBooking(usedItem, 'bookingCancelation', 3 * 24 * 60 * 60 * 1000);
+
   usedItem.booked = false;
   usedItem.charity = undefined;
+
   await usedItem.save();
 
   return usedItem;
@@ -138,6 +148,8 @@ const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
   usedItem.confirmed = true;
   await usedItem.save();
 
+  await notifyUserAboutUsedItemBooking(usedItem, 'bookingConfirmation');
+
   return usedItem;
 };
 
@@ -145,6 +157,37 @@ const isUsedItemBooked = (usedItem: IUsedItem) => {
   if (usedItem.booked) {
     throw new BadRequestError('This Used Item is already booked');
   }
+};
+
+const notifyUserAboutUsedItemBooking = async (
+  usedItem: IUsedItem,
+  notificationType: 'booking' | 'bookingConfirmation' | 'bookingCancelation',
+  maxAge: number | undefined = undefined
+) => {
+  if (notificationType !== 'bookingCancelation' && !usedItem.charity)
+    throw new BadRequestError('Item is not booked by any charity yet');
+
+  await usedItem.populate<{ charity: ICharity }>('charity');
+
+  //@ts-expect-error TODO:Fix this , IDK why ts can't infer that charity is populated
+  const charityName = usedItem.charity?.name;
+
+  const notificationMessage = {
+    booking: `Your item ${usedItem.title} has been booked by ${charityName} charity`,
+    bookingConfirmation: `Your item ${usedItem.title} booking has been confirmed by ${charityName} charity`,
+    bookingCancelation: `Your item ${usedItem.title} booking has been cancelled by ${charityName} charity`,
+  };
+
+  sendNotification(
+    'User',
+    usedItem.user,
+    notificationMessage[notificationType],
+    maxAge,
+    'usedItem',
+    usedItem._id
+  );
+
+  usedItem.depopulate('charity');
 };
 
 export const usedItemUtils = {

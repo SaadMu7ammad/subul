@@ -1,25 +1,26 @@
-//Routes 🛤️
+//Routes 🛣️
 import adminRoutes from '@components/admin/entry-points/api/admin.routes';
 import authCharityRoutes from '@components/auth/charity/entry-points/api/auth.routes';
 import authUserRoutes from '@components/auth/user/entry-points/api/auth.routes';
 import casesRoutes from '@components/case/entry-points/api/case.routes';
 import charityRoutes from '@components/charity/entry-points/api/charity.routes';
 import chatRoutes from '@components/chat/entry-points/api/chat.routes';
+import notificationRoutes from '@components/notification/entry-points/api/notification.routes';
 import transactionRoutes from '@components/transaction/entry-points/api/transaction.routes';
 import usedItemRoutes from '@components/used-items/entry-points/api/used-item.routes';
 import userRoutes from '@components/user/entry-points/api/user.routes';
-//Configuration ⚙️
+// Configuration ⚙️
 import configurationSchema from '@config/config';
 import connectDB from '@config/db';
 import * as configurationProvider from '@libs/configuration-provider/index';
-//Errors ⛔️
+// Errors ⛔️
 import { NotFound, errorHandler } from '@libs/errors/index';
-//Logger 📝
+// Logger 📝
 import logger from '@utils/logger';
+// Packages 📦️
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Application } from 'express';
-//Packages 📦️
 import { Server } from 'http';
 import { AddressInfo } from 'net';
 import * as path from 'path';
@@ -56,6 +57,7 @@ export async function startWebServer() {
   app.use(NotFound);
   app.use(errorHandler);
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const APIAddress = await openConnection(app);
   return APIAddress;
 }
@@ -97,6 +99,7 @@ const defineRoutes = (app: Application) => {
   casesRoutes(app);
   usedItemRoutes(app);
   chatRoutes(app);
+  notificationRoutes(app);
 };
 
 //handling errors outside express

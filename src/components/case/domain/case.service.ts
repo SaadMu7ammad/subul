@@ -16,6 +16,7 @@ import { userRepository } from '@components/user/data-access/user.repository';
 import { userUtils } from '@components/user/domain/user.utils';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { setupMailSender } from '@utils/mailer';
+import { notifyAllUsers } from '@utils/sendNotification';
 import { Response } from 'express';
 
 import { caseUtils } from './case.utils';
@@ -41,6 +42,12 @@ const addCase = async (
     await user.save();
   }
 
+  notifyAllUsers(
+    `Charity ${charity.name} has posted a new case , check it out!`,
+    1 * 24 * 60 * 60,
+    'case',
+    newCase._id
+  );
   return { case: newCase };
 };
 
@@ -140,7 +147,7 @@ const editCase = async (
     deleteOldImg = await caseUtils.replaceCaseImg(caseData, caseId);
   }
 
-  let updatedCase: ICase = await caseUtils.editCase(caseData, caseId);
+  const updatedCase: ICase = await caseUtils.editCase(caseData, caseId);
 
   if (deleteOldImg) deleteOldImg();
 
