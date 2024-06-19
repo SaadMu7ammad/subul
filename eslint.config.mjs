@@ -27,3 +27,8 @@ export default [
     },
   },
 ];
+/**
+    TODO : add in package.json lint-staged pre commit hook : 
+    eslint --cache --fix 
+    to the lint-staged when we fix our code to match eslint rules
+*/

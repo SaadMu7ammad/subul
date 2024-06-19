@@ -34,6 +34,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
 
         res.locals.charity = isCharityExist;
       }
+
       next();
     } else {
       throw new UnauthenticatedError('No Header Sent');
