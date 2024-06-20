@@ -131,3 +131,7 @@ dist
 
 # uploads
 uploads/*
+
+#cache
+tsconfig.tsbuildinfo
+.eslintcache

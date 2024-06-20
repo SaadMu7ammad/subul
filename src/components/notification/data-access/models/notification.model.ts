@@ -46,7 +46,7 @@ const notificationSchema = new Schema(
       type: notificationReceiverSchema,
       required: true,
     },
-    resource:{
+    resource: {
       type: resourceSchema,
       required: false,
     },
@@ -67,8 +67,6 @@ declare module '../interfaces/notification.interface' {
     'createdAt' | 'updatedAt'
   >;
 
-  export type INotification = HydratedDocument<
-    InferSchemaType<typeof notificationSchema>
-  >;
+  export type INotification = HydratedDocument<InferSchemaType<typeof notificationSchema>>;
 }
 export default NotificationModel;

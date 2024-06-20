@@ -1,27 +1,28 @@
 import { BadRequestError } from '@libs/errors/components';
 import { NextFunction, Request, Response } from 'express';
 
+import { SenderType } from '../data-access/interfaces';
 import { chatService } from './chat.service';
 
 // @desc   send message
 // @route  POST /api/chat/send-message
 // @access private
 const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
-  let typeSender;
+  let senderType: SenderType;
   if (res.locals.charity) {
-    typeSender = 'charity';
+    senderType = 'charity';
   } else {
-    typeSender = 'user';
+    senderType = 'user';
   }
 
   const { receiverId, message }: { receiverId: string; message: string } = req.body;
 
   const responseData = await chatService.sendMessage(
-    typeSender,
+    senderType,
     message,
-    typeSender === 'user' ? res.locals.user._id.toString() : res.locals.charity._id.toString(),
+    senderType === 'user' ? res.locals.user._id.toString() : res.locals.charity._id.toString(),
     receiverId,
-    typeSender === 'charity' ? res.locals.charity : undefined
+    senderType === 'charity' ? res.locals.charity : undefined
   );
 
   return {
