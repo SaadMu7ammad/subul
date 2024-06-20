@@ -1,4 +1,4 @@
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import * as configurationProvider from '@libs/configuration-provider/index';
 import bcrypt from 'bcryptjs';
 import mongoose, { HydratedDocument, InferSchemaType, Schema } from 'mongoose';
@@ -169,7 +169,10 @@ userSchema.pre('save', async function (next) {
 // });
 // export type User = InferSchemaType<typeof userSchema>;
 declare module '../interfaces/' {
-  export type User = HydratedDocument<InferSchemaType<typeof userSchema>>;
+  export type IUser = HydratedDocument<InferSchemaType<typeof userSchema>>;
+
+  export type PlainUser = InferSchemaType<typeof userSchema>;
+  // export type pureUser = { [k in keyof User as User[k] extends never?never:k ]: k extends keyof mongoose.Document|mongoose.Schema ?never: User[k] }
 }
 // InferSchemaType will determine the type as follows:
 // type User = {
@@ -179,5 +182,5 @@ declare module '../interfaces/' {
 // }
 
 // `UserModel` will have `name: string`, etc..
-const UserModel = mongoose.model<User>('Users', userSchema);
+const UserModel = mongoose.model<IUser>('Users', userSchema);
 export default UserModel;

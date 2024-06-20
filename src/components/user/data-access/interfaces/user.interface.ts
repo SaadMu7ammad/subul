@@ -1,7 +1,7 @@
-import { User } from '.';
+import { IUser } from '.';
 
 export type IUserModified = RecursivePartial<
-  Pick<User, 'name' | 'email' | 'userLocation' | 'gender' | 'phone'>
+  Pick<IUser, 'name' | 'email' | 'userLocation' | 'gender' | 'phone'>
 >;
 
 // export type IUserDocument = IUser & Document;
