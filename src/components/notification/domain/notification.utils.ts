@@ -61,7 +61,7 @@ const getSortObj = (sortQueryParams: string | undefined) => {
     if (sort[0] === '-') {
       sortObj[sort.substring(1)] = -1;
     } else {
-      sortObj[sort] = 1;
+      sortObj[`${sort}`] = 1;
     }
   });
 

@@ -181,7 +181,7 @@ const notifyUserAboutUsedItemBooking = async (
   sendNotification(
     'User',
     usedItem.user,
-    notificationMessage[notificationType],
+    notificationMessage[`${notificationType}`],
     maxAge,
     'usedItem',
     usedItem._id

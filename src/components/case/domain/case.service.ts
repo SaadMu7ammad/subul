@@ -11,7 +11,7 @@ import {
   SortObj,
 } from '@components/case/data-access/interfaces';
 import { ICharity } from '@components/charity/data-access/interfaces';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import { userRepository } from '@components/user/data-access/user.repository';
 import { userUtils } from '@components/user/domain/user.utils';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
@@ -25,7 +25,7 @@ const addCase = async (
   caseData: ICase,
   image: string,
   charity: ICharity,
-  user: User | undefined = undefined
+  user: IUser | undefined = undefined
 ): Promise<AddCaseResponse> => {
   caseData.coverImage = image;
   caseData.charity = charity._id;

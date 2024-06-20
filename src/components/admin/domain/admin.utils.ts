@@ -6,7 +6,7 @@ import {
   ICharityDocs,
   PendingCharities,
 } from '@components/charity/data-access/interfaces';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { deleteOldImgs } from '@utils/deleteFile';
 import { sendNotification } from '@utils/sendNotification';
@@ -65,8 +65,8 @@ const rejectingCharity = async (charity: PendingCharities) => {
       const docsKey = ('docs' + i) as keyof typeof charity.charityDocs;
 
       // Check if the property exists in charity.charityDocs
-      if (charity.charityDocs.hasOwnProperty(docsKey)) {
-        deleteOldImgs('charityDocs', charity.charityDocs[docsKey]);
+      if (Object.prototype.hasOwnProperty.call(charity.charityDocs, docsKey)) {
+        deleteOldImgs('charityDocs', charity.charityDocs[`${docsKey}`]);
       }
     }
   }
@@ -91,7 +91,7 @@ const rejectingCharity = async (charity: PendingCharities) => {
     for (const [method, docs] of paymentMethods) {
       const methodKey = method as keyof typeof charity.paymentMethods;
 
-      charity.paymentMethods[methodKey].forEach((acc: AccType) => {
+      charity.paymentMethods[`${methodKey}`].forEach((acc: AccType) => {
         if (docs in acc) {
           // console.log(docs); // bankDocs
           deleteOldImgs('charityDocs', docs);
@@ -104,7 +104,7 @@ const rejectingCharity = async (charity: PendingCharities) => {
         // // }
         // deleteOldImgs('charityDocs', docsValue);
       });
-      charity.paymentMethods[methodKey] = [];
+      charity.paymentMethods[`${methodKey}`] = [];
     }
   }
   await charity.save();
@@ -133,7 +133,7 @@ const checkPaymentMethodAvailability = (
 
   if (!charity.paymentMethods) throw new NotFoundError('Not found any payment methods');
 
-  const idx: number = charity.paymentMethods[paymentMethod].findIndex(
+  const idx: number = charity.paymentMethods[`${paymentMethod}`].findIndex(
     item => item._id == paymentAccountID
   );
 
@@ -173,9 +173,9 @@ const confirmingPaymentAccount = async (
   //   | CharityPaymentMethodFawry
   //   | CharityPaymentMethodVodafoneCash;
 
-  const paymentMethodData: AccType[] = charity.paymentMethods[paymentMethod]; // [ { Data } ]
+  const paymentMethodData: AccType[] = charity.paymentMethods[`${paymentMethod}`]; // [ { Data } ]
 
-  const paymentAccount: AccType | undefined = paymentMethodData[idx]; // { }
+  const paymentAccount: AccType | undefined = paymentMethodData[`${idx}`]; // { }
 
   if (!paymentAccount) throw new NotFoundError('This payment account not found');
 
@@ -208,9 +208,9 @@ const rejectingPaymentAccount = async (
   //   | CharityPaymentMethodFawry
   //   | CharityPaymentMethodVodafoneCash;
 
-  const paymentMethodData: AccType[] = charity.paymentMethods[paymentMethod]; // [ { Data } ]
+  const paymentMethodData: AccType[] = charity.paymentMethods[`${paymentMethod}`]; // [ { Data } ]
 
-  const paymentAccount: AccType | undefined = paymentMethodData[idx]; // { }
+  const paymentAccount: AccType | undefined = paymentMethodData[`${idx}`]; // { }
 
   if (!paymentAccount) throw new NotFoundError('This payment account not found');
 
@@ -276,7 +276,7 @@ const rejectingPaymentAccount = async (
 
   // await charity.save();
 };
-const resetRegisterOperation = async (entity: ICharity | User) => {
+const resetRegisterOperation = async (entity: ICharity | IUser) => {
   if (entity && typeof entity === 'object' && 'cases' in entity && 'cases' in entity) {
     //to ensure the entity type using type guard
     const res = await adminRepository.deleteCharityByEmail(entity.email);

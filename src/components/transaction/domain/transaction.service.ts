@@ -5,7 +5,7 @@ import {
 } from '@components/transaction/data-access/interfaces';
 import { ITransaction } from '@components/transaction/data-access/interfaces';
 import { TransactionRepository } from '@components/transaction/data-access/transaction.repository';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { checkValueEquality } from '@utils/shared';
 
@@ -15,7 +15,7 @@ const transactionRepository = new TransactionRepository();
 
 const preCreateTransaction = async (
   data: IDataPreCreateTransaction,
-  user: User
+  user: IUser
 ): Promise<boolean> => {
   //must check the account for the charity is valid or not
   const { charityId, caseId, amount } = data;
@@ -138,7 +138,7 @@ const updateCaseInfo = async (data: IDataUpdateCaseInfo): Promise<ITransaction |
   return newTransaction;
 };
 const getAllTransactions = async (
-  user: User
+  user: IUser
 ): Promise<{ allTransactions: (ITransaction | null)[] }> => {
   const allTransactionsPromised = await transactionUtils.getAllTransactionsPromised(user);
   return { allTransactions: allTransactionsPromised };

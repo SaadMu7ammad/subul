@@ -2,7 +2,7 @@ import { ICase } from '@components/case/data-access/interfaces/case.interface';
 import CaseModel from '@components/case/data-access/models/case.model';
 import { ICharity } from '@components/charity/data-access/interfaces';
 import CharityModel from '@components/charity/data-access/models/charity.model';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import UserModel from '@components/user/data-access/models/user.model';
 import { FilterQuery } from 'mongoose';
 
@@ -30,7 +30,7 @@ export class TransactionRepository implements TransactionDataStore {
     });
     return transaction;
   }
-  async findUserByEmail(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<IUser | null> {
     const user = await UserModel.findOne({
       email: email,
     });

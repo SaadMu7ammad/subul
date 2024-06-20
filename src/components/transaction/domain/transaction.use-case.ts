@@ -7,7 +7,7 @@ import {
   ITransaction,
   UpdateCaseInfoResponse,
 } from '@components/transaction/data-access/interfaces';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import { BadRequestError } from '@libs/errors/components/index';
 import { NextFunction, Request, Response } from 'express';
 
@@ -19,7 +19,7 @@ const preCreateTransaction = async (req: Request, res: Response, next: NextFunct
 
     const data: IDataPreCreateTransaction = { charityId, caseId, amount, mainTypePayment };
 
-    const storedUser: User = res.locals.user;
+    const storedUser: IUser = res.locals.user;
 
     const transaction: boolean = await transactionService.preCreateTransaction(data, storedUser);
 

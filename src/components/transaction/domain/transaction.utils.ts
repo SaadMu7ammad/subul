@@ -3,7 +3,7 @@ import { ICharity } from '@components/charity/data-access/interfaces';
 import { IDataPreCreateTransaction } from '@components/transaction/data-access/interfaces';
 import { ITransaction } from '@components/transaction/data-access/interfaces';
 import { TransactionRepository } from '@components/transaction/data-access/transaction.repository';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { Types } from 'mongoose';
 
@@ -76,7 +76,7 @@ const updateCaseAfterDonation = (cause: ICase, amount: number) => {
   return cause;
 };
 const addTransactionIdToUserTransactionIds = async (
-  user: User,
+  user: IUser,
   newTransactionId: Types.ObjectId
 ) => {
   user.transactions.push(newTransactionId);
@@ -86,10 +86,10 @@ const addTransactionIdToUserTransactionIds = async (
 const confirmSavingCase = async (cause: ICase) => {
   await cause.save();
 };
-const confirmSavingUser = async (user: User) => {
+const confirmSavingUser = async (user: IUser) => {
   await user.save();
 };
-const getAllTransactionsPromised = async (user: User): Promise<(ITransaction | null)[]> => {
+const getAllTransactionsPromised = async (user: IUser): Promise<(ITransaction | null)[]> => {
   const transactionPromises: Promise<ITransaction | null>[] = user.transactions.map(
     async (itemId, index) => {
       const myTransaction = await transactionRepository.findTransactionById(itemId.toString());

@@ -111,8 +111,8 @@ const editCharityProfileAddress = async (
 ): Promise<{ charity: ICharity }> => {
   //TODO: Should we use Partial<CharityLocationDocument>?
   for (let i = 0; i < charity.charityLocation.length; i++) {
-    if (charity.charityLocation[i]) {
-      const location = charity.charityLocation[i]!;
+    if (charity.charityLocation[`${i}`]) {
+      const location = charity.charityLocation[`${i}`]!;
       const isMatch: boolean = checkValueEquality(location._id!.toString(), id);
       if (isMatch) {
         // location = updatedLocation;//make a new id
@@ -246,9 +246,9 @@ const getChangedPaymentMethod = (
   reqPaymentMethodsObj: ICharityPaymentMethods
 ): PaymentMethodsNames => {
   let changedPaymentMethod: PaymentMethodsNames = 'bankAccount'; //it will be overwritten by the value in the request , so don't worry;
-  let paymentMethods: PaymentMethodsNames[] = ['bankAccount', 'fawry', 'vodafoneCash'];
+  const paymentMethods: PaymentMethodsNames[] = ['bankAccount', 'fawry', 'vodafoneCash'];
   paymentMethods.forEach((pm: PaymentMethodsNames) => {
-    if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
+    if (reqPaymentMethodsObj[`${pm}`]) changedPaymentMethod = pm;
   });
 
   return changedPaymentMethod;
@@ -260,7 +260,7 @@ const editBankAccount = async (
 ) => {
   if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to edit');
 
-  for (let [_, item] of storedCharity.paymentMethods.bankAccount.entries()) {
+  for (const [_, item] of storedCharity.paymentMethods.bankAccount.entries()) {
     console.log('1---------------');
 
     if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
@@ -284,7 +284,7 @@ const editFawryAccount = async (
 ) => {
   if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to edit');
 
-  for (let [_, item] of storedCharity.paymentMethods.fawry.entries()) {
+  for (const [_, item] of storedCharity.paymentMethods.fawry.entries()) {
     console.log('2---------------');
 
     if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
@@ -308,7 +308,7 @@ const editVodafoneAccount = async (
 ) => {
   if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to edit');
 
-  for (let [_, item] of storedCharity.paymentMethods.vodafoneCash.entries()) {
+  for (const [_, item] of storedCharity.paymentMethods.vodafoneCash.entries()) {
     console.log('-3--------------');
     if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
       console.log(item);

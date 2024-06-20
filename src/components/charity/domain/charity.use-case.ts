@@ -28,7 +28,7 @@ const activateCharityAccount = async (
   res: Response,
   next: NextFunction
 ): ActivateCharityAccountResponse => {
-  let storedCharity: ICharity = res.locals.charity;
+  const storedCharity: ICharity = res.locals.charity;
 
   const data: DataForActivateCharityAccount = { token: req.body.token };
 

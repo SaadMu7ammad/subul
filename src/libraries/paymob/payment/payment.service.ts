@@ -1,6 +1,6 @@
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import * as configurationProvider from '@libs/configuration-provider/index';
-import { NotFoundError } from '@libs/errors/components/index';
+import { CustomAPIError, NotFoundError } from '@libs/errors/components/index';
 
 import { paymentUtils } from './payment.utils';
 
@@ -15,8 +15,12 @@ const CreateAuthenticationRequest = async () => {
     });
     const response = await request.json();
     return response;
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error: unknown) {
+    if (error instanceof CustomAPIError || error instanceof Error) {
+      throw new NotFoundError(error.message);
+    } else {
+      throw new NotFoundError('strange behaviour');
+    }
   }
 };
 
@@ -53,12 +57,12 @@ const OrderRegistrationAPI = async (
 const generatePaymentKey = async (
   token: string,
   order_id: string,
-  user: User,
+  user: IUser,
   amount: number,
   integration_id: string
 ) => {
   try {
-    let request = await fetch(`https://accept.paymob.com/api/acceptance/payment_keys`, {
+    const request = await fetch(`https://accept.paymob.com/api/acceptance/payment_keys`, {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -87,12 +91,16 @@ const generatePaymentKey = async (
     });
     const response = await request.json();
     return response;
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error: unknown) {
+    if (error instanceof CustomAPIError || error instanceof Error) {
+      throw new NotFoundError(error.message);
+    } else {
+      throw new NotFoundError('strange behaviour');
+    }
   }
 };
 const createPayment = async (
-  user: User,
+  user: IUser,
   amount: number,
   charityId: string,
   caseId: string,

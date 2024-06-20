@@ -87,9 +87,10 @@ export async function processDocs(
   );
 }
 
-function assertFiles(file: any): asserts file is uploadDocsSchema {
+function assertFiles(file: string): asserts file is uploadDocsSchema {
   if (file && file.length > 0) {
-    return file;
+    //all is good
+    // return file;
   } else {
     throw new BadRequestError('bad type of file or not uploaded all docs');
   }
@@ -201,7 +202,7 @@ const resizeDoc = async (req: Request, res: Response, next: NextFunction) => {
         key == 'charityDocs3' ||
         key == 'charityDocs4'
       ) {
-        const fixedVal: charityDocsSchema | undefined = uploadCharityDocsIterable[i]; // Ensure key is of type charityDocsSchema
+        const fixedVal: charityDocsSchema | undefined = uploadCharityDocsIterable[`${i}`]; // Ensure key is of type charityDocsSchema
         if (fixedVal) {
           checkFilesCharityDocs(fixedVal, key);
           await processDocs(key, val, req, res);
