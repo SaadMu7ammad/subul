@@ -1,4 +1,4 @@
-import { IUser, UserDao } from './interfaces/';
+import { IUser, PlainUser, UserDao } from './interfaces/';
 // import { IUser, IUserDocument } from './interfaces/user.interface';
 import UserModel from './models/user.model';
 
@@ -13,7 +13,7 @@ export class userRepository implements UserDao {
     const user: IUser | null = await UserModel.findById(id);
     return user;
   }
-  async createUser(dataInputs: IUser): Promise<IUser> {
+  async createUser(dataInputs: PlainUser): Promise<IUser> {
     const user: IUser = await UserModel.create(dataInputs);
 
     return user;

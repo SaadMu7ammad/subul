@@ -4,8 +4,18 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(configurationProvider.getValue('DB.url'));
-    logger.info('mongoDB connected successfully');
+    let dbUrl;
+    const nodeEnv = configurationProvider.getValue('environment.nodeEnv');
+
+    if (nodeEnv === 'test') {
+      dbUrl = configurationProvider.getValue('DB.testUrl');
+    } else {
+      dbUrl = configurationProvider.getValue('DB.url');
+    }
+
+    await mongoose.connect(dbUrl);
+
+    logger.info(`mongoDB: connected successfully to ${nodeEnv} DB`);
   } catch (err) {
     // throw new BadRequestError(err.message);
     logger.info(`DataBase Error: ${err}`);

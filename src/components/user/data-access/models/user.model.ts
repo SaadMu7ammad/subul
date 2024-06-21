@@ -171,7 +171,7 @@ userSchema.pre('save', async function (next) {
 declare module '../interfaces/' {
   export type IUser = HydratedDocument<InferSchemaType<typeof userSchema>>;
 
-  export type PlainUser = InferSchemaType<typeof userSchema>;
+  export type PlainUser = Omit<InferSchemaType<typeof userSchema>, 'createdAt' | 'updatedAt'>;
   // export type pureUser = { [k in keyof User as User[k] extends never?never:k ]: k extends keyof mongoose.Document|mongoose.Schema ?never: User[k] }
 }
 // InferSchemaType will determine the type as follows:
