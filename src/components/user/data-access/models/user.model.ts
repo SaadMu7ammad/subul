@@ -170,6 +170,7 @@ userSchema.pre('save', async function (next) {
 // export type User = InferSchemaType<typeof userSchema>;
 declare module '../interfaces/' {
   export type User = HydratedDocument<InferSchemaType<typeof userSchema>>;
+  export type PlainUser = Omit<InferSchemaType<typeof userSchema>, 'createdAt' | 'updatedAt'>;
 }
 // InferSchemaType will determine the type as follows:
 // type User = {

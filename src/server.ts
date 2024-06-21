@@ -1,29 +1,32 @@
-//Packages 📦️
-//Routes 🛤️
+//Routes 🛣️
 import adminRoutes from '@components/admin/entry-points/api/admin.routes';
 import authCharityRoutes from '@components/auth/charity/entry-points/api/auth.routes';
 import authUserRoutes from '@components/auth/user/entry-points/api/auth.routes';
 import casesRoutes from '@components/case/entry-points/api/case.routes';
 import charityRoutes from '@components/charity/entry-points/api/charity.routes';
 import chatRoutes from '@components/chat/entry-points/api/chat.routes';
+import notificationRoutes from '@components/notification/entry-points/api/notification.routes';
 import transactionRoutes from '@components/transaction/entry-points/api/transaction.routes';
 import usedItemRoutes from '@components/used-items/entry-points/api/used-item.routes';
 import userRoutes from '@components/user/entry-points/api/user.routes';
-//Configuration ⚙️
+// Configuration ⚙️
 import configurationSchema from '@config/config';
 import connectDB from '@config/db';
 import * as configurationProvider from '@libs/configuration-provider/index';
-//Errors ⛔️
+// Errors ⛔️
 import { NotFound, errorHandler } from '@libs/errors/index';
-//Logger 📝
+// Logger 📝
 import logger from '@utils/logger';
+// Packages 📦️
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Application } from 'express';
+import { Server } from 'http';
 import i18next from 'i18next';
 import FsBackend from 'i18next-fs-backend';
 // Imports the i18next HTTP middleware for use with Express.
 import i18nextHttpMiddleware from 'i18next-http-middleware';
+import { AddressInfo } from 'net';
 import * as path from 'path';
 
 i18next
@@ -43,56 +46,94 @@ i18next
 
 dotenv.config();
 
-configurationProvider.initializeAndValidate(configurationSchema);
+let connection: Server;
 
-// const __dirname = path.resolve();
-const port: number = configurationProvider.getValue('environment.port');
-const host: string = configurationProvider.getValue('environment.host');
+export async function startWebServer() {
+  dotenv.config();
 
-const app: Application = express();
-app.use(
-  cors({
-    origin: 'https://charity-proj.netlify.app',
-    credentials: true, // Allow credentials
-  })
-);
-app.use(express.urlencoded({ extended: true })); //form data
-app.use(express.json());
+  configurationProvider.initializeAndValidate(configurationSchema);
 
-// Use i18next middleware
-app.use(i18nextHttpMiddleware.handle(i18next));
-// app.get('/test', (req, res) => {
-//   res.send(req.t('errors.notAdmin'));
-// });
+  const app: Application = express();
 
-//to access the img as path http://localhost:5000/charityLogos/imgName_In_DB.jpeg
-//http://localhost:5000/charityDocs/docs1-sss--.jpeg
-app.use(express.static(path.join(__dirname, `uploads`)));
-// app.use('/uploads',express.static( `uploads`));
+  // Use i18next middleware
+  app.use(i18nextHttpMiddleware.handle(i18next));
+  // app.get('/test', (req, res) => {
+  //   res.send(req.t('errors.notAdmin'));
+  // });
 
-transactionRoutes(app);
-authUserRoutes(app);
-authCharityRoutes(app);
-charityRoutes(app);
-adminRoutes(app);
-userRoutes(app);
-casesRoutes(app);
-usedItemRoutes(app);
-chatRoutes(app);
+  //to access the img as path http://localhost:5000/charityLogos/imgName_In_DB.jpeg
+  //http://localhost:5000/charityDocs/docs1-sss--.jpeg
+  app.use(express.static(path.join(__dirname, `uploads`)));
+  // app.use('/uploads',express.static( `uploads`));
 
-app.get('/', (req, res) => {
-  res.send('Welcome To Subul API 👋');
-});
+  app.use(
+    cors({
+      origin: 'https://charity-proj.netlify.app',
+      credentials: true, // Allow credentials
+    })
+  );
+  app.use(express.urlencoded({ extended: true })); //form data
+  app.use(express.json());
 
-app.use(NotFound);
-app.use(errorHandler);
-const server = async () => {
-  await connectDB();
-  app.listen(port, () => {
-    logger.info(`server is listenting http://${host}:${port}`);
+  //to access the img as path http://localhost:5000/charityLogos/imgName_In_DB.jpeg
+  //http://localhost:5000/charityDocs/docs1-sss--.jpeg
+  app.use(express.static(path.join(__dirname, `uploads`)));
+  // app.use('/uploads',express.static( `uploads`));
+
+  defineRoutes(app);
+
+  app.get('/', (req, res) => {
+    res.send('Welcome To Subul API 👋');
   });
+
+  app.use(NotFound);
+  app.use(errorHandler);
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  const APIAddress = await openConnection(app);
+  return APIAddress;
+}
+
+export async function stopWebServer() {
+  return new Promise<void>(resolve => {
+    if (connection !== undefined) {
+      connection.close(() => {
+        resolve();
+      });
+    }
+  });
+}
+
+export async function openConnection(expressApp: express.Application): Promise<AddressInfo> {
+  const portToListenTo = configurationProvider.getValue('environment.port');
+
+  const webServerPort = portToListenTo || 0;
+
+  await connectDB();
+
+  return new Promise(resolve => {
+    logger.info(`Server is about to listen to port ${webServerPort}`);
+
+    connection = expressApp.listen(webServerPort, () => {
+      logger.info(`Server is listening to port ${webServerPort} 🚀`);
+      resolve(connection.address() as AddressInfo);
+    });
+  });
+}
+
+const defineRoutes = (app: Application) => {
+  transactionRoutes(app);
+  authUserRoutes(app);
+  authCharityRoutes(app);
+  charityRoutes(app);
+  adminRoutes(app);
+  userRoutes(app);
+  casesRoutes(app);
+  usedItemRoutes(app);
+  chatRoutes(app);
+  notificationRoutes(app);
 };
-server();
+
 //handling errors outside express
 // process.on('unhandledRejection', (err) => {
 //   console.log(`unhandledRejection Errors + ${err.name} | ${err.message}`);

@@ -19,6 +19,7 @@ import {
   UnauthenticatedError,
 } from '@libs/errors/components/index';
 import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { sendNotification } from '@utils/sendNotification';
 import { checkValueEquality, updateNestedProperties } from '@utils/shared';
 import { Response } from 'express';
 
@@ -43,7 +44,7 @@ const resetUser = async (reqBody: dataForResetEmail) => {
 };
 
 const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
-  let updatedUser = await userUtils.checkUserIsExist(reqBody.email);
+  const updatedUser = await userUtils.checkUserIsExist(reqBody.email);
   // { user: { } }
 
   if (!updatedUser.user.verificationCode) throw new NotFoundError('code not exist');
@@ -73,7 +74,7 @@ const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
 };
 
 const changePassword = async (reqBody: dataForChangePassword, user: User) => {
-  let updatedUser = user;
+  const updatedUser = user;
   updatedUser.password = reqBody.password;
   await updatedUser.save();
   await setupMailSender(
@@ -93,7 +94,7 @@ const activateAccount = async (
   user: User,
   res: Response
 ): Promise<authUserResponse> => {
-  let storedUser = user;
+  const storedUser = user;
   if (storedUser.emailVerification?.isVerified) {
     return {
       // message: 'account already is activated'
@@ -137,6 +138,14 @@ const bloodContribution = async (user: User, id: string | undefined) => {
     'bloodContribution',
     'thanks for your caring' +
       `<h3>here is the number to get contact with the case immediate</h3> <h2>${isCaseExist.privateNumber}</h2>`
+  );
+  sendNotification(
+    'Charity',
+    isCaseExist.charity,
+    `User ${user.name.firstName} ${user.name.lastName} offered to donate blood to your case ${isCaseExist.title}`,
+    3 * 24 * 60 * 60 * 1000,
+    'usedItem',
+    isCaseExist._id
   );
 };
 const requestFundraisingCampaign = async (

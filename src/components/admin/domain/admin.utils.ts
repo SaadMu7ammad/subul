@@ -9,6 +9,7 @@ import {
 import { User } from '@components/user/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { deleteOldImgs } from '@utils/deleteFile';
+import { sendNotification } from '@utils/sendNotification';
 
 import { QueryObject } from './admin.service';
 
@@ -39,6 +40,13 @@ const confirmingCharity = async (charity: PendingCharities) => {
     });
   }
   await charity.save();
+
+  sendNotification(
+    'Charity',
+    charity._id,
+    'Your charity Account has been confirmed',
+    3 * 24 * 60 * 60 * 1000
+  );
 };
 
 // const rejectingCharity = async (charity: ICharity) => {
@@ -80,7 +88,7 @@ const rejectingCharity = async (charity: PendingCharities) => {
   // vodafoneCash: vodafoneCashDocs
 
   if (charity.paymentMethods) {
-    for (let [method, docs] of paymentMethods) {
+    for (const [method, docs] of paymentMethods) {
       const methodKey = method as keyof typeof charity.paymentMethods;
 
       charity.paymentMethods[methodKey].forEach((acc: AccType) => {
@@ -100,6 +108,13 @@ const rejectingCharity = async (charity: PendingCharities) => {
     }
   }
   await charity.save();
+
+  sendNotification(
+    'Charity',
+    charity._id,
+    'Your charity Account has been rejected',
+    3 * 24 * 60 * 60 * 1000
+  );
 };
 
 const checkPaymentMethodAvailability = (
@@ -171,6 +186,13 @@ const confirmingPaymentAccount = async (
   }
 
   await charity.save();
+
+  sendNotification(
+    'Charity',
+    charity._id,
+    'Your payment account has been confirmed',
+    3 * 24 * 60 * 60 * 1000
+  );
 };
 
 const rejectingPaymentAccount = async (
@@ -222,6 +244,13 @@ const rejectingPaymentAccount = async (
     throw new BadRequestError('No docs found for that account');
   }
   await charity.save();
+
+  sendNotification(
+    'Charity',
+    charity._id,
+    'Your payment account has been rejected',
+    3 * 24 * 60 * 60 * 1000
+  );
 
   // if (charity.paymentMethods[paymentMethod][idx].enable === true)
   //   throw new BadRequestError('Already this payment account is enabled');
