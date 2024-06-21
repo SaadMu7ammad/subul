@@ -1,5 +1,7 @@
 {
   "errors": {
-    "notAdmin": "You are not an admin"
+    "notAdmin": "You are not an admin",
+    "noHeaderSent": "No Header Sent",
+    "charityNotFound": "Charity not found"
   }
 }

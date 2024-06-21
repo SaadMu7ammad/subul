@@ -36,7 +36,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       }
       next();
     } else {
-      throw new UnauthenticatedError('No Header Sent');
+      throw new UnauthenticatedError(req.t('errors.noHeaderSent'));
     }
   } catch (err) {
     next(err);

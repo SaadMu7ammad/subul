@@ -13,6 +13,7 @@ import {
 } from '@components/charity/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { setupMailSender } from '@utils/mailer';
+import { Request } from 'express';
 import mongoose from 'mongoose';
 
 import { adminUtils } from './admin.utils';
@@ -34,7 +35,7 @@ const getAllChariteis = async () => {
 
   return { charities: charities };
 };
-const getAllOrOnePendingRequestsCharities = async (id: string | null = null) => {
+const getAllOrOnePendingRequestsCharities = async (req: Request, id: string | null = null) => {
   const queryObject: QueryObject = {
     $and: [
       { isPending: true },
@@ -52,9 +53,7 @@ const getAllOrOnePendingRequestsCharities = async (id: string | null = null) => 
     'name email charityDocs paymentMethods'
   );
 
-  // console.log(allPendingCharities[0]); // { selection }
-
-  if (id && !allPendingCharities[0]) throw new BadRequestError('charity not found');
+  if (id && !allPendingCharities[0]) throw new BadRequestError(req.t('errors.charityNotFound'));
 
   return { allPendingCharities: allPendingCharities };
 };
@@ -138,7 +137,7 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
 };
 
 // That mean if charity makes a requestEditCharityPayment (add another acc for receive payment)
-const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
+const getPendingPaymentRequestsForConfirmedCharityById = async (req: Request, id: string) => {
   const queryObject: QueryObject = {
     $and: [
       { isPending: false },
@@ -153,7 +152,7 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
   const paymentRequests: DataForForConfirmedCharity =
     await adminRepository.findConfirmedCharityById(queryObject, 'paymentMethods _id');
 
-  if (!paymentRequests) throw new BadRequestError('charity not found');
+  if (!paymentRequests) throw new BadRequestError('No payment requests found!');
 
   let bankAccount: CharityPaymentMethodBankAccount[] | undefined =
     paymentRequests.paymentMethods?.bankAccount.filter(
@@ -195,10 +194,10 @@ const getAllRequestsPaymentMethodsForConfirmedCharities = async () => {
   };
 };
 
-const confirmCharity = async (id: string): Promise<ConfirmPendingCharity> => {
+const confirmCharity = async (req: Request, id: string): Promise<ConfirmPendingCharity> => {
   // const charity: AllPendingRequestsCharitiesResponse =
   //   await getAllOrOnePendingRequestsCharities(id);
-  const charity = await getAllOrOnePendingRequestsCharities(id);
+  const charity = await getAllOrOnePendingRequestsCharities(req, id);
   // { allPendingCharities: allPendingCharities }
 
   const pendingCharity: PendingCharities | undefined = charity.allPendingCharities[0];
@@ -219,9 +218,11 @@ const confirmCharity = async (id: string): Promise<ConfirmPendingCharity> => {
   };
 };
 
-const rejectCharity = async (id: string): Promise<ConfirmPendingCharity> => {
-  const charity: AllPendingRequestsCharitiesResponse =
-    await getAllOrOnePendingRequestsCharities(id);
+const rejectCharity = async (req: Request, id: string): Promise<ConfirmPendingCharity> => {
+  const charity: AllPendingRequestsCharitiesResponse = await getAllOrOnePendingRequestsCharities(
+    req,
+    id
+  );
 
   const pendingCharity: PendingCharities | undefined = charity.allPendingCharities[0];
 

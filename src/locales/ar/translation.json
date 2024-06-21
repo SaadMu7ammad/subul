@@ -1,5 +1,7 @@
 {
   "errors": {
-    "notAdmin": "أنت لست مشرفًا"
+    "notAdmin": "أنت لست مشرفًا",
+    "noHeaderSent": "لم يتم تسجيل الدخول",
+    "charityNotFound": "لم يتم العثور على الجمعية"
   }
 }
