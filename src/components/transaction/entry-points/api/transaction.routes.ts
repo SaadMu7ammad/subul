@@ -1,9 +1,6 @@
 import { isAdmin } from '@components/admin/index';
 import { auth, isActivated } from '@components/auth/shared/index';
-import {
-  preCreateTransaction,
-  updateCaseInfo,
-} from '@components/transaction/domain/transaction.use-case';
+import { tranactionUseCaseClass } from '@components/transaction/domain/transaction.use-case';
 import { getTransactionById } from '@libs/paymob/admin/getTransactionById.controller';
 import { hmacSetting } from '@libs/paymob/hmac/hmac.controller';
 import { paywithMobileWallet } from '@libs/paymob/payment/mobileWallets/mobileWallets.controller';
@@ -16,13 +13,13 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
-
+  const transactionInstance = new tranactionUseCaseClass();
   //for user
   router.post(
     '/addTransaction/paymob/onlinecard',
     auth,
     isActivated,
-    preCreateTransaction,
+    transactionInstance.preCreateTransaction,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         // const req=_req as AuthedRequest
@@ -39,7 +36,7 @@ export default function defineRoutes(expressApp: Application) {
     '/addTransaction/paymob/mobilewallet',
     auth,
     isActivated,
-    preCreateTransaction,
+    transactionInstance.preCreateTransaction,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         // const req=_req as AuthedRequest
@@ -59,7 +56,7 @@ export default function defineRoutes(expressApp: Application) {
   router.post('/paymob/callback', hmacSetting, async (req, res, next) => {
     try {
       logger.info(`transaction API was called to update Case Info`);
-      const updateCaseInfoResponse = await updateCaseInfo(req, res, next);
+      const updateCaseInfoResponse = await transactionInstance.updateCaseInfo(req, res, next);
       logger.info('transaction created & case updated');
       return res.json(updateCaseInfoResponse);
     } catch (error) {

@@ -10,7 +10,7 @@ import { ITransaction } from './interfaces';
 import { TransactionDataStore } from './interfaces/transaction.dao';
 import TransactionModel from './models/transaction.model';
 
-export class TransactionRepository implements TransactionDataStore {
+class TransactionRepository implements TransactionDataStore {
   async findCaseById(id: string): Promise<ICase | null> {
     const cases = await CaseModel.findById(id);
     return cases;
@@ -39,5 +39,12 @@ export class TransactionRepository implements TransactionDataStore {
   async createTransaction(transaction: Partial<ITransaction>): Promise<ITransaction | null> {
     const newTransaction = await TransactionModel.create(transaction);
     return newTransaction;
+  }
+}
+export class TRANSACTION {
+  public transactionModel = new TransactionRepository();
+
+  constructor() {
+    // super();
   }
 }
