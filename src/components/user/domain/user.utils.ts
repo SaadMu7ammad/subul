@@ -1,15 +1,17 @@
-import { IUser, userUtilsDao } from '@components/user/data-access/interfaces';
-import { userRepository } from '@components/user/data-access/user.repository';
+import { IUser, userUtilsSkeleton } from '@components/user/data-access/interfaces';
 import { NotFoundError } from '@libs/errors/components/index';
 import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
 
-class userUtilsClass implements userUtilsDao {
-  private userRepositoryObj = new userRepository();
+import { USER } from './user.class';
+
+export class userUtilsClass implements userUtilsSkeleton {
+  #user = new USER();
+  // constructor(){}
 
   async checkUserIsExist(email: string): Promise<{ user: IUser }> {
     //return user if it exists
-    const userIsExist = await this.userRepositoryObj.findUser(email);
+    const userIsExist = await this.#user.userModel.findUser(email);
 
     if (!userIsExist) {
       throw new NotFoundError('email not found Please use another one');
@@ -21,7 +23,7 @@ class userUtilsClass implements userUtilsDao {
   }
   async checkUserIsExistById(id: string): Promise<{ user: IUser }> {
     //return user if it exists
-    const userIsExist = await this.userRepositoryObj.findUserById(id);
+    const userIsExist = await this.#user.userModel.findUserById(id);
 
     if (!userIsExist) {
       throw new NotFoundError('user not found');
@@ -42,7 +44,7 @@ class userUtilsClass implements userUtilsDao {
   // //   return { user: res.locals.user };
   // // };
   async checkIsEmailDuplicated(email: string): Promise<boolean> {
-    const isDuplicatedEmail: IUser | null = await this.userRepositoryObj.findUser(email);
+    const isDuplicatedEmail: IUser | null = await this.#user.userModel.findUser(email);
     // if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
     return isDuplicatedEmail ? true : false;
   }
@@ -127,7 +129,7 @@ class userUtilsClass implements userUtilsDao {
     user = await user.save();
   }
 }
-export const userUtils = new userUtilsClass();
+// export const userUtilsClass:userUtils = new userUtils();
 // = {
 //   checkUserIsExist,
 //   checkUserIsExistById,

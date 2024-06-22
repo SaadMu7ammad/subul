@@ -1,6 +1,9 @@
 import { authUserResponse } from '@components/auth/user/data-access/interfaces';
 import { ICase } from '@components/case/data-access/interfaces';
-import { bloodContributionResponse, userUseCaseDao } from '@components/user/data-access/interfaces';
+import {
+  bloodContributionResponse,
+  userUseCaseSkeleton,
+} from '@components/user/data-access/interfaces';
 import {
   ChangePasswordResponse,
   ConfirmResetResponse,
@@ -19,7 +22,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import { userService } from './user.service';
 
-class userUseCaseClass implements userUseCaseDao {
+class userUseCaseClass implements userUseCaseSkeleton {
   //@desc   reset password
   //@route  POST /api/users/reset
   //@access public

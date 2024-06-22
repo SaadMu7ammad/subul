@@ -8,11 +8,11 @@ import {
   EditProfile,
   IUser,
   IUserModified,
-  UserServiceDao,
   dataForActivateAccount,
   dataForChangePassword,
   dataForConfirmResetEmail,
   dataForResetEmail,
+  userServiceSkeleton,
 } from '@components/user/data-access/interfaces';
 import {
   BadRequestError,
@@ -20,17 +20,20 @@ import {
   UnauthenticatedError,
 } from '@libs/errors/components/index';
 import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
-import { sendNotification } from '@utils/sendNotification';
+import { notificationManager } from '@utils/sendNotification';
 import { checkValueEquality, updateNestedProperties } from '@utils/shared';
 import { Response } from 'express';
 
-import { userUtils } from './user.utils';
+import { userUtilsClass } from './user.utils';
 
-class userServiceClass implements UserServiceDao {
+class userServiceClass implements userServiceSkeleton {
+  #userUtilsInstance = new userUtilsClass();
+  #notificationInstance = new notificationManager();
+
   async resetUser(reqBody: dataForResetEmail) {
     const email = reqBody.email;
     //   if (!email) throw new BadRequestError('no email input');
-    const userResponse = await userUtils.checkUserIsExist(email);
+    const userResponse = await this.#userUtilsInstance.checkUserIsExist(email);
     const token = await generateResetTokenTemp();
     userResponse.user.verificationCode = token;
     await userResponse.user.save();
@@ -46,7 +49,7 @@ class userServiceClass implements UserServiceDao {
   }
 
   async confirmReset(reqBody: dataForConfirmResetEmail) {
-    const updatedUser = await userUtils.checkUserIsExist(reqBody.email);
+    const updatedUser = await this.#userUtilsInstance.checkUserIsExist(reqBody.email);
     // { user: { } }
 
     if (!updatedUser.user.verificationCode) throw new NotFoundError('code not exist');
@@ -108,11 +111,11 @@ class userServiceClass implements UserServiceDao {
     if (!storedUser.verificationCode) throw new NotFoundError('verificationCode not found');
     const isMatch = checkValueEquality(storedUser.verificationCode, reqBody.token);
     if (!isMatch) {
-      await userUtils.resetSentToken(storedUser);
-      userUtils.logout(res);
+      await this.#userUtilsInstance.resetSentToken(storedUser);
+      this.#userUtilsInstance.logout(res);
       throw new UnauthenticatedError('invalid token you have been logged out');
     }
-    await userUtils.verifyUserAccount(storedUser);
+    await this.#userUtilsInstance.verifyUserAccount(storedUser);
     await setupMailSender(
       storedUser.email,
       'account has been activated ',
@@ -141,7 +144,7 @@ class userServiceClass implements UserServiceDao {
       'thanks for your caring' +
         `<h3>here is the number to get contact with the case immediate</h3> <h2>${isCaseExist.privateNumber}</h2>`
     );
-    sendNotification(
+    this.#notificationInstance.sendNotification(
       'Charity',
       isCaseExist.charity,
       `User ${user.name.firstName} ${user.name.lastName} offered to donate blood to your case ${isCaseExist.title}`,
@@ -181,7 +184,7 @@ class userServiceClass implements UserServiceDao {
   }
 
   logoutUser(res: Response) {
-    userUtils.logout(res);
+    this.#userUtilsInstance.logout(res);
     return { message: 'logout' };
   }
 
@@ -206,14 +209,12 @@ class userServiceClass implements UserServiceDao {
     if (email) {
       //if the edit for email
       // const alreadyRegisteredEmail = await User.findOne({ email });
-      const isDupliacated = await userUtils.checkIsEmailDuplicated(email);
+      const isDupliacated = await this.#userUtilsInstance.checkIsEmailDuplicated(email);
 
       if (isDupliacated) throw new BadRequestError('Email is already taken!');
 
-      const userWithEmailUpdated: { user: IUser } = await userUtils.changeUserEmailWithMailAlert(
-        user,
-        email
-      ); //email is the NewEmail
+      const userWithEmailUpdated: { user: IUser } =
+        await this.#userUtilsInstance.changeUserEmailWithMailAlert(user, email); //email is the NewEmail
 
       const userObj: IUserModified = {
         name: userWithEmailUpdated.user.name,

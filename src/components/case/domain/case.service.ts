@@ -12,15 +12,18 @@ import {
 } from '@components/case/data-access/interfaces';
 import { ICharity } from '@components/charity/data-access/interfaces';
 import { IUser } from '@components/user/data-access/interfaces';
-import { userRepository } from '@components/user/data-access/user.repository';
-import { userUtils } from '@components/user/domain/user.utils';
+import { USER } from '@components/user/domain/user.class';
+import { userUtilsClass } from '@components/user/domain/user.utils';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { setupMailSender } from '@utils/mailer';
-import { notifyAllUsers } from '@utils/sendNotification';
+import { notificationManager } from '@utils/sendNotification';
 import { Response } from 'express';
 
 import { caseUtils } from './case.utils';
 
+const userUtilsInstance = new userUtilsClass();
+
+const notificatioInstance = new notificationManager();
 const addCase = async (
   caseData: ICase,
   image: string,
@@ -29,7 +32,7 @@ const addCase = async (
 ): Promise<AddCaseResponse> => {
   caseData.coverImage = image;
   caseData.charity = charity._id;
-  const newCase = await caseUtils.createCase(caseData);
+  const newCase: ICase | null = await caseUtils.createCase(caseData);
 
   if (!newCase) throw new BadRequestError('case not created... try again');
 
@@ -42,7 +45,7 @@ const addCase = async (
     await user.save();
   }
 
-  notifyAllUsers(
+  notificatioInstance.notifyAllUsers(
     `Charity ${charity.name} has posted a new case , check it out!`,
     1 * 24 * 60 * 60,
     'case',
@@ -109,16 +112,16 @@ const deleteCase = async (charity: ICharity, caseId: string): Promise<DeleteCase
 
   if (deletedCase.mainType === 'customizedCampaigns' && deletedCase.user) {
     //delete the id from the contributions arr of user and send email
-    const _userRepository = new userRepository();
+    const user = new USER();
 
-    const userOwner = await _userRepository.findUserById(deletedCase.user.toString());
+    const userOwner = await user.userModel.findUserById(deletedCase.user.toString());
     if (!userOwner) throw new BadRequestError('no user found');
 
-    const idx = userUtils.checkIfCaseBelongsToUserContributions(
+    const idx = userUtilsInstance.checkIfCaseBelongsToUserContributions(
       userOwner.contributions,
       deletedCase._id.toString()
     );
-    await userUtils.deleteCaseFromUserContributionsArray(userOwner, idx);
+    await userUtilsInstance.deleteCaseFromUserContributionsArray(userOwner, idx);
 
     await setupMailSender(
       userOwner.email,

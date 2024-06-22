@@ -27,7 +27,7 @@ export interface UserDao {
   createUser(dataInputs: IUser): Promise<IUser>;
   getAllUsers(): Promise<IUser[]>;
 }
-export interface UserServiceDao {
+export interface userServiceSkeleton {
   resetUser(reqBody: dataForResetEmail): Promise<{
     message: string;
   }>;
@@ -65,7 +65,7 @@ export interface UserServiceDao {
   editUserProfile(reqBody: IUserModified, user: IUser): Promise<EditProfile>;
 }
 
-export interface userUseCaseDao {
+export interface userUseCaseSkeleton {
   resetUser(req: Request): Promise<ResetUserResponse>;
 
   confirmReset(req: Request, res: Response, next: NextFunction): Promise<ConfirmResetResponse>;
@@ -94,7 +94,7 @@ export interface userUseCaseDao {
   getUserProfileData(req: Request, res: Response, next: NextFunction): getUserProfileDataResponse;
 }
 
-export interface userUtilsDao {
+export interface userUtilsSkeleton {
   checkUserIsExist(email: string): Promise<{ user: IUser }>;
   checkUserIsExistById(id: string): Promise<{ user: IUser }>;
   logout(res: Response): void;
