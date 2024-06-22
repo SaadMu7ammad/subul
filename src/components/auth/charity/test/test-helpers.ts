@@ -1,51 +1,11 @@
 import { CharityRepository } from '@components/charity/data-access/charity.repository';
 import { PlainCharity } from '@components/charity/data-access/interfaces';
 import { Charity as CharityModel } from '@components/charity/data-access/models/charity.model';
-import { PlainUser } from '@components/user/data-access/interfaces';
-import UserModel from '@components/user/data-access/models/user.model';
-import { userRepository as UserRepository } from '@components/user/data-access/user.repository';
 import { generateTokenForTesting } from '@utils/generateToken';
 import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs';
 import path from 'path';
-
-import UsedItem from '../data-access/models/used-item.model';
-
-export const createDummyUserAndReturnToken = async () => {
-  const userRepository = new UserRepository();
-
-  const dummyUserData: PlainUser = {
-    name: {
-      firstName: 'dummy',
-      lastName: 'dummy',
-    },
-    email: 'dummy@dummy.com',
-    password: 'dummy',
-    phone: '01234567890',
-    gender: 'male',
-    userLocation: {
-      governorate: 'Cairo',
-    },
-    isAdmin: false,
-    contributions: [],
-    isEnabled: true,
-    pointsOnDonations: 0,
-    totalDonationsAmount: 0,
-    transactions: [],
-    verificationCode: 'dummy',
-    emailVerification: {
-      isVerified: true,
-      verificationDate: new Date().toString(),
-    },
-  };
-
-  const dummyUser = await userRepository.createUser(dummyUserData);
-
-  const token = generateTokenForTesting(dummyUser._id.toString(), 'user');
-
-  return token;
-};
 
 export const createDummyCharityAndReturnToken = async () => {
   const charityRepository = new CharityRepository();
@@ -83,7 +43,7 @@ export const createDummyCharityAndReturnToken = async () => {
       docs4: ['doc4.png'],
     },
     charityInfo: {
-      establishedDate: new Date().toString(),
+      establishedDate: '2021-01-01',
       registeredNumber: '1234567890',
     },
   };
@@ -95,24 +55,14 @@ export const createDummyCharityAndReturnToken = async () => {
   return token;
 };
 
-export const clearUserDatabase = async () => {
-  await UserModel.deleteMany({});
-};
-
-export const clearUsedItemsDatabase = async () => {
-  await UsedItem.deleteMany({});
-};
-
 export const clearCharityDatabase = async () => {
   await CharityModel.deleteMany({});
 };
 
-export const appendDummyImagesToFormData = (formData: FormData) => {
+export const appendDummyImageToFormData = (formData: FormData) => {
   const imagePath = path.resolve(__dirname, 'test-image.png');
   const imageBuffer = fs.readFileSync(imagePath);
-  for (let i = 1; i <= 5; i++) {
-    formData.append('images', imageBuffer, `test-image${i}.png`);
-  }
+  formData.append('image', imageBuffer, 'test-image.png');
 };
 
 export const createAxiosApiClient = (token: string, port: number) => {
@@ -124,4 +74,53 @@ export const createAxiosApiClient = (token: string, port: number) => {
     },
   };
   return axios.create(axiosConfig);
+};
+
+export const getDummyCharityObject = (): PlainCharity => {
+  return {
+    image: 'image.png',
+    email: 'dummy@dummy.ape',
+    password: 'dummyPassword',
+    name: 'dummy',
+    contactInfo: {
+      email: 'dummy@dummy.ape',
+      phone: '01012345678',
+      websiteUrl: 'dummy.ape',
+    },
+    description: 'dummyDescription',
+    emailVerification: {
+      isVerified: false,
+      verificationDate: '',
+    },
+    isEnabled: false,
+    isConfirmed: false,
+    isPending: false,
+    currency: ['EGP'],
+    charityLocation: {
+      // @ts-expect-error don't care much when we are testing :P
+      governorate: 'Cairo',
+    },
+    charityInfo: {
+      establishedDate: '2021-01-01',
+      registeredNumber: '1234567890',
+    },
+  };
+};
+
+export const appendDummyCharityToFormData = (formData: FormData) => {
+  const dummyCharity = getDummyCharityObject();
+
+  const appendToFormData = (key: string, value: any) => {
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      Object.keys(value).forEach(nestedKey => {
+        appendToFormData(`${key}[${nestedKey}]`, value[nestedKey]);
+      });
+    } else {
+      formData.append(key, Array.isArray(value) ? value[0] : value.toString());
+    }
+  };
+
+  Object.keys(dummyCharity).forEach(key => {
+    appendToFormData(key, dummyCharity[key as keyof PlainCharity]);
+  });
 };
