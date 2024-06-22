@@ -10,7 +10,8 @@
     "watch": "tsc -w ",
     "start": "PORT=5000 npx ts-node --transpile-only -r tsconfig-paths/register src/start.ts",
     "prepare": "husky install",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "test-cli": "jest --testTimeout=30000 -w 3 --maxWorkers=40% "
   },
   "repository": {
     "type": "git",
