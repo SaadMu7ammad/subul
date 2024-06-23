@@ -4,7 +4,7 @@
   "description": "Subul - Charity Website",
   "main": "start.js",
   "scripts": {
-    "server": "PORT=5000 nodemon ./src/start.ts",
+    "server": "set PORT=5000 && nodemon",
     "build": "tsc -p tsconfig.json",
     "dev": "PORT=5000 ts-node-dev  -r tsconfig-paths/register ./src/start.ts",
     "watch": "tsc -w ",

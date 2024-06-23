@@ -2,6 +2,8 @@
   "errors": {
     "notAdmin": "You are not an admin",
     "noHeaderSent": "No Header Sent",
-    "charityNotFound": "Charity not found"
+    "charityNotFound": "Charity not found",
+    "firstNameRequired": "The first name is required",
+    "lastNameRequired": "The last name is required"
   }
 }

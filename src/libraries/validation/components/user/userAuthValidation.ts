@@ -1,3 +1,6 @@
+import { Request } from 'express';
+import { ValidationChain } from 'express-validator';
+
 import {
   emailValidation,
   genderValidtion,
@@ -7,13 +10,22 @@ import {
   phoneValidation,
 } from './allUserValidation';
 
-const registerUserValidation = [
-  ...nameUserValidation,
+const registerUserValidation = (req: Request): ValidationChain[] => [
+  ...nameUserValidation(req),
   emailValidation,
   phoneValidation,
   genderValidtion,
   governorateValidation,
   passwordValidation,
 ];
+
+// const registerUserValidation = [
+//   ...nameUserValidation,
+//   emailValidation,
+//   phoneValidation,
+//   genderValidtion,
+//   governorateValidation,
+//   passwordValidation,
+// ];
 const loginUserValidation = [emailValidation, passwordValidation];
 export { registerUserValidation, loginUserValidation };

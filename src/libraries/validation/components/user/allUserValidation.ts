@@ -1,13 +1,25 @@
-import { body } from 'express-validator';
+import { Request } from 'express';
+import { ValidationChain, body } from 'express-validator';
 
 const tokenUserValidation = body('token')
   .trim()
   .notEmpty()
   .isLength({ min: 60, max: 60 })
   .withMessage('Invalid Token!');
-const firstName = body('name.firstName').trim().notEmpty().withMessage('firstName is required');
-const lastName = body('name.lastName').trim().notEmpty().withMessage('lastName is required');
-const nameUserValidation = [firstName, lastName];
+// const firstName = body('name.firstName').trim().notEmpty().withMessage('firstName is required');
+// const lastName = body('name.lastName').trim().notEmpty().withMessage('lastName is required');
+
+const firstNameValidation = (req: Request): ValidationChain =>
+  body('name.firstName').trim().notEmpty().withMessage(req.t('errors.firstNameRequired'));
+
+const lastNameValidation = (req: Request): ValidationChain =>
+  body('name.lastName').trim().notEmpty().withMessage(req.t('errors.lastNameRequired'));
+
+const nameUserValidation = (req: Request): ValidationChain[] => [
+  firstNameValidation(req),
+  lastNameValidation(req),
+];
+
 const emailValidation = body('email')
   .trim()
   .notEmpty()
@@ -34,7 +46,7 @@ const genderValidtion = body('gender')
   .isIn(['male', 'female'])
   .withMessage('Gender must be "male" or "female"');
 
-const governorateValidation = body('location.governorate')
+const governorateValidation = body('userLocation.governorate')
   .isIn([
     'Alexandria',
     'Assiut',
