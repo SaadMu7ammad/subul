@@ -20,65 +20,68 @@ const nameUserValidation = (req: Request): ValidationChain[] => [
   lastNameValidation(req),
 ];
 
-const emailValidation = body('email')
-  .trim()
-  .notEmpty()
-  .withMessage('Email Required')
-  .isEmail()
-  .withMessage('Invalid email');
+const emailValidation = (req: Request): ValidationChain =>
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.emailRequired'))
+    .isEmail()
+    .withMessage(req.t('errors.emailInvalid'));
 
-const passwordValidation = body('password')
-  .trim()
-  .notEmpty()
-  .withMessage('Password Required')
-  .isLength({ min: 6, max: 20 })
-  .withMessage('Password must be at least 6 characters long');
+const passwordValidation = (req: Request) =>
+  body('password')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.passwordRequired'))
+    .isLength({ min: 6, max: 20 })
+    .withMessage(req.t('errors.passwordLength'));
 
-const phoneValidation = body('phone')
-  .trim()
-  .notEmpty()
-  .isMobilePhone('any')
-  .withMessage('Invalid PhoneNumber')
-  .isLength({ min: 11, max: 11 })
-  .withMessage('Invalid PhoneNumber');
+const phoneValidation = (req: Request) =>
+  body('phone')
+    .trim()
+    .notEmpty()
+    .isMobilePhone('any')
+    .withMessage(req.t('errors.phoneNumberRequired'))
+    .isLength({ min: 11, max: 11 })
+    .withMessage(req.t('errors.invalidPhoneNumber'));
 
-const genderValidtion = body('gender')
-  .isIn(['male', 'female'])
-  .withMessage('Gender must be "male" or "female"');
+const genderValidtion = (req: Request) =>
+  body('gender').isIn(['male', 'female']).withMessage(req.t('errors.genderInvalid'));
 
-const governorateValidation = body('userLocation.governorate')
-  .isIn([
-    'Alexandria',
-    'Assiut',
-    'Aswan',
-    'Beheira',
-    'Bani Suef',
-    'Cairo',
-    'Daqahliya',
-    'Damietta',
-    'Fayyoum',
-    'Gharbiya',
-    'Giza',
-    'Helwan',
-    'Ismailia',
-    'Kafr El Sheikh',
-    'Luxor',
-    'Marsa Matrouh',
-    'Minya',
-    'Monofiya',
-    'New Valley',
-    'North Sinai',
-    'Port Said',
-    'Qalioubiya',
-    'Qena',
-    'Red Sea',
-    'Sharqiya',
-    'Sohag',
-    'South Sinai',
-    'Suez',
-    'Tanta',
-  ])
-  .withMessage('governorate Invalid');
+const governorateValidation = (req: Request) =>
+  body('userLocation.governorate')
+    .isIn([
+      'Alexandria',
+      'Assiut',
+      'Aswan',
+      'Beheira',
+      'Bani Suef',
+      'Cairo',
+      'Daqahliya',
+      'Damietta',
+      'Fayyoum',
+      'Gharbiya',
+      'Giza',
+      'Helwan',
+      'Ismailia',
+      'Kafr El Sheikh',
+      'Luxor',
+      'Marsa Matrouh',
+      'Minya',
+      'Monofiya',
+      'New Valley',
+      'North Sinai',
+      'Port Said',
+      'Qalioubiya',
+      'Qena',
+      'Red Sea',
+      'Sharqiya',
+      'Sohag',
+      'South Sinai',
+      'Suez',
+      'Tanta',
+    ])
+    .withMessage(req.t('errors.governorateInvalid'));
 
 const nameValidation = body('name').trim().notEmpty().withMessage('Name Required');
 

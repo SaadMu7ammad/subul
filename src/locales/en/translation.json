@@ -3,7 +3,22 @@
     "notAdmin": "You are not an admin",
     "noHeaderSent": "No Header Sent",
     "charityNotFound": "Charity not found",
+    "nameRequired": "The name is required",
     "firstNameRequired": "The first name is required",
-    "lastNameRequired": "The last name is required"
+    "lastNameRequired": "The last name is required",
+    "emailRequired": "The email is required",
+    "emailInvalid": "The email is invalid",
+    "passwordRequired": "The password is required",
+    "passwordLength": "The password must be at least 6 characters",
+    "phoneNumberRequired": "The phone number is required",
+    "invalidPhoneNumber": "The phone number is invalid",
+    "genderInvalid": "Gender must be `male` or `female`",
+    "governorateInvalid": "Governorate must be a valid",
+    "descriptionRequired": "The description is required",
+    "descriptionLength": "The description must be at least 10 characters",
+    "currencyRequired": "The currency is required",
+    "currencyInvalid": "The currency is invalid",
+    "regNumber": "The registration number is required",
+    "estDate": "The establishment date is required"
   }
 }

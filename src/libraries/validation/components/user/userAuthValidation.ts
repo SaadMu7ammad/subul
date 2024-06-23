@@ -12,11 +12,11 @@ import {
 
 const registerUserValidation = (req: Request): ValidationChain[] => [
   ...nameUserValidation(req),
-  emailValidation,
-  phoneValidation,
-  genderValidtion,
-  governorateValidation,
-  passwordValidation,
+  emailValidation(req),
+  phoneValidation(req),
+  genderValidtion(req),
+  governorateValidation(req),
+  passwordValidation(req),
 ];
 
 // const registerUserValidation = [
@@ -27,5 +27,8 @@ const registerUserValidation = (req: Request): ValidationChain[] => [
 //   governorateValidation,
 //   passwordValidation,
 // ];
-const loginUserValidation = [emailValidation, passwordValidation];
+const loginUserValidation = (req: Request): ValidationChain[] => [
+  emailValidation(req),
+  passwordValidation(req),
+];
 export { registerUserValidation, loginUserValidation };

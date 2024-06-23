@@ -1,20 +1,24 @@
-import { body } from 'express-validator';
+import { Request } from 'express';
+import { ValidationChain, body } from 'express-validator';
 
-const emailValidation = body('email')
-  .trim()
-  .notEmpty()
-  .withMessage('Email Required')
-  .isEmail()
-  .withMessage('Invalid email');
+const emailValidation = (req: Request): ValidationChain =>
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.emailRequired'))
+    .isEmail()
+    .withMessage(req.t('errors.emailInvalid'));
 
-const nameValidation = body('name').trim().notEmpty().withMessage('Name Required');
+const nameValidation = (req: Request): ValidationChain =>
+  body('name').trim().notEmpty().withMessage(req.t('errors.nameRequired'));
 
-const descriptionValidation = body('description')
-  .trim()
-  .notEmpty()
-  .withMessage('Description Required')
-  .isLength({ min: 10 })
-  .withMessage('Description must be at least 10 characters long');
+const descriptionValidation = (req: Request): ValidationChain =>
+  body('description')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.descriptionRequired'))
+    .isLength({ min: 10 })
+    .withMessage(req.t('errors.descriptionLength'));
 
 const bankAccountNumberValidation = body('accNumber')
   .trim()
@@ -36,19 +40,25 @@ const switfCodeValidation = body('swiftCode')
 
 const bankAccountValidation = [bankAccountNumberValidation, ibanValidation, switfCodeValidation];
 
-const charityInfoRegNumber = body('charityInfo.registeredNumber')
-  .trim()
-  .notEmpty()
-  .withMessage('Registered Number Required')
-  .isNumeric();
+const charityInfoRegNumber = (req: Request) =>
+  body('charityInfo.registeredNumber')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.regNumber'))
+    .isNumeric();
 
-const charityInfoEstDate = body('charityInfo.establishedDate')
-  .trim()
-  .notEmpty()
-  .withMessage('Established Date Required')
-  .isDate();
+const charityInfoEstDate = (req: Request) =>
+  body('charityInfo.establishedDate')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.estDate'))
+    .isDate();
 
-const charityInfoValidation = [charityInfoRegNumber, charityInfoEstDate];
+const charityInfoValidation = (req: Request) => [
+  charityInfoRegNumber(req),
+  charityInfoEstDate(req),
+];
+
 const contactInfoEmail = body('contactInfo.email')
   .trim()
   .notEmpty()
@@ -71,175 +81,176 @@ const contactInfoWebsiteUrl = body('contactInfo.websiteUrl')
   .withMessage('Invalid URL');
 const contactValidation = [contactInfoEmail, contactInfoPhone, contactInfoWebsiteUrl];
 
-const currencyValidation = body('currency')
-  .trim()
-  .notEmpty()
-  .withMessage('Currency Required')
-  .isIn([
-    'AED',
-    'AFN',
-    'ALL',
-    'AMD',
-    'ANG',
-    'AOA',
-    'ARS',
-    'AUD',
-    'AWG',
-    'AZN',
-    'BAM',
-    'BBD',
-    'BDT',
-    'BGN',
-    'BHD',
-    'BIF',
-    'BMD',
-    'BND',
-    'BOB',
-    'BRL',
-    'BSD',
-    'BTN',
-    'BWP',
-    'BYN',
-    'BYR',
-    'BZD',
-    'CAD',
-    'CDF',
-    'CHF',
-    'CLF',
-    'CLP',
-    'CNY',
-    'COP',
-    'CRC',
-    'CUC',
-    'CUP',
-    'CVE',
-    'CZK',
-    'DJF',
-    'DKK',
-    'DOP',
-    'DZD',
-    'EGP',
-    'ERN',
-    'ETB',
-    'EUR',
-    'FJD',
-    'FKP',
-    'GBP',
-    'GEL',
-    'GHS',
-    'GIP',
-    'GMD',
-    'GNF',
-    'GTQ',
-    'GYD',
-    'HKD',
-    'HNL',
-    'HRK',
-    'HTG',
-    'HUF',
-    'IDR',
-    'ILS',
-    'INR',
-    'IQD',
-    'IRR',
-    'ISK',
-    'JMD',
-    'JOD',
-    'JPY',
-    'KES',
-    'KGS',
-    'KHR',
-    'KMF',
-    'KPW',
-    'KRW',
-    'KWD',
-    'KYD',
-    'KZT',
-    'LAK',
-    'LBP',
-    'LKR',
-    'LRD',
-    'LSL',
-    'LYD',
-    'MAD',
-    'MDL',
-    'MGA',
-    'MKD',
-    'MMK',
-    'MNT',
-    'MOP',
-    'MRO',
-    'MUR',
-    'MVR',
-    'MWK',
-    'MXN',
-    'MXV',
-    'MYR',
-    'MZN',
-    'NAD',
-    'NGN',
-    'NIO',
-    'NOK',
-    'NPR',
-    'NZD',
-    'OMR',
-    'PAB',
-    'PEN',
-    'PGK',
-    'PHP',
-    'PKR',
-    'PLN',
-    'PYG',
-    'QAR',
-    'RON',
-    'RSD',
-    'RUB',
-    'RWF',
-    'SAR',
-    'SBD',
-    'SCR',
-    'SDG',
-    'SEK',
-    'SGD',
-    'SHP',
-    'SLL',
-    'SOS',
-    'SRD',
-    'SSP',
-    'STD',
-    'SVC',
-    'SYP',
-    'SZL',
-    'THB',
-    'TJS',
-    'TMT',
-    'TND',
-    'TOP',
-    'TRY',
-    'TTD',
-    'TWD',
-    'TZS',
-    'UAH',
-    'UGX',
-    'USD',
-    'UYI',
-    'UYU',
-    'UZS',
-    'VEF',
-    'VND',
-    'VUV',
-    'WST',
-    'XAF',
-    'XCD',
-    'XOF',
-    'XPF',
-    'XXX',
-    'YER',
-    'ZAR',
-    'ZMW',
-    'ZWL',
-  ])
-  .withMessage('Currency Invalid');
+const currencyValidation = (req: Request): ValidationChain =>
+  body('currency')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.currencyRequired'))
+    .isIn([
+      'AED',
+      'AFN',
+      'ALL',
+      'AMD',
+      'ANG',
+      'AOA',
+      'ARS',
+      'AUD',
+      'AWG',
+      'AZN',
+      'BAM',
+      'BBD',
+      'BDT',
+      'BGN',
+      'BHD',
+      'BIF',
+      'BMD',
+      'BND',
+      'BOB',
+      'BRL',
+      'BSD',
+      'BTN',
+      'BWP',
+      'BYN',
+      'BYR',
+      'BZD',
+      'CAD',
+      'CDF',
+      'CHF',
+      'CLF',
+      'CLP',
+      'CNY',
+      'COP',
+      'CRC',
+      'CUC',
+      'CUP',
+      'CVE',
+      'CZK',
+      'DJF',
+      'DKK',
+      'DOP',
+      'DZD',
+      'EGP',
+      'ERN',
+      'ETB',
+      'EUR',
+      'FJD',
+      'FKP',
+      'GBP',
+      'GEL',
+      'GHS',
+      'GIP',
+      'GMD',
+      'GNF',
+      'GTQ',
+      'GYD',
+      'HKD',
+      'HNL',
+      'HRK',
+      'HTG',
+      'HUF',
+      'IDR',
+      'ILS',
+      'INR',
+      'IQD',
+      'IRR',
+      'ISK',
+      'JMD',
+      'JOD',
+      'JPY',
+      'KES',
+      'KGS',
+      'KHR',
+      'KMF',
+      'KPW',
+      'KRW',
+      'KWD',
+      'KYD',
+      'KZT',
+      'LAK',
+      'LBP',
+      'LKR',
+      'LRD',
+      'LSL',
+      'LYD',
+      'MAD',
+      'MDL',
+      'MGA',
+      'MKD',
+      'MMK',
+      'MNT',
+      'MOP',
+      'MRO',
+      'MUR',
+      'MVR',
+      'MWK',
+      'MXN',
+      'MXV',
+      'MYR',
+      'MZN',
+      'NAD',
+      'NGN',
+      'NIO',
+      'NOK',
+      'NPR',
+      'NZD',
+      'OMR',
+      'PAB',
+      'PEN',
+      'PGK',
+      'PHP',
+      'PKR',
+      'PLN',
+      'PYG',
+      'QAR',
+      'RON',
+      'RSD',
+      'RUB',
+      'RWF',
+      'SAR',
+      'SBD',
+      'SCR',
+      'SDG',
+      'SEK',
+      'SGD',
+      'SHP',
+      'SLL',
+      'SOS',
+      'SRD',
+      'SSP',
+      'STD',
+      'SVC',
+      'SYP',
+      'SZL',
+      'THB',
+      'TJS',
+      'TMT',
+      'TND',
+      'TOP',
+      'TRY',
+      'TTD',
+      'TWD',
+      'TZS',
+      'UAH',
+      'UGX',
+      'USD',
+      'UYI',
+      'UYU',
+      'UZS',
+      'VEF',
+      'VND',
+      'VUV',
+      'WST',
+      'XAF',
+      'XCD',
+      'XOF',
+      'XPF',
+      'XXX',
+      'YER',
+      'ZAR',
+      'ZMW',
+      'ZWL',
+    ])
+    .withMessage(req.t('errors.currencyInvalid'));
 
 const vodafoneCashValidation = body('vodafoneNumber')
   .trim()
@@ -257,45 +268,48 @@ const fawryValidation = body('fawryNumber')
   .isLength({ min: 11, max: 11 })
   .withMessage('Invalid PhoneNumber');
 
-const governorateValidation = body('location.governorate')
-  .isIn([
-    'Alexandria',
-    'Assiut',
-    'Aswan',
-    'Beheira',
-    'Bani Suef',
-    'Cairo',
-    'Daqahliya',
-    'Damietta',
-    'Fayyoum',
-    'Gharbiya',
-    'Giza',
-    'Helwan',
-    'Ismailia',
-    'Kafr El Sheikh',
-    'Luxor',
-    'Marsa Matrouh',
-    'Minya',
-    'Monofiya',
-    'New Valley',
-    'North Sinai',
-    'Port Said',
-    'Qalioubiya',
-    'Qena',
-    'Red Sea',
-    'Sharqiya',
-    'Sohag',
-    'South Sinai',
-    'Suez',
-    'Tanta',
-  ])
-  .withMessage('governorate Invalid');
-const passwordValidation = body('password')
-  .trim()
-  .notEmpty()
-  .withMessage('Password Required')
-  .isLength({ min: 6, max: 20 })
-  .withMessage('Password must be at least 6 characters long');
+const governorateValidation = (req: Request): ValidationChain =>
+  body('charityLocation.governorate')
+    .isIn([
+      'Alexandria',
+      'Assiut',
+      'Aswan',
+      'Beheira',
+      'Bani Suef',
+      'Cairo',
+      'Daqahliya',
+      'Damietta',
+      'Fayyoum',
+      'Gharbiya',
+      'Giza',
+      'Helwan',
+      'Ismailia',
+      'Kafr El Sheikh',
+      'Luxor',
+      'Marsa Matrouh',
+      'Minya',
+      'Monofiya',
+      'New Valley',
+      'North Sinai',
+      'Port Said',
+      'Qalioubiya',
+      'Qena',
+      'Red Sea',
+      'Sharqiya',
+      'Sohag',
+      'South Sinai',
+      'Suez',
+      'Tanta',
+    ])
+    .withMessage(req.t('errors.governorateInvalid'));
+
+const passwordValidation = (req: Request): ValidationChain =>
+  body('password')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.passwordRequired'))
+    .isLength({ min: 6, max: 20 })
+    .withMessage(req.t('errors.passwordLength'));
 
 const tokenCharityValidation = body('token')
   .trim()
@@ -304,13 +318,14 @@ const tokenCharityValidation = body('token')
   .isLength({ min: 60, max: 60 })
   .withMessage('Invalid Token!');
 
-const phoneValidation = body('phone')
-  .trim()
-  .notEmpty()
-  .isMobilePhone('any')
-  .withMessage('Invalid PhoneNumber')
-  .isLength({ min: 11, max: 11 })
-  .withMessage('Invalid PhoneNumber');
+const phoneValidation = (req: Request) =>
+  body('phone')
+    .trim()
+    .notEmpty()
+    .isMobilePhone('any')
+    .withMessage(req.t('errors.phoneNumberRequired'))
+    .isLength({ min: 11, max: 11 })
+    .withMessage(req.t('errors.invalidPhoneNumber'));
 
 // const _bankAccountValidation = bankAccountValidation.map(
 //   (validator) => validator.optional() //.not().isEmpty()

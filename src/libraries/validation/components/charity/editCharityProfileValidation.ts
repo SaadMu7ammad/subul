@@ -4,9 +4,11 @@ import {
   paymentIdValidation,
   vodafoneCashValidation,
 } from './allCharityValidation';
-import { registerCharityValidation } from './charityAuthValidation';
 
-const editCharityProfileValidation = [...registerCharityValidation];
+// import { registerCharityValidation } from './charityAuthValidation';
+
+// const editCharityProfileValidation = [...registerCharityValidation];
+
 const reqEditPaymentMethodsValidation = [
   ...bankAccountValidation,
   vodafoneCashValidation,
@@ -14,12 +16,13 @@ const reqEditPaymentMethodsValidation = [
   paymentIdValidation,
 ];
 
-editCharityProfileValidation.forEach(validator => {
-  validator.optional();
-});
+// editCharityProfileValidation.forEach(validator => {
+//   validator.optional();
+// });
 
 reqEditPaymentMethodsValidation.forEach(validator => {
   validator.optional();
 });
 
-export { editCharityProfileValidation, reqEditPaymentMethodsValidation };
+// export { editCharityProfileValidation, reqEditPaymentMethodsValidation };
+export { reqEditPaymentMethodsValidation };

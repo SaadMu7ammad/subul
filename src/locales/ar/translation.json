@@ -3,7 +3,22 @@
     "notAdmin": "أنت لست مشرفًا",
     "noHeaderSent": "لم يتم تسجيل الدخول",
     "charityNotFound": "لم يتم العثور على الجمعية",
+    "nameRequired": "الاسم مطلوب",
     "firstNameRequired": "الاسم الأول مطلوب",
-    "lastNameRequired": "اسم العائلة مطلوب"
+    "lastNameRequired": "اسم العائلة مطلوب",
+    "emailRequired": "البريد الإلكتروني مطلوب",
+    "emailInvalid": "البريد الإلكتروني غير صالح",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "passwordLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+    "phoneNumberRequired": "رقم الهاتف مطلوب",
+    "invalidPhoneNumber": "رقم الهاتف غير صالح",
+    "genderInvalid": "الجنس يجب أن يكون ذكر أو أنثى",
+    "governorateInvalid": "المحافظة غير موجودة",
+    "descriptionRequired": "الوصف مطلوب",
+    "descriptionLength": "يجب أن يكون الوصف 10 أحرف على الأقل",
+    "currencyRequired": "العملة مطلوبة",
+    "currencyInvalid": "العملة غير موجودة",
+    "regNumber": "رقم التسجيل مطلوب",
+    "estDate": "تاريخ التأسيس مطلوب"
   }
 }

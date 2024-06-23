@@ -11,7 +11,7 @@ import {
   tokenCharityValidation,
 } from '@libs/validation/components/charity/allCharityValidation';
 import {
-  editCharityProfileValidation,
+  // editCharityProfileValidation,
   reqEditPaymentMethodsValidation,
 } from '@libs/validation/components/charity/editCharityProfileValidation';
 import { validate } from '@libs/validation/index';
@@ -123,7 +123,7 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     isConfirmed,
-    editCharityProfileValidation,
+    // editCharityProfileValidation,
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
