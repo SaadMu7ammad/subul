@@ -77,3 +77,34 @@ export const createAxiosApiClient = (token: string, port: number) => {
   };
   return axios.create(axiosConfig);
 };
+
+export const getDummyCharityObject = (): PlainCharity => {
+  return {
+    image: 'image.png',
+    email: 'dummy@dummy.ape',
+    password: 'dummyPassword',
+    name: 'dummy',
+    contactInfo: {
+      email: 'dummy@dummy.ape',
+      phone: '01012345678',
+      websiteUrl: 'dummy.ape',
+    },
+    description: 'dummyDescription',
+    emailVerification: {
+      isVerified: false,
+      verificationDate: '',
+    },
+    isEnabled: false,
+    isConfirmed: false,
+    isPending: false,
+    currency: ['EGP'],
+    charityLocation: {
+      // @ts-expect-error don't care much when we are testing :P
+      governorate: 'Cairo',
+    },
+    charityInfo: {
+      establishedDate: '2021-01-01',
+      registeredNumber: '1234567890',
+    },
+  };
+};
