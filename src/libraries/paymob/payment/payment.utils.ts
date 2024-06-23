@@ -1,8 +1,8 @@
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import { NotFoundError } from '@libs/errors/components/index';
 
 const checkBeforeCreateLinkForPayment = (
-  user: User,
+  user: IUser,
   amount: number,
   charityId: string,
   caseId: string,

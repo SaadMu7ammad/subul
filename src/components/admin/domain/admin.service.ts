@@ -154,16 +154,17 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (req: Request, id
 
   if (!paymentRequests) throw new BadRequestError('No payment requests found!');
 
-  let bankAccount: CharityPaymentMethodBankAccount[] | undefined =
+  const bankAccount: CharityPaymentMethodBankAccount[] | undefined =
     paymentRequests.paymentMethods?.bankAccount.filter(
       (acc: CharityPaymentMethodBankAccount) => acc.enable === false
     );
 
-  let fawry: CharityPaymentMethodFawry[] | undefined = paymentRequests.paymentMethods?.fawry.filter(
-    (acc: CharityPaymentMethodFawry) => acc.enable === false
-  );
+  const fawry: CharityPaymentMethodFawry[] | undefined =
+    paymentRequests.paymentMethods?.fawry.filter(
+      (acc: CharityPaymentMethodFawry) => acc.enable === false
+    );
 
-  let vodafoneCash: CharityPaymentMethodVodafoneCash[] | undefined =
+  const vodafoneCash: CharityPaymentMethodVodafoneCash[] | undefined =
     paymentRequests.paymentMethods?.vodafoneCash.filter(
       (acc: CharityPaymentMethodVodafoneCash) => acc.enable === false
     );

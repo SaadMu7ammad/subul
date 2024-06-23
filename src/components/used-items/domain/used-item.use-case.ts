@@ -9,7 +9,7 @@ import {
   UpdateUsedItemRequest,
   UpdateUsedItemResponse,
 } from '@components/used-items/data-access/interfaces/used-item.api';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import { NextFunction, Request, Response } from 'express';
 
 import { usedItemService } from './used-item.service';
@@ -20,7 +20,7 @@ const addUsedItem = async (
   res: Response,
   next: NextFunction
 ): Promise<AddUsedItemResponse> => {
-  const user: User = res.locals.user;
+  const user: IUser = res.locals.user;
 
   const { title, description, category, amount, images } = req.body;
 

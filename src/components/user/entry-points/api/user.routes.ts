@@ -1,5 +1,5 @@
 import { auth, isActivated } from '@components/auth/shared/index';
-import { getAllTransactions } from '@components/transaction/domain/transaction.use-case';
+import { tranactionUseCaseClass } from '@components/transaction/domain/transaction.use-case';
 import { userUseCase } from '@components/user/domain/user.use-case';
 import {
   changePasswordUserValidation,
@@ -14,7 +14,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 
 export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
-
+  const transactionUseCaseInstance = new tranactionUseCaseClass();
   router.post('/logout', async (_req: Request, res: Response, next: NextFunction) => {
     try {
       logger.info(`User API was called to logout User`);
@@ -163,7 +163,11 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`User API was called to get user transactions`);
-        const getAllTransactionsResponse = await getAllTransactions(req, res, next);
+        const getAllTransactionsResponse = await transactionUseCaseInstance.getAllTransactions(
+          req,
+          res,
+          next
+        );
         return res.json(getAllTransactionsResponse);
       } catch (error) {
         next(error);

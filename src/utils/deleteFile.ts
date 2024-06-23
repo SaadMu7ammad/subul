@@ -60,12 +60,12 @@ const deleteCharityDocs = (req: Request, type: string) => {
       ['fawry', 'fawryDocs'],
       ['vodafoneCash', 'vodafoneCashDocs'],
     ].forEach(pm => {
-      let paymentMethod = pm[0];
-      let paymentDocs = pm[1];
+      const paymentMethod = pm[0];
+      const paymentDocs = pm[1];
       if (paymentMethod && paymentDocs) {
-        let paymentMethodObj = req.body.paymentMethods[paymentMethod];
-        if (paymentMethodObj && paymentMethodObj[0][paymentDocs])
-          deleteOldImgs('charityDocs', paymentMethodObj[0][paymentDocs]);
+        const paymentMethodObj = req.body.paymentMethods[`${paymentMethod}`];
+        if (paymentMethodObj && paymentMethodObj[0][`${paymentDocs}`])
+          deleteOldImgs('charityDocs', paymentMethodObj[0][`${paymentDocs}`]);
       }
     });
   }

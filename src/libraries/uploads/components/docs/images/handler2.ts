@@ -58,7 +58,7 @@ const resizeDocReq = async (req: Request, res: Response, next: NextFunction) => 
     }
 
     let flagPaymentMethodsUploaded = false;
-    let i = 0;
+    const i = 0;
     for (const [key, val] of Object.entries(req.files)) {
       console.log(i);
       assertFiles(key);
@@ -80,9 +80,10 @@ const resizeDocReq = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 type paymentDocsSchema = 'bankDocs' | 'fawryDocs' | 'vodafoneDocs';
-function assertFiles(file: any): asserts file is paymentDocsSchema {
+function assertFiles(file: string): asserts file is paymentDocsSchema {
   if (file && file.length > 0) {
-    return file;
+    //all is good
+    // return file;
   } else {
     throw new BadRequestError('bad type of file or not uploaded all docs');
   }

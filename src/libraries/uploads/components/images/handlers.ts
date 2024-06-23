@@ -32,7 +32,7 @@ const resizeImg = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
 
-    let { destinationFolder, suffix } = getImageConfiguration(req.path);
+    const { destinationFolder, suffix } = getImageConfiguration(req.path);
 
     const uniqueSuffix = suffix + uuidv4() + '-' + Date.now();
     const fileName = `${uniqueSuffix}--${req.body.name || res.locals.charity.name}.jpeg`;

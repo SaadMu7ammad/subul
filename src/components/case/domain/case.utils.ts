@@ -27,7 +27,7 @@ const getSortObj = (sortQueryParams: string | undefined): SortObj => {
     if (sort[0] === '-') {
       sortObj[sort.substring(1)] = -1;
     } else {
-      sortObj[sort] = 1;
+      sortObj[`${sort}`] = 1;
     }
   });
 
@@ -45,15 +45,15 @@ const getFilterObj = (charityId: string, queryParams: GetAllCasesQueryParams): F
   ];
   // filterQueryParameters[0]='mainType'//just for remove the code temp
   for (const param of filterQueryParameters) {
-    if (queryParams[param]) {
+    if (queryParams[`${param}`]) {
       if (param === 'freezed') {
         // console.log(typeof queryParams[param]);//string
-        filterObject[param] = true; // queryParams[param];
+        filterObject[`${param}`] = true; // queryParams[param];
         filterObject['mainType'] = 'customizedCampaigns';
 
         // console.log(typeof filterObject[param]);//string if we assign queryParams[param] not explicit value
       } else if (param == 'mainType' || param == 'subType' || param == 'nestedSubType') {
-        filterObject[param] = queryParams[param];
+        filterObject[`${param}`] = queryParams[`${param}`];
       }
     }
   }
@@ -157,7 +157,7 @@ const replaceCaseImg = async (
 
   if (!caseObject) throw new NotFoundError('No Such Case With this Id!');
 
-  let oldCoverImage: string = caseObject.coverImage;
+  const oldCoverImage: string = caseObject.coverImage;
 
   return deleteOldImgs.bind(this, 'caseCoverImages', oldCoverImage);
 };

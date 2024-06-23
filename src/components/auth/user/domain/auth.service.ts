@@ -5,7 +5,7 @@ import {
   UserObject,
   UserResponseBasedOnUserVerification,
 } from '@components/auth/user/data-access/interfaces';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import generateToken from '@utils/generateToken';
 import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
@@ -19,7 +19,7 @@ const authUser = async (
 ): Promise<UserResponseBasedOnUserVerification> => {
   const { email, password }: { email: string; password: string } = reqBody;
 
-  const userResponse: { isMatch: boolean; user: User } = await authUserUtils.checkUserPassword(
+  const userResponse: { isMatch: boolean; user: IUser } = await authUserUtils.checkUserPassword(
     email,
     password
   );

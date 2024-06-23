@@ -3,7 +3,7 @@ import { PlainCharity } from '@components/charity/data-access/interfaces';
 import { Charity as CharityModel } from '@components/charity/data-access/models/charity.model';
 import { PlainUser } from '@components/user/data-access/interfaces';
 import UserModel from '@components/user/data-access/models/user.model';
-import { userRepository as UserRepository } from '@components/user/data-access/user.repository';
+import { USER } from '@components/user/domain/user.class';
 import { generateTokenForTesting } from '@utils/generateToken';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -13,7 +13,7 @@ import path from 'path';
 import UsedItem from '../data-access/models/used-item.model';
 
 export const createDummyUserAndReturnToken = async () => {
-  const userRepository = new UserRepository();
+  const user = new USER();
 
   const dummyUserData: PlainUser = {
     name: {
@@ -40,7 +40,7 @@ export const createDummyUserAndReturnToken = async () => {
     },
   };
 
-  const dummyUser = await userRepository.createUser(dummyUserData);
+  const dummyUser = await user.userModel.createUser(dummyUserData);
 
   const token = generateTokenForTesting(dummyUser._id.toString(), 'user');
 

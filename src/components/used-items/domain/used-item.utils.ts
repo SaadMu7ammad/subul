@@ -8,7 +8,7 @@ import {
 import { UsedItemRepository } from '@components/used-items/data-access/used-item.repository';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { deleteOldImgs } from '@utils/deleteFile';
-import { sendNotification } from '@utils/sendNotification';
+import { notificationManager } from '@utils/sendNotification';
 import { isDefined } from '@utils/shared';
 import { Request, Response } from 'express';
 
@@ -177,11 +177,11 @@ const notifyUserAboutUsedItemBooking = async (
     bookingConfirmation: `Your item ${usedItem.title} booking has been confirmed by ${charityName} charity`,
     bookingCancelation: `Your item ${usedItem.title} booking has been cancelled by ${charityName} charity`,
   };
-
-  sendNotification(
+  const notificationInstance = new notificationManager();
+  notificationInstance.sendNotification(
     'User',
     usedItem.user,
-    notificationMessage[notificationType],
+    notificationMessage[`${notificationType}`],
     maxAge,
     'usedItem',
     usedItem._id

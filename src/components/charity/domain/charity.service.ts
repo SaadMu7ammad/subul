@@ -40,7 +40,7 @@ const requestResetPassword = async (reqBody: DataForRequestResetPassword) => {
 const confirmResetPassword = async (
   reqBody: DataForConfirmResetPassword
 ): Promise<{ message: string }> => {
-  let updatedCharity = await charityUtils.checkCharityIsExist(reqBody.email);
+  const updatedCharity = await charityUtils.checkCharityIsExist(reqBody.email);
   if (!updatedCharity.charity.verificationCode)
     throw new NotFoundError('verificationCode not found');
   const isEqual = checkValueEquality(updatedCharity.charity.verificationCode, reqBody.token);
@@ -63,7 +63,7 @@ const activateAccount = async (
   charity: ICharity,
   res: Response
 ): Promise<{ message: string }> => {
-  let storedCharity = charity;
+  const storedCharity = charity;
   if (charityUtils.checkCharityVerification(storedCharity)) {
     return { message: 'account already is activated' };
   }
@@ -259,7 +259,7 @@ const requestEditCharityPayments = async (
   }
   if (edited !== created && paymentTypeSelected) {
     return {
-      paymentMethods: reqPaymentMethodsObj.paymentMethods[paymentTypeSelected],
+      paymentMethods: reqPaymentMethodsObj.paymentMethods[`${paymentTypeSelected}`],
       message: `${paymentTypeSelected} Payment Method Has been ${
         edited ? 'edited' : created ? 'created' : ' '
       } Successfully!`,

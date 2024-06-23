@@ -1,7 +1,7 @@
 import { ICharity } from '@components/charity/data-access/interfaces';
 import { charityUtils } from '@components/charity/domain/charity.utils';
 import { PlainIConversation, sendMessageResponse } from '@components/chat/data-access/interfaces';
-import { userUtils } from '@components/user/domain/user.utils';
+import { userUtilsClass } from '@components/user/domain/user.utils';
 import { BadRequestError } from '@libs/errors/components';
 
 import { chatUtils } from './chat.utils';
@@ -13,12 +13,13 @@ const sendMessage = async (
   receiverId: string,
   charity: ICharity | undefined
 ): Promise<sendMessageResponse> => {
+  const userUtilsInstance = new userUtilsClass();
   if (charity && !charity.isConfirmed)
     throw new BadRequestError('Charity Account is not Completed to start chatting');
 
   //check the reciever id is exist
   if (typeSender === 'user') await charityUtils.checkCharityIsExistById(receiverId);
-  else await userUtils.checkUserIsExistById(receiverId);
+  else await userUtilsInstance.checkUserIsExistById(receiverId);
 
   const conversation = await chatUtils.createConversationOrGetTheExist(senderId, receiverId);
   const createdMessage = await chatUtils.createMessage(senderId, receiverId, message);
