@@ -113,3 +113,9 @@ export const getDummyCharityObject = (): PlainCharity => {
     },
   };
 };
+
+export const appendDummyImageToFormData = (formData: FormData) => {
+  const imagePath = path.resolve(__dirname, 'test-image.png');
+  const imageBuffer = fs.readFileSync(imagePath);
+  formData.append('image', imageBuffer, 'test-image.png');
+};
