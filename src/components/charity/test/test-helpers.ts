@@ -7,7 +7,11 @@ import FormData from 'form-data';
 import fs from 'fs';
 import path from 'path';
 
-export const createDummyCharityAndReturnToken = async () => {
+export const createDummyCharityAndReturnToken = async (
+  isActivated: boolean,
+  isConfirmed: boolean,
+  verificationCode: string = ''
+) => {
   const charityRepository = new CharityRepository();
 
   const dummyCharityData: PlainCharity = {
@@ -23,11 +27,11 @@ export const createDummyCharityAndReturnToken = async () => {
     },
     description: 'dummy',
     emailVerification: {
-      isVerified: true,
-      verificationDate: new Date().toString(),
+      isVerified: isActivated,
+      verificationDate: isActivated ? new Date().toString() : '',
     },
     isEnabled: true,
-    isConfirmed: true,
+    isConfirmed,
     isPending: false,
     currency: ['EGP'],
     charityLocation: [
@@ -36,6 +40,7 @@ export const createDummyCharityAndReturnToken = async () => {
         governorate: 'Cairo',
       },
     ],
+    verificationCode,
     charityDocs: {
       docs1: ['doc1.png'],
       docs2: ['doc2.png'],

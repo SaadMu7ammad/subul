@@ -11,7 +11,7 @@ let axiosAPIClient: AxiosInstance;
 
 beforeAll(async () => {
   const apiConnection = await startWebServer();
-  const token = await createDummyCharityAndReturnToken();
+  const token = await createDummyCharityAndReturnToken(true, true);
 
   const axiosConfig = {
     baseURL: `http://127.0.0.1:${apiConnection.port}`,

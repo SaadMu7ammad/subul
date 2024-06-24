@@ -65,7 +65,7 @@ const activateAccount = async (
 ): Promise<{ message: string }> => {
   let storedCharity = charity;
   if (charityUtils.checkCharityVerification(storedCharity)) {
-    return { message: 'account already is activated' };
+    throw new BadRequestError('account already is activated');
   }
   if (!storedCharity.verificationCode) throw new NotFoundError('verificationCode not found');
   const isMatch = checkValueEquality(storedCharity.verificationCode, reqBody.token);
