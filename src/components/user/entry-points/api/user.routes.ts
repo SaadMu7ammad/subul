@@ -140,7 +140,12 @@ export default function defineRoutes(expressApp: Application) {
 
   router.put(
     '/profile/edit',
-    editUserProfileValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = editUserProfileValidation(req);
+      Promise.all(validation.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     auth,
     isActivated,

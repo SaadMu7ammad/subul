@@ -27,6 +27,9 @@ const registerCharityValidation = (req: Request): ValidationChain[] => [
   // fawryValidation,
   phoneValidation(req),
 ];
-const loginCharityValidation = [emailValidation, passwordValidation];
+const loginCharityValidation = (req: Request): ValidationChain[] => [
+  emailValidation(req),
+  passwordValidation(req),
+];
 
 export { registerCharityValidation, loginCharityValidation };
