@@ -8,8 +8,8 @@ import fs from 'fs';
 import path from 'path';
 
 export const createDummyCharityAndReturnToken = async (
-  isActivated: boolean,
-  isConfirmed: boolean,
+  isActivated: boolean = true,
+  isConfirmed: boolean = true,
   verificationCode: string = ''
 ) => {
   const charityRepository = new CharityRepository();

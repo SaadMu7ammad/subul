@@ -33,13 +33,13 @@ afterAll(async () => {
 });
 
 describe('api/charities', () => {
-  describe('GET /profile', () => {
-    test('should return the charity profile with 200 status code', async () => {
-      //Act
-      const response = await axiosAPIClient.get('/api/charities/profile');
-      //Assert
+  describe('POST /change-password', () => {
+    test('should change password successfully with 200 status code', async () => {
+      const response = await axiosAPIClient.post('/api/charities/change-password', {
+        password: 'newPassword',
+      });
+
       expect(response.status).toBe(200);
-      expect(response.data.charity.email).toBe('dummy@dummy.ape');
     });
   });
 });
