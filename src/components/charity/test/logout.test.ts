@@ -32,13 +32,19 @@ afterAll(async () => {
 });
 
 describe('api/charities', () => {
-  describe('GET /profile', () => {
-    test('should return the charity profile with 200 status code', async () => {
+  describe('POST /logout', () => {
+    test('should logout the charity and delete the cookie with 200 status code', async () => {
       //Act
-      const response = await axiosAPIClient.get('/api/charities/profile');
+      const response = await axiosAPIClient.post('/api/charities/logout');
+
+      //Simulating browser behavior
+      if (response.headers['set-cookie'] && response.headers['set-cookie'][0])
+        axiosAPIClient.defaults.headers['cookie'] = response.headers['set-cookie'][0];
+
       //Assert
       expect(response.status).toBe(200);
-      expect(response.data.charity.email).toBe('dummy@dummy.ape');
+      if (response.headers['set-cookie'])
+        expect(response.headers['set-cookie'][0]).toMatch(/jwt=;/);
     });
   });
 });

@@ -4,7 +4,6 @@ import axios, { AxiosInstance } from 'axios';
 import mongoose from 'mongoose';
 import nock from 'nock';
 
-// jest.setTimeout(30000);
 import { clearCharityDatabase, createDummyCharityAndReturnToken } from './test-helpers';
 
 let axiosAPIClient: AxiosInstance;
