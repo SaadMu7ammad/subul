@@ -1,5 +1,6 @@
 import { auth, isActivated, isConfirmed } from '@components/auth/shared/index';
 import { charityUseCase } from '@components/charity/domain/charity.use-case';
+import { tranactionUseCaseClass } from '@components/transaction/domain/transaction.use-case';
 import { usedItemUseCase } from '@components/used-items/domain/used-item.use-case';
 import { resizeDoc, uploadDocs } from '@libs/uploads/components/docs/images/handler';
 import { resizeDocReq, uploadDocsReq } from '@libs/uploads/components/docs/images/handler2';
@@ -257,6 +258,25 @@ export default function defineRoutes(expressApp: Application) {
         logger.info(`Used Items API was called to Confirm Booking Receipt`);
         const confirmBookingReceiptResponse = await usedItemUseCase.ConfirmBookingReceipt(req, res);
         return res.json(confirmBookingReceiptResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
+  router.get(
+    '/charityTransactionsLogs',
+    auth,
+    isActivated,
+    isConfirmed,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`charity API was called to get transactions donation for the charity`);
+        const transactionUseCaseInstance = new tranactionUseCaseClass();
+        const getAllTransactionsResponse =
+          await transactionUseCaseInstance.getAllTransactionsToCharity(req, res, next);
+        return res.json(getAllTransactionsResponse);
       } catch (error) {
         next(error);
         return undefined;

@@ -27,9 +27,23 @@ import { Response } from 'express';
 import { userUtilsClass } from './user.utils';
 
 class userServiceClass implements userServiceSkeleton {
-  #userUtilsInstance = new userUtilsClass();
-  #notificationInstance = new notificationManager();
+  #userUtilsInstance: userUtilsClass;
+  #notificationInstance: notificationManager;
 
+  constructor() {
+    this.resetUser = this.resetUser.bind(this);
+    this.confirmReset = this.confirmReset.bind(this);
+    this.changePassword = this.changePassword.bind(this);
+    this.activateAccount = this.activateAccount.bind(this);
+    this.bloodContribution = this.bloodContribution.bind(this);
+    this.requestFundraisingCampaign = this.requestFundraisingCampaign.bind(this);
+    this.logoutUser = this.logoutUser.bind(this);
+    this.getUserProfileData = this.getUserProfileData.bind(this);
+    this.editUserProfile = this.editUserProfile.bind(this);
+
+    this.#userUtilsInstance = new userUtilsClass();
+    this.#notificationInstance = new notificationManager();
+  }
   async resetUser(reqBody: dataForResetEmail) {
     const email = reqBody.email;
     //   if (!email) throw new BadRequestError('no email input');

@@ -12,9 +12,31 @@ import { Types } from 'mongoose';
 import { TRANSACTION } from '../data-access/transaction.repository';
 
 export class transactionUtilsClass implements transactionUtilsSkeleton {
-  #transactionRepository = new TRANSACTION();
-  #transactionInstance = this.#transactionRepository.transactionModel;
+  #transactionRepository: TRANSACTION;
+  #transactionInstance: TRANSACTION;
+  // #transactionInstance ;
 
+  constructor() {
+    this.#transactionRepository = new TRANSACTION();
+    this.#transactionInstance = this.#transactionRepository;
+
+    this.checkPreCreateTransaction = this.checkPreCreateTransaction.bind(this);
+    this.checkCharityIsValidToDonate = this.checkCharityIsValidToDonate.bind(this);
+    this.checkCaseIsValidToDonate = this.checkCaseIsValidToDonate.bind(this);
+    this.donationAmountAssertion = this.donationAmountAssertion.bind(this);
+    this.updateTransactionAfterRefund = this.updateTransactionAfterRefund.bind(this);
+    this.updateCaseAfterRefund = this.updateCaseAfterRefund.bind(this);
+    this.checkIsLastDonation = this.checkIsLastDonation.bind(this);
+    this.updateCaseAfterDonation = this.updateCaseAfterDonation.bind(this);
+    this.addTransactionIdToUserTransactionIds =
+      this.addTransactionIdToUserTransactionIds.bind(this);
+    this.confirmSavingCase = this.confirmSavingCase.bind(this);
+    this.confirmSavingUser = this.confirmSavingUser.bind(this);
+    this.getAllTransactionsPromised = this.getAllTransactionsPromised.bind(this);
+    this.confirmSavingUser = this.confirmSavingUser.bind(this);
+    this.getAllTransactionsToCharity = this.getAllTransactionsToCharity.bind(this);
+    this.refundUtility = this.refundUtility.bind(this);
+  }
   async checkPreCreateTransaction(data: IDataPreCreateTransaction) {
     const { charityId, caseId, amount, mainTypePayment } = data;
     if (!charityId) {
@@ -105,7 +127,7 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
   async getAllTransactionsPromised(user: IUser): Promise<(ITransaction | null)[]> {
     const transactionPromises: Promise<ITransaction | null>[] = user.transactions.map(
       async (itemId, index) => {
-        const myTransaction = await this.#transactionInstance.findTransactionById(
+        const myTransaction = await this.#transactionInstance.transactionModel.findTransactionById(
           itemId.toString()
         );
         if (!myTransaction) {
@@ -120,15 +142,30 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
         }
       }
     );
+
     const allTransactionsPromised = await Promise.all(transactionPromises);
     await this.confirmSavingUser(user);
     return allTransactionsPromised;
   }
+
+  async getAllTransactionsToCharity(
+    cause: string,
+    charity: ICharity
+  ): Promise<ITransaction[] | null> {
+    const myTransactions = await this.#transactionInstance.transactionModel.findTransactionsByQuery(
+      { charity: charity._id, case: cause }
+    );
+    // if (!myTransaction) return null;
+
+    return myTransactions;
+  }
+
   async refundUtility(transaction: ITransaction, amount: number): Promise<ITransaction> {
     const caseId: string | undefined = transaction?.case?.toString(); //get the id of the case
     if (!caseId) throw new NotFoundError('case id not found');
 
-    const caseIsExistForRefund = await this.#transactionInstance.findCaseById(caseId);
+    const caseIsExistForRefund =
+      await this.#transactionInstance.transactionModel.findCaseById(caseId);
     if (!caseIsExistForRefund) throw new NotFoundError('case id not found');
 
     await this.updateTransactionAfterRefund(transaction);

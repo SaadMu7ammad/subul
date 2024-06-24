@@ -6,8 +6,22 @@ import { Response } from 'express';
 import { USER } from './user.class';
 
 export class userUtilsClass implements userUtilsSkeleton {
-  #user = new USER();
-  // constructor(){}
+  #user: USER;
+  constructor() {
+    this.#user = new USER();
+
+    this.checkUserIsExist = this.checkUserIsExist.bind(this);
+    this.checkUserIsExistById = this.checkUserIsExistById.bind(this);
+    this.logout = this.logout.bind(this);
+    this.checkIsEmailDuplicated = this.checkIsEmailDuplicated.bind(this);
+    this.changeUserEmailWithMailAlert = this.changeUserEmailWithMailAlert.bind(this);
+    this.verifyUserAccount = this.verifyUserAccount.bind(this);
+    this.checkIfCaseBelongsToUserContributions =
+      this.checkIfCaseBelongsToUserContributions.bind(this);
+    this.deleteCaseFromUserContributionsArray =
+      this.deleteCaseFromUserContributionsArray.bind(this);
+    this.resetSentToken = this.resetSentToken.bind(this);
+  }
 
   async checkUserIsExist(email: string): Promise<{ user: IUser }> {
     //return user if it exists
