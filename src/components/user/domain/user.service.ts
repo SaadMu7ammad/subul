@@ -2,8 +2,8 @@ import { authUserResponse } from '@components/auth/user/data-access/interfaces';
 import { ICase } from '@components/case/data-access/interfaces';
 import { caseService } from '@components/case/domain/case.service';
 import { caseUtils } from '@components/case/domain/case.utils';
-import { CharityRepository } from '@components/charity/data-access/charity.repository';
 import { ICharity } from '@components/charity/data-access/interfaces';
+import { CHARITY } from '@components/charity/domain/charity.class';
 import {
   EditProfile,
   IUser,
@@ -27,6 +27,7 @@ import { Response } from 'express';
 import { userUtilsClass } from './user.utils';
 
 class userServiceClass implements userServiceSkeleton {
+  #charity: CHARITY;
   #userUtilsInstance: userUtilsClass;
   #notificationInstance: notificationManager;
 
@@ -43,6 +44,7 @@ class userServiceClass implements userServiceSkeleton {
 
     this.#userUtilsInstance = new userUtilsClass();
     this.#notificationInstance = new notificationManager();
+    this.#charity = new CHARITY();
   }
   async resetUser(reqBody: dataForResetEmail) {
     const email = reqBody.email;
@@ -173,9 +175,10 @@ class userServiceClass implements userServiceSkeleton {
     charityId: string,
     storedUser: IUser
   ) {
-    const _CharityRepository = new CharityRepository();
+    // const _CharityRepository = new CharityRepository();
 
-    const chosenCharity: ICharity | null = await _CharityRepository.findCharityById(charityId);
+    const chosenCharity: ICharity | null =
+      await this.#charity.chairtyModel.findCharityById(charityId);
     if (!chosenCharity) throw new BadRequestError('no charity found');
 
     if (

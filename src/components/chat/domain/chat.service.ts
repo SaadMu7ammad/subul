@@ -1,10 +1,12 @@
 import { ICharity } from '@components/charity/data-access/interfaces';
-import { charityUtils } from '@components/charity/domain/charity.utils';
+import { charityUtilsClass } from '@components/charity/domain/charity.utils';
 import { PlainIConversation, sendMessageResponse } from '@components/chat/data-access/interfaces';
 import { userUtilsClass } from '@components/user/domain/user.utils';
 import { BadRequestError } from '@libs/errors/components';
 
 import { chatUtils } from './chat.utils';
+
+const charityUtils = new charityUtilsClass();
 
 const sendMessage = async (
   typeSender: string,
