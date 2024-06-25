@@ -22,6 +22,7 @@ import {
 import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
 import { notificationManager } from '@utils/sendNotification';
 import { checkValueEquality, updateNestedProperties } from '@utils/shared';
+import { Request } from 'express';
 import { Response } from 'express';
 
 import { userUtilsClass } from './user.utils';
@@ -131,9 +132,9 @@ class userServiceClass implements userServiceSkeleton {
   }
   //we must limit the amount of sending emails as each time user click to contribute to the same case will send an email to him
   //we store nothing in the db
-  async bloodContribution(user: IUser, id: string | undefined) {
+  async bloodContribution(req: Request, user: IUser, id: string | undefined) {
     if (!id) throw new BadRequestError('no id provided');
-    const isCaseExist = await caseUtils.getCaseByIdFromDB(id);
+    const isCaseExist = await caseUtils.getCaseByIdFromDB(req, id);
 
     if (!isCaseExist.privateNumber) throw new BadRequestError('sorry no number is added');
     if (isCaseExist.finished) throw new BadRequestError('the case had been finished');

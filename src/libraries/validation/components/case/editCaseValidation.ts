@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 import {
   cityValidation,
   descriptionValidation,
@@ -11,17 +13,17 @@ import {
   titleValidation,
 } from './allCaseValidation';
 
-const editCaseValidation = [
-  titleValidation.optional(),
-  descriptionValidation.optional(),
-  mainTypeValidation.optional(),
-  subTypeValidation.optional(),
-  nestedSubTypeValidation,
-  governorateValidation.optional(),
-  cityValidation,
-  genderValidtion.optional(),
-  helpedNumbersValidation.optional(),
-  targetDonationAmountValidation.optional(),
+const editCaseValidation = (req: Request) => [
+  titleValidation(req).optional(),
+  descriptionValidation(req).optional(),
+  mainTypeValidation(req).optional(),
+  subTypeValidation(req).optional(),
+  nestedSubTypeValidation(req),
+  governorateValidation(req).optional(),
+  cityValidation(req),
+  genderValidtion(req).optional(),
+  helpedNumbersValidation(req).optional(),
+  targetDonationAmountValidation(req).optional(),
 ];
 
 export { editCaseValidation };

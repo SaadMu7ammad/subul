@@ -30,7 +30,7 @@ const imageAssertion = upload.single('image');
 
 const resizeImg = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (!req.file) throw new BadRequestError('no cover/logo image uploaded');
+    if (!req.file) throw new BadRequestError(req.t('errors.noImageUploaded'));
 
     const { destinationFolder, suffix } = getImageConfiguration(req.path);
 

@@ -17,6 +17,7 @@ import { userUtilsClass } from '@components/user/domain/user.utils';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { setupMailSender } from '@utils/mailer';
 import { notificationManager } from '@utils/sendNotification';
+import { Request } from 'express';
 import { Response } from 'express';
 
 import { caseUtils } from './case.utils';
@@ -85,28 +86,32 @@ const getAllCasesForUser = async (
 };
 
 const getCaseById = async (
+  req: Request,
   charityCases: ICase['id'][],
   caseId: string
 ): Promise<GetCaseByIdResponse> => {
-  caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
+  caseUtils.checkIfCaseBelongsToCharity(req, charityCases, caseId);
 
-  const _case: ICase = await caseUtils.getCaseByIdFromDB(caseId);
+  const _case: ICase = await caseUtils.getCaseByIdFromDB(req, caseId);
 
   return {
     case: _case,
   };
 };
 
-const deleteCase = async (charity: ICharity, caseId: string): Promise<DeleteCaseResponse> => {
-  const isCaseFinished = await caseUtils.getCaseByIdFromDB(caseId);
-  if (isCaseFinished.finished)
-    throw new BadRequestError('you dont have access to delete a completed case');
+const deleteCase = async (
+  req: Request,
+  charity: ICharity,
+  caseId: string
+): Promise<DeleteCaseResponse> => {
+  const isCaseFinished = await caseUtils.getCaseByIdFromDB(req, caseId);
+  if (isCaseFinished.finished) throw new BadRequestError(req.t('errors.cantDeleteCase'));
   if (isCaseFinished.currentDonationAmount > 0)
-    throw new BadRequestError('you dont have access to delete a case in progress');
+    throw new BadRequestError(req.t('errors.cantDeleteCase'));
 
-  const idx: number = caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
+  const idx: number = caseUtils.checkIfCaseBelongsToCharity(req, charity.cases, caseId);
 
-  const deletedCase: ICase = await caseUtils.deleteCaseFromDB(caseId);
+  const deletedCase: ICase = await caseUtils.deleteCaseFromDB(req, caseId);
 
   await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
 
@@ -136,14 +141,15 @@ const deleteCase = async (charity: ICharity, caseId: string): Promise<DeleteCase
 };
 
 const editCase = async (
+  req: Request,
   charity: ICharity,
   caseData: ICase & { coverImage: string; image: string[] },
   caseId: string
 ): Promise<EditCaseResponse> => {
-  const isFinishedCase = await caseUtils.getCaseByIdFromDB(caseId);
-  if (isFinishedCase.finished) throw new BadRequestError('cant edit completed case');
+  const isFinishedCase = await caseUtils.getCaseByIdFromDB(req, caseId);
+  if (isFinishedCase.finished) throw new BadRequestError(req.t('errors.cantEditCase'));
 
-  caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
+  caseUtils.checkIfCaseBelongsToCharity(req, charity.cases, caseId);
 
   let deleteOldImg: (() => void) | null = null;
   if (caseData.image) {

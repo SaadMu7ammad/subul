@@ -117,7 +117,7 @@ class userUseCaseClass implements userUseCaseSkeleton {
     const storedUser: IUser = res.locals.user;
     const caseId: string | undefined = req.params.id;
 
-    await userService.bloodContribution(storedUser, caseId);
+    await userService.bloodContribution(req, storedUser, caseId);
     return {
       message: 'an email had been sent to your mail address with detailed info',
     };

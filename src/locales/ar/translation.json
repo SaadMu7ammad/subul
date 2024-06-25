@@ -26,6 +26,22 @@
     "invalidPaymentId": "رقم الدفع غير صالح",
     "invalidToken": "التوكن غير صالح",
     "invalidPassword": "كلمة المرور غير صحيحة",
-    "userNotFound": "المستخدم غير موجود"
+    "userNotFound": "المستخدم غير موجود",
+    "fetchedCases": "تم جلب كل الحالات بنجاح",
+    "titleRequired": "العنوان مطلوب",
+    "invalidMainType": "نوع الحالة غير موجود",
+    "invalidSubType": "نوع الحالة الفرعي غير موجود",
+    "cityInvalid": "المدينة غير موجودة",
+    "helpedNumbers": "يجب أن تكون الأرقام المساعدة 1 على الأقل!",
+    "targetDonationAmount": "المبلغ المستهدف للتبرع مطلوب",
+    "caseAddedSuccessfully": "تمت إضافة الحالة بنجاح",
+    "fetchAllCases": "تم جلب كل الحالات بنجاح",
+    "invalidSort": "نوع الفرز غير صحيح",
+    "caseNotFound": "الحالة غير موجودة",
+    "fetchCase": "تم جلب الحالة بنجاح",
+    "deleteCase": "تم حذف الحالة بنجاح",
+    "cantEditCase": "لا يمكن تعديل الحالة المكتملة",
+    "editCase": "تم تعديل الحالة بنجاح",
+    "noImageUploaded": "لم يتم تحميل صورة الغلاف أو الشعار"
   }
 }

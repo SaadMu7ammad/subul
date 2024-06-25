@@ -17,7 +17,12 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isConfirmed,
     imageAssertion,
-    postCaseValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = postCaseValidation(req);
+      Promise.all(validations.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     resizeImg,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -36,7 +41,12 @@ export default function defineRoutes(expressApp: Application) {
     '/addBloodCase',
     auth,
     isConfirmed,
-    postCaseValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = postCaseValidation(req);
+      Promise.all(validations.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -54,7 +64,12 @@ export default function defineRoutes(expressApp: Application) {
     '/allCasesOfCharity',
     auth,
     isConfirmed,
-    getAllCasesValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = getAllCasesValidation(req);
+      Promise.all(validations.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -72,7 +87,12 @@ export default function defineRoutes(expressApp: Application) {
   router.get(
     '/allCases',
     auth,
-    getAllCasesValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = getAllCasesValidation(req);
+      Promise.all(validations.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -111,7 +131,12 @@ export default function defineRoutes(expressApp: Application) {
     .put(
       auth,
       isConfirmed,
-      editCaseValidation,
+      (req: Request, res: Response, next: NextFunction) => {
+        const validations = editCaseValidation(req);
+        Promise.all(validations.map(v => v.run(req)))
+          .then(() => next())
+          .catch(next);
+      },
       validate,
       async (req: Request, res: Response, next: NextFunction) => {
         try {

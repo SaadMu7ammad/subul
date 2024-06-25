@@ -10,6 +10,7 @@ import { ICharity } from '@components/charity/data-access/interfaces';
 import { NotFoundError } from '@libs/errors/components/not-found';
 import { deleteOldImgs } from '@utils/deleteFile';
 import { Response } from 'express';
+import { Request } from 'express';
 
 const caseRepository = new CaseRepository();
 
@@ -86,31 +87,35 @@ const getAllCasesForUser = async (
   return cases;
 };
 
-const getCaseByIdFromDB = async (caseId: string): Promise<ICase> => {
+const getCaseByIdFromDB = async (req: Request, caseId: string): Promise<ICase> => {
   const _case: ICase | null = await caseRepository.getCaseById(caseId);
 
-  if (!_case) throw new NotFoundError('No Such Case With this Id!');
+  if (!_case) throw new NotFoundError(req.t('errors.caseNotFound'));
 
   return _case;
 };
 
-const checkIfCaseBelongsToCharity = (charityCasesArray: ICase['_id'][], caseId: string): number => {
+const checkIfCaseBelongsToCharity = (
+  req: Request,
+  charityCasesArray: ICase['_id'][],
+  caseId: string
+): number => {
   const idx: number = charityCasesArray.findIndex(function (id) {
     return id.toString() === caseId;
   });
 
   if (idx === -1) {
-    throw new NotFoundError('No Such Case With this Id!');
+    throw new NotFoundError(req.t('errors.caseNotFound'));
   }
 
   return idx;
 };
 
-const deleteCaseFromDB = async (id: string) => {
+const deleteCaseFromDB = async (req: Request, id: string) => {
   const deletedCase: ICase | null = await caseRepository.deleteCaseById(id);
 
   if (!deletedCase) {
-    throw new NotFoundError('No Such Case With this Id!');
+    throw new NotFoundError(req.t('errors.caseNotFound'));
   }
 
   deleteOldImgs('caseCoverImages', deletedCase.coverImage);

@@ -14,7 +14,7 @@
     "invalidPhoneNumber": "Invalid phone number",
     "genderInvalid": "Gender must be `male` or `female`",
     "governorateInvalid": "Governorate must be a valid",
-    "descriptionRequired": "The description is required",
+    "descriptionRequired": "Description Is Required!",
     "descriptionLength": "The description must be at least 10 characters",
     "currencyRequired": "The currency is required",
     "currencyInvalid": "The currency is invalid",
@@ -26,6 +26,23 @@
     "invalidPaymentId": "Invalid Payment ID",
     "invalidToken": "Invalid Token",
     "invalidPassword": "Invalid Password",
-    "userNotFound": "User not found"
+    "userNotFound": "User not found",
+    "fetchedCases": "All Cases fetched Successfully",
+    "titleRequired": "Title Is Required!",
+    "invalidMainType": "Invalid Main Type",
+    "invalidSubType": "Invalid Sub Type",
+    "cityInvalid": "City must be valid",
+    "helpedNumbers": "Helped Numbers should be at least 1!",
+    "targetDonationAmount": "Target Donation Amount must be Provided!",
+    "caseAddedSuccessfully": "Case Created Successfully",
+    "fetchAllCases": "All Cases fetched Successfully",
+    "invalidSort": "Invalid Sort Parameter!",
+    "caseNotFound": "No Such Case With this Id!",
+    "fetchCase": "Case Fetched Successfully",
+    "deleteCase": "Case Deleted Successfully",
+    "cantDeleteCase": "You dont have access to delete a completed case or a case in progress",
+    "cantEditCase": "Can't edit completed case",
+    "editCase": "Case Edited Successfully",
+    "noImageUploaded": "No cover/logo image uploaded"
   }
 }
