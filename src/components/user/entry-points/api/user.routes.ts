@@ -29,7 +29,13 @@ export default function defineRoutes(expressApp: Application) {
   //notice reset and /reset/confirm without isActivated coz the if the user didn't activate his account and want to reset the pass
   router.post(
     '/reset',
-    requestResetEmailUserValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = requestResetEmailUserValidation(req);
+      validation
+        .run(req)
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -45,7 +51,12 @@ export default function defineRoutes(expressApp: Application) {
 
   router.post(
     '/reset/confirm',
-    confirmResetUserValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = confirmResetUserValidation(req);
+      Promise.all(validation.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -61,7 +72,13 @@ export default function defineRoutes(expressApp: Application) {
 
   router.put(
     '/changepassword',
-    changePasswordUserValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = changePasswordUserValidation(req);
+      validation
+        .run(req)
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     auth,
     isActivated,
@@ -79,7 +96,13 @@ export default function defineRoutes(expressApp: Application) {
 
   router.post(
     '/activate',
-    tokenUserValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = tokenUserValidation(req);
+      validation
+        .run(req)
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     auth,
     async (req: Request, res: Response, next: NextFunction) => {

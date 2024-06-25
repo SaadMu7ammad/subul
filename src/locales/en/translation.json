@@ -24,6 +24,8 @@
     "ibanRequired": "IBAN is Required",
     "swiftCodeRequired": "Swift Code is Required",
     "invalidPaymentId": "Invalid Payment ID",
-    "invalidToken": "Invalid Token"
+    "invalidToken": "Invalid Token",
+    "invalidPassword": "Invalid Password",
+    "userNotFound": "User not found"
   }
 }

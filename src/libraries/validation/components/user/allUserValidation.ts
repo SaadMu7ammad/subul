@@ -1,11 +1,12 @@
 import { Request } from 'express';
 import { ValidationChain, body } from 'express-validator';
 
-const tokenUserValidation = body('token')
-  .trim()
-  .notEmpty()
-  .isLength({ min: 60, max: 60 })
-  .withMessage('Invalid Token!');
+const tokenUserValidation = (req: Request) =>
+  body('token')
+    .trim()
+    .notEmpty()
+    .isLength({ min: 60, max: 60 })
+    .withMessage(req.t('errors.invalidToken'));
 
 const firstNameValidation = (req: Request): ValidationChain =>
   body('name.firstName').trim().notEmpty().withMessage(req.t('errors.firstNameRequired'));
@@ -298,11 +299,15 @@ const fawryValidation = body('paymentMethods.fawry[0].number')
   .withMessage('Invalid PhoneNumber');
 
 //for changing password
-const changePasswordUserValidation = [passwordValidation];
+const changePasswordUserValidation = (req: Request) => passwordValidation(req);
 //for confirming reset password for user
-const confirmResetUserValidation = [emailValidation, passwordValidation, tokenUserValidation];
+const confirmResetUserValidation = (req: Request): ValidationChain[] => [
+  emailValidation(req),
+  passwordValidation(req),
+  tokenUserValidation(req),
+];
 //for requesting reset email for User
-const requestResetEmailUserValidation = [emailValidation];
+const requestResetEmailUserValidation = (req: Request): ValidationChain => emailValidation(req);
 
 export {
   nameUserValidation,

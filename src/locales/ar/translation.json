@@ -24,6 +24,8 @@
     "ibanRequired": "IBAN مطلوب",
     "swiftCodeRequired": "Swift Code مطلوب",
     "invalidPaymentId": "رقم الدفع غير صالح",
-    "invalidToken": "التوكن غير صالح"
+    "invalidToken": "التوكن غير صالح",
+    "invalidPassword": "كلمة المرور غير صحيحة",
+    "userNotFound": "المستخدم غير موجود"
   }
 }

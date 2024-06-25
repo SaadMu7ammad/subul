@@ -7,16 +7,18 @@ import {
   UnauthenticatedError,
 } from '@libs/errors/components/index';
 import bcryptjs from 'bcryptjs';
+import { Request } from 'express';
 
 const checkUserPassword = async (
+  req: Request,
   email: string,
   password: string
 ): Promise<{ isMatch: boolean; user: IUser }> => {
   const user = await authUserRepository.findUser(email);
-  if (!user) throw new NotFoundError('email not found');
+  if (!user) throw new NotFoundError(req.t('errors.userNotFound'));
   const isMatch: boolean = await bcryptjs.compare(password, user.password);
   if (!isMatch) {
-    throw new UnauthenticatedError('invalid password');
+    throw new UnauthenticatedError(req.t('errors.invalidPassword'));
   }
   return { isMatch, user: user };
 };
