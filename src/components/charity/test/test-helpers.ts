@@ -15,6 +15,19 @@ export const createDummyCharityAndReturnToken = async (
   const charityRepository = new CharityRepository();
 
   const dummyCharityData: PlainCharity = {
+    paymentMethods: {
+      bankAccount: [
+        {
+          accNumber: '1234567890',
+          swiftCode: '1234567890',
+          iban: '1234567890',
+          bankDocs: ['doc.png'],
+          enabled: true,
+          //@ts-expect-error don't care much when we are testing :P
+          _id: '65f9fcf93dbbeaaa8c2afec4',
+        },
+      ],
+    },
     cases: [],
     image: 'image.png',
     email: 'dummy@dummy.ape',

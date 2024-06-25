@@ -262,7 +262,8 @@ const editBankAccount = async (
   for (let [_, item] of storedCharity.paymentMethods.bankAccount.entries()) {
     console.log('1---------------');
 
-    if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
+    //@ts-expect-error TODO: fix this , why there is no toString in the type of _id ?
+    if (item._id.toString() === reqPaymentMethodsObj.paymentId) {
       console.log(item);
       item.enable = false;
       item.iban = reqPaymentMethodsObj.paymentMethods.bankAccount.iban;
@@ -286,7 +287,8 @@ const editFawryAccount = async (
   for (let [_, item] of storedCharity.paymentMethods.fawry.entries()) {
     console.log('2---------------');
 
-    if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
+    //@ts-expect-error TODO: fix this , why there is no toString in the type of _id ?
+    if (item._id.toString() === reqPaymentMethodsObj.paymentId) {
       console.log(item);
       item.enable = false;
       item.number = reqPaymentMethodsObj.paymentMethods.fawry.number;
@@ -309,7 +311,9 @@ const editVodafoneAccount = async (
 
   for (let [_, item] of storedCharity.paymentMethods.vodafoneCash.entries()) {
     console.log('-3--------------');
-    if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
+
+    //@ts-expect-error TODO: fix this , why there is no toString in the type of _id ?
+    if (item._id.toString() === reqPaymentMethodsObj.paymentId) {
       console.log(item);
       item.enable = false;
       item.number = reqPaymentMethodsObj.paymentMethods.vodafoneCash.number;

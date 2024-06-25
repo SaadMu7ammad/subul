@@ -204,6 +204,7 @@ const requestEditCharityPayments = async (
   }
 
   if (reqPaymentMethodsObj.paymentId) {
+    console.log('ape from request edit charity payments');
     if (
       reqPaymentMethodsObj.paymentMethods.bankAccount.iban &&
       reqPaymentMethodsObj.paymentMethods.bankAccount.accNumber &&
@@ -211,6 +212,7 @@ const requestEditCharityPayments = async (
     ) {
       const isUpdated = await charityUtils.editBankAccount(storedCharity, reqPaymentMethodsObj);
       if (isUpdated) {
+        console.log('ape from isUpdated');
         paymentTypeSelected = 'bankAccount';
         edited = true;
         created = false;
