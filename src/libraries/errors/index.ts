@@ -15,7 +15,7 @@ const NotFound = (req: Request, res: Response, next: NextFunction) => {
 const errorHandler = (err: IError, req: Request, res: Response, next: NextFunction) => {
   const environment = configurationProvider.getValue('environment.nodeEnv');
 
-  const stack = environment === 'development' ? err.stack : null;
+  const stack = environment === 'production' ? null : err.stack;
 
   logger.error('Reached error handler');
 

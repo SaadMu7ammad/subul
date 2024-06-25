@@ -114,8 +114,30 @@ export const getDummyCharityObject = (): PlainCharity => {
   };
 };
 
-export const appendDummyImageToFormData = (formData: FormData) => {
+export const appendDummyImageToFormData = (formData: FormData, imageName: string) => {
   const imagePath = path.resolve(__dirname, 'test-image.png');
   const imageBuffer = fs.readFileSync(imagePath);
-  formData.append('image', imageBuffer, 'test-image.png');
+  formData.append(imageName, imageBuffer, 'test-image.png');
+};
+
+export const appendDocsToFormData = (formData: FormData) => {
+  const imagePath = path.resolve(__dirname, 'test-image.png');
+  const imageBuffer = fs.readFileSync(imagePath);
+  for (let i = 1; i <= 4; i++) {
+    formData.append(`charityDocs${i}`, imageBuffer, `test-image${i}.png`);
+  }
+};
+
+export const appendBankInfoToFormData = (formData: FormData) => {
+  const bankInfo = {
+    accNumber: '1503070704120700019',
+    swiftCode: 'ECBAEGCA',
+    iban: 'EG890003000930603696309000540',
+  };
+
+  for (const [key, value] of Object.entries(bankInfo)) {
+    formData.append(key, value);
+  }
+
+  appendDummyImageToFormData(formData, 'bankDocs');
 };
