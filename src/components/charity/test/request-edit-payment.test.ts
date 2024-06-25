@@ -74,7 +74,6 @@ describe('api/charities', () => {
           ...formData.getHeaders(),
         },
       });
-      console.log('🚀 ~ test ~ response:', response.data);
 
       const getProfileResponse = await axiosAPIClient.get('/api/charities/profile');
 

@@ -40,7 +40,7 @@ describe('/api/charities', () => {
   describe('PUT /edit-profileImg', () => {
     test('Should Change profile image with 200 status code', async () => {
       const form = new FormData();
-      appendDummyImageToFormData(form);
+      appendDummyImageToFormData(form, 'image');
 
       const response = await axiosAPIClient.put(`/api/charities/edit-profileImg`, form, {
         headers: form.getHeaders(),
