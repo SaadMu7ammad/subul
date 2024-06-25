@@ -7,11 +7,11 @@
     "firstNameRequired": "The first name is required",
     "lastNameRequired": "The last name is required",
     "emailRequired": "The email is required",
-    "emailInvalid": "The email is invalid",
+    "emailInvalid": "Email is invalid",
     "passwordRequired": "The password is required",
     "passwordLength": "The password must be at least 6 characters",
     "phoneNumberRequired": "The phone number is required",
-    "invalidPhoneNumber": "The phone number is invalid",
+    "invalidPhoneNumber": "Invalid phone number",
     "genderInvalid": "Gender must be `male` or `female`",
     "governorateInvalid": "Governorate must be a valid",
     "descriptionRequired": "The description is required",
@@ -19,6 +19,11 @@
     "currencyRequired": "The currency is required",
     "currencyInvalid": "The currency is invalid",
     "regNumber": "The registration number is required",
-    "estDate": "The establishment date is required"
+    "estDate": "The establishment date is required",
+    "accNumberRequired": "Account Number is Required",
+    "ibanRequired": "IBAN is Required",
+    "swiftCodeRequired": "Swift Code is Required",
+    "invalidPaymentId": "Invalid Payment ID",
+    "invalidToken": "Invalid Token"
   }
 }

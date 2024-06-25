@@ -20,25 +20,33 @@ const descriptionValidation = (req: Request): ValidationChain =>
     .isLength({ min: 10 })
     .withMessage(req.t('errors.descriptionLength'));
 
-const bankAccountNumberValidation = body('accNumber')
-  .trim()
-  .notEmpty()
-  .withMessage('Account Number is Required')
-  .isNumeric()
-  .isLength({ min: 19, max: 19 });
+const bankAccountNumberValidation = (req: Request) =>
+  body('accNumber')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.accNumberRequired'))
+    .isNumeric()
+    .isLength({ min: 19, max: 19 });
 
-const ibanValidation = body('iban')
-  .trim()
-  .notEmpty()
-  .withMessage('iban is Required')
-  .isLength({ min: 29, max: 29 });
-const switfCodeValidation = body('swiftCode')
-  .trim()
-  .notEmpty()
-  .withMessage('Swift Code is Required')
-  .isLength({ min: 8, max: 11 });
+const ibanValidation = (req: Request) =>
+  body('iban')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.ibanRequired'))
+    .isLength({ min: 29, max: 29 });
 
-const bankAccountValidation = [bankAccountNumberValidation, ibanValidation, switfCodeValidation];
+const switfCodeValidation = (req: Request) =>
+  body('swiftCode')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.swiftCodeRequired'))
+    .isLength({ min: 8, max: 11 });
+
+const bankAccountValidation = (req: Request): ValidationChain[] => [
+  bankAccountNumberValidation(req),
+  ibanValidation(req),
+  switfCodeValidation(req),
+];
 
 const charityInfoRegNumber = (req: Request) =>
   body('charityInfo.registeredNumber')
@@ -59,27 +67,31 @@ const charityInfoValidation = (req: Request) => [
   charityInfoEstDate(req),
 ];
 
-const contactInfoEmail = body('contactInfo.email')
-  .trim()
-  .notEmpty()
-  .withMessage('Email Required')
-  .isEmail()
-  .withMessage('Invalid email');
+const contactInfoEmail = (req: Request) =>
+  body('contactInfo.email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email Required')
+    .isEmail()
+    .withMessage('Invalid email');
 
-const contactInfoPhone = body('contactInfo.phone')
-  .trim()
-  .notEmpty()
-  .isMobilePhone('any')
-  .withMessage('Invalid PhoneNumber')
-  .isLength({ min: 11, max: 11 })
-  .withMessage('Invalid PhoneNumber');
+const contactInfoPhone = (req: Request) =>
+  body('contactInfo.phone')
+    .trim()
+    .notEmpty()
+    .isMobilePhone('any')
+    .withMessage('Invalid PhoneNumber')
+    .isLength({ min: 11, max: 11 })
+    .withMessage('Invalid PhoneNumber');
 
-const contactInfoWebsiteUrl = body('contactInfo.websiteUrl')
-  .trim()
-  .notEmpty()
-  .isURL()
-  .withMessage('Invalid URL');
-const contactValidation = [contactInfoEmail, contactInfoPhone, contactInfoWebsiteUrl];
+const contactInfoWebsiteUrl = (req: Request) =>
+  body('contactInfo.websiteUrl').trim().notEmpty().isURL().withMessage('Invalid URL');
+
+const contactValidation = (req: Request): ValidationChain[] => [
+  contactInfoEmail(req),
+  contactInfoPhone(req),
+  contactInfoWebsiteUrl(req),
+];
 
 const currencyValidation = (req: Request): ValidationChain =>
   body('currency')
@@ -252,21 +264,23 @@ const currencyValidation = (req: Request): ValidationChain =>
     ])
     .withMessage(req.t('errors.currencyInvalid'));
 
-const vodafoneCashValidation = body('vodafoneNumber')
-  .trim()
-  .notEmpty()
-  .isMobilePhone('any')
-  .withMessage('Invalid PhoneNumber')
-  .isLength({ min: 11, max: 11 })
-  .withMessage('Invalid PhoneNumber');
+const vodafoneCashValidation = (req: Request) =>
+  body('vodafoneNumber')
+    .trim()
+    .notEmpty()
+    .isMobilePhone('any')
+    .withMessage(req.t('errors.invalidPhoneNumber'))
+    .isLength({ min: 11, max: 11 })
+    .withMessage(req.t('errors.invalidPhoneNumber'));
 
-const fawryValidation = body('fawryNumber')
-  .trim()
-  .notEmpty()
-  .isMobilePhone('any')
-  .withMessage('Invalid PhoneNumber')
-  .isLength({ min: 11, max: 11 })
-  .withMessage('Invalid PhoneNumber');
+const fawryValidation = (req: Request) =>
+  body('fawryNumber')
+    .trim()
+    .notEmpty()
+    .isMobilePhone('any')
+    .withMessage(req.t('errors.invalidPhoneNumber'))
+    .isLength({ min: 11, max: 11 })
+    .withMessage(req.t('errors.invalidPhoneNumber'));
 
 const governorateValidation = (req: Request): ValidationChain =>
   body('charityLocation.governorate')
@@ -311,12 +325,13 @@ const passwordValidation = (req: Request): ValidationChain =>
     .isLength({ min: 6, max: 20 })
     .withMessage(req.t('errors.passwordLength'));
 
-const tokenCharityValidation = body('token')
-  .trim()
-  .notEmpty()
-  // .isLength({ min: 64, max: 64 })
-  .isLength({ min: 60, max: 60 })
-  .withMessage('Invalid Token!');
+const tokenCharityValidation = (req: Request): ValidationChain =>
+  body('token')
+    .trim()
+    .notEmpty()
+    // .isLength({ min: 64, max: 64 })
+    .isLength({ min: 60, max: 60 })
+    .withMessage(req.t('errors.invalidToken'));
 
 const phoneValidation = (req: Request) =>
   body('phone')
@@ -340,18 +355,19 @@ const phoneValidation = (req: Request) =>
 // },'Validation input bank not completed')
 
 //for changing password
-const changePasswordCharityValidation = [passwordValidation];
+const changePasswordCharityValidation = (req: Request): ValidationChain => passwordValidation(req);
 
 //for confirming reset password for charity
-const confirmResetCharityValidation = [emailValidation, passwordValidation, tokenCharityValidation];
+const confirmResetCharityValidation = (req: Request): ValidationChain[] => [
+  emailValidation(req),
+  passwordValidation(req),
+  tokenCharityValidation(req),
+];
 //for requesting reset email for charity
-const requestResetEmailCharityValidation = [emailValidation];
+const requestResetEmailCharityValidation = (req: Request) => emailValidation(req);
 
-const paymentIdValidation = body('payment_id')
-  .trim()
-  .notEmpty()
-  .isMongoId()
-  .withMessage('Invalid Id!');
+const paymentIdValidation = (req: Request) =>
+  body('payment_id').trim().notEmpty().isMongoId().withMessage(req.t('errors.invalidPaymentId'));
 
 export {
   tokenCharityValidation,

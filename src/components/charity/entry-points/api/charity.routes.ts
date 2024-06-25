@@ -23,7 +23,13 @@ export default function defineRoutes(expressApp: Application) {
   const router = express.Router();
   router.post(
     '/activate',
-    tokenCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = tokenCharityValidation(req);
+      validation
+        .run(req)
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     auth,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -43,7 +49,13 @@ export default function defineRoutes(expressApp: Application) {
   );
   router.post(
     '/reset',
-    requestResetEmailCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = requestResetEmailCharityValidation(req);
+      validation
+        .run(req)
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -62,7 +74,12 @@ export default function defineRoutes(expressApp: Application) {
   );
   router.post(
     '/reset/confirm',
-    confirmResetCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = confirmResetCharityValidation(req);
+      Promise.all(validation.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -81,7 +98,13 @@ export default function defineRoutes(expressApp: Application) {
   );
   router.post(
     '/change-password',
-    changePasswordCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = changePasswordCharityValidation(req);
+      validation
+        .run(req)
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     auth,
     isActivated,
@@ -166,7 +189,12 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     isConfirmed,
-    reqEditPaymentMethodsValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = reqEditPaymentMethodsValidation(req);
+      Promise.all(validation.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     resizeDocReq,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -192,7 +220,12 @@ export default function defineRoutes(expressApp: Application) {
     '/send-docs',
     uploadDocs,
     auth,
-    reqEditPaymentMethodsValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = reqEditPaymentMethodsValidation(req);
+      Promise.all(validation.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     resizeDoc,
     async (req: Request, res: Response, next: NextFunction) => {

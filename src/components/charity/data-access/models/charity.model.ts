@@ -143,18 +143,18 @@ const charitySchema = new Schema(
       type: {
         email: {
           type: String,
-          required: true,
+          required: false,
         },
         phone: {
           type: Number,
-          required: true,
+          required: false,
         },
         websiteUrl: {
           type: String,
-          required: true,
+          required: false,
         },
       },
-      required: true,
+      required: false,
     },
     description: {
       type: String,

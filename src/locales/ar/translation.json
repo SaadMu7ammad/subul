@@ -19,6 +19,11 @@
     "currencyRequired": "العملة مطلوبة",
     "currencyInvalid": "العملة غير موجودة",
     "regNumber": "رقم التسجيل مطلوب",
-    "estDate": "تاريخ التأسيس مطلوب"
+    "estDate": "تاريخ التأسيس مطلوب",
+    "accNumberRequired": "رقم الحساب مطلوب",
+    "ibanRequired": "IBAN مطلوب",
+    "swiftCodeRequired": "Swift Code مطلوب",
+    "invalidPaymentId": "رقم الدفع غير صالح",
+    "invalidToken": "التوكن غير صالح"
   }
 }

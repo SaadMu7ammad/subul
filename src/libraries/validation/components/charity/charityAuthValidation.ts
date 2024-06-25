@@ -18,7 +18,7 @@ const registerCharityValidation = (req: Request): ValidationChain[] => [
   passwordValidation(req),
   nameValidation(req),
   descriptionValidation(req),
-  ...contactValidation,
+  ...contactValidation(req).map(v => v.optional()),
   currencyValidation(req),
   governorateValidation(req),
   ...charityInfoValidation(req),

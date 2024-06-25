@@ -6,8 +6,6 @@ const tokenUserValidation = body('token')
   .notEmpty()
   .isLength({ min: 60, max: 60 })
   .withMessage('Invalid Token!');
-// const firstName = body('name.firstName').trim().notEmpty().withMessage('firstName is required');
-// const lastName = body('name.lastName').trim().notEmpty().withMessage('lastName is required');
 
 const firstNameValidation = (req: Request): ValidationChain =>
   body('name.firstName').trim().notEmpty().withMessage(req.t('errors.firstNameRequired'));
