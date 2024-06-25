@@ -109,7 +109,6 @@ const editCharityProfileAddress = async (
   id: string,
   updatedLocation: ICharityLocation
 ): Promise<{ charity: ICharity }> => {
-  //TODO: Should we use Partial<CharityLocationDocument>?
   for (let i = 0; i < charity.charityLocation.length; i++) {
     if (charity.charityLocation[i]) {
       const location = charity.charityLocation[i]!;

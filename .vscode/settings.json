@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["Authed", "cloudinary", "fawry", "paymob", "uuidv"],
+  "cSpell.words": ["Authed", "cloudinary", "fawry", "iban", "paymob", "uuidv"],
   "eslint.enable": true,
   "eslint.validate": ["typescript"]
 }
