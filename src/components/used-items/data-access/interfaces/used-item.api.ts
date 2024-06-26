@@ -1,6 +1,9 @@
 import { IUsedItem, PlainIUsedItem } from '.';
 
-export type AddUsedItemRequest = PlainIUsedItem;
+export type AddUsedItemRequest = Pick<
+  PlainIUsedItem,
+  'title' | 'description' | 'category' | 'amount' | 'images' | 'user'
+>;
 
 export type AddUsedItemResponse = {
   usedItem: IUsedItem;

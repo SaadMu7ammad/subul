@@ -28,9 +28,9 @@ const validateIdParam = (id: string | undefined): asserts id is string => {
   }
 };
 
-const checkIfUsedItemBelongsToUser = (usedItem: IUsedItem, userId: string) => {
+const checkIfUsedItemBelongsToUser = (req: Request, usedItem: IUsedItem, userId: string) => {
   if (usedItem.user.toString() !== userId) {
-    throw new BadRequestError('You are not the owner of this Used Item');
+    throw new BadRequestError(req.t('usedItems.notOwner'));
   }
 };
 

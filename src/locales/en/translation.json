@@ -44,5 +44,20 @@
     "cantEditCase": "Can't edit completed case",
     "editCase": "Case Edited Successfully",
     "noImageUploaded": "No cover/logo image uploaded"
+  },
+  "usedItems": {
+    "onlyStringTitle": "Title must be a string",
+    "titleLength": "Title must be between 5 and 255 characters",
+    "onlyStringCategory": "Category must be a string",
+    "categoryType": "Category must be one of clothes, electronics, appliances, furniture, or others",
+    "onlyStringDescription": "Description must be a string",
+    "onlyPositiveNumberAmount": "Amount must be a positive number",
+    "retrieveUsedItems": "All Used Items Retrieved Successfully",
+    "noImagesUploaded": "No images uploaded",
+    "addUsedItem": "Used Item Created Successfully",
+    "notOwner": "You are not the owner of this item",
+    "updateUsedItem": "Used Item Updated Successfully",
+    "getUsedItem": "Used Item Retrieved Successfully",
+    "imageNameInvalid": "Image name must end with .jpg, .jpeg, or .png."
   }
 }

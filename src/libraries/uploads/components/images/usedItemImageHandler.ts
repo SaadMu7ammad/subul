@@ -11,7 +11,7 @@ const imageAssertion = upload.array('images', 5);
 const resizeImg = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (Array.isArray(req.files) && !req.files.length)
-      throw new BadRequestError('no image uploaded');
+      throw new BadRequestError(req.t('usedItems.noImagesUploaded'));
 
     const destinationFolder = 'usedItemsImages',
       suffix = 'usedItem-';

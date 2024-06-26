@@ -43,5 +43,20 @@
     "cantEditCase": "لا يمكن تعديل الحالة المكتملة",
     "editCase": "تم تعديل الحالة بنجاح",
     "noImageUploaded": "لم يتم تحميل صورة الغلاف أو الشعار"
+  },
+  "usedItems": {
+    "onlyStringTitle": "العنوان يجب أن يكون نصًا",
+    "titleLength": "يجب أن يكون العنوان بين 5 و 255 حرفًا",
+    "onlyStringCategory": "الصنف يجب أن يكون نصًا",
+    "categoryType": "يجب أن تكون الصنف ملابس أو إلكترونيات أو أجهزة أو أثاث أو آخر",
+    "onlyStringDescription": "الوصف يجب أن يكون نصًا",
+    "onlyPositiveNumberAmount": "الكمية يجب أن تكون رقمًا موجبًا",
+    "retrieveUsedItems": "تم جلب جميع العناصر المستعملة بنجاح",
+    "noImagesUploaded": "لم يتم تحميل الصور",
+    "addUsedItem": "تمت إضافة العنصر المستعمل بنجاح",
+    "notOwner": "أنت لست صاحب العنصر",
+    "updateUsedItem": "تم تحديث العنصر المستعمل بنجاح",
+    "getUsedItem": "تم جلب العنصر المستعمل بنجاح",
+    "imageNameInvalid": "اسم الصورة يجب أن ينتهي بـ .jpg, .jpeg, أو .png"
   }
 }

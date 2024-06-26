@@ -1,7 +1,6 @@
 import {
   AddUsedItemImageRequest,
   AddUsedItemImageResponse,
-  AddUsedItemRequest,
   AddUsedItemResponse,
   DeleteUsedItemImageRequest,
   DeletedUsedItemResponse,
@@ -12,6 +11,7 @@ import {
 import { IUser } from '@components/user/data-access/interfaces';
 import { NextFunction, Request, Response } from 'express';
 
+import { PlainIUsedItem } from '../data-access/interfaces';
 import { usedItemService } from './used-item.service';
 import { usedItemUtils } from './used-item.utils';
 
@@ -24,7 +24,7 @@ const addUsedItem = async (
 
   const { title, description, category, amount, images } = req.body;
 
-  const usedItemData: AddUsedItemRequest = {
+  const usedItemData: PlainIUsedItem = {
     title,
     description,
     category,
@@ -33,7 +33,7 @@ const addUsedItem = async (
     user: user._id,
   };
 
-  const responseData = await usedItemService.addUsedItem(usedItemData);
+  const responseData = await usedItemService.addUsedItem(req, usedItemData);
 
   return {
     usedItem: responseData.usedItem,
@@ -48,7 +48,7 @@ const getUsedItem = async (
   next: NextFunction
 ): Promise<GetUsedItemResponse> => {
   const { id } = req.params;
-  const responseData = await usedItemService.getUsedItem(id);
+  const responseData = await usedItemService.getUsedItem(req, id);
 
   return {
     usedItem: responseData.usedItem,
@@ -63,7 +63,7 @@ const deleteUsedItem = async (
 ): Promise<DeletedUsedItemResponse> => {
   const { id } = req.params;
   const userId = res.locals.user._id.toString();
-  const responseData = await usedItemService.deleteUsedItem(id, userId);
+  const responseData = await usedItemService.deleteUsedItem(req, id, userId);
 
   return {
     usedItem: responseData.usedItem,
@@ -87,7 +87,7 @@ const updateUsedItem = async (
     amount,
   };
 
-  const responseData = await usedItemService.updateUsedItem(id, userId, usedItemData);
+  const responseData = await usedItemService.updateUsedItem(req, id, userId, usedItemData);
 
   return {
     usedItem: responseData.usedItem,
@@ -103,7 +103,7 @@ const addUsedItemImages = async (
   const { id } = req.params;
   const userId = res.locals.user._id.toString();
   const { images }: AddUsedItemImageRequest = req.body;
-  const responseData = await usedItemService.addUsedItemImages(id, userId, images);
+  const responseData = await usedItemService.addUsedItemImages(req, id, userId, images);
 
   return {
     usedItem: responseData.usedItem,
@@ -120,7 +120,7 @@ const deleteUsedItemImage = async (
   const userId = res.locals.user._id.toString();
   const { imageName }: DeleteUsedItemImageRequest = req.body;
 
-  const responseData = await usedItemService.deleteUsedItemImage(id, userId, imageName);
+  const responseData = await usedItemService.deleteUsedItemImage(req, id, userId, imageName);
 
   return {
     usedItem: responseData.usedItem,
@@ -128,8 +128,8 @@ const deleteUsedItemImage = async (
   };
 };
 
-const getAllUsedItems = async () => {
-  const usedItemsResponse = await usedItemService.findAllUsedItems();
+const getAllUsedItems = async (req: Request) => {
+  const usedItemsResponse = await usedItemService.findAllUsedItems(req);
 
   return {
     usedItems: usedItemsResponse.usedItems,

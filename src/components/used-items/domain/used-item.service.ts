@@ -1,23 +1,23 @@
 import { BookItemRequest, PlainIUsedItem } from '@components/used-items/data-access/interfaces';
 import { deleteOldImgs } from '@utils/deleteFile';
+import { Request } from 'express';
 
 import { usedItemUtils } from './used-item.utils';
 
-const addUsedItem = async (usedItemData: PlainIUsedItem) => {
+const addUsedItem = async (req: Request, usedItemData: PlainIUsedItem) => {
   const usedItem = await usedItemUtils.addUsedItem(usedItemData);
-
   return {
     usedItem,
-    message: 'Used Item Created Successfully',
+    message: req.t('usedItems.addUsedItem'),
   };
 };
 
-const findAllUsedItems = async () => {
+const findAllUsedItems = async (req: Request) => {
   const usedItems = await usedItemUtils.findAllUsedItems();
 
   return {
     usedItems: usedItems,
-    message: 'All Used Items Retrieved Successfully',
+    message: req.t('usedItems.retrieveUsedItems'),
   };
 };
 
@@ -60,7 +60,7 @@ const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
   };
 };
 
-const getUsedItem = async (id: string | undefined) => {
+const getUsedItem = async (req: Request, id: string | undefined) => {
   //check if the id was sent in the request
   const validate: (id: string | undefined) => asserts id is string = usedItemUtils.validateIdParam;
   validate(id); //it gives an error if I executed the function directly 🤕
@@ -69,11 +69,12 @@ const getUsedItem = async (id: string | undefined) => {
 
   return {
     usedItem,
-    message: 'Used Item Fetched Successfully',
+    message: req.t('usedItems.getUsedItem'),
   };
 };
 
 const updateUsedItem = async (
+  req: Request,
   id: string | undefined,
   userId: string,
   usedItemData: Partial<PlainIUsedItem>
@@ -86,7 +87,7 @@ const updateUsedItem = async (
   const usedItem = await usedItemUtils.getUsedItem(id);
 
   //check if the user is the owner of the used item
-  usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
+  usedItemUtils.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
   //check if the used item is booked or not
   usedItemUtils.isUsedItemBooked(usedItem);
@@ -99,11 +100,11 @@ const updateUsedItem = async (
 
   return {
     usedItem: updatedUsedItem,
-    message: 'Used Item Updated Successfully',
+    message: req.t('usedItems.updateUsedItem'),
   };
 };
 
-const deleteUsedItem = async (id: string | undefined, userId: string) => {
+const deleteUsedItem = async (req: Request, id: string | undefined, userId: string) => {
   //check if the id was sent in the request
   const validate: (id: string | undefined) => asserts id is string = usedItemUtils.validateIdParam;
   validate(id); //it gives an error if I executed the function directly 🤕
@@ -112,7 +113,7 @@ const deleteUsedItem = async (id: string | undefined, userId: string) => {
   const usedItem = await usedItemUtils.getUsedItem(id);
 
   //check if the user is the owner of the used item
-  usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
+  usedItemUtils.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
   //check if the usedItem is booked or not
   usedItemUtils.isUsedItemBooked(usedItem);
@@ -129,7 +130,12 @@ const deleteUsedItem = async (id: string | undefined, userId: string) => {
   };
 };
 
-const addUsedItemImages = async (id: string | undefined, userId: string, images: string[]) => {
+const addUsedItemImages = async (
+  req: Request,
+  id: string | undefined,
+  userId: string,
+  images: string[]
+) => {
   //check if the id was sent in the request
   const validate: (id: string | undefined) => asserts id is string = usedItemUtils.validateIdParam;
   validate(id); //it gives an error if I executed the function directly 🤕
@@ -138,7 +144,7 @@ const addUsedItemImages = async (id: string | undefined, userId: string, images:
   const usedItem = await usedItemUtils.getUsedItem(id);
 
   //check if the user is the owner of the used item
-  usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
+  usedItemUtils.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
   //check if the usedItem is booked or not
   usedItemUtils.isUsedItemBooked(usedItem);
@@ -152,7 +158,12 @@ const addUsedItemImages = async (id: string | undefined, userId: string, images:
   };
 };
 
-const deleteUsedItemImage = async (id: string | undefined, userId: string, imageName: string) => {
+const deleteUsedItemImage = async (
+  req: Request,
+  id: string | undefined,
+  userId: string,
+  imageName: string
+) => {
   //check if the id was sent in the request
   const validate: (id: string | undefined) => asserts id is string = usedItemUtils.validateIdParam;
   validate(id); //it gives an error if I executed the function directly 🤕
@@ -161,7 +172,7 @@ const deleteUsedItemImage = async (id: string | undefined, userId: string, image
   const usedItem = await usedItemUtils.getUsedItem(id);
 
   //check if the user is the owner of the used item
-  usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
+  usedItemUtils.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
   //check if the usedItem is booked or not
   usedItemUtils.isUsedItemBooked(usedItem);

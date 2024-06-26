@@ -19,7 +19,12 @@ export default function defineRoutes(expressApp: Application) {
     isUser,
     imageAssertion,
     resizeImg,
-    addUsedItemValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = addUsedItemValidation(req);
+      Promise.all(validations.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -41,7 +46,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Get All Used Items`);
-        const getAllUsedItemsResponse = await usedItemUseCase.getAllUsedItems();
+        const getAllUsedItemsResponse = await usedItemUseCase.getAllUsedItems(req);
         return res.json(getAllUsedItemsResponse);
       } catch (error) {
         next(error);
@@ -63,7 +68,12 @@ export default function defineRoutes(expressApp: Application) {
       }
     })
     .put(
-      editUsedItemValidation,
+      (req: Request, res: Response, next: NextFunction) => {
+        const validations = editUsedItemValidation(req);
+        Promise.all(validations.map(v => v.run(req)))
+          .then(() => next())
+          .catch(next);
+      },
       validate,
       async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -102,7 +112,13 @@ export default function defineRoutes(expressApp: Application) {
       }
     })
     .put(
-      deleteUsedItemImageValidation,
+      (req: Request, res: Response, next: NextFunction) => {
+        const validation = deleteUsedItemImageValidation(req);
+        validation
+          .run(req)
+          .then(() => next())
+          .catch(next);
+      },
       validate,
       async (req: Request, res: Response, next: NextFunction) => {
         try {
