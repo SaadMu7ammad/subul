@@ -20,8 +20,8 @@ beforeAll(async () => {
   const charityToken = await createDummyCharityAndReturnToken();
   const userToken = await createDummyUserAndReturnToken();
 
-  userAxiosAPIClient = createAxiosApiClient(userToken, apiConnection.port);
-  charityAxiosAPIClient = createAxiosApiClient(charityToken, apiConnection.port);
+  userAxiosAPIClient = createAxiosApiClient(apiConnection.port, userToken);
+  charityAxiosAPIClient = createAxiosApiClient(apiConnection.port, charityToken);
 
   nock.disableNetConnect();
   nock.enableNetConnect('127.0.0.1');

@@ -3,9 +3,10 @@ import { startWebServer, stopWebServer } from '@src/server';
 import {
   clearUsedItemsDatabase,
   clearUserDatabase,
+  createAxiosApiClient,
   createDummyUserAndReturnToken,
 } from '@utils/test-helpers';
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
 import mongoose from 'mongoose';
 import nock from 'nock';
 
@@ -15,14 +16,8 @@ beforeAll(async () => {
   const apiConnection = await startWebServer();
   const token = await createDummyUserAndReturnToken();
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-    headers: {
-      cookie: `jwt=${token}`,
-    },
-  };
-  axiosAPIClient = axios.create(axiosConfig);
+  axiosAPIClient = createAxiosApiClient(apiConnection.port, token);
+
   nock.disableNetConnect();
   nock.enableNetConnect('127.0.0.1');
 });
