@@ -1,15 +1,14 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import FormData from 'form-data';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
 import {
   appendDummyImageToFormData,
   clearCharityDatabase,
   createDummyCharityAndReturnToken,
-} from './test-helpers';
+} from '@utils/test-helpers';
+import axios, { AxiosInstance } from 'axios';
+import FormData from 'form-data';
+import mongoose from 'mongoose';
+import nock from 'nock';
 
 let axiosAPIClient: AxiosInstance;
 
