@@ -126,3 +126,21 @@ export const createDummyCharityAndReturnToken = async (
 
   return token;
 };
+
+export const appendDummyCharityToFormData = (formData: FormData) => {
+  const dummyCharity = getDummyCharityObject();
+
+  const appendToFormData = (key: string, value: any) => {
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      Object.keys(value).forEach(nestedKey => {
+        appendToFormData(`${key}[${nestedKey}]`, value[nestedKey]);
+      });
+    } else {
+      formData.append(key, Array.isArray(value) ? value[0] : value.toString());
+    }
+  };
+
+  Object.keys(dummyCharity).forEach(key => {
+    appendToFormData(key, dummyCharity[key as keyof PlainCharity]);
+  });
+};

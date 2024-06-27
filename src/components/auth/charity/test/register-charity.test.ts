@@ -1,17 +1,16 @@
 import Charity from '@components/charity/data-access/models/charity.model';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import FormData from 'form-data';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
 import {
   appendDummyCharityToFormData,
   appendDummyImageToFormData,
   clearCharityDatabase,
   getDummyCharityObject,
-} from './test-helpers';
+} from '@utils/test-helpers';
+import axios, { AxiosInstance } from 'axios';
+import FormData from 'form-data';
+import mongoose from 'mongoose';
+import nock from 'nock';
 
 let axiosAPIClient: AxiosInstance;
 
@@ -43,7 +42,7 @@ describe('/api/charities', () => {
     test('should register a new charity with success', async () => {
       //Arrange
       const formData = new FormData();
-      appendDummyImageToFormData(formData);
+      appendDummyImageToFormData(formData, 'image');
       appendDummyCharityToFormData(formData);
 
       //Act
@@ -73,7 +72,7 @@ describe('/api/charities', () => {
   test('should not register a charity with email already in use', async () => {
     //Arrange
     const formData = new FormData();
-    appendDummyImageToFormData(formData);
+    appendDummyImageToFormData(formData, 'image');
     appendDummyCharityToFormData(formData);
 
     //Act
