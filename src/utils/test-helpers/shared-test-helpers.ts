@@ -7,6 +7,7 @@ import nock from 'nock';
 import path from 'path';
 
 import { clearCharityDatabase, createDummyCharityAndReturnToken } from './charity-test-helpers';
+import { clearUsedItemsDatabase } from './usedItem-test-helpers';
 import { clearUserDatabase, createDummyUserAndReturnToken } from './user-test-helpers';
 
 export const appendDummyImageToFormData = (
@@ -35,39 +36,18 @@ export const createAxiosApiClient = (port: number, token: string = '') => {
 };
 
 interface TestingEnvironmentOptions {
-  axiosClientType: 'user' | 'charity' | 'both';
   authenticated: boolean;
   usedDbs: string[]; // Array of database identifiers (e.g., 'charity', 'user', 'usedItem', etc.)
 }
 
 export class TestingEnvironment {
   axiosAPIClient?: AxiosInstance;
-  userAxiosAPIClient?: AxiosInstance;
-  charityAxiosAPIClient?: AxiosInstance;
-  axiosClientType: 'user' | 'charity' | 'both';
   authenticated: boolean;
   usedDbs: string[];
 
   constructor(options: TestingEnvironmentOptions) {
-    this.axiosClientType = options.axiosClientType;
     this.authenticated = options.authenticated;
     this.usedDbs = options.usedDbs;
-  }
-
-  private async getToken() {
-    if (this.axiosClientType === 'both') {
-      return {
-        charityToken: await createDummyCharityAndReturnToken(),
-        userToken: await createDummyUserAndReturnToken(),
-      };
-    }
-    if (this.axiosClientType === 'charity') {
-      return await createDummyCharityAndReturnToken();
-    }
-    if (this.axiosClientType === 'user') {
-      return await createDummyUserAndReturnToken();
-    }
-    return '';
   }
 
   createAxiosApiClient = (port: number, token: string = '') => {
@@ -83,53 +63,22 @@ export class TestingEnvironment {
     return axios.create(axiosConfig);
   };
 
-  private async createAxiosAPIClients() {
-    const apiConnection = await startWebServer();
-    let token = '';
-    let charityToken = '';
-    let userToken = '';
-
-    if (this.authenticated) {
-      const tokens = await this.getToken();
-      if (this.axiosClientType === 'both') {
-        const { charityToken: ct, userToken: ut } = tokens as {
-          charityToken: string;
-          userToken: string;
-        };
-        charityToken = ct;
-        userToken = ut;
-      } else {
-        token = tokens as string;
-      }
-    }
-
-    if (this.axiosClientType === 'both') {
-      this.charityAxiosAPIClient = this.createAxiosApiClient(apiConnection.port, charityToken);
-      this.userAxiosAPIClient = this.createAxiosApiClient(apiConnection.port, userToken);
-    } else {
-      this.axiosAPIClient = this.createAxiosApiClient(apiConnection.port, token);
-    }
-  }
-
   async setup() {
     try {
       await this.createAxiosAPIClients();
 
       nock.disableNetConnect();
-
       nock.enableNetConnect('127.0.0.1');
     } catch (error) {
       console.error('Error setting up testing environment:', error);
       throw error;
     }
 
-    if (this.axiosClientType === 'both') {
-      return {
-        charityAxiosAPIClient: this.charityAxiosAPIClient,
-        userAxiosAPIClient: this.userAxiosAPIClient,
-      };
-    }
     return this.axiosAPIClient;
+  }
+
+  protected async createAxiosAPIClients() {
+    throw new Error('createAxiosAPIClients method must be implemented by subclasses');
   }
 
   async teardown() {
@@ -137,9 +86,7 @@ export class TestingEnvironment {
       await this.clearDatabases(this.usedDbs);
 
       nock.enableNetConnect();
-
       await mongoose.connection.close();
-
       await stopWebServer();
     } catch (error) {
       console.error('Error tearing down testing environment:', error);
@@ -158,7 +105,7 @@ export class TestingEnvironment {
             await clearUserDatabase();
             break;
           case 'usedItem':
-            await clearUserDatabase();
+            await clearUsedItemsDatabase();
             break;
           default:
             console.warn(`Unknown database type: ${db}. Skipping cleanup.`);
@@ -168,5 +115,78 @@ export class TestingEnvironment {
       console.error('Error clearing databases:', error);
       throw error;
     }
+  }
+}
+
+export class UserTestingEnvironment extends TestingEnvironment {
+  constructor(options: TestingEnvironmentOptions) {
+    super(options);
+  }
+
+  protected async createAxiosAPIClients() {
+    const apiConnection = await startWebServer();
+    let token = '';
+
+    if (this.authenticated) {
+      token = await createDummyUserAndReturnToken();
+    }
+
+    this.axiosAPIClient = this.createAxiosApiClient(apiConnection.port, token);
+  }
+}
+
+export class CharityTestingEnvironment extends TestingEnvironment {
+  constructor(options: TestingEnvironmentOptions) {
+    super(options);
+  }
+
+  protected async createAxiosAPIClients() {
+    const apiConnection = await startWebServer();
+    let token = '';
+
+    if (this.authenticated) {
+      token = await createDummyCharityAndReturnToken();
+    }
+
+    this.axiosAPIClient = this.createAxiosApiClient(apiConnection.port, token);
+  }
+}
+
+export class BothTestingEnvironment extends TestingEnvironment {
+  userAxiosAPIClient: AxiosInstance;
+  charityAxiosAPIClient: AxiosInstance;
+  constructor(options: TestingEnvironmentOptions) {
+    super(options);
+  }
+
+  protected async createAxiosAPIClients() {
+    const apiConnection = await startWebServer();
+    let charityToken = '';
+    let userToken = '';
+
+    if (this.authenticated) {
+      charityToken = await createDummyCharityAndReturnToken();
+      userToken = await createDummyUserAndReturnToken();
+    }
+
+    this.charityAxiosAPIClient = this.createAxiosApiClient(apiConnection.port, charityToken);
+    this.userAxiosAPIClient = this.createAxiosApiClient(apiConnection.port, userToken);
+  }
+
+  override async setup() {
+    try {
+      await this.createAxiosAPIClients();
+
+      nock.disableNetConnect();
+      nock.enableNetConnect('127.0.0.1');
+    } catch (error) {
+      console.error('Error setting up testing environment:', error);
+      throw error;
+    }
+
+    return {
+      charityAxiosAPIClient: this.charityAxiosAPIClient,
+      userAxiosAPIClient: this.userAxiosAPIClient,
+    };
   }
 }
