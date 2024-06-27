@@ -15,7 +15,7 @@ export const appendDummyImageToFormData = (
   }
 };
 
-export const createAxiosApiClient = (token: string = '', port: number) => {
+export const createAxiosApiClient = (port: number, token: string = '') => {
   const axiosConfig: CreateAxiosDefaults = {
     baseURL: `http://127.0.0.1:${port}`,
     validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable

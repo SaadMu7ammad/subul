@@ -41,3 +41,30 @@ export const createDummyUserAndReturnToken = async () => {
 export const clearUserDatabase = async () => {
   await UserModel.deleteMany({});
 };
+
+export const getDummyUserObject = (): PlainUser => {
+  return {
+    name: {
+      firstName: 'folan',
+      lastName: '3ellan',
+    },
+    email: 'folan@3ellan.teltan',
+    password: 'folan3ellanTelTan',
+    phone: '01012345678',
+    gender: 'male',
+    userLocation: {
+      governorate: 'Giza',
+    },
+    contributions: [],
+    isAdmin: false,
+    isEnabled: false,
+    pointsOnDonations: 0,
+    totalDonationsAmount: 0,
+    transactions: [],
+    verificationCode: '',
+    emailVerification: {
+      isVerified: false,
+      verificationDate: '',
+    },
+  };
+};
