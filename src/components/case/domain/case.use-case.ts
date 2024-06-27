@@ -22,7 +22,7 @@ const addCase = async (
   const caseImage: string = req.body?.image?.[0] || 'noImg';
   const charity: ICharity = res.locals.charity;
 
-  const responseData = await caseService.addCase(caseData, caseImage, charity);
+  const responseData = await caseService.addCase(req, caseData, caseImage, charity);
 
   return {
     case: responseData.case,

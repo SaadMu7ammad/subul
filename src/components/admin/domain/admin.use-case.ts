@@ -92,6 +92,7 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (req: Request) =
 
   const confirmedPaymentAccount: ConfirmPendingCharity =
     await adminService.confirmPaymentAccountRequestForConfirmedCharities(
+      req,
       id,
       paymentMethod,
       paymentAccountID
@@ -122,6 +123,7 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
 
   const rejectedPaymentAccount: ConfirmPendingCharity =
     await adminService.rejectPaymentAccountRequestForConfirmedCharities(
+      req,
       id,
       paymentMethod,
       paymentAccountID

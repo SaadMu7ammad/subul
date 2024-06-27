@@ -59,6 +59,7 @@ const getAllOrOnePendingRequestsCharities = async (req: Request, id: string | nu
 };
 
 const confirmPaymentAccountRequestForConfirmedCharities = async (
+  req: Request,
   charityId: string,
   // paymentMethod: string, // Allows any string value, which could include invalid keys
   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
@@ -83,7 +84,7 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
     paymentAccountID
   );
 
-  await adminUtils.confirmingPaymentAccount(charity, paymentMethod, idx);
+  await adminUtils.confirmingPaymentAccount(req, charity, paymentMethod, idx);
 
   await setupMailSender(
     charity.email,
@@ -98,6 +99,7 @@ const confirmPaymentAccountRequestForConfirmedCharities = async (
 };
 
 const rejectPaymentAccountRequestForConfirmedCharities = async (
+  req: Request,
   charityId: string,
   // paymentMethod: string, // Allows any string value, which could include invalid keys
   paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
@@ -123,7 +125,7 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
     paymentAccountID
   );
 
-  await adminUtils.rejectingPaymentAccount(charity, paymentMethod, idx);
+  await adminUtils.rejectingPaymentAccount(req, charity, paymentMethod, idx);
 
   await setupMailSender(
     charity.email,
@@ -205,7 +207,7 @@ const confirmCharity = async (req: Request, id: string): Promise<ConfirmPendingC
 
   if (!pendingCharity) throw new NotFoundError('Charity not found');
 
-  await adminUtils.confirmingCharity(pendingCharity);
+  await adminUtils.confirmingCharity(req, pendingCharity);
 
   await setupMailSender(
     pendingCharity.email,
@@ -215,7 +217,7 @@ const confirmCharity = async (req: Request, id: string): Promise<ConfirmPendingC
 
   return {
     charity: charity.allPendingCharities[0],
-    message: 'Charity has been confirmed successfully',
+    message: req.t('errors.charityConfirmed'),
   };
 };
 
@@ -229,7 +231,7 @@ const rejectCharity = async (req: Request, id: string): Promise<ConfirmPendingCh
 
   if (!pendingCharity) throw new NotFoundError('Charity not found');
 
-  await adminUtils.rejectingCharity(pendingCharity);
+  await adminUtils.rejectingCharity(req, pendingCharity);
 
   await setupMailSender(
     pendingCharity.email,

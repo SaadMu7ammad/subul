@@ -10,6 +10,7 @@ import { IUser } from '@components/user/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { deleteOldImgs } from '@utils/deleteFile';
 import { notificationManager } from '@utils/sendNotification';
+import { Request } from 'express';
 
 import { QueryObject } from './admin.service';
 
@@ -25,7 +26,7 @@ class adminUtilsClass {
     return paymentMethodRequests; // []
   }
 
-  async confirmingCharity(charity: PendingCharities) {
+  async confirmingCharity(req: Request, charity: PendingCharities) {
     charity.isPending = false;
     charity.isConfirmed = true;
     //enable all paymentMethods when first time the charity send the docs
@@ -44,13 +45,13 @@ class adminUtilsClass {
     this.#notificationInstance.sendNotification(
       'Charity',
       charity._id,
-      'Your charity Account has been confirmed',
+      req.t('notifications.charityConfirmed'),
       3 * 24 * 60 * 60 * 1000
     );
   }
 
   // const rejectingCharity = async (charity: ICharity) => {
-  async rejectingCharity(charity: PendingCharities) {
+  async rejectingCharity(req: Request, charity: PendingCharities) {
     charity.isPending = false;
     charity.isConfirmed = false;
     // console.log('charity', charity); // { charityDocs:{ docs1: []... }, _id, email, name, paymentMethod: {} }
@@ -112,7 +113,8 @@ class adminUtilsClass {
     this.#notificationInstance.sendNotification(
       'Charity',
       charity._id,
-      'Your charity Account has been rejected',
+      //
+      req.t('notifications.charityRejected'),
       3 * 24 * 60 * 60 * 1000
     );
   }
@@ -155,6 +157,7 @@ class adminUtilsClass {
   }
 
   async confirmingPaymentAccount(
+    req: Request,
     charity: PendingCharities,
     // paymentMethod: string, // Allows any string value, which could include invalid keys
     paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
@@ -190,12 +193,13 @@ class adminUtilsClass {
     this.#notificationInstance.sendNotification(
       'Charity',
       charity._id,
-      'Your payment account has been confirmed',
+      req.t('notifications.paymentAccountConfirmed'),
       3 * 24 * 60 * 60 * 1000
     );
   }
 
   async rejectingPaymentAccount(
+    req: Request,
     charity: ConfirmedCharities,
     // paymentMethod: string, // Allows any string value, which could include invalid keys
     paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
@@ -248,7 +252,8 @@ class adminUtilsClass {
     this.#notificationInstance.sendNotification(
       'Charity',
       charity._id,
-      'Your payment account has been rejected',
+      // Your payment account has been rejected
+      req.t('notifications.paymentAccountRejected'),
       3 * 24 * 60 * 60 * 1000
     );
 

@@ -21,10 +21,10 @@ const findAllUsedItems = async (req: Request) => {
   };
 };
 
-const bookUsedItem = async (bookItemData: BookItemRequest) => {
+const bookUsedItem = async (req: Request, bookItemData: BookItemRequest) => {
   await usedItemUtils.getUsedItem(bookItemData.itemId); //TODO : Delete this line and separate the logic : find the usedItem first , then book it
 
-  const usedItem = await usedItemUtils.bookUsedItem(bookItemData);
+  const usedItem = await usedItemUtils.bookUsedItem(req, bookItemData);
 
   return {
     usedItem: usedItem,
@@ -32,8 +32,8 @@ const bookUsedItem = async (bookItemData: BookItemRequest) => {
   };
 };
 
-const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
-  const usedItem = await usedItemUtils.cancelBookingOfUsedItem(bookItemData);
+const cancelBookingOfUsedItem = async (req: Request, bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemUtils.cancelBookingOfUsedItem(req, bookItemData);
   // // If not null and charity is not the same as the one in the request should handle that though
   // if (usedItems && usedItems.charity?.toString() !== bookItemData.charity) {
   //   throw new UnauthenticatedError(
@@ -46,8 +46,8 @@ const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   };
 };
 
-const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
-  const usedItem = await usedItemUtils.ConfirmBookingReceipt(bookItemData);
+const ConfirmBookingReceipt = async (req: Request, bookItemData: BookItemRequest) => {
+  const usedItem = await usedItemUtils.ConfirmBookingReceipt(req, bookItemData);
   // // If not null and charity is not the same as the one in the request should handle that though
   // if (usedItem && usedItem.charity?.toString() !== bookItemData.charity) {
   //   throw new UnauthenticatedError(

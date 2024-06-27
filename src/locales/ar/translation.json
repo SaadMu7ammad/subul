@@ -3,6 +3,7 @@
     "notAdmin": "أنت لست مشرفًا",
     "noHeaderSent": "لم يتم تسجيل الدخول",
     "charityNotFound": "لم يتم العثور على الجمعية",
+    "charityConfirmed": "تم تأكيد حساب الجمعية بنجاح",
     "nameRequired": "الاسم مطلوب",
     "firstNameRequired": "الاسم الأول مطلوب",
     "lastNameRequired": "اسم العائلة مطلوب",
@@ -58,5 +59,16 @@
     "updateUsedItem": "تم تحديث العنصر المستعمل بنجاح",
     "getUsedItem": "تم جلب العنصر المستعمل بنجاح",
     "imageNameInvalid": "اسم الصورة يجب أن ينتهي بـ .jpg, .jpeg, أو .png"
+  },
+  "notifications": {
+    "charityConfirmed": "تم تأكيد حساب جمعيتك",
+    "charityRejected": "تم رفض حساب جمعيتك",
+    "paymentAccountConfirmed": "تم تأكيد حساب الدفع",
+    "paymentAccountRejected": "تم رفض حساب الدفع",
+    "charityPostedCase": "لقد نشرت المؤسسة الخيرية {{name}} حالة جديدة، تحقق منها!",
+    "usedItemsBooked": "تم حجز العنصر الخاص بك {{title}} بواسطة مؤسسة {{charityName}} الخيرية",
+    "usedItemsBookedConfirmed": "تم تأكيد حجز العنصر الخاص بك {{title}} بواسطة مؤسسة {{charityName}} الخيرية",
+    "usedItemsBookedCancelled": "تم إلغاء حجز العنصر الخاص بك {{title}} بواسطة مؤسسة {{charityName}} الخيرية",
+    "bloodContribution": "عرض المستخدم {{firstName}} {{lastName}} التبرع بالدم لحالتك {{title}}"
   }
 }

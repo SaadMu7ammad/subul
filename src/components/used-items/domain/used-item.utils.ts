@@ -117,22 +117,27 @@ const createBookItemData = async (req: Request, res: Response): Promise<BookItem
   };
 };
 
-const bookUsedItem = async (bookItemData: BookItemRequest) => {
+const bookUsedItem = async (req: Request, bookItemData: BookItemRequest) => {
   const usedItem = await usedItemRepository.findAndUpdateToBooked(bookItemData);
 
   if (!usedItem) throw new BadRequestError('This Item Is Already Booked');
 
-  await notifyUserAboutUsedItemBooking(usedItem, 'booking');
+  await notifyUserAboutUsedItemBooking(req, usedItem, 'booking');
 
   return usedItem;
 };
 
-const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
+const cancelBookingOfUsedItem = async (req: Request, bookItemData: BookItemRequest) => {
   const usedItem = await usedItemRepository.findBookedItem(bookItemData);
   if (!usedItem) throw new BadRequestError('This Item Already Cancelled Or Confirmed');
 
   // TODO : this should be after saving the usedItem , don't notify the user if something wrong happened and the used Item is not saved
-  await notifyUserAboutUsedItemBooking(usedItem, 'bookingCancelation', 3 * 24 * 60 * 60 * 1000);
+  await notifyUserAboutUsedItemBooking(
+    req,
+    usedItem,
+    'bookingCancelation',
+    3 * 24 * 60 * 60 * 1000
+  );
 
   usedItem.booked = false;
   usedItem.charity = undefined;
@@ -142,13 +147,13 @@ const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
   return usedItem;
 };
 
-const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
+const ConfirmBookingReceipt = async (req: Request, bookItemData: BookItemRequest) => {
   const usedItem = await usedItemRepository.findBookedItem(bookItemData);
   if (!usedItem) throw new NotFoundError('Used Item Not Found');
   usedItem.confirmed = true;
   await usedItem.save();
 
-  await notifyUserAboutUsedItemBooking(usedItem, 'bookingConfirmation');
+  await notifyUserAboutUsedItemBooking(req, usedItem, 'bookingConfirmation');
 
   return usedItem;
 };
@@ -160,6 +165,7 @@ const isUsedItemBooked = (usedItem: IUsedItem) => {
 };
 
 const notifyUserAboutUsedItemBooking = async (
+  req: Request,
   usedItem: IUsedItem,
   notificationType: 'booking' | 'bookingConfirmation' | 'bookingCancelation',
   maxAge: number | undefined = undefined
@@ -173,9 +179,18 @@ const notifyUserAboutUsedItemBooking = async (
   const charityName = usedItem.charity?.name;
 
   const notificationMessage = {
-    booking: `Your item ${usedItem.title} has been booked by ${charityName} charity`,
-    bookingConfirmation: `Your item ${usedItem.title} booking has been confirmed by ${charityName} charity`,
-    bookingCancelation: `Your item ${usedItem.title} booking has been cancelled by ${charityName} charity`,
+    // `Your item ${usedItem.title} has been booked by ${charityName} charity`
+    booking: req.t('notifications.usedItemsBooked', { title: usedItem.title, charityName }),
+    // `Your item ${usedItem.title} booking has been confirmed by ${charityName} charity`
+    bookingConfirmation: req.t('notifications.usedItemsBookedConfirmed', {
+      title: usedItem.title,
+      charityName,
+    }),
+    // `Your item ${usedItem.title} booking has been cancelled by ${charityName} charity`
+    bookingCancelation: req.t('notifications.usedItemsBookedCancelled', {
+      title: usedItem.title,
+      charityName,
+    }),
   };
   const notificationInstance = new notificationManager();
   notificationInstance.sendNotification(

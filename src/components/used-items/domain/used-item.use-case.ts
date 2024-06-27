@@ -140,7 +140,7 @@ const getAllUsedItems = async (req: Request) => {
 const bookUsedItem = async (req: Request, res: Response) => {
   const bookItemData = await usedItemUtils.createBookItemData(req, res);
 
-  const usedItemResponse = await usedItemService.bookUsedItem(bookItemData);
+  const usedItemResponse = await usedItemService.bookUsedItem(req, bookItemData);
   return {
     usedItem: usedItemResponse.usedItem,
     message: usedItemResponse.message,
@@ -150,7 +150,7 @@ const bookUsedItem = async (req: Request, res: Response) => {
 const cancelBookingOfUsedItem = async (req: Request, res: Response) => {
   const bookItemData = await usedItemUtils.createBookItemData(req, res);
 
-  const usedItemsResponse = await usedItemService.cancelBookingOfUsedItem(bookItemData);
+  const usedItemsResponse = await usedItemService.cancelBookingOfUsedItem(req, bookItemData);
 
   return {
     usedItem: usedItemsResponse.usedItem,
@@ -161,7 +161,7 @@ const cancelBookingOfUsedItem = async (req: Request, res: Response) => {
 const ConfirmBookingReceipt = async (req: Request, res: Response) => {
   const bookItemData = await usedItemUtils.createBookItemData(req, res);
 
-  const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(bookItemData);
+  const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(req, bookItemData);
 
   return {
     usedItem: usedItemsResponse.usedItem,

@@ -148,13 +148,19 @@ class userServiceClass implements userServiceSkeleton {
     this.#notificationInstance.sendNotification(
       'Charity',
       isCaseExist.charity,
-      `User ${user.name.firstName} ${user.name.lastName} offered to donate blood to your case ${isCaseExist.title}`,
+      // `User ${user.name.firstName} ${user.name.lastName} offered to donate blood to your case ${isCaseExist.title}`
+      req.t('notifications.bloodContribution', {
+        firstName: user.name.firstName,
+        lastName: user.name.lastName,
+        title: isCaseExist.title,
+      }),
       3 * 24 * 60 * 60 * 1000,
       'usedItem',
       isCaseExist._id
     );
   }
   async requestFundraisingCampaign(
+    req: Request,
     caseData: ICase,
     image: string,
     charityId: string,
@@ -177,7 +183,13 @@ class userServiceClass implements userServiceSkeleton {
     caseData.freezed = true; //till the charity accept it will be false
     caseData.user = storedUser._id;
 
-    const responseData = await caseService.addCase(caseData, 'none', chosenCharity, storedUser);
+    const responseData = await caseService.addCase(
+      req,
+      caseData,
+      'none',
+      chosenCharity,
+      storedUser
+    );
 
     return {
       case: responseData.case,
