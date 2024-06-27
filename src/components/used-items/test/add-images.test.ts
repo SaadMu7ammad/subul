@@ -1,16 +1,15 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import { startWebServer, stopWebServer } from '@src/server';
+import {
+  appendDummyImageToFormData,
+  clearUsedItemsDatabase,
+  clearUserDatabase,
+  createDummyUserAndReturnToken,
+} from '@utils/test-helpers';
 import axios, { AxiosInstance } from 'axios';
 import FormData from 'form-data';
 import mongoose from 'mongoose';
 import nock from 'nock';
-
-import {
-  appendDummyImagesToFormData,
-  clearUsedItemsDatabase,
-  clearUserDatabase,
-  createDummyUserAndReturnToken,
-} from './test-helpers';
 
 let axiosAPIClient: AxiosInstance;
 
@@ -58,7 +57,7 @@ describe('api/usedItem', () => {
 
       const formData = new FormData();
 
-      appendDummyImagesToFormData(formData);
+      appendDummyImageToFormData(formData, 'images', 5);
 
       //Act
       const response = await axiosAPIClient.post(
@@ -81,7 +80,7 @@ describe('api/usedItem', () => {
       //Arrange
       const formData = new FormData();
 
-      appendDummyImagesToFormData(formData);
+      appendDummyImageToFormData(formData, 'images', 5);
 
       const usedItemId = '60b1f1b1b4b3f1f1b1b4b3f1';
 

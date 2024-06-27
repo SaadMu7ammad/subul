@@ -1,9 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import { startWebServer, stopWebServer } from '@src/server';
-import { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
 import {
   clearCharityDatabase,
   clearUsedItemsDatabase,
@@ -11,7 +7,10 @@ import {
   createAxiosApiClient,
   createDummyCharityAndReturnToken,
   createDummyUserAndReturnToken,
-} from './test-helpers';
+} from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
+import mongoose from 'mongoose';
+import nock from 'nock';
 
 let userAxiosAPIClient: AxiosInstance;
 let charityAxiosAPIClient: AxiosInstance;

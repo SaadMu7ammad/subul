@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { CreateAxiosDefaults } from 'axios';
 import FormData from 'form-data';
 import fs from 'fs';
 import path from 'path';
@@ -10,16 +10,20 @@ export const appendDummyImageToFormData = (
 ) => {
   const imagePath = path.resolve(__dirname, 'test-image.png');
   const imageBuffer = fs.readFileSync(imagePath);
-  formData.append(imageName, imageBuffer, 'test-image.png');
+  for (let i = 1; i <= numberOfImages; i++) {
+    formData.append(imageName, imageBuffer, `test-image${i}.png`);
+  }
 };
 
-export const createAxiosApiClient = (token: string, port: number) => {
-  const axiosConfig = {
+export const createAxiosApiClient = (token: string = '', port: number) => {
+  const axiosConfig: CreateAxiosDefaults = {
     baseURL: `http://127.0.0.1:${port}`,
     validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-    headers: {
-      cookie: `jwt=${token}`,
-    },
   };
+  if (token) {
+    axiosConfig['headers'] = {
+      cookie: `jwt=${token}`,
+    };
+  }
   return axios.create(axiosConfig);
 };

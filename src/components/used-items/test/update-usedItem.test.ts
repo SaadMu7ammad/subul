@@ -1,14 +1,13 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
 import {
   clearUsedItemsDatabase,
   clearUserDatabase,
   createDummyUserAndReturnToken,
-} from './test-helpers';
+} from '@utils/test-helpers';
+import axios, { AxiosInstance } from 'axios';
+import mongoose from 'mongoose';
+import nock from 'nock';
 
 let axiosAPIClient: AxiosInstance;
 

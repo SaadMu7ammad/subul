@@ -30,45 +30,12 @@ export const appendBankInfoToFormData = (formData: FormData) => {
   appendDummyImageToFormData(formData, 'bankDocs');
 };
 
-export const getDummyCharityObject = (): PlainCharity => {
-  return {
-    image: 'image.png',
-    email: 'dummy@dummy.ape',
-    password: 'dummyPassword',
-    name: 'dummy',
-    contactInfo: {
-      email: 'dummy@dummy.ape',
-      phone: '01012345678',
-      websiteUrl: 'dummy.ape',
-    },
-    description: 'dummyDescription',
-    emailVerification: {
-      isVerified: false,
-      verificationDate: '',
-    },
-    isEnabled: false,
-    isConfirmed: false,
-    isPending: false,
-    currency: ['EGP'],
-    charityLocation: {
-      // @ts-expect-error don't care much when we are testing :P
-      governorate: 'Cairo',
-    },
-    charityInfo: {
-      establishedDate: '2021-01-01',
-      registeredNumber: '1234567890',
-    },
-  };
-};
-
-export const createDummyCharityAndReturnToken = async (
+export const getDummyCharityObject = (
   isActivated: boolean = true,
   isConfirmed: boolean = true,
   verificationCode: string = ''
-) => {
-  const charityRepository = new CharityRepository();
-
-  const dummyCharityData: PlainCharity = {
+): PlainCharity => {
+  return {
     paymentMethods: {
       bankAccount: [
         {
@@ -85,14 +52,14 @@ export const createDummyCharityAndReturnToken = async (
     cases: [],
     image: 'image.png',
     email: 'dummy@dummy.ape',
-    password: 'dummy',
+    password: 'dummyPassword',
     name: 'dummy',
     contactInfo: {
       email: 'dummy@dummy.ape',
-      phone: '1234567890',
+      phone: '01234567890',
       websiteUrl: 'dummy.ape',
     },
-    description: 'dummy',
+    description: 'dummyDescription',
     emailVerification: {
       isVerified: isActivated,
       verificationDate: isActivated ? new Date().toString() : '',
@@ -115,10 +82,24 @@ export const createDummyCharityAndReturnToken = async (
       docs4: ['doc4.png'],
     },
     charityInfo: {
-      establishedDate: new Date().toString(),
+      establishedDate: '2021-01-01',
       registeredNumber: '1234567890',
     },
   };
+};
+
+export const createDummyCharityAndReturnToken = async (
+  isActivated: boolean = true,
+  isConfirmed: boolean = true,
+  verificationCode: string = ''
+) => {
+  const charityRepository = new CharityRepository();
+
+  const dummyCharityData: PlainCharity = getDummyCharityObject(
+    isActivated,
+    isConfirmed,
+    verificationCode
+  );
 
   const dummyCharity = await charityRepository.createCharity(dummyCharityData);
 
@@ -131,12 +112,18 @@ export const appendDummyCharityToFormData = (formData: FormData) => {
   const dummyCharity = getDummyCharityObject();
 
   const appendToFormData = (key: string, value: any) => {
-    if (typeof value === 'object' && !Array.isArray(value)) {
-      Object.keys(value).forEach(nestedKey => {
-        appendToFormData(`${key}[${nestedKey}]`, value[nestedKey]);
-      });
+    if (typeof value === 'object' && value !== null) {
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          appendToFormData(`${key}[${index}]`, item);
+        });
+      } else {
+        Object.keys(value).forEach(nestedKey => {
+          appendToFormData(`${key}[${nestedKey}]`, value[nestedKey]);
+        });
+      }
     } else {
-      formData.append(key, Array.isArray(value) ? value[0] : value.toString());
+      formData.append(key, value.toString());
     }
   };
 
