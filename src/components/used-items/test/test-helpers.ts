@@ -1,6 +1,6 @@
-import { CharityRepository } from '@components/charity/data-access/charity.repository';
 import { PlainCharity } from '@components/charity/data-access/interfaces';
 import { Charity as CharityModel } from '@components/charity/data-access/models/charity.model';
+import { CHARITY } from '@components/charity/domain/charity.class';
 import { PlainUser } from '@components/user/data-access/interfaces';
 import UserModel from '@components/user/data-access/models/user.model';
 import { USER } from '@components/user/domain/user.class';
@@ -14,7 +14,6 @@ import UsedItem from '../data-access/models/used-item.model';
 
 export const createDummyUserAndReturnToken = async () => {
   const user = new USER();
-
   const dummyUserData: PlainUser = {
     name: {
       firstName: 'dummy',
@@ -48,7 +47,7 @@ export const createDummyUserAndReturnToken = async () => {
 };
 
 export const createDummyCharityAndReturnToken = async () => {
-  const charityRepository = new CharityRepository();
+  const charity = new CHARITY();
 
   const dummyCharityData: PlainCharity = {
     cases: [],
@@ -88,7 +87,7 @@ export const createDummyCharityAndReturnToken = async () => {
     },
   };
 
-  const dummyCharity = await charityRepository.createCharity(dummyCharityData);
+  const dummyCharity = await charity.chairtyModel.createCharity(dummyCharityData);
 
   const token = generateTokenForTesting(dummyCharity!._id.toString(), 'charity');
 
