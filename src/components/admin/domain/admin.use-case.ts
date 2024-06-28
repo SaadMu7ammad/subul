@@ -9,6 +9,20 @@ const getAllCharities = async () => {
   return charities;
 };
 
+const getAllUsers = async () => {
+  const users = await adminService.getAllUsers();
+  return users;
+};
+
+const getCharityById = async (req: Request, res: Response, next: NextFunction) => {
+  const { id }: { id?: string } = req.params;
+
+  if (!id) throw new NotFoundError('no id found to get a charity');
+
+  const charity = await adminService.getCharityById(id);
+  return charity;
+};
+
 const getAllPendingRequestsCharities = async (
   req: Request,
   _res: Response,
@@ -134,6 +148,8 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
 };
 export const adminUseCase = {
   getAllCharities,
+  getAllUsers,
+  getCharityById,
   getAllPendingRequestsCharities,
   getPendingRequestCharityById,
   confirmCharity,

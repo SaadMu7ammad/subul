@@ -1,5 +1,6 @@
 import { adminRepository } from '@components/admin/data-access/admin.repository';
 import {
+  AllCharities,
   AllPendingRequestsCharitiesResponse,
   CharitiesAccountsByAggregation,
   CharityPaymentMethodBankAccount,
@@ -31,9 +32,27 @@ export type QueryObject = {
 };
 
 const getAllChariteis = async () => {
-  const charities = await adminRepository.findAllCharities('name email isPending isConfirmed');
+  // I wanna calculate number of cases for each charity
+
+  const charities: AllCharities[] = await adminRepository.findAllCharities(
+    'name email isPending isConfirmed numberOfCases'
+  );
 
   return { charities: charities };
+};
+
+const getAllUsers = async () => {
+  const users = await adminRepository.findAllUsers('name email');
+
+  return { users: users };
+};
+
+const getCharityById = async (id: string) => {
+  const charity = await adminRepository.findCharityById(id);
+
+  if (!charity) throw new BadRequestError('Charity not found');
+
+  return { charity: charity };
 };
 const getAllOrOnePendingRequestsCharities = async (req: Request, id: string | null = null) => {
   const queryObject: QueryObject = {
@@ -245,6 +264,8 @@ const rejectCharity = async (req: Request, id: string): Promise<ConfirmPendingCh
 
 export const adminService = {
   getAllChariteis,
+  getAllUsers,
+  getCharityById,
   getAllOrOnePendingRequestsCharities,
   confirmCharity,
   rejectCharity,

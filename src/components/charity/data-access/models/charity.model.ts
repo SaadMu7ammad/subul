@@ -122,6 +122,11 @@ const charitySchema = new Schema(
         ref: 'Case',
       },
     ],
+    // I wanna calculate number of cases for charity
+    numberOfCases: {
+      type: Number,
+      default: 0,
+    },
     image: {
       type: String,
       required: true, // Ensure it's required
@@ -263,13 +268,32 @@ const charitySchema = new Schema(
   { timestamps: true }
 );
 
+// charitySchema.pre('save', async function (next) {
+//   if (!this.isModified('password')) {
+//     //to not change password every time we edit the user data
+//     next();
+//   }
+//   this.numberOfCases = this.cases.length;
+//   next();
+//   const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
+//   this.password = await bcrypt.hash(this.password, salt);
+// });
+
+/** 👆👆
+ * The hook needs to run every time a charity is saved, regardless of whether the password is modified.
+ *  Also, it needs to handle cases where the password is not modified properly. */
 charitySchema.pre('save', async function (next) {
+  // Update the number of cases
+  this.numberOfCases = this.cases.length;
+
+  // Skip password hashing if password is not modified
   if (!this.isModified('password')) {
-    //to not change password every time we edit the user data
-    next();
+    return next();
   }
+
   const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 declare module '../interfaces/charity.interface' {

@@ -9,8 +9,19 @@ import CharityModel from '@components/charity/data-access/models/charity.model';
 import UserModel from '@components/user/data-access/models/user.model';
 
 const findAllCharities = async (selection: string): Promise<AllCharities[]> => {
-  const charities = await CharityModel.find().select(selection);
+  const charities = await CharityModel.find().select(selection).lean(); // Use .lean() to get plain JavaScript objects instead of Mongoose documents
+
   return charities;
+};
+
+const findAllUsers = async (selection: string) => {
+  const users = await UserModel.find().select(selection);
+  return users;
+};
+
+const findCharityById = async (id: string) => {
+  const charity = await CharityModel.findById(id);
+  return charity;
 };
 
 const findAllPendingCharities = async (
@@ -88,6 +99,8 @@ const deleteCharityByEmail = async (email: string): Promise<boolean> => {
 
 export const adminRepository = {
   findAllCharities,
+  findAllUsers,
+  findCharityById,
   findAllPendingCharities,
   findConfirmedCharityById,
   getPendingPaymentAccountByAggregation,
