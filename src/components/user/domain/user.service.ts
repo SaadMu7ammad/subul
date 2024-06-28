@@ -1,7 +1,7 @@
 import { authUserResponse } from '@components/auth/user/data-access/interfaces';
 import { ICase } from '@components/case/data-access/interfaces';
-import { caseService } from '@components/case/domain/case.service';
-import { caseUtils } from '@components/case/domain/case.utils';
+import { caseServiceClass } from '@components/case/domain/case.service';
+import { caseUtilsClass } from '@components/case/domain/case.utils';
 import { ICharity } from '@components/charity/data-access/interfaces';
 import { CHARITY } from '@components/charity/domain/charity.class';
 import {
@@ -30,8 +30,11 @@ class userServiceClass implements userServiceSkeleton {
   #charity: CHARITY;
   #userUtilsInstance: userUtilsClass;
   #notificationInstance: notificationManager;
-
+  caseServiceInstance: caseServiceClass;
+  caseUtilsInstance: caseUtilsClass;
   constructor() {
+    this.caseServiceInstance = new caseServiceClass();
+    this.caseUtilsInstance = new caseUtilsClass();
     this.resetUser = this.resetUser.bind(this);
     this.confirmReset = this.confirmReset.bind(this);
     this.changePassword = this.changePassword.bind(this);
@@ -149,7 +152,7 @@ class userServiceClass implements userServiceSkeleton {
   //we store nothing in the db
   async bloodContribution(user: IUser, id: string | undefined) {
     if (!id) throw new BadRequestError('no id provided');
-    const isCaseExist = await caseUtils.getCaseByIdFromDB(id);
+    const isCaseExist = await this.caseUtilsInstance.getCaseByIdFromDB(id);
 
     if (!isCaseExist.privateNumber) throw new BadRequestError('sorry no number is added');
     if (isCaseExist.finished) throw new BadRequestError('the case had been finished');
@@ -193,7 +196,12 @@ class userServiceClass implements userServiceSkeleton {
     caseData.freezed = true; //till the charity accept it will be false
     caseData.user = storedUser._id;
 
-    const responseData = await caseService.addCase(caseData, 'none', chosenCharity, storedUser);
+    const responseData = await this.caseServiceInstance.addCase(
+      caseData,
+      'none',
+      chosenCharity,
+      storedUser
+    );
 
     return {
       case: responseData.case,

@@ -50,31 +50,6 @@ export class charityUtilsClass implements charityUtilsSkeleton {
     this.createFawryAccount = this.createFawryAccount.bind(this);
     this.createVodafoneAccount = this.createVodafoneAccount.bind(this);
     this.checkCharityVerification = this.checkCharityVerification.bind(this);
-    this.checkCharityIsExist = this.checkCharityIsExist.bind(this);
-    this.checkCharityIsExistById = this.checkCharityIsExistById.bind(this);
-    this.logout = this.logout.bind(this);
-    this.getCharity = this.getCharity.bind(this);
-    this.checkIsEmailDuplicated = this.checkIsEmailDuplicated.bind(this);
-    this.changeCharityEmailWithMailAlert = this.changeCharityEmailWithMailAlert.bind(this);
-    this.verifyCharityAccount = this.verifyCharityAccount.bind(this);
-    this.resetSentToken = this.resetSentToken.bind(this);
-    this.setTokenToCharity = this.setTokenToCharity.bind(this);
-    this.changePassword = this.changePassword.bind(this);
-    this.changeCharityPasswordWithMailAlert = this.changeCharityPasswordWithMailAlert.bind(this);
-    this.editCharityProfileAddress = this.editCharityProfileAddress.bind(this);
-    this.addCharityProfileAddress = this.addCharityProfileAddress.bind(this);
-    this.replaceProfileImage = this.replaceProfileImage.bind(this);
-    this.addDocs = this.addDocs.bind(this);
-    this.makeCharityIsPending = this.makeCharityIsPending.bind(this);
-    this.addPaymentAccounts = this.addPaymentAccounts.bind(this);
-    this.getChangedPaymentMethod = this.getChangedPaymentMethod.bind(this);
-    this.editBankAccount = this.editBankAccount.bind(this);
-    this.editFawryAccount = this.editFawryAccount.bind(this);
-    this.editVodafoneAccount = this.editVodafoneAccount.bind(this);
-    this.createBankAccount = this.createBankAccount.bind(this);
-    this.createFawryAccount = this.createFawryAccount.bind(this);
-    this.createVodafoneAccount = this.createVodafoneAccount.bind(this);
-    this.checkCharityVerification = this.checkCharityVerification.bind(this);
   }
   checkCharityIsExist = async (email: string): Promise<{ charity: ICharity }> => {
     //return charity if it exists
