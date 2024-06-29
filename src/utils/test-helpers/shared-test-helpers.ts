@@ -40,6 +40,12 @@ interface TestingEnvironmentOptions {
   usedDbs: string[]; // Array of database identifiers (e.g., 'charity', 'user', 'usedItem', etc.)
 }
 
+type AxiosClients = {
+  axiosAPIClient?: AxiosInstance;
+  userAxiosAPIClient?: AxiosInstance;
+  charityAxiosAPIClient?: AxiosInstance;
+};
+
 export class TestingEnvironment {
   axiosAPIClient?: AxiosInstance;
   authenticated: boolean;
@@ -50,7 +56,7 @@ export class TestingEnvironment {
     this.usedDbs = options.usedDbs;
   }
 
-  createAxiosApiClient = (port: number, token: string = '') => {
+  createAxiosApiClient = (port: number, token: string = ''): AxiosInstance => {
     const axiosConfig: CreateAxiosDefaults = {
       baseURL: `http://127.0.0.1:${port}`,
       validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
@@ -63,7 +69,7 @@ export class TestingEnvironment {
     return axios.create(axiosConfig);
   };
 
-  async setup() {
+  async setup(): Promise<AxiosClients> {
     try {
       await this.createAxiosAPIClients();
 
@@ -74,7 +80,9 @@ export class TestingEnvironment {
       throw error;
     }
 
-    return this.axiosAPIClient;
+    return {
+      axiosAPIClient: this.axiosAPIClient,
+    };
   }
 
   protected async createAxiosAPIClients() {
@@ -133,6 +141,14 @@ export class UserTestingEnvironment extends TestingEnvironment {
 
     this.axiosAPIClient = this.createAxiosApiClient(apiConnection.port, token);
   }
+
+  override async setup(): Promise<{ axiosAPIClient: AxiosInstance }> {
+    await super.setup();
+    if (!this.axiosAPIClient) {
+      throw new Error('axiosAPIClient not created');
+    }
+    return { axiosAPIClient: this.axiosAPIClient };
+  }
 }
 
 export class CharityTestingEnvironment extends TestingEnvironment {
@@ -150,11 +166,20 @@ export class CharityTestingEnvironment extends TestingEnvironment {
 
     this.axiosAPIClient = this.createAxiosApiClient(apiConnection.port, token);
   }
+
+  override async setup(): Promise<{ axiosAPIClient: AxiosInstance }> {
+    await super.setup();
+    if (!this.axiosAPIClient) {
+      throw new Error('axiosAPIClient not created');
+    }
+    return { axiosAPIClient: this.axiosAPIClient };
+  }
 }
 
-export class BothTestingEnvironment extends TestingEnvironment {
-  userAxiosAPIClient: AxiosInstance;
-  charityAxiosAPIClient: AxiosInstance;
+export class CharityAndUserTestingEnvironment extends TestingEnvironment {
+  userAxiosAPIClient?: AxiosInstance;
+  charityAxiosAPIClient?: AxiosInstance;
+
   constructor(options: TestingEnvironmentOptions) {
     super(options);
   }
@@ -173,17 +198,14 @@ export class BothTestingEnvironment extends TestingEnvironment {
     this.userAxiosAPIClient = this.createAxiosApiClient(apiConnection.port, userToken);
   }
 
-  override async setup() {
-    try {
-      await this.createAxiosAPIClients();
-
-      nock.disableNetConnect();
-      nock.enableNetConnect('127.0.0.1');
-    } catch (error) {
-      console.error('Error setting up testing environment:', error);
-      throw error;
+  override async setup(): Promise<{
+    charityAxiosAPIClient: AxiosInstance;
+    userAxiosAPIClient: AxiosInstance;
+  }> {
+    await super.setup();
+    if (!this.charityAxiosAPIClient || !this.userAxiosAPIClient) {
+      throw new Error('axiosAPIClients not created');
     }
-
     return {
       charityAxiosAPIClient: this.charityAxiosAPIClient,
       userAxiosAPIClient: this.userAxiosAPIClient,
