@@ -1,7 +1,7 @@
 import { auth, isActivated, isConfirmed } from '@components/auth/shared/index';
 import { charityUseCaseClass } from '@components/charity/domain/charity.use-case';
 import { tranactionUseCaseClass } from '@components/transaction/domain/transaction.use-case';
-import { usedItemUseCase } from '@components/used-items/domain/used-item.use-case';
+import { usedItemUseCaseClass } from '@components/used-items/domain/used-item.use-case';
 import { resizeDoc, uploadDocs } from '@libs/uploads/components/docs/images/handler';
 import { resizeDocReq, uploadDocsReq } from '@libs/uploads/components/docs/images/handler2';
 import { imageAssertion, resizeImg } from '@libs/uploads/components/images/handlers';
@@ -21,6 +21,7 @@ import logger from '@utils/logger';
 import express, { Application, NextFunction, Request, Response } from 'express';
 
 export default function defineRoutes(expressApp: Application) {
+  const usedItemUseCaseInstance = new usedItemUseCaseClass();
   const charityUseCaseInstance = new charityUseCaseClass();
   const router = express.Router();
   router.post(
@@ -228,7 +229,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Get All Used Items`);
-        const bookUsedItemResponse = await usedItemUseCase.bookUsedItem(req, res);
+        const bookUsedItemResponse = await usedItemUseCaseInstance.bookUsedItem(req, res);
         return res.json(bookUsedItemResponse);
       } catch (error) {
         next(error);
@@ -245,10 +246,8 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Cancel Booking Of Used Items`);
-        const cancelBookingOfUsedItemResponse = await usedItemUseCase.cancelBookingOfUsedItem(
-          req,
-          res
-        );
+        const cancelBookingOfUsedItemResponse =
+          await usedItemUseCaseInstance.cancelBookingOfUsedItem(req, res);
         return res.json(cancelBookingOfUsedItemResponse);
       } catch (error) {
         next(error);
@@ -265,7 +264,10 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Confirm Booking Receipt`);
-        const confirmBookingReceiptResponse = await usedItemUseCase.ConfirmBookingReceipt(req, res);
+        const confirmBookingReceiptResponse = await usedItemUseCaseInstance.ConfirmBookingReceipt(
+          req,
+          res
+        );
         return res.json(confirmBookingReceiptResponse);
       } catch (error) {
         next(error);
