@@ -1,24 +1,18 @@
 import Charity from '@components/charity/data-access/models/charity.model';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
 import {
+  CharityTestingEnvironment,
   clearCharityDatabase,
-  createAxiosApiClient,
   getDummyCharityObject,
 } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
 
 let axiosAPIClient: AxiosInstance;
 
+const env = new CharityTestingEnvironment({ authenticated: false, usedDbs: ['charity'] });
+
 beforeAll(async () => {
-  const apiConnection = await startWebServer();
-
-  axiosAPIClient = createAxiosApiClient(apiConnection.port);
-
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -26,10 +20,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('/api/charities', () => {

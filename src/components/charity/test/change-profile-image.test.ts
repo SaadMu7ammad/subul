@@ -1,33 +1,18 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import {
-  appendDummyImageToFormData,
-  clearCharityDatabase,
-  createAxiosApiClient,
-  createDummyCharityAndReturnToken,
-} from '@utils/test-helpers';
+import { CharityTestingEnvironment, appendDummyImageToFormData } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 import FormData from 'form-data';
-import mongoose from 'mongoose';
-import nock from 'nock';
 
 let axiosAPIClient: AxiosInstance;
 
+const env = new CharityTestingEnvironment({ authenticated: true, usedDbs: ['charity'] });
+
 beforeAll(async () => {
-  const apiConnection = await startWebServer();
-  const token = await createDummyCharityAndReturnToken();
-
-  axiosAPIClient = createAxiosApiClient(apiConnection.port, token);
-
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+  ({ axiosAPIClient } = await env.setup());
 });
 
 afterAll(async () => {
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('/api/charities', () => {
