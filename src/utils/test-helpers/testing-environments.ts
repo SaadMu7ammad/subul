@@ -122,9 +122,20 @@ export class UserTestingEnvironment extends TestingEnvironment {
     return { axiosAPIClient: this.axiosAPIClient };
   }
 }
-
+type CharityOptions = {
+  isActivated: boolean;
+  isConfirmed: boolean;
+  verificationCode: string;
+};
 export class CharityTestingEnvironment extends TestingEnvironment {
-  constructor(options: TestingEnvironmentOptions) {
+  constructor(
+    options: TestingEnvironmentOptions,
+    private charityOptions: CharityOptions = {
+      isActivated: true,
+      isConfirmed: true,
+      verificationCode: '',
+    }
+  ) {
     super(options);
   }
 
@@ -133,7 +144,8 @@ export class CharityTestingEnvironment extends TestingEnvironment {
     let token = '';
 
     if (this.authenticated) {
-      token = await createDummyCharityAndReturnToken();
+      const { isActivated, isConfirmed, verificationCode } = this.charityOptions;
+      token = await createDummyCharityAndReturnToken(isActivated, isConfirmed, verificationCode);
     }
 
     this.axiosAPIClient = this.createAxiosApiClient(apiConnection.port, token);

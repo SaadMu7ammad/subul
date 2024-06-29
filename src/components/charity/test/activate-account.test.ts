@@ -1,30 +1,22 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import {
-  clearCharityDatabase,
-  createAxiosApiClient,
-  createDummyCharityAndReturnToken,
-} from '@utils/test-helpers';
+import { CharityTestingEnvironment } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
 
 import Charity from '../data-access/models/charity.model';
 
 let axiosAPIClient: AxiosInstance;
 
+const env = new CharityTestingEnvironment(
+  { authenticated: true, usedDbs: ['charity'] },
+  {
+    isActivated: true,
+    isConfirmed: false,
+    verificationCode: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
+  }
+);
+
 beforeAll(async () => {
-  const apiConnection = await startWebServer();
-  const token = await createDummyCharityAndReturnToken(
-    false,
-    false,
-    '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha'
-  );
-
-  axiosAPIClient = createAxiosApiClient(apiConnection.port, token);
-
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -42,10 +34,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('api/charities', () => {
