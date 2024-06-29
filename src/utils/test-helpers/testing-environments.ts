@@ -148,7 +148,7 @@ export class CharityTestingEnvironment extends TestingEnvironment {
   }
 }
 
-export class CharityAndUserTestingEnvironment extends TestingEnvironment {
+export class UsedItemTestingEnvironment extends TestingEnvironment {
   userAxiosAPIClient?: AxiosInstance;
   charityAxiosAPIClient?: AxiosInstance;
 

@@ -1,11 +1,14 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { CharityTestingEnvironment, appendDummyImageToFormData } from '@utils/test-helpers';
+import {
+  appendDummyImageToFormData,
+  authenticatedCharityTestingEnvironment,
+} from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 import FormData from 'form-data';
 
 let axiosAPIClient: AxiosInstance;
 
-const env = new CharityTestingEnvironment({ authenticated: true, usedDbs: ['charity'] });
+const env = authenticatedCharityTestingEnvironment;
 
 beforeAll(async () => {
   ({ axiosAPIClient } = await env.setup());

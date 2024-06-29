@@ -1,15 +1,15 @@
 import Charity from '@components/charity/data-access/models/charity.model';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import {
-  CharityTestingEnvironment,
   clearCharityDatabase,
   getDummyCharityObject,
+  unauthenticatedCharityTestingEnvironment,
 } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
-const env = new CharityTestingEnvironment({ authenticated: false, usedDbs: ['charity'] });
+const env = unauthenticatedCharityTestingEnvironment;
 
 beforeAll(async () => {
   ({ axiosAPIClient } = await env.setup());

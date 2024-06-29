@@ -1,30 +1,15 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import {
-  clearCharityDatabase,
-  clearUsedItemsDatabase,
-  clearUserDatabase,
-  createAxiosApiClient,
-  createDummyCharityAndReturnToken,
-  createDummyUserAndReturnToken,
-} from '@utils/test-helpers';
+import { clearUsedItemsDatabase, usedItemTestingEnvironment } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
 
 let userAxiosAPIClient: AxiosInstance;
+
 let charityAxiosAPIClient: AxiosInstance;
 
+const env = usedItemTestingEnvironment;
+
 beforeAll(async () => {
-  const apiConnection = await startWebServer();
-  const charityToken = await createDummyCharityAndReturnToken();
-  const userToken = await createDummyUserAndReturnToken();
-
-  userAxiosAPIClient = createAxiosApiClient(apiConnection.port, userToken);
-  charityAxiosAPIClient = createAxiosApiClient(apiConnection.port, charityToken);
-
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+  ({ userAxiosAPIClient, charityAxiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -32,12 +17,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearUserDatabase();
-  await clearUsedItemsDatabase();
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('api/charities/confirmBookingReceipt', () => {

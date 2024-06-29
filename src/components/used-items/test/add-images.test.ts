@@ -1,27 +1,18 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
 import {
   appendDummyImageToFormData,
+  authenticatedUserTestingEnvironment,
   clearUsedItemsDatabase,
-  clearUserDatabase,
-  createAxiosApiClient,
-  createDummyUserAndReturnToken,
 } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 import FormData from 'form-data';
-import mongoose from 'mongoose';
-import nock from 'nock';
 
 let axiosAPIClient: AxiosInstance;
 
+const env = authenticatedUserTestingEnvironment;
+
 beforeAll(async () => {
-  const apiConnection = await startWebServer();
-  const token = await createDummyUserAndReturnToken();
-
-  axiosAPIClient = createAxiosApiClient(apiConnection.port, token);
-
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -29,11 +20,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearUserDatabase();
-  await clearUsedItemsDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('api/usedItem', () => {
