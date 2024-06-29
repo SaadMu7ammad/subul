@@ -1,19 +1,17 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import { clearUserDatabase, createAxiosApiClient, getDummyUserObject } from '@utils/test-helpers';
+import {
+  clearUserDatabase,
+  getDummyUserObject,
+  unauthenticatedUserTestingEnvironment,
+} from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
 
 let axiosAPIClient: AxiosInstance;
 
+const env = unauthenticatedUserTestingEnvironment;
+
 beforeAll(async () => {
-  const apiConnection = await startWebServer();
-
-  axiosAPIClient = createAxiosApiClient(apiConnection.port);
-
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -21,10 +19,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearUserDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('/api/users', () => {
