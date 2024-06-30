@@ -33,7 +33,7 @@ const addCase = async (
 ): Promise<AddCaseResponse> => {
   caseData.coverImage = image;
   caseData.charity = charity._id;
-  const newCase: ICase | null = await caseUtils.createCase(caseData);
+  const newCase: ICase | null = await caseUtils.createCase(charity, caseData);
 
   if (!newCase) throw new BadRequestError('case not created... try again');
 

@@ -1,3 +1,4 @@
+import CaseModel from '@components/case/data-access/models/case.model';
 import { CharityRepository } from '@components/charity/data-access/charity.repository';
 import {
   DataForRequestEditCharityPayments,
@@ -8,6 +9,7 @@ import {
   IDataForSendDocs,
   PaymentMethodsNames,
 } from '@components/charity/data-access/interfaces';
+import CharityModel from '@components/charity/data-access/models/charity.model';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { deleteOldImgs } from '@utils/deleteFile';
 import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
@@ -365,6 +367,34 @@ const checkCharityVerification = (charity: ICharity): boolean => {
   else return false;
 };
 
+// Update each charity's numberOfCases field with the calculated value every time a new case is created
+const updateNumberOfCases = async (charity: ICharity) => {
+  const numberOfCases = charity.cases.length;
+  await CharityModel.updateOne({ _id: charity._id }, { numberOfCases });
+
+  console.log('Charity has been updated with the correct numberOfCases');
+};
+
+const getTotalNumberOfDonorsAndDonationsIncome = async () => {
+  const charities = await CharityModel.find().lean(); // Get all charity documents as plain JavaScript objects
+  for (const charity of charities) {
+    const cases = await CaseModel.find({ _id: { $in: charity.cases } }).select(
+      'donationNumbers currentDonationAmount'
+    );
+    const totalNumberOfDonors = cases.reduce((sum, caseDoc) => sum + caseDoc.donationNumbers, 0);
+    const totalDonationsIncome = cases.reduce(
+      (sum, caseDoc) => sum + caseDoc.currentDonationAmount,
+      0
+    );
+
+    await CharityModel.updateOne(
+      { _id: charity._id },
+      { totalNumberOfDonors, totalDonationsIncome }
+    );
+  }
+  console.log('All charities have been updated with the correct totalNumberOfDonors');
+};
+
 export const charityUtils = {
   checkCharityIsExist,
   checkCharityIsExistById,
@@ -388,4 +418,6 @@ export const charityUtils = {
   createFawryAccount,
   createVodafoneAccount,
   checkCharityVerification,
+  updateNumberOfCases,
+  getTotalNumberOfDonorsAndDonationsIncome,
 };

@@ -12,6 +12,7 @@ import {
   ICharityDocs,
   PendingCharities,
 } from '@components/charity/data-access/interfaces';
+import { charityUtils } from '@components/charity/domain/charity.utils';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { setupMailSender } from '@utils/mailer';
 import { Request } from 'express';
@@ -32,10 +33,9 @@ export type QueryObject = {
 };
 
 const getAllChariteis = async () => {
-  // I wanna calculate number of cases for each charity
-
+  charityUtils.getTotalNumberOfDonorsAndDonationsIncome();
   const charities: AllCharities[] = await adminRepository.findAllCharities(
-    'name email isPending isConfirmed numberOfCases'
+    'name email isPending isConfirmed numberOfCases image createdAt totalNumberOfDonors totalDonationsIncome'
   );
 
   return { charities: charities };

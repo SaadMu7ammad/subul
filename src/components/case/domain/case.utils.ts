@@ -7,7 +7,6 @@ import {
   SortObj,
 } from '@components/case/data-access/interfaces';
 import { ICharity } from '@components/charity/data-access/interfaces';
-import CharityModel from '@components/charity/data-access/models/charity.model';
 import { NotFoundError } from '@libs/errors/components/not-found';
 import { deleteOldImgs } from '@utils/deleteFile';
 import { Response } from 'express';
@@ -15,15 +14,8 @@ import { Request } from 'express';
 
 const caseRepository = new CaseRepository();
 
-const createCase = async (caseData: ICase) => {
-  // updates each charity's numberOfCases field with the calculated value every time a new case is created
-  const charities = await CharityModel.find().lean();
-  for (const charity of charities) {
-    const numberOfCases = charity.cases.length;
-    await CharityModel.updateOne({ _id: charity._id }, { numberOfCases });
-  }
-  console.log('All charities have been updated with the correct numberOfCases.');
-  return await caseRepository.createCase(caseData);
+const createCase = async (charity: ICharity, caseData: ICase) => {
+  return await caseRepository.createCase(charity, caseData);
 };
 
 const getSortObj = (sortQueryParams: string | undefined): SortObj => {
