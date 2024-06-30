@@ -4,7 +4,7 @@ import { Charity as CharityModel } from '@components/charity/data-access/models/
 import { generateTokenForTesting } from '@utils/generateToken';
 import FormData from 'form-data';
 
-import { appendDummyImageToFormData } from './shared-test-helpers';
+import { appendDummyImageToFormData } from '..';
 
 export const clearCharityDatabase = async () => {
   await CharityModel.deleteMany({});

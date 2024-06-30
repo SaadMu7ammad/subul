@@ -8,7 +8,7 @@ export const appendDummyImageToFormData = (
   imageName: string,
   numberOfImages: number = 1
 ) => {
-  const imagePath = path.resolve(__dirname, 'test-image.png');
+  const imagePath = path.resolve(__dirname, '../test-image.png');
   const imageBuffer = fs.readFileSync(imagePath);
   for (let i = 1; i <= numberOfImages; i++) {
     formData.append(imageName, imageBuffer, `test-image${i}.png`);
