@@ -73,7 +73,7 @@ const activateAccount = async (
   await setupMailSender(
     storedCharity.email,
     'Account Activated',
-    `hello ${storedCharity.name} charity ,your account has been activated successfully` +
+    `hello ${storedCharity.name} charity, your account has been activated successfully ` +
       `now you are ready to spread the goodness with us`
   );
 

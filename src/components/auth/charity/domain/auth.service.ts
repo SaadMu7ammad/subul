@@ -1,6 +1,6 @@
 import { AuthCharityObject, CharityObject } from '@components/auth/charity/data-access/interfaces';
 import generateToken from '@utils/generateToken';
-import { generateResetTokenTemp, sendReactivationEmail, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendActivationEmail, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
 
 import logger from '../../../../utils/logger';
@@ -28,7 +28,7 @@ const authCharity = async (
     //not verified(not activated)
     const token = await generateResetTokenTemp();
     await authCharityUtils.setTokenToCharity(charityResponse.charity, token);
-    await sendReactivationEmail(charityResponse.charity.email, token);
+    await sendActivationEmail(charityResponse.charity.email, token);
     return {
       charity: charityResponse.charity,
       emailAlert: true,
