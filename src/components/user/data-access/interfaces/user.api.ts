@@ -1,10 +1,10 @@
-import { IUserModified, User } from '.';
+import { IUser, IUserModified } from '.';
 
 export type IUserResponse = {
   // emailEdited?: boolean;
   emailAlert?: boolean;
   // user: Partial<IUserDocument>;
-  user: Partial<User>;
+  user: Partial<IUser>;
   message?: string;
   token?: string;
 };
@@ -32,7 +32,7 @@ export type LogoutUserResponse = {
 };
 
 export type getUserProfileDataResponse = {
-  user: User;
+  user: IUser;
   message: string;
 };
 

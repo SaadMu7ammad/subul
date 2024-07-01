@@ -1,3 +1,5 @@
+import { ICharity } from '@components/charity/data-access/interfaces';
+import { charityUtils } from '@components/charity/domain/charity.utils';
 import { Response } from 'express';
 
 import { CaseDao } from './interfaces/case.dao';
@@ -5,8 +7,12 @@ import { FilterObj, ICase, SortObj } from './interfaces/case.interface';
 import CaseModel from './models/case.model';
 
 export class CaseRepository implements CaseDao {
-  createCase = async (caseData: ICase): Promise<ICase | null> => {
+  createCase = async (charity: ICharity, caseData: ICase): Promise<ICase | null> => {
     const newCase = await CaseModel.create(caseData);
+
+    charityUtils.updateNumberOfCases(charity);
+    await charity.save();
+
     return newCase;
   };
 

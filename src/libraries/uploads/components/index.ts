@@ -18,13 +18,13 @@ const saveImg = async (
     } else if (environment === 'production') {
       //saving to cloudniary
       const resizedImgBuffer = await sharpPromise.toBuffer();
-      const uploadResult = await cloudinaryObj.uploadImg(
+      // const uploadResult =
+      await cloudinaryObj.uploadImg(
         resizedImgBuffer,
         destinationFolder,
         fileName.split('.jpeg')[0] as string
       );
-      //@ts-ignore
-      console.log({ imgUrl: uploadResult.secure_url });
+      // console.log({ imgUrl: uploadResult.secure_url });
     }
   } else {
     throw new NotFoundError('no destination found...try again');

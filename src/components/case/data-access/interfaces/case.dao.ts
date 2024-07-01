@@ -1,7 +1,9 @@
+import { ICharity } from '@components/charity/data-access/interfaces';
+
 import { FilterObj, ICase, SortObj } from './case.interface';
 
 export interface CaseDao {
-  createCase: (caseData: ICase) => Promise<ICase | null>;
+  createCase: (charity: ICharity, caseData: ICase) => Promise<ICase | null>;
   getAllCases: (
     sortObj: SortObj,
     filterObj: FilterObj,

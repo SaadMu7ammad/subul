@@ -26,7 +26,7 @@ const addCase = async (
 
   return {
     case: responseData.case,
-    message: 'Case Created Successfully',
+    message: req.t('errors.caseAddedSuccessfully'),
   };
 };
 
@@ -42,7 +42,7 @@ const getAllCases = async (
 
   return {
     cases: responseData.cases,
-    message: 'All Cases fetched Successfully',
+    message: req.t('errors.fetchedCases'),
   };
 };
 
@@ -53,7 +53,7 @@ const getAllCasesForUser = async (req: Request, res: Response, next: NextFunctio
 
   return {
     cases: responseData.cases,
-    message: 'All Cases fetched Successfully',
+    message: req.t('errors.fetchAllCases'),
   };
 };
 
@@ -66,11 +66,11 @@ const getCaseById = async (
   const caseId: string | undefined = req.params.caseId;
   if (!caseId) throw new NotFoundError('no id exist for the case');
 
-  const responseData = await caseService.getCaseById(charityCases, caseId);
+  const responseData = await caseService.getCaseById(req, charityCases, caseId);
 
   return {
     case: responseData.case,
-    message: 'Case Fetched Successfully',
+    message: req.t('errors.fetchCase'),
   };
 };
 
@@ -84,11 +84,11 @@ const deleteCase = async (
   const caseId: string | undefined = req.params.caseId;
   if (!caseId) throw new NotFoundError('no id exist for the case');
 
-  const responseData = await caseService.deleteCase(charity, caseId);
+  const responseData = await caseService.deleteCase(req, charity, caseId);
 
   return {
     case: responseData.case,
-    message: 'Case Deleted Successfully',
+    message: req.t('errors.deleteCase'),
   };
 };
 
@@ -103,11 +103,11 @@ const editCase = async (
   if (!caseId) throw new NotFoundError('no id exist for the case');
   const caseData: ICase & { coverImage: string; image: string[] } = req.body;
 
-  const responseData = await caseService.editCase(charity, caseData, caseId);
+  const responseData = await caseService.editCase(req, charity, caseData, caseId);
 
   return {
     case: responseData.case,
-    message: 'Case Edited Successfully',
+    message: req.t('errors.editCase'),
   };
 };
 

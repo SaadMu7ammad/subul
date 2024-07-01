@@ -9,7 +9,7 @@ import { authCharityUtils } from './auth.utils';
 
 const authCharity = async (
   reqBody: { email: string; password: string },
-  res: Response<any, Record<string, any>>
+  res: Response
 ): Promise<AuthCharityObject> => {
   const { email, password }: { email: string; password: string } = reqBody;
 

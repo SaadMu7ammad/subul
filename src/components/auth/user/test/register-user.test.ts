@@ -69,7 +69,7 @@ describe('/api/users', () => {
       expect(response.status).toBe(400);
     });
 
-    test('should return 500 when trying to register a user with missing values', async () => {
+    test('should return 400 when trying to register a user with missing values', async () => {
       // Arrange
       const user = getDummyUserObject();
       //@ts-expect-error // We are testing the API, so we can delete the email field
@@ -79,7 +79,7 @@ describe('/api/users', () => {
       const response = await axiosAPIClient.post('/api/users', user);
 
       // Assert
-      expect(response.status).toBe(500);
+      expect(response.status).toBe(400);
     });
   });
 });

@@ -1,5 +1,6 @@
 import { adminRepository } from '@components/admin/data-access/admin.repository';
 import {
+  AllCharities,
   AllPendingRequestsCharitiesResponse,
   CharitiesAccountsByAggregation,
   CharityPaymentMethodBankAccount,
@@ -11,8 +12,10 @@ import {
   ICharityDocs,
   PendingCharities,
 } from '@components/charity/data-access/interfaces';
+import { charityUtils } from '@components/charity/domain/charity.utils';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { setupMailSender } from '@utils/mailer';
+import { Request } from 'express';
 import mongoose from 'mongoose';
 
 import { adminUtils } from './admin.utils';
@@ -30,11 +33,28 @@ export type QueryObject = {
 };
 
 const getAllChariteis = async () => {
-  const charities = await adminRepository.findAllCharities('name email isPending isConfirmed');
+  charityUtils.getTotalNumberOfDonorsAndDonationsIncome();
+  const charities: AllCharities[] = await adminRepository.findAllCharities(
+    'name email isPending isConfirmed numberOfCases image createdAt totalNumberOfDonors totalDonationsIncome'
+  );
 
   return { charities: charities };
 };
-const getAllOrOnePendingRequestsCharities = async (id: string | null = null) => {
+
+const getAllUsers = async () => {
+  const users = await adminRepository.findAllUsers('name email');
+
+  return { users: users };
+};
+
+const getCharityById = async (id: string) => {
+  const charity = await adminRepository.findCharityById(id);
+
+  if (!charity) throw new BadRequestError('Charity not found');
+
+  return { charity: charity };
+};
+const getAllOrOnePendingRequestsCharities = async (req: Request, id: string | null = null) => {
   const queryObject: QueryObject = {
     $and: [
       { isPending: true },
@@ -52,9 +72,7 @@ const getAllOrOnePendingRequestsCharities = async (id: string | null = null) => 
     'name email charityDocs paymentMethods'
   );
 
-  // console.log(allPendingCharities[0]); // { selection }
-
-  if (id && !allPendingCharities[0]) throw new BadRequestError('charity not found');
+  if (id && !allPendingCharities[0]) throw new BadRequestError(req.t('errors.charityNotFound'));
 
   return { allPendingCharities: allPendingCharities };
 };
@@ -138,7 +156,7 @@ const rejectPaymentAccountRequestForConfirmedCharities = async (
 };
 
 // That mean if charity makes a requestEditCharityPayment (add another acc for receive payment)
-const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
+const getPendingPaymentRequestsForConfirmedCharityById = async (req: Request, id: string) => {
   const queryObject: QueryObject = {
     $and: [
       { isPending: false },
@@ -153,18 +171,19 @@ const getPendingPaymentRequestsForConfirmedCharityById = async (id: string) => {
   const paymentRequests: DataForForConfirmedCharity =
     await adminRepository.findConfirmedCharityById(queryObject, 'paymentMethods _id');
 
-  if (!paymentRequests) throw new BadRequestError('charity not found');
+  if (!paymentRequests) throw new BadRequestError('No payment requests found!');
 
-  let bankAccount: CharityPaymentMethodBankAccount[] | undefined =
+  const bankAccount: CharityPaymentMethodBankAccount[] | undefined =
     paymentRequests.paymentMethods?.bankAccount.filter(
       (acc: CharityPaymentMethodBankAccount) => acc.enable === false
     );
 
-  let fawry: CharityPaymentMethodFawry[] | undefined = paymentRequests.paymentMethods?.fawry.filter(
-    (acc: CharityPaymentMethodFawry) => acc.enable === false
-  );
+  const fawry: CharityPaymentMethodFawry[] | undefined =
+    paymentRequests.paymentMethods?.fawry.filter(
+      (acc: CharityPaymentMethodFawry) => acc.enable === false
+    );
 
-  let vodafoneCash: CharityPaymentMethodVodafoneCash[] | undefined =
+  const vodafoneCash: CharityPaymentMethodVodafoneCash[] | undefined =
     paymentRequests.paymentMethods?.vodafoneCash.filter(
       (acc: CharityPaymentMethodVodafoneCash) => acc.enable === false
     );
@@ -195,10 +214,10 @@ const getAllRequestsPaymentMethodsForConfirmedCharities = async () => {
   };
 };
 
-const confirmCharity = async (id: string): Promise<ConfirmPendingCharity> => {
+const confirmCharity = async (req: Request, id: string): Promise<ConfirmPendingCharity> => {
   // const charity: AllPendingRequestsCharitiesResponse =
   //   await getAllOrOnePendingRequestsCharities(id);
-  const charity = await getAllOrOnePendingRequestsCharities(id);
+  const charity = await getAllOrOnePendingRequestsCharities(req, id);
   // { allPendingCharities: allPendingCharities }
 
   const pendingCharity: PendingCharities | undefined = charity.allPendingCharities[0];
@@ -219,9 +238,11 @@ const confirmCharity = async (id: string): Promise<ConfirmPendingCharity> => {
   };
 };
 
-const rejectCharity = async (id: string): Promise<ConfirmPendingCharity> => {
-  const charity: AllPendingRequestsCharitiesResponse =
-    await getAllOrOnePendingRequestsCharities(id);
+const rejectCharity = async (req: Request, id: string): Promise<ConfirmPendingCharity> => {
+  const charity: AllPendingRequestsCharitiesResponse = await getAllOrOnePendingRequestsCharities(
+    req,
+    id
+  );
 
   const pendingCharity: PendingCharities | undefined = charity.allPendingCharities[0];
 
@@ -243,6 +264,8 @@ const rejectCharity = async (id: string): Promise<ConfirmPendingCharity> => {
 
 export const adminService = {
   getAllChariteis,
+  getAllUsers,
+  getCharityById,
   getAllOrOnePendingRequestsCharities,
   confirmCharity,
   rejectCharity,

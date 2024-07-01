@@ -1,6 +1,8 @@
 import { ICharity } from '@components/charity/data-access/interfaces';
 import Charity from '@components/charity/data-access/models/charity.model';
 
+import { CharityData } from '../domain/auth.use-case';
+
 const findCharity = async (email: string): Promise<ICharity | null> => {
   const charity = await Charity.findOne({
     email: email,
@@ -8,7 +10,7 @@ const findCharity = async (email: string): Promise<ICharity | null> => {
   return charity;
 };
 
-const createCharity = async (dataInputs: any): Promise<ICharity | null> => {
+const createCharity = async (dataInputs: CharityData): Promise<ICharity | null> => {
   const charity = (await Charity.create(dataInputs)) as ICharity | null;
   return charity;
 };

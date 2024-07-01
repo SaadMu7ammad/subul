@@ -11,25 +11,29 @@ import {
   SortObj,
 } from '@components/case/data-access/interfaces';
 import { ICharity } from '@components/charity/data-access/interfaces';
-import { User } from '@components/user/data-access/interfaces';
-import { userRepository } from '@components/user/data-access/user.repository';
-import { userUtils } from '@components/user/domain/user.utils';
+import { IUser } from '@components/user/data-access/interfaces';
+import { USER } from '@components/user/domain/user.class';
+import { userUtilsClass } from '@components/user/domain/user.utils';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { setupMailSender } from '@utils/mailer';
-import { notifyAllUsers } from '@utils/sendNotification';
+import { notificationManager } from '@utils/sendNotification';
+import { Request } from 'express';
 import { Response } from 'express';
 
 import { caseUtils } from './case.utils';
 
+const userUtilsInstance = new userUtilsClass();
+
+const notificatioInstance = new notificationManager();
 const addCase = async (
   caseData: ICase,
   image: string,
   charity: ICharity,
-  user: User | undefined = undefined
+  user: IUser | undefined = undefined
 ): Promise<AddCaseResponse> => {
   caseData.coverImage = image;
   caseData.charity = charity._id;
-  const newCase = await caseUtils.createCase(caseData);
+  const newCase: ICase | null = await caseUtils.createCase(charity, caseData);
 
   if (!newCase) throw new BadRequestError('case not created... try again');
 
@@ -42,7 +46,7 @@ const addCase = async (
     await user.save();
   }
 
-  notifyAllUsers(
+  notificatioInstance.notifyAllUsers(
     `Charity ${charity.name} has posted a new case , check it out!`,
     1 * 24 * 60 * 60,
     'case',
@@ -82,43 +86,47 @@ const getAllCasesForUser = async (
 };
 
 const getCaseById = async (
+  req: Request,
   charityCases: ICase['id'][],
   caseId: string
 ): Promise<GetCaseByIdResponse> => {
-  caseUtils.checkIfCaseBelongsToCharity(charityCases, caseId);
+  caseUtils.checkIfCaseBelongsToCharity(req, charityCases, caseId);
 
-  const _case: ICase = await caseUtils.getCaseByIdFromDB(caseId);
+  const _case: ICase = await caseUtils.getCaseByIdFromDB(req, caseId);
 
   return {
     case: _case,
   };
 };
 
-const deleteCase = async (charity: ICharity, caseId: string): Promise<DeleteCaseResponse> => {
-  const isCaseFinished = await caseUtils.getCaseByIdFromDB(caseId);
-  if (isCaseFinished.finished)
-    throw new BadRequestError('you dont have access to delete a completed case');
+const deleteCase = async (
+  req: Request,
+  charity: ICharity,
+  caseId: string
+): Promise<DeleteCaseResponse> => {
+  const isCaseFinished = await caseUtils.getCaseByIdFromDB(req, caseId);
+  if (isCaseFinished.finished) throw new BadRequestError(req.t('errors.cantDeleteCase'));
   if (isCaseFinished.currentDonationAmount > 0)
-    throw new BadRequestError('you dont have access to delete a case in progress');
+    throw new BadRequestError(req.t('errors.cantDeleteCase'));
 
-  const idx: number = caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
+  const idx: number = caseUtils.checkIfCaseBelongsToCharity(req, charity.cases, caseId);
 
-  const deletedCase: ICase = await caseUtils.deleteCaseFromDB(caseId);
+  const deletedCase: ICase = await caseUtils.deleteCaseFromDB(req, caseId);
 
   await caseUtils.deleteCaseFromCharityCasesArray(charity, idx);
 
   if (deletedCase.mainType === 'customizedCampaigns' && deletedCase.user) {
     //delete the id from the contributions arr of user and send email
-    const _userRepository = new userRepository();
+    const user = new USER();
 
-    const userOwner = await _userRepository.findUserById(deletedCase.user.toString());
+    const userOwner = await user.userModel.findUserById(deletedCase.user.toString());
     if (!userOwner) throw new BadRequestError('no user found');
 
-    const idx = userUtils.checkIfCaseBelongsToUserContributions(
+    const idx = userUtilsInstance.checkIfCaseBelongsToUserContributions(
       userOwner.contributions,
       deletedCase._id.toString()
     );
-    await userUtils.deleteCaseFromUserContributionsArray(userOwner, idx);
+    await userUtilsInstance.deleteCaseFromUserContributionsArray(userOwner, idx);
 
     await setupMailSender(
       userOwner.email,
@@ -133,14 +141,15 @@ const deleteCase = async (charity: ICharity, caseId: string): Promise<DeleteCase
 };
 
 const editCase = async (
+  req: Request,
   charity: ICharity,
   caseData: ICase & { coverImage: string; image: string[] },
   caseId: string
 ): Promise<EditCaseResponse> => {
-  const isFinishedCase = await caseUtils.getCaseByIdFromDB(caseId);
-  if (isFinishedCase.finished) throw new BadRequestError('cant edit completed case');
+  const isFinishedCase = await caseUtils.getCaseByIdFromDB(req, caseId);
+  if (isFinishedCase.finished) throw new BadRequestError(req.t('errors.cantEditCase'));
 
-  caseUtils.checkIfCaseBelongsToCharity(charity.cases, caseId);
+  caseUtils.checkIfCaseBelongsToCharity(req, charity.cases, caseId);
 
   let deleteOldImg: (() => void) | null = null;
   if (caseData.image) {

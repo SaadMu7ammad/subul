@@ -16,6 +16,6 @@ export function getValue(keyName: string) {
   if (convictConfigurationProvider === undefined) {
     throw new Error('Configuration has not been initialized yet');
   }
-  // @ts-expect-error
+  // @ts-expect-error >> any type
   return convictConfigurationProvider.get(keyName);
 }

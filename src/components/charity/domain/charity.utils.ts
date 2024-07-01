@@ -1,3 +1,4 @@
+import CaseModel from '@components/case/data-access/models/case.model';
 import { CharityRepository } from '@components/charity/data-access/charity.repository';
 import {
   DataForRequestEditCharityPayments,
@@ -8,6 +9,7 @@ import {
   IDataForSendDocs,
   PaymentMethodsNames,
 } from '@components/charity/data-access/interfaces';
+import CharityModel from '@components/charity/data-access/models/charity.model';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { deleteOldImgs } from '@utils/deleteFile';
 import { generateResetTokenTemp, sendReactivationEmail, setupMailSender } from '@utils/mailer';
@@ -103,8 +105,8 @@ const editCharityProfileAddress = async (
   updatedLocation: ICharityLocation
 ): Promise<{ charity: ICharity }> => {
   for (let i = 0; i < charity.charityLocation.length; i++) {
-    if (charity.charityLocation[i]) {
-      const location = charity.charityLocation[i]!;
+    if (charity.charityLocation[`${i}`]) {
+      const location = charity.charityLocation[`${i}`]!;
       const isMatch: boolean = checkValueEquality(location._id!.toString(), id);
       if (isMatch) {
         // location = updatedLocation;//make a new id
@@ -238,9 +240,9 @@ const getChangedPaymentMethod = (
   reqPaymentMethodsObj: ICharityPaymentMethods
 ): PaymentMethodsNames => {
   let changedPaymentMethod: PaymentMethodsNames = 'bankAccount'; //it will be overwritten by the value in the request , so don't worry;
-  let paymentMethods: PaymentMethodsNames[] = ['bankAccount', 'fawry', 'vodafoneCash'];
+  const paymentMethods: PaymentMethodsNames[] = ['bankAccount', 'fawry', 'vodafoneCash'];
   paymentMethods.forEach((pm: PaymentMethodsNames) => {
-    if (reqPaymentMethodsObj[pm]) changedPaymentMethod = pm;
+    if (reqPaymentMethodsObj[`${pm}`]) changedPaymentMethod = pm;
   });
 
   return changedPaymentMethod;
@@ -252,7 +254,7 @@ const editBankAccount = async (
 ) => {
   if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to edit');
 
-  for (let [_, item] of storedCharity.paymentMethods.bankAccount.entries()) {
+  for (const [_, item] of storedCharity.paymentMethods.bankAccount.entries()) {
     console.log('1---------------');
 
     //@ts-expect-error TODO: fix this , why there is no toString in the type of _id ?
@@ -277,7 +279,7 @@ const editFawryAccount = async (
 ) => {
   if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to edit');
 
-  for (let [_, item] of storedCharity.paymentMethods.fawry.entries()) {
+  for (const [_, item] of storedCharity.paymentMethods.fawry.entries()) {
     console.log('2---------------');
 
     //@ts-expect-error TODO: fix this , why there is no toString in the type of _id ?
@@ -302,7 +304,7 @@ const editVodafoneAccount = async (
 ) => {
   if (!storedCharity.paymentMethods) throw new BadRequestError('no payments to edit');
 
-  for (let [_, item] of storedCharity.paymentMethods.vodafoneCash.entries()) {
+  for (const [_, item] of storedCharity.paymentMethods.vodafoneCash.entries()) {
     console.log('-3--------------');
 
     //@ts-expect-error TODO: fix this , why there is no toString in the type of _id ?
@@ -361,6 +363,34 @@ const checkCharityVerification = (charity: ICharity): boolean => {
   else return false;
 };
 
+// Update each charity's numberOfCases field with the calculated value every time a new case is created
+const updateNumberOfCases = async (charity: ICharity) => {
+  const numberOfCases = charity.cases.length;
+  await CharityModel.updateOne({ _id: charity._id }, { numberOfCases });
+
+  console.log('Charity has been updated with the correct numberOfCases');
+};
+
+const getTotalNumberOfDonorsAndDonationsIncome = async () => {
+  const charities = await CharityModel.find().lean(); // Get all charity documents as plain JavaScript objects
+  for (const charity of charities) {
+    const cases = await CaseModel.find({ _id: { $in: charity.cases } }).select(
+      'donationNumbers currentDonationAmount'
+    );
+    const totalNumberOfDonors = cases.reduce((sum, caseDoc) => sum + caseDoc.donationNumbers, 0);
+    const totalDonationsIncome = cases.reduce(
+      (sum, caseDoc) => sum + caseDoc.currentDonationAmount,
+      0
+    );
+
+    await CharityModel.updateOne(
+      { _id: charity._id },
+      { totalNumberOfDonors, totalDonationsIncome }
+    );
+  }
+  console.log('All charities have been updated with the correct totalNumberOfDonors');
+};
+
 export const charityUtils = {
   checkCharityIsExist,
   checkCharityIsExistById,
@@ -384,4 +414,6 @@ export const charityUtils = {
   createFawryAccount,
   createVodafoneAccount,
   checkCharityVerification,
+  updateNumberOfCases,
+  getTotalNumberOfDonorsAndDonationsIncome,
 };

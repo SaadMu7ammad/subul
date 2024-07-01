@@ -1,9 +1,9 @@
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import * as configurationProvider from '@libs/configuration-provider/index';
 import { IPaymentInfoData } from '@libs/paymob/payment/payment.interface';
 import { createPayment } from '@libs/paymob/payment/payment.service';
 
-const paywithMobileWallet = async (reqBody: IPaymentInfoData, user: User) => {
+const paywithMobileWallet = async (reqBody: IPaymentInfoData, user: IUser) => {
   const { amount, charityId, caseId, caseTitle } = reqBody;
   const { tokenThirdStep } = await createPayment(
     user,

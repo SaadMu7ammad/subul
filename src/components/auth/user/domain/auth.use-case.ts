@@ -5,6 +5,7 @@ import {
   registerUserResponse,
 } from '@components/auth/user/data-access/interfaces';
 import { RequestHandler } from 'express';
+import { Request, Response } from 'express';
 
 import { authUserService } from './auth.service';
 
@@ -12,11 +13,15 @@ import { authUserService } from './auth.service';
 //@route  POST /api/users/auth
 //@access public
 
-const authUser: RequestHandler = async (req, res, _next): Promise<authUserResponse> => {
+const authUser: RequestHandler = async (
+  req: Request,
+  res: Response,
+  _next
+): Promise<authUserResponse> => {
   const { email, password }: { email: string; password: string } = req.body;
   const data = { email, password };
 
-  const responseData = await authUserService.authUser(data, res);
+  const responseData = await authUserService.authUser(data, res, req);
   const userResponsed = responseData.user;
 
   if (responseData.emailAlert) {

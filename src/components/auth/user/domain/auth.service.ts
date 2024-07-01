@@ -5,21 +5,23 @@ import {
   UserObject,
   UserResponseBasedOnUserVerification,
 } from '@components/auth/user/data-access/interfaces';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import generateToken from '@utils/generateToken';
 import { generateResetTokenTemp, sendActivationEmail, setupMailSender } from '@utils/mailer';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 import logger from '../../../../utils/logger';
 import { authUserUtils } from './auth.utils';
 
 const authUser = async (
   reqBody: IloginData,
-  res: Response
+  res: Response,
+  req: Request
 ): Promise<UserResponseBasedOnUserVerification> => {
   const { email, password }: { email: string; password: string } = reqBody;
 
-  const userResponse: { isMatch: boolean; user: User } = await authUserUtils.checkUserPassword(
+  const userResponse: { isMatch: boolean; user: IUser } = await authUserUtils.checkUserPassword(
+    req,
     email,
     password
   );
