@@ -10,7 +10,7 @@ import {
 } from '@components/charity/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { deleteOldImgs } from '@utils/deleteFile';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendReactivationEmail, setupMailSender } from '@utils/mailer';
 import { checkValueEquality } from '@utils/shared';
 import { Response } from 'express';
 
@@ -61,13 +61,7 @@ const changeCharityEmailWithMailAlert = async (
   }
   const token = await generateResetTokenTemp();
   CharityBeforeUpdate.verificationCode = token;
-  await setupMailSender(
-    CharityBeforeUpdate.email,
-    'email changed alert',
-    `hi ${CharityBeforeUpdate.name}email has been changed You must Re activate account ` +
-      `<h3>(www.activate.com)</h3>` +
-      `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-  );
+  await sendReactivationEmail(CharityBeforeUpdate.email, token);
   await CharityBeforeUpdate.save();
   return { charity: CharityBeforeUpdate };
 };
@@ -99,9 +93,8 @@ const changeCharityPasswordWithMailAlert = async (
   await resetSentToken(charity); //after saving and changing the password
   await setupMailSender(
     charity.email,
-    'password changed alert',
-    `hi ${charity.name} <h3>contact us if you did not changed the password</h3>` +
-      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+    'Password Changed',
+    `hi ${charity.name} contact us if you did not changed the password or you can freeze your account`
   );
 };
 const editCharityProfileAddress = async (

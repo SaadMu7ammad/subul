@@ -18,7 +18,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '@libs/errors/components/index';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendResetPasswordEmail, setupMailSender } from '@utils/mailer';
 import { sendNotification } from '@utils/sendNotification';
 import { checkValueEquality, updateNestedProperties } from '@utils/shared';
 import { Response } from 'express';
@@ -32,12 +32,7 @@ const resetUser = async (reqBody: dataForResetEmail) => {
   const token = await generateResetTokenTemp();
   userResponse.user.verificationCode = token;
   await userResponse.user.save();
-  await setupMailSender(
-    userResponse.user.email,
-    'reset alert',
-    'go to that link to reset the password (www.dummy.com) ' +
-      `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-  );
+  await sendResetPasswordEmail(userResponse.user.email, token);
   return {
     message: 'email sent successfully to reset the password',
   };
@@ -63,11 +58,8 @@ const confirmReset = async (reqBody: dataForConfirmResetEmail) => {
 
   await setupMailSender(
     updatedUser.user.email,
-    'password changed alert',
-    `hi ${
-      updatedUser.user.name?.firstName + ' ' + updatedUser.user.name?.lastName
-    } <h3>contact us if you did not changed the password</h3>` +
-      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+    'Password Changed',
+    `hi ${updatedUser.user.name.firstName} contact us if you did not changed the password or you can freeze your account`
   );
 
   return { message: 'user password changed successfully' };
@@ -79,13 +71,10 @@ const changePassword = async (reqBody: dataForChangePassword, user: User) => {
   await updatedUser.save();
   await setupMailSender(
     updatedUser.email,
-    'password changed alert',
-    `hi ${
-      // updatedUser.name?.firstName will safely access firstName if name is not undefined.
-      updatedUser.name.firstName + ' ' + updatedUser.name?.lastName
-    }<h3>contact us if you did not changed the password</h3>` +
-      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+    'Password Changed',
+    `hi ${updatedUser.name.firstName} contact us if you did not changed the password or you can freeze your account`
   );
+
   return { message: 'user password changed successfully' };
 };
 
@@ -113,8 +102,8 @@ const activateAccount = async (
   await userUtils.verifyUserAccount(storedUser);
   await setupMailSender(
     storedUser.email,
-    'account has been activated ',
-    `<h2>now you are ready to spread the goodness with us </h2>`
+    'Account Activated ',
+    `now you are ready to spread the goodness with us`
   );
 
   return {
@@ -135,9 +124,9 @@ const bloodContribution = async (user: User, id: string | undefined) => {
 
   await setupMailSender(
     user.email,
-    'bloodContribution',
+    'Blood Contribution',
     'thanks for your caring' +
-      `<h3>here is the number to get contact with the case immediate</h3> <h2>${isCaseExist.privateNumber}</h2>`
+      `here is the number to get contact with the case immediate,${isCaseExist.privateNumber}`
   );
   sendNotification(
     'Charity',

@@ -1,6 +1,6 @@
 import { AuthCharityObject, CharityObject } from '@components/auth/charity/data-access/interfaces';
 import generateToken from '@utils/generateToken';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendActivationEmail, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
 
 import logger from '../../../../utils/logger';
@@ -28,13 +28,7 @@ const authCharity = async (
     //not verified(not activated)
     const token = await generateResetTokenTemp();
     await authCharityUtils.setTokenToCharity(charityResponse.charity, token);
-    await setupMailSender(
-      charityResponse.charity.email,
-      'login alert',
-      `hi ${charityResponse.charity.name} it seems that your account still not verified or activated please go to that link to activate the account ` +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
+    await sendActivationEmail(charityResponse.charity.email, token);
     return {
       charity: charityResponse.charity,
       emailAlert: true,
@@ -49,7 +43,7 @@ const registerCharity = async (reqBody: CharityData): Promise<{ charity: Charity
   try {
     await setupMailSender(
       newCreatedCharity.charity.email,
-      'welcome alert',
+      'Welcome Alert',
       `hi ${newCreatedCharity.charity.name} ` +
         ' we are happy that you joined our community ... keep spreading goodness with us'
     );
