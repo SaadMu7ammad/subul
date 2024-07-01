@@ -93,9 +93,8 @@ const changeCharityPasswordWithMailAlert = async (
   await resetSentToken(charity); //after saving and changing the password
   await setupMailSender(
     charity.email,
-    'password changed alert',
-    `hi ${charity.name} <h3>contact us if you did not changed the password</h3>` +
-      `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+    'Password Changed',
+    `hi ${charity.name} contact us if you did not changed the password or you can freeze your account`
   );
 };
 const editCharityProfileAddress = async (

@@ -1,6 +1,7 @@
 import * as configurationProvider from '@libs/configuration-provider/index';
 import fs from 'fs-extra';
 import { parse } from 'node-html-parser';
+import { HTMLElement } from 'node-html-parser';
 import path from 'path';
 
 export const loadHtmlTemplate = async (templatePath: string): Promise<string> => {
@@ -14,7 +15,7 @@ export const loadHtmlTemplate = async (templatePath: string): Promise<string> =>
 export const createHtmlPage = async (
   subject: string,
   content: string,
-  isActivationEmail: boolean,
+  emailType: 'alert' | 'activation',
   token: string
 ) => {
   const templatePath = path.join(__dirname, 'mail.html');
@@ -24,19 +25,43 @@ export const createHtmlPage = async (
   const root = parse(html);
 
   // Update the header
-  const header = root.querySelector('.header h1');
-  if (header) {
-    header.set_content(subject);
-  }
+  addPageHeader(root, subject);
 
   // Update the content
+  addPageContent(root, content);
+
+  // Update the button
+  addPageButton(root, emailType, token);
+
+  return root.toString();
+};
+
+const addPageContent = (root: HTMLElement, content: string) => {
   const contentDiv = root.querySelector('.content p');
   if (contentDiv) {
     contentDiv.set_content(content);
   }
+};
 
-  // If it's an activation email, update the button link
-  if (isActivationEmail) {
+const addPageHeader = (root: HTMLElement, subject: string) => {
+  const header = root.querySelector('.header h1');
+  if (header) {
+    header.set_content(subject);
+  }
+};
+
+const addPageButton = (
+  root: HTMLElement,
+  emailType: 'alert' | 'activation' | 'passwordReset',
+  token: string
+) => {
+  if (emailType === 'alert') {
+    // Remove the button container if not activation email
+    const buttonContainer = root.querySelector('.button-container');
+    if (buttonContainer) {
+      buttonContainer.remove();
+    }
+  } else if (emailType === 'activation') {
     const button = root.querySelector('#btn');
     const nodeEnv = configurationProvider.getValue('environment.nodeEnv');
     if (button) {
@@ -46,12 +71,5 @@ export const createHtmlPage = async (
         button.setAttribute('href', `https://charity-proj.netlify.app/activateAccount/${token}`);
       }
     }
-  } else {
-    // Remove the button container if not activation email
-    const buttonContainer = root.querySelector('.button-container');
-    if (buttonContainer) {
-      buttonContainer.remove();
-    }
   }
-  return root.toString();
 };

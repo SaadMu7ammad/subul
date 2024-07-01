@@ -15,7 +15,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '@libs/errors/components/index';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendResetPasswordEmail, setupMailSender } from '@utils/mailer';
 import { checkValueEquality, updateNestedProperties } from '@utils/shared';
 import { Response } from 'express';
 
@@ -25,12 +25,7 @@ const requestResetPassword = async (reqBody: DataForRequestResetPassword) => {
   const charityResponse = await charityUtils.checkCharityIsExist(reqBody.email);
   const token = await generateResetTokenTemp();
   await charityUtils.setTokenToCharity(charityResponse.charity, token);
-  await setupMailSender(
-    charityResponse.charity.email,
-    'reset alert',
-    'go to that link to reset the password (www.dummy.com) ' +
-      `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-  );
+  await sendResetPasswordEmail(reqBody.email, token);
   return {
     charity: charityResponse.charity,
     message: 'email sent successfully to reset the password',
@@ -77,8 +72,9 @@ const activateAccount = async (
   await charityUtils.verifyCharityAccount(storedCharity);
   await setupMailSender(
     storedCharity.email,
-    `hello ${storedCharity.name} charity ,your account has been activated successfully`,
-    `<h2>now you are ready to spread the goodness with us </h2>`
+    'Account Activated',
+    `hello ${storedCharity.name} charity ,your account has been activated successfully` +
+      `now you are ready to spread the goodness with us`
   );
 
   return {

@@ -16,10 +16,10 @@ const createTransporter = async (
   receiverEmail: string,
   subject: string,
   content: string,
-  isActivationEmail: boolean = false,
+  emailType: 'alert' | 'activation' = 'alert',
   token: string = ''
 ) => {
-  const html = await createHtmlPage(subject, content, isActivationEmail, token);
+  const html = await createHtmlPage(subject, content, emailType, token);
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -61,7 +61,7 @@ const sendActivationEmail = async (receiverEmail: string, token: string) => {
       receiverEmail,
       'Activate Your Account',
       "Welcome to Subul Organization! We're excited to have you on board. To get started, please activate your account by clicking the button below.",
-      true,
+      'activation',
       token
     );
     await transporter.sendMail();
@@ -78,7 +78,7 @@ const sendReactivationEmail = async (receiverEmail: string, token: string) => {
       receiverEmail,
       'Reactivate Your Account',
       'Your Email Has Been Changed! Please reactivate your account by clicking the button below.',
-      true,
+      'activation',
       token
     );
     await transporter.sendMail();
@@ -87,4 +87,27 @@ const sendReactivationEmail = async (receiverEmail: string, token: string) => {
     throw new Error('An Error Occurred While Sending The Mail');
   }
 };
-export { setupMailSender, generateResetTokenTemp, sendActivationEmail, sendReactivationEmail };
+
+// Frontend Team has no time to make the reset password page 🥲
+const sendResetPasswordEmail = async (receiverEmail: string, token: string) => {
+  logger.info(`sending mail to ${receiverEmail}`);
+  try {
+    const transporter = await createTransporter(
+      receiverEmail,
+      'Reset Your Password',
+      `You are receiving this email because you requested to reset your password. Please use this token to reset your password.\n ${token}`,
+      'alert'
+    );
+    await transporter.sendMail();
+  } catch (error) {
+    logger.error(`Mailer Error : ${error}`);
+    throw new Error('An Error Occurred While Sending The Mail');
+  }
+};
+export {
+  setupMailSender,
+  generateResetTokenTemp,
+  sendActivationEmail,
+  sendReactivationEmail,
+  sendResetPasswordEmail,
+};

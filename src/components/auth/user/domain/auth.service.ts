@@ -66,7 +66,7 @@ const registerUser = async (
   try {
     await setupMailSender(
       newCreatedUser.user.email,
-      'welcome alert',
+      'Welcome Alert',
       `hi ${newCreatedUser.user.name?.firstName + ' ' + newCreatedUser.user.name?.lastName} ` +
         ' we are happy that you joined our community ... keep spreading goodness with us'
     );
