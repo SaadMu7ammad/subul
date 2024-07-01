@@ -28,6 +28,16 @@ export class charityServiceClass implements charityServiceSkeleton {
 
   constructor() {
     this.charityUtils = new charityUtilsClass();
+    this.requestResetPassword = this.requestResetPassword.bind(this);
+    this.confirmResetPassword = this.confirmResetPassword.bind(this);
+    this.changePassword = this.changePassword.bind(this);
+    this.activateAccount = this.activateAccount.bind(this);
+    this.logoutCharity = this.logoutCharity.bind(this);
+    this.getCharityProfileData = this.getCharityProfileData.bind(this);
+    this.editCharityProfile = this.editCharityProfile.bind(this);
+    this.changeProfileImage = this.changeProfileImage.bind(this);
+    this.sendDocs = this.sendDocs.bind(this);
+    this.requestEditCharityPayments = this.requestEditCharityPayments.bind(this);
   }
   async requestResetPassword(
     reqBody: DataForRequestResetPassword

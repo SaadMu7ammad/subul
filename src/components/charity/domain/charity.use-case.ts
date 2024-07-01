@@ -29,6 +29,17 @@ export class charityUseCaseClass implements charityUseCaseSkeleton {
 
   constructor() {
     this.charityService = new charityServiceClass();
+    this.activateCharityAccount = this.activateCharityAccount.bind(this);
+    this.requestResetPassword = this.requestResetPassword.bind(this);
+    this.confirmResetPassword = this.confirmResetPassword.bind(this);
+    this.changePassword = this.changePassword.bind(this);
+    this.showCharityProfile = this.showCharityProfile.bind(this);
+    this.editCharityProfile = this.editCharityProfile.bind(this);
+    this.changeProfileImage = this.changeProfileImage.bind(this);
+    this.requestEditCharityPayments = this.requestEditCharityPayments.bind(this);
+    this.requestEditCharityPayments = this.requestEditCharityPayments.bind(this);
+    this.sendDocs = this.sendDocs.bind(this);
+    this.logout = this.logout.bind(this);
   }
   async activateCharityAccount(
     req: Request,

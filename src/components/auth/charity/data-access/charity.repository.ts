@@ -1,7 +1,7 @@
 import { ICharity } from '@components/charity/data-access/interfaces';
 import Charity from '@components/charity/data-access/models/charity.model';
 
-import { CharityData } from '../domain/auth.use-case';
+import { CharityData } from './interfaces';
 
 const findCharity = async (email: string): Promise<ICharity | null> => {
   const charity = await Charity.findOne({
