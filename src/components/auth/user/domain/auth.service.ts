@@ -7,7 +7,7 @@ import {
 } from '@components/auth/user/data-access/interfaces';
 import { User } from '@components/user/data-access/interfaces';
 import generateToken from '@utils/generateToken';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendActivationEmail, setupMailSender } from '@utils/mailer';
 import { Response } from 'express';
 
 import logger from '../../../../utils/logger';
@@ -39,15 +39,7 @@ const authUser = async (
     const token: string = await generateResetTokenTemp();
     userResponse.user.verificationCode = token;
     await userResponse.user.save();
-    await setupMailSender(
-      userResponse.user.email,
-      'login alert',
-      `hi ${
-        userResponse.user.name?.firstName + ' ' + userResponse.user.name?.lastName
-      } it seems that your account still not verified or activated please go to that link to activate the account ` +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
+    await sendActivationEmail(userResponse.user.email, token);
     return {
       user: userResponse.user,
       emailAlert: true,
