@@ -17,7 +17,7 @@ export const createHtmlPage = async (
   isActivationEmail: boolean,
   token: string
 ) => {
-  const templatePath = path.join(__dirname, 'email.html');
+  const templatePath = path.join(__dirname, 'mail.html');
   const html = await loadHtmlTemplate(templatePath);
 
   // Parse the HTML and make replacements
@@ -30,18 +30,19 @@ export const createHtmlPage = async (
   }
 
   // Update the content
-  const contentDiv = root.querySelector('.content');
+  const contentDiv = root.querySelector('.content p');
   if (contentDiv) {
     contentDiv.set_content(content);
   }
 
   // If it's an activation email, update the button link
   if (isActivationEmail) {
-    const button = root.querySelector('.button-container .button');
+    const button = root.querySelector('#btn');
+    const nodeEnv = configurationProvider.getValue('environment.nodeEnv');
     if (button) {
-      if (configurationProvider.getValue('NODE_ENV') === 'development') {
+      if (nodeEnv === 'development') {
         button.setAttribute('href', `http://localhost:5173/activateAccount/${token}`);
-      } else if (configurationProvider.getValue('NODE_ENV') === 'production') {
+      } else if (nodeEnv === 'production') {
         button.setAttribute('href', `https://charity-proj.netlify.app/activateAccount/${token}`);
       }
     }

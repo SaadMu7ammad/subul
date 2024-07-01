@@ -71,4 +71,20 @@ const sendActivationEmail = async (receiverEmail: string, token: string) => {
   }
 };
 
-export { setupMailSender, generateResetTokenTemp, sendActivationEmail };
+const sendReactivationEmail = async (receiverEmail: string, token: string) => {
+  logger.info(`sending mail to ${receiverEmail}`);
+  try {
+    const transporter = await createTransporter(
+      receiverEmail,
+      'Reactivate Your Account',
+      'Your Email Has Been Changed! Please reactivate your account by clicking the button below.',
+      true,
+      token
+    );
+    await transporter.sendMail();
+  } catch (error) {
+    logger.error(`Mailer Error : ${error}`);
+    throw new Error('An Error Occurred While Sending The Mail');
+  }
+};
+export { setupMailSender, generateResetTokenTemp, sendActivationEmail, sendReactivationEmail };
