@@ -17,7 +17,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '@libs/errors/components/index';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendResetPasswordEmail, setupMailSender } from '@utils/mailer';
 import { checkValueEquality, updateNestedProperties } from '@utils/shared';
 import { Response } from 'express';
 
@@ -35,12 +35,14 @@ export class charityServiceClass implements charityServiceSkeleton {
     const charityResponse = await this.charityUtils.checkCharityIsExist(reqBody.email);
     const token = await generateResetTokenTemp();
     await this.charityUtils.setTokenToCharity(charityResponse.charity, token);
-    await setupMailSender(
-      charityResponse.charity.email,
-      'reset alert',
-      'go to that link to reset the password (www.dummy.com) ' +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
+    // await setupMailSender(
+    //   charityResponse.charity.email,
+    //   'reset alert',
+    //   'go to that link to reset the password (www.dummy.com) ' +
+    //     `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
+    // );
+    await sendResetPasswordEmail(reqBody.email, token);
+
     return {
       charity: charityResponse.charity,
       message: 'email sent successfully to reset the password',
@@ -76,7 +78,7 @@ export class charityServiceClass implements charityServiceSkeleton {
   ): Promise<{ message: string }> {
     const storedCharity = charity;
     if (this.charityUtils.checkCharityVerification(storedCharity)) {
-      return { message: 'account already is activated' };
+      throw new BadRequestError('account already is activated');
     }
     if (!storedCharity.verificationCode) throw new NotFoundError('verificationCode not found');
     const isMatch = checkValueEquality(storedCharity.verificationCode, reqBody.token);
@@ -89,7 +91,7 @@ export class charityServiceClass implements charityServiceSkeleton {
     await setupMailSender(
       storedCharity.email,
       `hello ${storedCharity.name} charity ,your account has been activated successfully`,
-      `<h2>now you are ready to spread the goodness with us </h2>`
+      `now you are ready to spread the goodness with us`
     );
 
     return {

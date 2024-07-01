@@ -113,7 +113,7 @@ export class usedItemUtilsClass implements usedItemUtilsSkeleton {
     const usedItems = await this.usedItemInstance.usedItemdModel.findAllUsedItems();
     if (!usedItems.length) {
       return {
-        usedItems: usedItems,
+        usedItems: [],
         message: 'No Used Items Found',
       };
     }

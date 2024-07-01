@@ -1,6 +1,6 @@
 import { IUser, userUtilsSkeleton } from '@components/user/data-access/interfaces';
 import { NotFoundError } from '@libs/errors/components/index';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendReactivationEmail } from '@utils/mailer';
 import { Response } from 'express';
 
 import { USER } from './user.class';
@@ -81,15 +81,7 @@ export class userUtilsClass implements userUtilsSkeleton {
 
     const token = await generateResetTokenTemp();
     UserBeforeUpdate.verificationCode = token;
-    await setupMailSender(
-      UserBeforeUpdate.email,
-      'email changed alert',
-      `hi ${
-        UserBeforeUpdate?.name?.firstName + ' ' + UserBeforeUpdate?.name?.lastName
-      }email has been changed You must Re activate account ` +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
+    await sendReactivationEmail(UserBeforeUpdate.email, token);
     await UserBeforeUpdate.save();
     return { user: UserBeforeUpdate };
   }

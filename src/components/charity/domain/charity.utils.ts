@@ -13,7 +13,7 @@ import {
 } from '@components/charity/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { deleteOldImgs } from '@utils/deleteFile';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendReactivationEmail, setupMailSender } from '@utils/mailer';
 import { checkValueEquality } from '@utils/shared';
 import { Response } from 'express';
 
@@ -97,13 +97,7 @@ export class charityUtilsClass implements charityUtilsSkeleton {
     }
     const token = await generateResetTokenTemp();
     CharityBeforeUpdate.verificationCode = token;
-    await setupMailSender(
-      CharityBeforeUpdate.email,
-      'email changed alert',
-      `hi ${CharityBeforeUpdate.name}email has been changed You must Re activate account ` +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
+    await sendReactivationEmail(CharityBeforeUpdate.email, token);
     await CharityBeforeUpdate.save();
     return { charity: CharityBeforeUpdate };
   };

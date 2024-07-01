@@ -125,7 +125,7 @@ export class caseServiceClass implements caseServiceSkeleton {
 
       await setupMailSender(
         userOwner.email,
-        `request Fundraising campaign`,
+        `Request Fundraising Campaign`,
         `hello ${userOwner.name.firstName} ${userOwner.name.lastName} -- we ${charity.name} charity are sorry that your fundraising request had been rejected`
       );
     }
