@@ -1,6 +1,7 @@
 import Charity from '@components/charity/data-access/models/charity.model';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import {
+  DUMMY_CHARITY,
   appendDummyCharityToFormData,
   appendDummyImageToFormData,
   clearCharityDatabase,
@@ -47,7 +48,7 @@ describe('/api/charities', () => {
   test('should not register a new charity with missing data', async () => {
     //Arrange
     const formData = new FormData();
-    formData.append('name', 'Charity Name');
+    formData.append('name', DUMMY_CHARITY.name);
 
     //Act
     const response = await axiosAPIClient.post('/api/charities/register', formData, {
