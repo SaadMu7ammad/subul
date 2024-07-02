@@ -32,11 +32,12 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
   }
 
   async bookUsedItem(
+    req: Request,
     bookItemData: BookItemRequest
   ): Promise<{ usedItem: IUsedItem; message: string }> {
     await this.usedItemUtilsInstance.getUsedItem(bookItemData.itemId); //TODO : Delete this line and separate the logic : find the usedItem first , then book it
 
-    const usedItem = await this.usedItemUtilsInstance.bookUsedItem(bookItemData);
+    const usedItem = await this.usedItemUtilsInstance.bookUsedItem(req, bookItemData);
 
     return {
       usedItem: usedItem,
@@ -45,9 +46,10 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
   }
 
   async cancelBookingOfUsedItem(
+    req: Request,
     bookItemData: BookItemRequest
   ): Promise<{ usedItem: IUsedItem; message: string }> {
-    const usedItem = await this.usedItemUtilsInstance.cancelBookingOfUsedItem(bookItemData);
+    const usedItem = await this.usedItemUtilsInstance.cancelBookingOfUsedItem(req, bookItemData);
     // // If not null and charity is not the same as the one in the request should handle that though
     // if (usedItems && usedItems.charity?.toString() !== bookItemData.charity) {
     //   throw new UnauthenticatedError(
@@ -61,9 +63,10 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
   }
 
   async ConfirmBookingReceipt(
+    req: Request,
     bookItemData: BookItemRequest
   ): Promise<{ usedItem: IUsedItem; message: string }> {
-    const usedItem = await this.usedItemUtilsInstance.ConfirmBookingReceipt(bookItemData);
+    const usedItem = await this.usedItemUtilsInstance.ConfirmBookingReceipt(req, bookItemData);
     // // If not null and charity is not the same as the one in the request should handle that though
     // if (usedItem && usedItem.charity?.toString() !== bookItemData.charity) {
     //   throw new UnauthenticatedError(

@@ -3,6 +3,7 @@
     "notAdmin": "You are not an admin",
     "noHeaderSent": "No Header Sent",
     "charityNotFound": "Charity not found",
+    "charityConfirmed": "Charity has been confirmed successfully",
     "nameRequired": "The name is required",
     "firstNameRequired": "The first name is required",
     "lastNameRequired": "The last name is required",
@@ -59,5 +60,16 @@
     "updateUsedItem": "Used Item Updated Successfully",
     "getUsedItem": "Used Item Retrieved Successfully",
     "imageNameInvalid": "Image name must end with .jpg, .jpeg, or .png."
+  },
+  "notifications": {
+    "charityConfirmed": "Your charity account has been confirmed",
+    "charityRejected": "Your charity account has been rejected",
+    "paymentAccountConfirmed": "Your payment account has been confirmed",
+    "paymentAccountRejected": "Your payment account has been rejected",
+    "charityPostedCase": "Charity {{name}} has posted a new case, check it out!",
+    "usedItemsBooked": "Your item {{title}} has been booked by {{charityName}} charity",
+    "usedItemsBookedConfirmed": "Your item {{title}} booking has been confirmed by {{charityName}} charity",
+    "usedItemsBookedCancelled": "Your item {{title}} booking has been cancelled by {{charityName}} charity",
+    "bloodContribution": "User {{firstName}} {{lastName}} offered to donate blood to your case {{title}}"
   }
 }

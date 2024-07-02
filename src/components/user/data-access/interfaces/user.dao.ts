@@ -52,6 +52,7 @@ export interface userServiceSkeleton {
   bloodContribution(req: Request, user: IUser, id: string | undefined): Promise<void>;
 
   requestFundraisingCampaign(
+    req: Request,
     caseData: ICase,
     image: string,
     charityId: string,

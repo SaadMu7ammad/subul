@@ -24,7 +24,7 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
     const caseImage: string = req.body?.image?.[0] || 'noImg';
     const charity: ICharity = res.locals.charity;
 
-    const responseData = await this.caseServiceInstance.addCase(caseData, caseImage, charity);
+    const responseData = await this.caseServiceInstance.addCase(req, caseData, caseImage, charity);
 
     return {
       case: responseData.case,

@@ -29,6 +29,7 @@ export class caseServiceClass implements caseServiceSkeleton {
 
   notificatioInstance = new notificationManager();
   async addCase(
+    req: Request,
     caseData: ICase,
     image: string,
     charity: ICharity,
@@ -50,7 +51,9 @@ export class caseServiceClass implements caseServiceSkeleton {
     }
 
     this.notificatioInstance.notifyAllUsers(
-      `Charity ${charity.name} has posted a new case , check it out!`,
+      // `Charity ${charity.name} has posted a new case , check it out!`,
+      // req.t('notifications.charityPostedCase'),
+      req.t('notifications.charityPostedCase', { name: charity.name }),
       1 * 24 * 60 * 60,
       'case',
       newCase._id

@@ -131,22 +131,23 @@ export class usedItemUtilsClass implements usedItemUtilsSkeleton {
     };
   }
 
-  async bookUsedItem(bookItemData: BookItemRequest): Promise<IUsedItem> {
+  async bookUsedItem(req: Request, bookItemData: BookItemRequest): Promise<IUsedItem> {
     const usedItem = await this.usedItemInstance.usedItemdModel.findAndUpdateToBooked(bookItemData);
 
     if (!usedItem) throw new BadRequestError('This Item Is Already Booked');
 
-    await this.notifyUserAboutUsedItemBooking(usedItem, 'booking');
+    await this.notifyUserAboutUsedItemBooking(req, usedItem, 'booking');
 
     return usedItem;
   }
 
-  async cancelBookingOfUsedItem(bookItemData: BookItemRequest): Promise<IUsedItem> {
+  async cancelBookingOfUsedItem(req: Request, bookItemData: BookItemRequest): Promise<IUsedItem> {
     const usedItem = await this.usedItemInstance.usedItemdModel.findBookedItem(bookItemData);
     if (!usedItem) throw new BadRequestError('This Item Already Cancelled Or Confirmed');
 
     // TODO : this should be after saving the usedItem , don't notify the user if something wrong happened and the used Item is not saved
     await this.notifyUserAboutUsedItemBooking(
+      req,
       usedItem,
       'bookingCancelation',
       3 * 24 * 60 * 60 * 1000
@@ -160,13 +161,13 @@ export class usedItemUtilsClass implements usedItemUtilsSkeleton {
     return usedItem;
   }
 
-  async ConfirmBookingReceipt(bookItemData: BookItemRequest): Promise<IUsedItem> {
+  async ConfirmBookingReceipt(req: Request, bookItemData: BookItemRequest): Promise<IUsedItem> {
     const usedItem = await this.usedItemInstance.usedItemdModel.findBookedItem(bookItemData);
     if (!usedItem) throw new NotFoundError('Used Item Not Found');
     usedItem.confirmed = true;
     await usedItem.save();
 
-    await this.notifyUserAboutUsedItemBooking(usedItem, 'bookingConfirmation');
+    await this.notifyUserAboutUsedItemBooking(req, usedItem, 'bookingConfirmation');
 
     return usedItem;
   }
@@ -178,6 +179,7 @@ export class usedItemUtilsClass implements usedItemUtilsSkeleton {
   }
 
   async notifyUserAboutUsedItemBooking(
+    req: Request,
     usedItem: IUsedItem,
     notificationType: 'booking' | 'bookingConfirmation' | 'bookingCancelation',
     maxAge: number | undefined = undefined
@@ -191,9 +193,18 @@ export class usedItemUtilsClass implements usedItemUtilsSkeleton {
     const charityName = usedItem.charity?.name;
 
     const notificationMessage = {
-      booking: `Your item ${usedItem.title} has been booked by ${charityName} charity`,
-      bookingConfirmation: `Your item ${usedItem.title} booking has been confirmed by ${charityName} charity`,
-      bookingCancelation: `Your item ${usedItem.title} booking has been cancelled by ${charityName} charity`,
+      // `Your item ${usedItem.title} has been booked by ${charityName} charity`
+      booking: req.t('notifications.usedItemsBooked', { title: usedItem.title, charityName }),
+      // `Your item ${usedItem.title} booking has been confirmed by ${charityName} charity`
+      bookingConfirmation: req.t('notifications.usedItemsBookedConfirmed', {
+        title: usedItem.title,
+        charityName,
+      }),
+      // `Your item ${usedItem.title} booking has been cancelled by ${charityName} charity`
+      bookingCancelation: req.t('notifications.usedItemsBookedCancelled', {
+        title: usedItem.title,
+        charityName,
+      }),
     };
     const notificationInstance = new notificationManager();
     notificationInstance.sendNotification(

@@ -146,6 +146,7 @@ export class adminUseCaseClass implements adminUseCaseSkeleton {
 
     const confirmedPaymentAccount: ConfirmPendingCharity =
       await this.adminServiceInstance.confirmPaymentAccountRequestForConfirmedCharities(
+        req,
         id,
         paymentMethod,
         paymentAccountID
@@ -176,6 +177,7 @@ export class adminUseCaseClass implements adminUseCaseSkeleton {
 
     const rejectedPaymentAccount: ConfirmPendingCharity =
       await this.adminServiceInstance.rejectPaymentAccountRequestForConfirmedCharities(
+        req,
         id,
         paymentMethod,
         paymentAccountID

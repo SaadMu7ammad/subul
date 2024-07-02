@@ -156,7 +156,7 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
   async bookUsedItem(req: Request, res: Response): Promise<GetUsedItemResponse> {
     const bookItemData = await this.usedItemUtilsInstance.createBookItemData(req, res);
 
-    const usedItemResponse = await this.usedItemServiceInstance.bookUsedItem(bookItemData);
+    const usedItemResponse = await this.usedItemServiceInstance.bookUsedItem(req, bookItemData);
     return {
       usedItem: usedItemResponse.usedItem,
       message: usedItemResponse.message,
@@ -166,8 +166,10 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
   async cancelBookingOfUsedItem(req: Request, res: Response): Promise<GetUsedItemResponse> {
     const bookItemData = await this.usedItemUtilsInstance.createBookItemData(req, res);
 
-    const usedItemsResponse =
-      await this.usedItemServiceInstance.cancelBookingOfUsedItem(bookItemData);
+    const usedItemsResponse = await this.usedItemServiceInstance.cancelBookingOfUsedItem(
+      req,
+      bookItemData
+    );
 
     return {
       usedItem: usedItemsResponse.usedItem,
@@ -178,8 +180,10 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
   async ConfirmBookingReceipt(req: Request, res: Response): Promise<GetUsedItemResponse> {
     const bookItemData = await this.usedItemUtilsInstance.createBookItemData(req, res);
 
-    const usedItemsResponse =
-      await this.usedItemServiceInstance.ConfirmBookingReceipt(bookItemData);
+    const usedItemsResponse = await this.usedItemServiceInstance.ConfirmBookingReceipt(
+      req,
+      bookItemData
+    );
 
     return {
       usedItem: usedItemsResponse.usedItem,
