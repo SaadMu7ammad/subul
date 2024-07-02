@@ -48,7 +48,7 @@ export const createDummyCharityAndReturnToken = async () => {
     },
   };
 
-  const dummyCharity = await charity.chairtyModel.createCharity(dummyCharityData);
+  const dummyCharity = await charity.charityModel.createCharity(dummyCharityData);
 
   const token = generateTokenForTesting(dummyCharity!._id.toString(), 'charity');
 

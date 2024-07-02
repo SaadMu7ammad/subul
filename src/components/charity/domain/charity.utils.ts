@@ -55,7 +55,7 @@ export class charityUtilsClass implements charityUtilsSkeleton {
   }
   checkCharityIsExist = async (email: string): Promise<{ charity: ICharity }> => {
     //return charity if it exists
-    const charityIsExist = await this.#charity.chairtyModel.findCharity(email);
+    const charityIsExist = await this.#charity.charityModel.findCharity(email);
     if (!charityIsExist) {
       throw new NotFoundError('email not found Please use another one');
     }
@@ -66,7 +66,7 @@ export class charityUtilsClass implements charityUtilsSkeleton {
 
   checkCharityIsExistById = async (id: string): Promise<{ charity: ICharity }> => {
     //return charity if it exists
-    const charityIsExist = await this.#charity.chairtyModel.findCharityById(id);
+    const charityIsExist = await this.#charity.charityModel.findCharityById(id);
     if (!charityIsExist) {
       throw new NotFoundError('charity not found');
     }
@@ -84,7 +84,7 @@ export class charityUtilsClass implements charityUtilsSkeleton {
     return { charity: res.locals.charity };
   };
   checkIsEmailDuplicated = async (email: string): Promise<void> => {
-    const isDuplicatedEmail = await this.#charity.chairtyModel.findCharity(email);
+    const isDuplicatedEmail = await this.#charity.charityModel.findCharity(email);
     if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
   };
   changeCharityEmailWithMailAlert = async (

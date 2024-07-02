@@ -169,7 +169,7 @@ class userServiceClass implements userServiceSkeleton {
     // const _CharityRepository = new CharityRepository();
 
     const chosenCharity: ICharity | null =
-      await this.#charity.chairtyModel.findCharityById(charityId);
+      await this.#charity.charityModel.findCharityById(charityId);
     if (!chosenCharity) throw new BadRequestError('no charity found');
 
     if (
