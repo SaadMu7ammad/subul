@@ -56,6 +56,7 @@ export const getDummyCharityObject = (
     email: 'dummy@dummy.ape',
     password: 'dummyPassword',
     name: 'dummy',
+    phone: '01234567890',
     contactInfo: {
       email: 'dummy@dummy.ape',
       phone: '01234567890',
@@ -70,12 +71,10 @@ export const getDummyCharityObject = (
     isConfirmed,
     isPending: false,
     currency: ['EGP'],
-    charityLocation: [
+    charityLocation: {
       //@ts-expect-error don't care much when we are testing :P
-      {
-        governorate: 'Cairo',
-      },
-    ],
+      governorate: 'Cairo',
+    },
     verificationCode,
     charityDocs: {
       docs1: ['doc1.png'],

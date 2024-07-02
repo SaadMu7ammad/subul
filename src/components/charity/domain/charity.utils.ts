@@ -295,7 +295,8 @@ export class charityUtilsClass implements charityUtilsSkeleton {
     for (const [_, item] of storedCharity.paymentMethods.bankAccount.entries()) {
       console.log('1---------------');
 
-      if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
+      //@ts-expect-error //TODO: Fix this
+      if (item._id.toString() === reqPaymentMethodsObj.paymentId) {
         console.log(item);
         item.enable = false;
         item.iban = reqPaymentMethodsObj.paymentMethods.bankAccount.iban;
@@ -319,7 +320,8 @@ export class charityUtilsClass implements charityUtilsSkeleton {
     for (const [_, item] of storedCharity.paymentMethods.fawry.entries()) {
       console.log('2---------------');
 
-      if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
+      //@ts-expect-error //TODO: Fix this
+      if (item._id.toString() === reqPaymentMethodsObj.paymentId) {
         console.log(item);
         item.enable = false;
         item.number = reqPaymentMethodsObj.paymentMethods.fawry.number;
@@ -342,7 +344,9 @@ export class charityUtilsClass implements charityUtilsSkeleton {
 
     for (const [_, item] of storedCharity.paymentMethods.vodafoneCash.entries()) {
       console.log('-3--------------');
-      if (item._id === reqPaymentMethodsObj.paymentId.toString()) {
+
+      //@ts-expect-error //TODO: Fix this
+      if (item._id.toString() === reqPaymentMethodsObj.paymentId) {
         console.log(item);
         item.enable = false;
         item.number = reqPaymentMethodsObj.paymentMethods.vodafoneCash.number;
