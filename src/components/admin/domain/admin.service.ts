@@ -87,6 +87,7 @@ export class adminServiceClass implements adminServiceSkeleton {
   }
 
   async confirmPaymentAccountRequestForConfirmedCharities(
+    req: Request,
     charityId: string,
     // paymentMethod: string, // Allows any string value, which could include invalid keys
     paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
@@ -115,7 +116,7 @@ export class adminServiceClass implements adminServiceSkeleton {
       paymentAccountID
     );
 
-    await this.adminUtilsInstance.confirmingPaymentAccount(charity, paymentMethod, idx);
+    await this.adminUtilsInstance.confirmingPaymentAccount(req, charity, paymentMethod, idx);
 
     await setupMailSender(
       charity.email,
@@ -130,6 +131,7 @@ export class adminServiceClass implements adminServiceSkeleton {
   }
 
   async rejectPaymentAccountRequestForConfirmedCharities(
+    req: Request,
     charityId: string,
     // paymentMethod: string, // Allows any string value, which could include invalid keys
     paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
@@ -156,7 +158,7 @@ export class adminServiceClass implements adminServiceSkeleton {
       paymentAccountID
     );
 
-    await this.adminUtilsInstance.rejectingPaymentAccount(charity, paymentMethod, idx);
+    await this.adminUtilsInstance.rejectingPaymentAccount(req, charity, paymentMethod, idx);
 
     await setupMailSender(
       charity.email,
@@ -168,7 +170,6 @@ export class adminServiceClass implements adminServiceSkeleton {
       message: 'Charity payment account has been rejected',
     };
   }
-
   // That mean if charity makes a requestEditCharityPayment (add another acc for receive payment)
   async getPendingPaymentRequestsForConfirmedCharityById(
     req: Request,
@@ -260,7 +261,8 @@ export class adminServiceClass implements adminServiceSkeleton {
 
     if (!pendingCharity) throw new NotFoundError('Charity not found');
 
-    await this.adminUtilsInstance.confirmingCharity(pendingCharity);
+    await this.adminUtilsInstance.confirmingCharity(req, pendingCharity);
+    // await adminUtils.confirmingCharity(req, pendingCharity);
 
     await setupMailSender(
       pendingCharity.email,
@@ -270,7 +272,7 @@ export class adminServiceClass implements adminServiceSkeleton {
 
     return {
       charity: charity.allPendingCharities[0],
-      message: 'Charity has been confirmed successfully',
+      message: req.t('errors.charityConfirmed'),
     };
   }
 
@@ -282,7 +284,7 @@ export class adminServiceClass implements adminServiceSkeleton {
 
     if (!pendingCharity) throw new NotFoundError('Charity not found');
 
-    await this.adminUtilsInstance.rejectingCharity(pendingCharity);
+    await this.adminUtilsInstance.rejectingCharity(req, pendingCharity);
 
     await setupMailSender(
       pendingCharity.email,

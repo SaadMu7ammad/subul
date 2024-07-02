@@ -26,6 +26,7 @@ export interface CaseDao {
 
 export interface caseServiceSkeleton {
   addCase(
+    req: Request,
     caseData: ICase,
     image: string,
     charity: ICharity,
