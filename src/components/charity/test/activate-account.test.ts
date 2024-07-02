@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { CharityTestingEnvironment } from '@utils/test-helpers';
+import { CharityTestingEnvironment, DUMMY_TOKEN, INVALID_TOKEN } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 import Charity from '../data-access/models/charity.model';
@@ -11,7 +11,7 @@ const env = new CharityTestingEnvironment(
   {
     isActivated: true,
     isConfirmed: false,
-    verificationCode: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
+    verificationCode: DUMMY_TOKEN,
   }
 );
 
@@ -27,7 +27,7 @@ beforeEach(async () => {
 
     charity.emailVerification.verificationDate = '';
 
-    charity.verificationCode = '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha';
+    charity.verificationCode = DUMMY_TOKEN;
 
     await charity.save();
   }
@@ -56,7 +56,7 @@ describe('api/charities', () => {
     test('Should return 401 Status Code if token is invalid', async () => {
       // Act
       const response = await axiosAPIClient.post('/api/charities/activate', {
-        token: 'invalidTokeninvalidTokeninvalidTokeninvalidTokeninvalidToken',
+        token: INVALID_TOKEN,
       });
 
       // Assert
@@ -66,12 +66,12 @@ describe('api/charities', () => {
     test('Should return 400 Status Code if account is already activated', async () => {
       // Arrange
       await axiosAPIClient.post('/api/charities/activate', {
-        token: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
+        token: DUMMY_TOKEN,
       });
 
       // Act
       const response = await axiosAPIClient.post('/api/charities/activate', {
-        token: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
+        token: DUMMY_TOKEN,
       });
 
       // Assert

@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
 import {
+  BANK_ACCOUNT_INFO,
+  DUMMY_CHARITY,
   appendBankInfoToFormData,
   authenticatedCharityTestingEnvironment,
 } from '@utils/test-helpers';
@@ -39,7 +41,7 @@ describe('api/charities', () => {
       expect(response.status).toBe(200);
       expect(getProfileResponse.data.charity.paymentMethods.bankAccount.length).toEqual(2);
       expect(getProfileResponse.data.charity.paymentMethods.bankAccount[1].accNumber).toEqual(
-        '1503070704120700019'
+        BANK_ACCOUNT_INFO.accNumber
       );
     });
 
@@ -47,7 +49,7 @@ describe('api/charities', () => {
       // Arrange
       const formData = new FormData();
 
-      formData.append('payment_id', '65f9fcf93dbbeaaa8c2afec4');
+      formData.append('payment_id', DUMMY_CHARITY?.paymentMethods?.bankAccount[0]?._id);
 
       appendBankInfoToFormData(formData);
 
@@ -64,7 +66,7 @@ describe('api/charities', () => {
       expect(response.status).toBe(200);
       expect(getProfileResponse.data.charity.paymentMethods.bankAccount.length).toEqual(2);
       expect(getProfileResponse.data.charity.paymentMethods.bankAccount[0].accNumber).toEqual(
-        '1503070704120700019'
+        BANK_ACCOUNT_INFO.accNumber
       );
     });
   });

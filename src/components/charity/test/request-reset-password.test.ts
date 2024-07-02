@@ -1,6 +1,7 @@
 import Charity from '@components/charity/data-access/models/charity.model';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import {
+  NON_EXISTING_CHARITY_EMAIL,
   clearCharityDatabase,
   getDummyCharityObject,
   unauthenticatedCharityTestingEnvironment,
@@ -45,7 +46,7 @@ describe('/api/charities', () => {
     test('Should Send a 404 status code when the email is not found', async () => {
       //Act
       const response = await axiosAPIClient.post('/api/charities/reset', {
-        email: 'none@none.ape',
+        email: NON_EXISTING_CHARITY_EMAIL,
       });
 
       //Assert

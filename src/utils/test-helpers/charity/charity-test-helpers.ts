@@ -4,7 +4,7 @@ import { CHARITY } from '@components/charity/domain/charity.class';
 import { generateTokenForTesting } from '@utils/generateToken';
 import FormData from 'form-data';
 
-import { appendDummyImageToFormData } from '..';
+import { BANK_ACCOUNT_INFO, appendDummyImageToFormData } from '..';
 
 const charityObj = new CHARITY();
 
@@ -19,13 +19,9 @@ export const appendDocsToFormData = (formData: FormData) => {
 };
 
 export const appendBankInfoToFormData = (formData: FormData) => {
-  const bankInfo = {
-    accNumber: '1503070704120700019',
-    swiftCode: 'ECBAEGCA',
-    iban: 'EG890003000930603696309000540',
-  };
+  const bankAccountInfo = BANK_ACCOUNT_INFO;
 
-  for (const [key, value] of Object.entries(bankInfo)) {
+  for (const [key, value] of Object.entries(bankAccountInfo)) {
     formData.append(key, value);
   }
 

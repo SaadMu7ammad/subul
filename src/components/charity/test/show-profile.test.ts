@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { authenticatedCharityTestingEnvironment } from '@utils/test-helpers';
+import { DUMMY_CHARITY, authenticatedCharityTestingEnvironment } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
@@ -21,7 +21,7 @@ describe('api/charities', () => {
       const response = await axiosAPIClient.get('/api/charities/profile');
       //Assert
       expect(response.status).toBe(200);
-      expect(response.data.charity.email).toBe('dummy@dummy.ape');
+      expect(response.data.charity.email).toBe(DUMMY_CHARITY.email);
     });
   });
 });

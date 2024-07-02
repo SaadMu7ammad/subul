@@ -1,6 +1,8 @@
 import Charity from '@components/charity/data-access/models/charity.model';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import {
+  DUMMY_TOKEN,
+  NEW_PASSWORD,
   clearCharityDatabase,
   getDummyCharityObject,
   unauthenticatedCharityTestingEnvironment,
@@ -42,13 +44,13 @@ describe('/api/charities', () => {
         {
           email: charity.email,
           token: fetchedCharity?.verificationCode,
-          password: 'newPassword',
+          password: NEW_PASSWORD,
         }
       );
 
       const charityAuthResponse = await axiosAPIClient.post('/api/charities/auth', {
         email: charity.email,
-        password: 'newPassword',
+        password: NEW_PASSWORD,
       });
 
       //Assert
@@ -70,8 +72,8 @@ describe('/api/charities', () => {
         '/api/charities/reset/confirm',
         {
           email: charity.email,
-          token: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
-          password: 'newPassword',
+          token: DUMMY_TOKEN,
+          password: NEW_PASSWORD,
         }
       );
 

@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { authenticatedCharityTestingEnvironment } from '@utils/test-helpers';
+import {
+  EDIT_CHARITY_PROFILE_DATA,
+  authenticatedCharityTestingEnvironment,
+} from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
@@ -19,12 +22,12 @@ describe('api/charities', () => {
     test('Should edit profile with 200 status code', async () => {
       // Arrange
       const charityData = {
-        name: 'Charity Name',
+        name: EDIT_CHARITY_PROFILE_DATA.name,
         location: {
-          governorate: 'Cairo',
-          city: 'apeCity',
+          governorate: EDIT_CHARITY_PROFILE_DATA.location.governorate,
+          city: EDIT_CHARITY_PROFILE_DATA.location.city,
         },
-        description: 'this is a description',
+        description: EDIT_CHARITY_PROFILE_DATA.description,
       };
 
       // Act
@@ -49,8 +52,8 @@ describe('api/charities', () => {
       // Arrange
       const charityData = {
         location: {
-          governorate: 'Cairo',
-          city: 'apeCity',
+          governorate: EDIT_CHARITY_PROFILE_DATA.location.governorate,
+          city: EDIT_CHARITY_PROFILE_DATA.location.city,
         },
         locationId: charityLocation[0]._id,
       };
@@ -77,7 +80,7 @@ describe('api/charities', () => {
     test('When the email is changed, the old email should not be in the database & and Account needs to be verified again', async () => {
       // Arrange
       const charityData = {
-        email: 'dummy@dummy.dummy',
+        email: EDIT_CHARITY_PROFILE_DATA.email,
       };
 
       // Act

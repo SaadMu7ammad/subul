@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { authenticatedCharityTestingEnvironment } from '@utils/test-helpers';
+import { NEW_PASSWORD, authenticatedCharityTestingEnvironment } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
@@ -17,7 +17,7 @@ describe('api/charities', () => {
   describe('POST /change-password', () => {
     test('should change password successfully with 200 status code', async () => {
       const response = await axiosAPIClient.post('/api/charities/change-password', {
-        password: 'newPassword',
+        password: NEW_PASSWORD,
       });
 
       expect(response.status).toBe(200);
