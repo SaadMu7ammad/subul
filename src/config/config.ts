@@ -136,5 +136,19 @@ export default {
       nullable: false,
       env: 'HMAC_Secret',
     },
+    publicKey: {
+      doc: 'public Key',
+      format: 'String',
+      default: '',
+      nullable: false,
+      env: 'publicKey',
+    },
+    secretKey: {
+      doc: 'secret Key',
+      format: 'String',
+      default: '',
+      nullable: false,
+      env: 'secretKey',
+    },
   },
 };
