@@ -3,7 +3,7 @@ import { auth, isActivated } from '@components/auth/shared/index';
 import { tranactionUseCaseClass } from '@components/transaction/domain/transaction.use-case';
 import { getTransactionById } from '@libs/paymob/admin/getTransactionById.controller';
 import { hmacSetting } from '@libs/paymob/hmac/hmac.controller';
-import { paywithMobileWallet } from '@libs/paymob/payment/mobileWallets/mobileWallets.controller';
+import { payWithMobileWallet } from '@libs/paymob/payment/mobileWallets/mobileWallets.controller';
 import { payWithOnlineCard } from '@libs/paymob/payment/onlineCards/onlineCards.controller';
 import { refund } from '@libs/paymob/refund/refund.controller';
 import logger from '@utils/logger';
@@ -41,7 +41,7 @@ export default function defineRoutes(expressApp: Application) {
       try {
         // const req=_req as AuthedRequest
         logger.info(`transaction API was called to pay With MobileWallet`);
-        const payWithMobileWalletResponse = await paywithMobileWallet(req, res, next);
+        const payWithMobileWalletResponse = await payWithMobileWallet(req, res, next);
         return res.json(payWithMobileWalletResponse);
       } catch (error) {
         next(error);
