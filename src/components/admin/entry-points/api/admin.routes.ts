@@ -24,6 +24,39 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
+  // Fetch all users profile
+  router.get(
+    '/AllUsers',
+    auth,
+    isAdmin,
+    async (_req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Admin API was called to get All Users`);
+        const allUsersResponse = await adminUseCaseInstance.getAllUsers();
+        return res.json(allUsersResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
+  router.get(
+    '/GetCharity/:id',
+    auth,
+    isAdmin,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`Admin API was called to get a Charity by Id`);
+        const charityResponse = await adminUseCaseInstance.getCharityById(req, res, next);
+        return res.json(charityResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
   router.get(
     '/AllRequestsCharities',
     auth,

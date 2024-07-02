@@ -26,8 +26,11 @@ export interface UsedItemDao {
 }
 
 export interface usedItemServiceSkeleton {
-  addUsedItem(usedItemData: PlainIUsedItem): Promise<{ usedItem: IUsedItem; message: string }>;
-  findAllUsedItems(): Promise<{ usedItems: IUsedItem[]; message: string }>;
+  addUsedItem(
+    req: Request,
+    usedItemData: PlainIUsedItem
+  ): Promise<{ usedItem: IUsedItem; message: string }>;
+  findAllUsedItems(req: Request): Promise<{ usedItems: IUsedItem[]; message: string }>;
   bookUsedItem(bookItemData: BookItemRequest): Promise<{ usedItem: IUsedItem; message: string }>;
 
   cancelBookingOfUsedItem(
@@ -37,20 +40,26 @@ export interface usedItemServiceSkeleton {
     bookItemData: BookItemRequest
   ): Promise<{ usedItem: IUsedItem; message: string }>;
 
-  getUsedItem(id: string | undefined): Promise<{ usedItem: IUsedItem; message: string }>;
+  getUsedItem(
+    req: Request,
+    id: string | undefined
+  ): Promise<{ usedItem: IUsedItem; message: string }>;
   updateUsedItem(
+    req: Request,
     id: string | undefined,
     userId: string,
     usedItemData: Partial<IUsedItem>
   ): Promise<{ usedItem: IUsedItem; message: string }>;
 
   addUsedItemImages(
+    req: Request,
     id: string | undefined,
     userId: string,
     images: string[]
   ): Promise<{ usedItem: IUsedItem; message: string }>;
 
   deleteUsedItemImage(
+    req: Request,
     id: string | undefined,
     userId: string,
     imageName: string
@@ -75,7 +84,7 @@ export interface usedItemUseCaseSkeleton {
     res: Response,
     next: NextFunction
   ): Promise<AddUsedItemResponse>;
-  getAllUsedItems(): Promise<GetAllUsedItemsResponse>;
+  getAllUsedItems(req: Request): Promise<GetAllUsedItemsResponse>;
   bookUsedItem(req: Request, res: Response): Promise<GetUsedItemResponse>;
   cancelBookingOfUsedItem(req: Request, res: Response): Promise<GetUsedItemResponse>;
 
@@ -87,7 +96,7 @@ export interface usedItemUtilsSkeleton {
 
   validateIdParam(id: string | undefined): asserts id is string;
 
-  checkIfUsedItemBelongsToUser(usedItem: IUsedItem, userId: string): void;
+  checkIfUsedItemBelongsToUser(req: Request, usedItem: IUsedItem, userId: string): void;
 
   deleteUsedItem(id: string): Promise<IUsedItem>;
 

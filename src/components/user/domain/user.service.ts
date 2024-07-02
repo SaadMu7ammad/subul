@@ -22,6 +22,7 @@ import {
 import { generateResetTokenTemp, sendResetPasswordEmail, setupMailSender } from '@utils/mailer';
 import { notificationManager } from '@utils/sendNotification';
 import { checkValueEquality, updateNestedProperties } from '@utils/shared';
+import { Request } from 'express';
 import { Response } from 'express';
 
 import { userUtilsClass } from './user.utils';
@@ -88,7 +89,6 @@ class userServiceClass implements userServiceSkeleton {
 
     return { message: 'user password changed successfully' };
   }
-
   async changePassword(reqBody: dataForChangePassword, user: IUser) {
     const updatedUser = user;
     updatedUser.password = reqBody.password;
@@ -138,9 +138,9 @@ class userServiceClass implements userServiceSkeleton {
   }
   //we must limit the amount of sending emails as each time user click to contribute to the same case will send an email to him
   //we store nothing in the db
-  async bloodContribution(user: IUser, id: string | undefined) {
+  async bloodContribution(req: Request, user: IUser, id: string | undefined) {
     if (!id) throw new BadRequestError('no id provided');
-    const isCaseExist = await this.caseUtilsInstance.getCaseByIdFromDB(id);
+    const isCaseExist = await this.caseUtilsInstance.getCaseByIdFromDB(req, id);
 
     if (!isCaseExist.privateNumber) throw new BadRequestError('sorry no number is added');
     if (isCaseExist.finished) throw new BadRequestError('the case had been finished');

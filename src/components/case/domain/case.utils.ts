@@ -10,6 +10,7 @@ import { ICharity } from '@components/charity/data-access/interfaces';
 import { NotFoundError } from '@libs/errors/components/not-found';
 import { deleteOldImgs } from '@utils/deleteFile';
 import { Response } from 'express';
+import { Request } from 'express';
 
 import { CASE } from './case.class';
 
@@ -19,8 +20,8 @@ export class caseUtilsClass implements caseUtilsSkeleton {
     this.caseInstance = new CASE();
   }
 
-  async createCase(caseData: ICase): Promise<ICase | null> {
-    return await this.caseInstance.caseModel.createCase(caseData);
+  async createCase(charity: ICharity, caseData: ICase): Promise<ICase | null> {
+    return await this.caseInstance.caseModel.createCase(charity, caseData);
   }
 
   getSortObj(sortQueryParams: string | undefined): SortObj {
@@ -102,27 +103,31 @@ export class caseUtilsClass implements caseUtilsSkeleton {
     return cases;
   }
 
-  async getCaseByIdFromDB(caseId: string): Promise<ICase> {
+  async getCaseByIdFromDB(req: Request, caseId: string): Promise<ICase> {
     const _case: ICase | null = await this.caseInstance.caseModel.getCaseById(caseId);
 
-    if (!_case) throw new NotFoundError('No Such Case With this Id!');
+    if (!_case) throw new NotFoundError(req.t('errors.caseNotFound'));
 
     return _case;
   }
 
-  checkIfCaseBelongsToCharity(charityCasesArray: ICase['_id'][], caseId: string): number {
+  checkIfCaseBelongsToCharity(
+    req: Request,
+    charityCasesArray: ICase['_id'][],
+    caseId: string
+  ): number {
     const idx: number = charityCasesArray.findIndex(function (id) {
       return id.toString() === caseId;
     });
 
     if (idx === -1) {
-      throw new NotFoundError('No Such Case With this Id!');
+      throw new NotFoundError(req.t('errors.caseNotFound'));
     }
 
     return idx;
   }
 
-  async deleteCaseFromDB(id: string): Promise<ICase> {
+  async deleteCaseFromDB(req: Request, id: string): Promise<ICase> {
     const deletedCase: ICase | null = await this.caseInstance.caseModel.deleteCaseById(id);
 
     if (!deletedCase) {

@@ -11,8 +11,10 @@ import {
   ICharityDocs,
   PendingCharities,
 } from '@components/charity/data-access/interfaces';
+import { charityUtilsClass } from '@components/charity/domain/charity.utils';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { setupMailSender } from '@utils/mailer';
+import { Request } from 'express';
 
 import { adminServiceSkeleton } from '../data-access/interfaces/admin.dao';
 import { QueryObject } from '../data-access/interfaces/admin.interface';
@@ -24,21 +26,41 @@ import { adminUtilsClass } from './admin.utils';
 export class adminServiceClass implements adminServiceSkeleton {
   adminInstance: ADMIN;
   adminUtilsInstance: adminUtilsClass;
+  charityUtilsInstance: charityUtilsClass;
   constructor() {
     this.adminUtilsInstance = new adminUtilsClass();
     this.adminInstance = new ADMIN();
+    this.charityUtilsInstance = new charityUtilsClass();
   }
 
   async getAllChariteis(): Promise<{
     charities: AllCharities[];
   }> {
+    this.charityUtilsInstance.getTotalNumberOfDonorsAndDonationsIncome();
+
     const charities = await this.adminInstance.adminModel.findAllCharities(
       'name email isPending isConfirmed'
     );
 
     return { charities: charities };
   }
+
+  async getAllUsers() {
+    const users = await this.adminInstance.adminModel.findAllUsers('name email');
+
+    return { users: users };
+  }
+
+  async getCharityById(id: string) {
+    const charity = await this.adminInstance.adminModel.findCharityById(id);
+
+    if (!charity) throw new BadRequestError('Charity not found');
+
+    return { charity: charity };
+  }
+
   async getAllOrOnePendingRequestsCharities(
+    req: Request,
     id: string | null = null
   ): Promise<{ allPendingCharities: PendingCharities[] }> {
     const queryObject: QueryObject = {
@@ -59,9 +81,7 @@ export class adminServiceClass implements adminServiceSkeleton {
         'name email charityDocs paymentMethods'
       );
 
-    // console.log(allPendingCharities[0]); // { selection }
-
-    if (id && !allPendingCharities[0]) throw new BadRequestError('charity not found');
+    if (id && !allPendingCharities[0]) throw new BadRequestError(req.t('errors.charityNotFound'));
 
     return { allPendingCharities: allPendingCharities };
   }
@@ -150,7 +170,10 @@ export class adminServiceClass implements adminServiceSkeleton {
   }
 
   // That mean if charity makes a requestEditCharityPayment (add another acc for receive payment)
-  async getPendingPaymentRequestsForConfirmedCharityById(id: string): Promise<{
+  async getPendingPaymentRequestsForConfirmedCharityById(
+    req: Request,
+    id: string
+  ): Promise<{
     paymentRequestsAccounts: {
       bankAccount: CharityPaymentMethodBankAccount[] | undefined;
       fawry: CharityPaymentMethodFawry[] | undefined;
@@ -174,7 +197,7 @@ export class adminServiceClass implements adminServiceSkeleton {
         'paymentMethods _id'
       );
 
-    if (!paymentRequests) throw new BadRequestError('charity not found');
+    if (!paymentRequests) throw new BadRequestError('No payment requests found!');
 
     const bankAccount: CharityPaymentMethodBankAccount[] | undefined =
       paymentRequests.paymentMethods?.bankAccount.filter(
@@ -227,10 +250,10 @@ export class adminServiceClass implements adminServiceSkeleton {
     };
   }
 
-  async confirmCharity(id: string): Promise<ConfirmPendingCharity> {
+  async confirmCharity(req: Request, id: string): Promise<ConfirmPendingCharity> {
     // const charity: AllPendingRequestsCharitiesResponse =
     //   await getAllOrOnePendingRequestsCharities(id);
-    const charity = await this.getAllOrOnePendingRequestsCharities(id);
+    const charity = await this.getAllOrOnePendingRequestsCharities(req, id);
     // { allPendingCharities: allPendingCharities }
 
     const pendingCharity: PendingCharities | undefined = charity.allPendingCharities[0];
@@ -251,9 +274,9 @@ export class adminServiceClass implements adminServiceSkeleton {
     };
   }
 
-  async rejectCharity(id: string): Promise<ConfirmPendingCharity> {
+  async rejectCharity(req: Request, id: string): Promise<ConfirmPendingCharity> {
     const charity: AllPendingRequestsCharitiesResponse =
-      await this.getAllOrOnePendingRequestsCharities(id);
+      await this.getAllOrOnePendingRequestsCharities(req, id);
 
     const pendingCharity: PendingCharities | undefined = charity.allPendingCharities[0];
 

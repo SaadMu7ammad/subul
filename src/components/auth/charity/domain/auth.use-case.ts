@@ -17,6 +17,8 @@ export class authCharityUseCase implements authCharityUseCaseSkeleton {
 
   constructor() {
     this.authCharityServiceInstance = new authCharityServiceClass();
+    this.registerCharity = this.registerCharity.bind(this);
+    this.authCharity = this.authCharity.bind(this);
   }
 
   async registerCharity(

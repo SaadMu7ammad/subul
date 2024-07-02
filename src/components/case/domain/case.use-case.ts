@@ -28,7 +28,7 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
 
     return {
       case: responseData.case,
-      message: 'Case Created Successfully',
+      message: req.t('errors.caseAddedSuccessfully'),
     };
   }
 
@@ -40,7 +40,7 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
 
     return {
       cases: responseData.cases,
-      message: 'All Cases fetched Successfully',
+      message: req.t('errors.fetchedCases'),
     };
   }
 
@@ -55,7 +55,7 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
 
     return {
       cases: responseData.cases,
-      message: 'All Cases fetched Successfully',
+      message: req.t('errors.fetchAllCases'),
     };
   }
 
@@ -64,11 +64,11 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
     const caseId: string | undefined = req.params.caseId;
     if (!caseId) throw new NotFoundError('no id exist for the case');
 
-    const responseData = await this.caseServiceInstance.getCaseById(charityCases, caseId);
+    const responseData = await this.caseServiceInstance.getCaseById(req, charityCases, caseId);
 
     return {
       case: responseData.case,
-      message: 'Case Fetched Successfully',
+      message: req.t('errors.fetchCase'),
     };
   }
 
@@ -78,11 +78,11 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
     const caseId: string | undefined = req.params.caseId;
     if (!caseId) throw new NotFoundError('no id exist for the case');
 
-    const responseData = await this.caseServiceInstance.deleteCase(charity, caseId);
+    const responseData = await this.caseServiceInstance.deleteCase(req, charity, caseId);
 
     return {
       case: responseData.case,
-      message: 'Case Deleted Successfully',
+      message: req.t('errors.deleteCase'),
     };
   }
 
@@ -93,11 +93,11 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
     if (!caseId) throw new NotFoundError('no id exist for the case');
     const caseData: ICase & { coverImage: string; image: string[] } = req.body;
 
-    const responseData = await this.caseServiceInstance.editCase(charity, caseData, caseId);
+    const responseData = await this.caseServiceInstance.editCase(req, charity, caseData, caseId);
 
     return {
       case: responseData.case,
-      message: 'Case Edited Successfully',
+      message: req.t('errors.editCase'),
     };
   }
 }

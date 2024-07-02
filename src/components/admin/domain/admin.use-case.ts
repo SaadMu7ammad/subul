@@ -27,12 +27,26 @@ export class adminUseCaseClass implements adminUseCaseSkeleton {
     return charities;
   }
 
+  async getAllUsers() {
+    const users = await this.adminServiceInstance.getAllUsers();
+    return users;
+  }
+
+  async getCharityById(req: Request, res: Response, next: NextFunction) {
+    const { id }: { id?: string } = req.params;
+
+    if (!id) throw new NotFoundError('no id found to get a charity');
+
+    const charity = await this.adminServiceInstance.getCharityById(id);
+    return charity;
+  }
+
   async getAllPendingRequestsCharities(
     _req: Request,
     _res: Response,
     _next: NextFunction
   ): Promise<{ allPendingCharities: PendingCharities[] }> {
-    const charities = await this.adminServiceInstance.getAllOrOnePendingRequestsCharities();
+    const charities = await this.adminServiceInstance.getAllOrOnePendingRequestsCharities(_req);
     return { allPendingCharities: charities.allPendingCharities };
   }
 
@@ -48,13 +62,11 @@ export class adminUseCaseClass implements adminUseCaseSkeleton {
     if (!id) throw new NotFoundError('no id found to make a rejection');
 
     const pendingRequestCharityById =
-      await this.adminServiceInstance.getAllOrOnePendingRequestsCharities(id);
+      await this.adminServiceInstance.getAllOrOnePendingRequestsCharities(req, id);
     return { pendingCharity: pendingRequestCharityById.allPendingCharities };
   }
 
-  async getPendingPaymentRequestsForConfirmedCharityById(
-    req: Request
-  ): Promise<{
+  async getPendingPaymentRequestsForConfirmedCharityById(req: Request): Promise<{
     CharityPaymentsRequest: {
       bankAccount: CharityPaymentMethodBankAccount[] | undefined;
       fawry: CharityPaymentMethodFawry[] | undefined;
@@ -69,7 +81,7 @@ export class adminUseCaseClass implements adminUseCaseSkeleton {
     //   paymentRequestsAccounts: { bankAccount: [], fawry: [], vodafoneCash: [ [Object] ] }
     // } 👇
     const paymentRequests =
-      await this.adminServiceInstance.getPendingPaymentRequestsForConfirmedCharityById(id);
+      await this.adminServiceInstance.getPendingPaymentRequestsForConfirmedCharityById(req, id);
 
     return { CharityPaymentsRequest: paymentRequests.paymentRequestsAccounts };
   }
@@ -93,7 +105,7 @@ export class adminUseCaseClass implements adminUseCaseSkeleton {
 
     if (!id) throw new NotFoundError('no id found to make a rejection');
 
-    const confirmedCharity = await this.adminServiceInstance.confirmCharity(id);
+    const confirmedCharity = await this.adminServiceInstance.confirmCharity(req, id);
 
     return {
       message: confirmedCharity.message,
@@ -108,7 +120,7 @@ export class adminUseCaseClass implements adminUseCaseSkeleton {
 
     if (!id) throw new NotFoundError('no id found to make a rejection');
 
-    const rejectedCharity = await this.adminServiceInstance.rejectCharity(id);
+    const rejectedCharity = await this.adminServiceInstance.rejectCharity(req, id);
 
     return {
       message: rejectedCharity.message,

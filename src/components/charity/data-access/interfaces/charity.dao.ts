@@ -43,12 +43,16 @@ export interface charityUtilsSkeleton {
   logout(res: Response): void;
 
   getCharity(res: Response): { charity: ICharity };
+  updateNumberOfCases(charity: ICharity): Promise<void>;
+
+  getTotalNumberOfDonorsAndDonationsIncome(): Promise<void>;
 
   checkIsEmailDuplicated(email: string): Promise<void>;
   changeCharityEmailWithMailAlert(
     CharityBeforeUpdate: ICharity,
     newEmail: string
   ): Promise<{ charity: ICharity }>;
+
   verifyCharityAccount(charity: ICharity): Promise<void>;
   resetSentToken(charity: ICharity): Promise<void>;
   setTokenToCharity(charity: ICharity, token: string): Promise<void>;

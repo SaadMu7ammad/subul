@@ -7,6 +7,7 @@ import {
   UnauthenticatedError,
 } from '@libs/errors/components/index';
 import bcryptjs from 'bcryptjs';
+import { Request } from 'express';
 
 import { authUserUtilsSkeleton } from '../data-access/interfaces/auth.interfaces';
 
@@ -17,6 +18,7 @@ export class authUserUtilsClass implements authUserUtilsSkeleton {
     this.createUser = this.createUser.bind(this);
   }
   async checkUserPassword(
+    req: Request,
     email: string,
     password: string
   ): Promise<{ isMatch: boolean; user: IUser }> {

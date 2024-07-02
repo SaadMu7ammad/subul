@@ -12,7 +12,12 @@ export default function defineRoutes(expressApp: Application) {
   const authUserUseCaseInstance = new authUserUseCaseClass();
   router.post(
     '/',
-    registerUserValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = registerUserValidation(req);
+      Promise.all(validations.map(validation => validation.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -28,7 +33,12 @@ export default function defineRoutes(expressApp: Application) {
 
   router.post(
     '/auth',
-    loginUserValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = loginUserValidation(req);
+      Promise.all(validations.map(validation => validation.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {

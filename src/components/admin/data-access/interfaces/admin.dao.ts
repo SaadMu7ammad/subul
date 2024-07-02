@@ -28,6 +28,7 @@ export interface adminServiceSkeleton {
     charities: AllCharities[];
   }>;
   getAllOrOnePendingRequestsCharities(
+    req: Request,
     id: string | null
   ): Promise<{ allPendingCharities: PendingCharities[] }>;
 
@@ -50,6 +51,7 @@ export interface adminServiceSkeleton {
 
   // That mean if charity makes a requestEditCharityPayment (add another acc for receive payment)
   getPendingPaymentRequestsForConfirmedCharityById(
+    req: Request,
     id: string
   ): Promise<{
     paymentRequestsAccounts: {
@@ -67,9 +69,9 @@ export interface adminServiceSkeleton {
     };
   }>;
 
-  confirmCharity(id: string): Promise<ConfirmPendingCharity>;
+  confirmCharity(req: Request, id: string): Promise<ConfirmPendingCharity>;
 
-  rejectCharity(id: string): Promise<ConfirmPendingCharity>;
+  rejectCharity(req: Request, id: string): Promise<ConfirmPendingCharity>;
 }
 
 export interface adminUseCaseSkeleton {
@@ -91,9 +93,7 @@ export interface adminUseCaseSkeleton {
     pendingCharity: PendingCharities[];
   }>;
 
-  getPendingPaymentRequestsForConfirmedCharityById(
-    req: Request
-  ): Promise<{
+  getPendingPaymentRequestsForConfirmedCharityById(req: Request): Promise<{
     CharityPaymentsRequest: {
       bankAccount: CharityPaymentMethodBankAccount[] | undefined;
       fawry: CharityPaymentMethodFawry[] | undefined;

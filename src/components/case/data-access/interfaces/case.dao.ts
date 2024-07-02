@@ -12,7 +12,7 @@ import {
 import { FilterObj, GetAllCasesQueryParams, ICase, PaginationObj, SortObj } from './case.interface';
 
 export interface CaseDao {
-  createCase: (caseData: ICase) => Promise<ICase | null>;
+  createCase: (charity: ICharity, caseData: ICase) => Promise<ICase | null>;
   getAllCases: (
     sortObj: SortObj,
     filterObj: FilterObj,
@@ -39,11 +39,17 @@ export interface caseServiceSkeleton {
     queryParams: GetAllCasesQueryParams
   ): Promise<GetAllCasesResponse>;
 
-  getCaseById(charityCases: ICase['id'][], caseId: string): Promise<GetCaseByIdResponse>;
+  getCaseById(
+    req: Request,
+    charityCases: ICase['id'][],
+    caseId: string
+  ): Promise<GetCaseByIdResponse>;
 
-  deleteCase(charity: ICharity, caseId: string): Promise<DeleteCaseResponse>;
+  deleteCase(req: Request, charity: ICharity, caseId: string): Promise<DeleteCaseResponse>;
 
   editCase(
+    req: Request,
+
     charity: ICharity,
     caseData: ICase & { coverImage: string; image: string[] },
     caseId: string
@@ -68,7 +74,7 @@ export interface caseUseCaseSkeleton {
 }
 
 export interface caseUtilsSkeleton {
-  createCase(caseData: ICase): Promise<ICase | null>;
+  createCase(charity: ICharity, caseData: ICase): Promise<ICase | null>;
 
   getSortObj(sortQueryParams: string | undefined): SortObj;
 
@@ -88,10 +94,14 @@ export interface caseUtilsSkeleton {
     page: number,
     limit: number
   ): Promise<ICase[] | null>;
-  getCaseByIdFromDB(caseId: string): Promise<ICase>;
-  checkIfCaseBelongsToCharity(charityCasesArray: ICase['_id'][], caseId: string): number;
+  getCaseByIdFromDB(req: Request, caseId: string): Promise<ICase>;
+  checkIfCaseBelongsToCharity(
+    req: Request,
+    charityCasesArray: ICase['_id'][],
+    caseId: string
+  ): number;
 
-  deleteCaseFromDB(id: string): Promise<ICase>;
+  deleteCaseFromDB(req: Request, id: string): Promise<ICase>;
   deleteCaseFromCharityCasesArray(charity: ICharity, idx: number): Promise<void>;
   editCase(caseData: ICase, caseId: string): Promise<ICase>;
   replaceCaseImg(

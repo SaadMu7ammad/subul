@@ -15,7 +15,12 @@ export default function defineRoutes(expressApp: Application) {
   router.post(
     '/register',
     imageAssertion,
-    registerCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = registerCharityValidation(req);
+      Promise.all(validations.map(validation => validation.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     resizeImg,
     async (req: Request, res: Response, next: NextFunction) => {
@@ -38,7 +43,12 @@ export default function defineRoutes(expressApp: Application) {
 
   router.post(
     '/auth',
-    loginCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = loginCharityValidation(req);
+      Promise.all(validations.map(validation => validation.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {

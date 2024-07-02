@@ -49,7 +49,7 @@ export interface userServiceSkeleton {
     res: Response
   ): Promise<authUserResponse>;
 
-  bloodContribution(user: IUser, id: string | undefined): Promise<void>;
+  bloodContribution(req: Request, user: IUser, id: string | undefined): Promise<void>;
 
   requestFundraisingCampaign(
     caseData: ICase,

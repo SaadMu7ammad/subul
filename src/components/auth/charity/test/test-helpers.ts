@@ -92,6 +92,7 @@ export const getDummyCharityObject = (): PlainCharity => {
       isVerified: false,
       verificationDate: '',
     },
+    phone: '01022222555',
     isEnabled: false,
     isConfirmed: false,
     isPending: false,

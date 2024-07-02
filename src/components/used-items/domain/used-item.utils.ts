@@ -37,9 +37,9 @@ export class usedItemUtilsClass implements usedItemUtilsSkeleton {
     }
   }
 
-  checkIfUsedItemBelongsToUser(usedItem: IUsedItem, userId: string): void {
+  checkIfUsedItemBelongsToUser(req: Request, usedItem: IUsedItem, userId: string): void {
     if (usedItem.user.toString() !== userId) {
-      throw new BadRequestError('You are not the owner of this Used Item');
+      throw new BadRequestError(req.t('usedItems.notOwner'));
     }
   }
 

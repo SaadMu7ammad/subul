@@ -1,4 +1,5 @@
 import { deleteOldImgs } from '@utils/deleteFile';
+import { Request } from 'express';
 
 import { BookItemRequest, IUsedItem, PlainIUsedItem } from '../data-access/interfaces';
 import { usedItemServiceSkeleton } from '../data-access/interfaces';
@@ -11,22 +12,22 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
     this.usedItemUtilsInstance = new usedItemUtilsClass();
   }
   async addUsedItem(
+    req: Request,
     usedItemData: PlainIUsedItem
   ): Promise<{ usedItem: IUsedItem; message: string }> {
     const usedItem = await this.usedItemUtilsInstance.addUsedItem(usedItemData);
-
     return {
       usedItem,
-      message: 'Used Item Created Successfully',
+      message: req.t('usedItems.addUsedItem'),
     };
   }
 
-  async findAllUsedItems(): Promise<{ usedItems: IUsedItem[]; message: string }> {
+  async findAllUsedItems(req: Request): Promise<{ usedItems: IUsedItem[]; message: string }> {
     const usedItems = await this.usedItemUtilsInstance.findAllUsedItems();
 
     return {
       usedItems: usedItems.usedItems,
-      message: 'All Used Items Retrieved Successfully',
+      message: req.t('usedItems.retrieveUsedItems'),
     };
   }
 
@@ -75,7 +76,10 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
     };
   }
 
-  async getUsedItem(id: string | undefined): Promise<{ usedItem: IUsedItem; message: string }> {
+  async getUsedItem(
+    req: Request,
+    id: string | undefined
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
     //check if the id was sent in the request
     const validate: (id: string | undefined) => asserts id is string =
       this.usedItemUtilsInstance.validateIdParam;
@@ -85,11 +89,12 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
 
     return {
       usedItem,
-      message: 'Used Item Fetched Successfully',
+      message: req.t('usedItems.getUsedItem'),
     };
   }
 
   async updateUsedItem(
+    req: Request,
     id: string | undefined,
     userId: string,
     usedItemData: Partial<IUsedItem>
@@ -103,7 +108,7 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
     const usedItem = await this.usedItemUtilsInstance.getUsedItem(id);
 
     //check if the user is the owner of the used item
-    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(usedItem, userId);
+    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
     //check if the used item is booked or not
     this.usedItemUtilsInstance.isUsedItemBooked(usedItem);
@@ -119,11 +124,12 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
 
     return {
       usedItem: updatedUsedItem,
-      message: 'Used Item Updated Successfully',
+      message: req.t('usedItems.updateUsedItem'),
     };
   }
 
   async deleteUsedItem(
+    req: Request,
     id: string | undefined,
     userId: string
   ): Promise<{ usedItem: IUsedItem; message: string }> {
@@ -136,7 +142,7 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
     const usedItem = await this.usedItemUtilsInstance.getUsedItem(id);
 
     //check if the user is the owner of the used item
-    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(usedItem, userId);
+    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
     //check if the usedItem is booked or not
     this.usedItemUtilsInstance.isUsedItemBooked(usedItem);
@@ -154,8 +160,11 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
   }
 
   async addUsedItemImages(
+    req: Request,
     id: string | undefined,
+
     userId: string,
+
     images: string[]
   ): Promise<{ usedItem: IUsedItem; message: string }> {
     //check if the id was sent in the request
@@ -167,7 +176,7 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
     const usedItem = await this.usedItemUtilsInstance.getUsedItem(id);
 
     //check if the user is the owner of the used item
-    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(usedItem, userId);
+    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
     //check if the usedItem is booked or not
     this.usedItemUtilsInstance.isUsedItemBooked(usedItem);
@@ -182,8 +191,11 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
   }
 
   async deleteUsedItemImage(
+    req: Request,
     id: string | undefined,
+
     userId: string,
+
     imageName: string
   ): Promise<{ usedItem: IUsedItem; message: string }> {
     //check if the id was sent in the request
@@ -195,7 +207,7 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
     const usedItem = await this.usedItemUtilsInstance.getUsedItem(id);
 
     //check if the user is the owner of the used item
-    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(usedItem, userId);
+    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
     //check if the usedItem is booked or not
     this.usedItemUtilsInstance.isUsedItemBooked(usedItem);

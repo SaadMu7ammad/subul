@@ -18,6 +18,7 @@ import { userUtilsClass } from '@components/user/domain/user.utils';
 import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { setupMailSender } from '@utils/mailer';
 import { notificationManager } from '@utils/sendNotification';
+import { Request } from 'express';
 import { Response } from 'express';
 
 import { caseUtilsClass } from './case.utils';
@@ -35,7 +36,7 @@ export class caseServiceClass implements caseServiceSkeleton {
   ): Promise<AddCaseResponse> {
     caseData.coverImage = image;
     caseData.charity = charity._id;
-    const newCase: ICase | null = await this.caseUtilsInstance.createCase(caseData);
+    const newCase: ICase | null = await this.caseUtilsInstance.createCase(charity, caseData);
 
     if (!newCase) throw new BadRequestError('case not created... try again');
 
@@ -87,26 +88,35 @@ export class caseServiceClass implements caseServiceSkeleton {
     return { cases: cases };
   }
 
-  async getCaseById(charityCases: ICase['id'][], caseId: string): Promise<GetCaseByIdResponse> {
-    this.caseUtilsInstance.checkIfCaseBelongsToCharity(charityCases, caseId);
+  async getCaseById(
+    req: Request,
+    charityCases: ICase['id'][],
+    caseId: string
+  ): Promise<GetCaseByIdResponse> {
+    this.caseUtilsInstance.checkIfCaseBelongsToCharity(req, charityCases, caseId);
 
-    const _case: ICase = await this.caseUtilsInstance.getCaseByIdFromDB(caseId);
+    const _case: ICase = await this.caseUtilsInstance.getCaseByIdFromDB(req, caseId);
 
     return {
       case: _case,
     };
   }
 
-  async deleteCase(charity: ICharity, caseId: string): Promise<DeleteCaseResponse> {
-    const isCaseFinished = await this.caseUtilsInstance.getCaseByIdFromDB(caseId);
+  async deleteCase(req: Request, charity: ICharity, caseId: string): Promise<DeleteCaseResponse> {
+    const isCaseFinished = await this.caseUtilsInstance.getCaseByIdFromDB(req, caseId);
     if (isCaseFinished.finished)
-      throw new BadRequestError('you dont have access to delete a completed case');
+      if (isCaseFinished.finished) throw new BadRequestError(req.t('errors.cantDeleteCase'));
+
     if (isCaseFinished.currentDonationAmount > 0)
-      throw new BadRequestError('you dont have access to delete a case in progress');
+      throw new BadRequestError(req.t('errors.cantDeleteCase'));
 
-    const idx: number = this.caseUtilsInstance.checkIfCaseBelongsToCharity(charity.cases, caseId);
+    const idx: number = this.caseUtilsInstance.checkIfCaseBelongsToCharity(
+      req,
+      charity.cases,
+      caseId
+    );
 
-    const deletedCase: ICase = await this.caseUtilsInstance.deleteCaseFromDB(caseId);
+    const deletedCase: ICase = await this.caseUtilsInstance.deleteCaseFromDB(req, caseId);
 
     await this.caseUtilsInstance.deleteCaseFromCharityCasesArray(charity, idx);
 
@@ -136,14 +146,15 @@ export class caseServiceClass implements caseServiceSkeleton {
   }
 
   async editCase(
+    req: Request,
     charity: ICharity,
     caseData: ICase & { coverImage: string; image: string[] },
     caseId: string
   ): Promise<EditCaseResponse> {
-    const isFinishedCase = await this.caseUtilsInstance.getCaseByIdFromDB(caseId);
-    if (isFinishedCase.finished) throw new BadRequestError('cant edit completed case');
+    const isFinishedCase = await this.caseUtilsInstance.getCaseByIdFromDB(req, caseId);
+    if (isFinishedCase.finished) throw new BadRequestError(req.t('errors.cantEditCase'));
 
-    this.caseUtilsInstance.checkIfCaseBelongsToCharity(charity.cases, caseId);
+    this.caseUtilsInstance.checkIfCaseBelongsToCharity(req, charity.cases, caseId);
 
     let deleteOldImg: (() => void) | null = null;
     if (caseData.image) {

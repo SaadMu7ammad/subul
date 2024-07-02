@@ -1,3 +1,4 @@
+import CaseModel from '@components/case/data-access/models/case.model';
 import {
   CharityPaymentMethodBankAccount,
   CharityPaymentMethodFawry,
@@ -11,6 +12,7 @@ import {
   PaymentMethodsNames,
   charityUtilsSkeleton,
 } from '@components/charity/data-access/interfaces';
+import CharityModel from '@components/charity/data-access/models/charity.model';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { deleteOldImgs } from '@utils/deleteFile';
 import { generateResetTokenTemp, sendReactivationEmail, setupMailSender } from '@utils/mailer';
@@ -396,6 +398,34 @@ export class charityUtilsClass implements charityUtilsSkeleton {
       return true;
     else return false;
   };
+
+  // Update each charity's numberOfCases field with the calculated value every time a new case is created
+  async updateNumberOfCases(charity: ICharity): Promise<void> {
+    const numberOfCases = charity.cases.length;
+    await CharityModel.updateOne({ _id: charity._id }, { numberOfCases });
+
+    console.log('Charity has been updated with the correct numberOfCases');
+  }
+
+  async getTotalNumberOfDonorsAndDonationsIncome(): Promise<void> {
+    const charities = await CharityModel.find().lean(); // Get all charity documents as plain JavaScript objects
+    for (const charity of charities) {
+      const cases = await CaseModel.find({ _id: { $in: charity.cases } }).select(
+        'donationNumbers currentDonationAmount'
+      );
+      const totalNumberOfDonors = cases.reduce((sum, caseDoc) => sum + caseDoc.donationNumbers, 0);
+      const totalDonationsIncome = cases.reduce(
+        (sum, caseDoc) => sum + caseDoc.currentDonationAmount,
+        0
+      );
+
+      await CharityModel.updateOne(
+        { _id: charity._id },
+        { totalNumberOfDonors, totalDonationsIncome }
+      );
+    }
+    console.log('All charities have been updated with the correct totalNumberOfDonors');
+  }
 }
 
 // export const charityUtils = {
@@ -421,4 +451,6 @@ export class charityUtilsClass implements charityUtilsSkeleton {
 //   createFawryAccount,
 //   createVodafoneAccount,
 //   checkCharityVerification,
+//   updateNumberOfCases,
+//   getTotalNumberOfDonorsAndDonationsIncome,
 // };

@@ -12,6 +12,12 @@ import { CharityData } from '../data-access/interfaces';
 import { authCharityUtilsSkeleton } from '../data-access/interfaces/auth.interfaces';
 
 export class authCharityUtilsClass implements authCharityUtilsSkeleton {
+  constructor() {
+    this.checkCharityPassword = this.checkCharityPassword.bind(this);
+    this.checkCharityIsVerified = this.checkCharityIsVerified.bind(this);
+    this.setTokenToCharity = this.setTokenToCharity.bind(this);
+    this.createCharity = this.createCharity.bind(this);
+  }
   async checkCharityPassword(
     email: string,
     password: string

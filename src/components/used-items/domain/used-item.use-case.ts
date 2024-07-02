@@ -1,7 +1,6 @@
 import {
   AddUsedItemImageRequest,
   AddUsedItemImageResponse,
-  AddUsedItemRequest,
   AddUsedItemResponse,
   DeleteUsedItemImageRequest,
   DeletedUsedItemResponse,
@@ -13,6 +12,7 @@ import {
 import { IUser } from '@components/user/data-access/interfaces';
 import { NextFunction, Request, Response } from 'express';
 
+import { PlainIUsedItem } from '../data-access/interfaces';
 import { usedItemUseCaseSkeleton } from '../data-access/interfaces';
 import { usedItemServiceClass } from './used-item.service';
 import { usedItemUtilsClass } from './used-item.utils';
@@ -29,7 +29,7 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
 
     const { title, description, category, amount, images } = req.body;
 
-    const usedItemData: AddUsedItemRequest = {
+    const usedItemData: PlainIUsedItem = {
       title,
       description,
       category,
@@ -38,7 +38,7 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
       user: user._id,
     };
 
-    const responseData = await this.usedItemServiceInstance.addUsedItem(usedItemData);
+    const responseData = await this.usedItemServiceInstance.addUsedItem(req, usedItemData);
 
     return {
       usedItem: responseData.usedItem,
@@ -49,7 +49,7 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
   //public route
   async getUsedItem(req: Request, res: Response, next: NextFunction): Promise<GetUsedItemResponse> {
     const { id } = req.params;
-    const responseData = await this.usedItemServiceInstance.getUsedItem(id);
+    const responseData = await this.usedItemServiceInstance.getUsedItem(req, id);
 
     return {
       usedItem: responseData.usedItem,
@@ -64,7 +64,7 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
   ): Promise<DeletedUsedItemResponse> {
     const { id } = req.params;
     const userId = res.locals.user._id.toString();
-    const responseData = await this.usedItemServiceInstance.deleteUsedItem(id, userId);
+    const responseData = await this.usedItemServiceInstance.deleteUsedItem(req, id, userId);
 
     return {
       usedItem: responseData.usedItem,
@@ -89,6 +89,7 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
     };
 
     const responseData = await this.usedItemServiceInstance.updateUsedItem(
+      req,
       id,
       userId,
       usedItemData
@@ -108,7 +109,12 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
     const { id } = req.params;
     const userId = res.locals.user._id.toString();
     const { images }: AddUsedItemImageRequest = req.body;
-    const responseData = await this.usedItemServiceInstance.addUsedItemImages(id, userId, images);
+    const responseData = await this.usedItemServiceInstance.addUsedItemImages(
+      req,
+      id,
+      userId,
+      images
+    );
 
     return {
       usedItem: responseData.usedItem,
@@ -126,6 +132,7 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
     const { imageName }: DeleteUsedItemImageRequest = req.body;
 
     const responseData = await this.usedItemServiceInstance.deleteUsedItemImage(
+      req,
       id,
       userId,
       imageName
@@ -137,8 +144,8 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
     };
   }
 
-  async getAllUsedItems(): Promise<GetAllUsedItemsResponse> {
-    const usedItemsResponse = await this.usedItemServiceInstance.findAllUsedItems();
+  async getAllUsedItems(req: Request): Promise<GetAllUsedItemsResponse> {
+    const usedItemsResponse = await this.usedItemServiceInstance.findAllUsedItems(req);
 
     return {
       usedItems: usedItemsResponse.usedItems,

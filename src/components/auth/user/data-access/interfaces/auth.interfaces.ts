@@ -10,7 +10,11 @@ import {
 } from './auth.user';
 
 export interface authUserServiceSkeleton {
-  authUser(reqBody: IloginData, res: Response): Promise<UserResponseBasedOnUserVerification>;
+  authUser(
+    reqBody: IloginData,
+    res: Response,
+    req: Request
+  ): Promise<UserResponseBasedOnUserVerification>;
   registerUser(reqBody: RegisterUserInputData): Promise<{
     user: UserObject;
   }>;
@@ -23,7 +27,11 @@ export interface authUserUseCaseSkeleton {
 }
 
 export interface authUserUtilsSkeleton {
-  checkUserPassword(email: string, password: string): Promise<{ isMatch: boolean; user: IUser }>;
+  checkUserPassword(
+    req: Request,
+    email: string,
+    password: string
+  ): Promise<{ isMatch: boolean; user: IUser }>;
 
   checkUserIsVerified(user: IUser): boolean;
 

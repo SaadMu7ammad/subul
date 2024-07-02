@@ -8,7 +8,7 @@ import {
 import { IUser } from '@components/user/data-access/interfaces';
 import generateToken from '@utils/generateToken';
 import { generateResetTokenTemp, sendActivationEmail, setupMailSender } from '@utils/mailer';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 import logger from '../../../../utils/logger';
 import { authUserServiceSkeleton } from '../data-access/interfaces/auth.interfaces';
@@ -20,11 +20,15 @@ export class authUserServiceClass implements authUserServiceSkeleton {
   constructor() {
     this.authUserUtilsInstance = new authUserUtilsClass();
   }
-  async authUser(reqBody: IloginData, res: Response): Promise<UserResponseBasedOnUserVerification> {
+  async authUser(
+    reqBody: IloginData,
+    res: Response,
+    req: Request
+  ): Promise<UserResponseBasedOnUserVerification> {
     const { email, password }: { email: string; password: string } = reqBody;
 
     const userResponse: { isMatch: boolean; user: IUser } =
-      await this.authUserUtilsInstance.checkUserPassword(email, password);
+      await this.authUserUtilsInstance.checkUserPassword(req, email, password);
 
     const token = generateToken(res, userResponse.user.id, 'user');
 

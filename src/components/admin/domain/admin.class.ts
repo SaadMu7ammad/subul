@@ -88,6 +88,15 @@ class adminRepository {
     const charity = await CharityModel.deleteOne({ email });
     return charity.acknowledged;
   }
+  async findAllUsers(selection: string) {
+    const users = await UserModel.find().select(selection);
+    return users;
+  }
+
+  async findCharityById(id: string) {
+    const charity = await CharityModel.findById(id);
+    return charity;
+  }
 }
 
 export class ADMIN {

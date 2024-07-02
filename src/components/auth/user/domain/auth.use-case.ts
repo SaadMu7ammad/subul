@@ -24,7 +24,7 @@ export class authUserUseCaseClass implements authUserUseCaseSkeleton {
     const { email, password }: { email: string; password: string } = req.body;
     const data = { email, password };
 
-    const responseData = await this.authUserServiceInstance.authUser(data, res);
+    const responseData = await this.authUserServiceInstance.authUser(data, res, req);
     const userResponsed = responseData.user;
 
     if (responseData.emailAlert) {
