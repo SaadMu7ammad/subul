@@ -1,3 +1,4 @@
+import { ICharity } from '@components/charity/data-access/interfaces';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
@@ -13,22 +14,36 @@ import { checkValueEquality } from '@utils/shared';
 import { transactionUtilsClass } from './transaction.utils';
 
 export class transactionServiceClass implements transactionServiceSkeleton {
-  #transactionRepository = new TRANSACTION();
-  #transactionInstance = this.#transactionRepository.transactionModel;
+  #transactionRepository: TRANSACTION;
+  #transactionInstance: TRANSACTION;
 
-  #transactionUtilsInstance = new transactionUtilsClass();
+  #transactionUtilsInstance: transactionUtilsClass;
 
-  async preCreateTransaction(data: IDataPreCreateTransaction, user: IUser): Promise<boolean> {
+  constructor() {
+    this.#transactionRepository = new TRANSACTION();
+    this.#transactionInstance = this.#transactionRepository;
+
+    this.#transactionUtilsInstance = new transactionUtilsClass();
+
+    this.preCreateTransactionService = this.preCreateTransactionService.bind(this);
+    this.updateCaseInfo = this.updateCaseInfo.bind(this);
+    this.getAllTransactions = this.getAllTransactions.bind(this);
+    this.getAllTransactionsToCharity = this.getAllTransactionsToCharity.bind(this);
+  }
+  async preCreateTransactionService(
+    data: IDataPreCreateTransaction,
+    user: IUser
+  ): Promise<boolean> {
     //must check the account for the charity is valid or not
     const { charityId, caseId, amount } = data;
     //pre processing
     this.#transactionUtilsInstance.checkPreCreateTransaction(data);
 
-    const caseIsExist = await this.#transactionInstance.findCaseById(caseId);
+    const caseIsExist = await this.#transactionInstance.transactionModel.findCaseById(caseId);
     if (!caseIsExist) {
       throw new NotFoundError('case is not found');
     }
-    const charityIsExist = await this.#transactionInstance.findCharityById(
+    const charityIsExist = await this.#transactionInstance.transactionModel.findCharityById(
       caseIsExist.charity.toString()
     );
     if (!charityIsExist) {
@@ -66,12 +81,14 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     if (!user.email) throw new NotFoundError('user not found');
 
     //check case is stored or not in the case table
-    let caseIsExist = await this.#transactionInstance.findCaseById(items[0].name); //the id of the case
+    let caseIsExist = await this.#transactionInstance.transactionModel.findCaseById(items[0].name); //the id of the case
     if (!caseIsExist) {
       throw new NotFoundError('case is not found');
     }
     //check user who made the transaction exist
-    const userIsExist = await this.#transactionInstance.findUserByEmail(user.email);
+    const userIsExist = await this.#transactionInstance.transactionModel.findUserByEmail(
+      user.email
+    );
     if (!userIsExist) throw new BadRequestError('no user found');
 
     // implement the refund here
@@ -81,7 +98,7 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     };
 
     let transactionIsExist: ITransaction | null =
-      await this.#transactionInstance.findTransactionByQuery(queryObj);
+      await this.#transactionInstance.transactionModel.findTransactionByQuery(queryObj);
     if (transactionIsExist) {
       //transaction must updated not created again
       transactionIsExist = await this.#transactionUtilsInstance.refundUtility(
@@ -130,7 +147,8 @@ export class transactionServiceClass implements transactionServiceSkeleton {
       status,
       currency,
     };
-    const newTransaction = await this.#transactionInstance.createTransaction(transactionData);
+    const newTransaction =
+      await this.#transactionInstance.transactionModel.createTransaction(transactionData);
     if (!newTransaction) throw new BadRequestError('no transaction found');
     //add the transaction id to the user
     await this.#transactionUtilsInstance.addTransactionIdToUserTransactionIds(
@@ -149,6 +167,14 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     const allTransactionsPromised =
       await this.#transactionUtilsInstance.getAllTransactionsPromised(user);
     return { allTransactions: allTransactionsPromised };
+  }
+  async getAllTransactionsToCharity(
+    charity: ICharity,
+    cause: string
+  ): Promise<{ allTransactions: (ITransaction | null)[] }> {
+    const allTransactionsPromised =
+      await this.#transactionUtilsInstance.getAllTransactionsToCharity(cause, charity);
+    return { allTransactions: allTransactionsPromised ? allTransactionsPromised : [] };
   }
 }
 // export const transactionService = {

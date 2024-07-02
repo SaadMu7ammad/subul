@@ -1,28 +1,34 @@
 import { ICharity } from '@components/charity/data-access/interfaces';
-import { charityUtils } from '@components/charity/domain/charity.utils';
+import { charityUtilsClass } from '@components/charity/domain/charity.utils';
 import { Response } from 'express';
 
-import { CaseDao } from './interfaces/case.dao';
-import { FilterObj, ICase, SortObj } from './interfaces/case.interface';
-import CaseModel from './models/case.model';
+import { CaseDao, FilterObj, ICase, SortObj } from '../data-access/interfaces';
+import Case from '../data-access/models/case.model';
 
-export class CaseRepository implements CaseDao {
-  createCase = async (charity: ICharity, caseData: ICase): Promise<ICase | null> => {
-    const newCase = await CaseModel.create(caseData);
+// import Case from '../data-access/models/case.model';
 
-    charityUtils.updateNumberOfCases(charity);
+class CaseRepository implements CaseDao {
+  charityUtilsInstance: charityUtilsClass;
+
+  constructor() {
+    this.charityUtilsInstance = new charityUtilsClass();
+  }
+  async createCase(charity: ICharity, caseData: ICase): Promise<ICase | null> {
+    const newCase = await Case.create(caseData);
+
+    this.charityUtilsInstance.updateNumberOfCases(charity);
     await charity.save();
 
     return newCase;
-  };
+  }
 
-  getAllCases = async (
+  async getAllCases(
     sortObj: SortObj,
     filterObj: FilterObj,
     page: number,
     limit: number
-  ): Promise<ICase[] | null> => {
-    const charityCases = await CaseModel.aggregate([
+  ): Promise<ICase[] | null> {
+    const charityCases = await Case.aggregate([
       {
         $match: filterObj,
       },
@@ -46,15 +52,15 @@ export class CaseRepository implements CaseDao {
       });
 
     return charityCases;
-  };
+  }
 
-  getAllCasesForUser = async (
+  async getAllCasesForUser(
     res: Response,
     sortObj: SortObj,
     page: number,
     limit: number
-  ): Promise<ICase[] | null> => {
-    let allCases = await CaseModel.find()
+  ): Promise<ICase[] | null> {
+    let allCases = await Case.find()
       .sort(sortObj)
       .skip((page - 1) * limit)
       .limit(limit);
@@ -76,20 +82,20 @@ export class CaseRepository implements CaseDao {
     });
 
     return allCases;
-  };
+  }
 
   getCaseById = async (id: string): Promise<ICase | null> => {
-    const _case = await CaseModel.findById(id);
+    const _case = await Case.findById(id);
     return _case;
   };
 
   deleteCaseById = async (id: string): Promise<ICase | null> => {
-    const _case = await CaseModel.findByIdAndDelete(id);
+    const _case = await Case.findByIdAndDelete(id);
     return _case;
   };
 
   editCase = async (caseData: ICase | { finished: boolean }, id: string): Promise<ICase | null> => {
-    const updatedCase = await CaseModel.findByIdAndUpdate(
+    const updatedCase = await Case.findByIdAndUpdate(
       id,
       {
         $set: { ...caseData },
@@ -102,4 +108,12 @@ export class CaseRepository implements CaseDao {
 
     return updatedCase;
   };
+}
+
+export class CASE {
+  public caseModel = new CaseRepository();
+
+  constructor() {
+    // super();
+  }
 }

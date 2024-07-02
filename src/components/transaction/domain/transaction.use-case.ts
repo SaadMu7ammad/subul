@@ -15,8 +15,18 @@ import { NextFunction, Request, Response } from 'express';
 import { transactionServiceClass } from './transaction.service';
 
 export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
-  #transactionService = new transactionServiceClass();
+  transactionService: transactionServiceClass;
 
+  constructor() {
+    // Initialize the private field in the constructor
+    this.transactionService = new transactionServiceClass();
+    // console.log(this.transactionService);
+    // Bind the method to ensure 'this' refers to the class instance
+    this.preCreateTransaction = this.preCreateTransaction.bind(this);
+    this.getAllTransactions = this.getAllTransactions.bind(this);
+    this.updateCaseInfo = this.updateCaseInfo.bind(this);
+    this.getAllTransactionsToCharity = this.getAllTransactionsToCharity.bind(this);
+  }
   async preCreateTransaction(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { charityId, caseId, amount, mainTypePayment } = req.body;
@@ -24,11 +34,11 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
       const data: IDataPreCreateTransaction = { charityId, caseId, amount, mainTypePayment };
 
       const storedUser: IUser = res.locals.user;
-
-      const transaction: boolean = await this.#transactionService.preCreateTransaction(
+      const transaction: boolean = await this.transactionService.preCreateTransactionService(
         data,
         storedUser
       );
+      // console.log(this.#transactionService);
 
       if (!transaction) {
         throw new BadRequestError('transaction not completed ... please try again!');
@@ -46,7 +56,7 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
     next: NextFunction
   ): Promise<GetAllTransactionResponse> {
     const myTransactions: { allTransactions: (ITransaction | null)[] } =
-      await this.#transactionService.getAllTransactions(res.locals.user);
+      await this.transactionService.getAllTransactions(res.locals.user);
 
     if (!myTransactions) {
       throw new BadRequestError('no transactions found');
@@ -54,7 +64,22 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
 
     return { status: 'success', data: myTransactions };
   }
+  async getAllTransactionsToCharity(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<GetAllTransactionResponse> {
+    const caseId: string = req.body.caseId;
 
+    const myTransactions: { allTransactions: (ITransaction | null)[] } =
+      await this.transactionService.getAllTransactionsToCharity(res.locals.charity, caseId);
+
+    if (!myTransactions) {
+      throw new BadRequestError('no transactions found');
+    }
+
+    return { status: 'success', data: myTransactions };
+  }
   async updateCaseInfo(
     req: Request,
     res: Response,
@@ -81,7 +106,7 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
 
       // create a new transaction here
       //before update the case info check if the transaction is a refund or payment donation
-      const transaction = await this.#transactionService.updateCaseInfo(data);
+      const transaction = await this.transactionService.updateCaseInfo(data);
 
       if (!transaction) {
         throw new BadRequestError('transaction not completed ... please try again!');

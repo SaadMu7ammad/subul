@@ -17,168 +17,179 @@ import {
   RequestResetPasswordResponse,
   SendDocsResponse,
   ShowCharityProfileResponse,
+  charityUseCaseSkeleton,
   logoutResponse,
 } from '@components/charity/data-access/interfaces';
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
-import { charityService } from './charity.service';
+import { charityServiceClass } from './charity.service';
 
-const activateCharityAccount = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): ActivateCharityAccountResponse => {
-  const storedCharity: ICharity = res.locals.charity;
+export class charityUseCaseClass implements charityUseCaseSkeleton {
+  charityService: charityServiceClass;
 
-  const data: DataForActivateCharityAccount = { token: req.body.token };
+  constructor() {
+    this.charityService = new charityServiceClass();
+    this.activateCharityAccount = this.activateCharityAccount.bind(this);
+    this.requestResetPassword = this.requestResetPassword.bind(this);
+    this.confirmResetPassword = this.confirmResetPassword.bind(this);
+    this.changePassword = this.changePassword.bind(this);
+    this.showCharityProfile = this.showCharityProfile.bind(this);
+    this.editCharityProfile = this.editCharityProfile.bind(this);
+    this.changeProfileImage = this.changeProfileImage.bind(this);
+    this.requestEditCharityPayments = this.requestEditCharityPayments.bind(this);
+    this.requestEditCharityPayments = this.requestEditCharityPayments.bind(this);
+    this.sendDocs = this.sendDocs.bind(this);
+    this.logout = this.logout.bind(this);
+  }
+  async activateCharityAccount(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): ActivateCharityAccountResponse {
+    const storedCharity: ICharity = res.locals.charity;
 
-  const activateCharityAccountResponse = await charityService.activateAccount(
-    data,
-    storedCharity,
-    res
-  );
+    const data: DataForActivateCharityAccount = { token: req.body.token };
 
-  return {
-    message: activateCharityAccountResponse.message,
-  };
-};
+    const activateCharityAccountResponse = await this.charityService.activateAccount(
+      data,
+      storedCharity,
+      res
+    );
 
-const requestResetPassword: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): RequestResetPasswordResponse => {
-  const data: DataForRequestResetPassword = { email: req.body.email };
+    return {
+      message: activateCharityAccountResponse.message,
+    };
+  }
 
-  const requestResetPasswordResponse = await charityService.requestResetPassword(data);
+  async requestResetPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): RequestResetPasswordResponse {
+    const data: DataForRequestResetPassword = { email: req.body.email };
 
-  return {
-    message: requestResetPasswordResponse.message,
-  };
-};
+    const requestResetPasswordResponse = await this.charityService.requestResetPassword(data);
 
-const confirmResetPassword: RequestHandler = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): ConfirmResetPasswordResponse => {
-  const data: DataForConfirmResetPassword = {
-    token: req.body.token,
-    email: req.body.email,
-    password: req.body.password,
-  };
+    return {
+      message: requestResetPasswordResponse.message,
+    };
+  }
 
-  const confirmResetPasswordResponse = await charityService.confirmResetPassword(data);
+  async confirmResetPassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): ConfirmResetPasswordResponse {
+    const data: DataForConfirmResetPassword = {
+      token: req.body.token,
+      email: req.body.email,
+      password: req.body.password,
+    };
 
-  return { message: confirmResetPasswordResponse.message };
-};
+    const confirmResetPasswordResponse = await this.charityService.confirmResetPassword(data);
 
-const changePassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): ChangePasswordResponse => {
-  const data: DataForChangePassword = { password: req.body.password };
+    return { message: confirmResetPasswordResponse.message };
+  }
 
-  const storedCharity: ICharity = res.locals.charity;
+  async changePassword(req: Request, res: Response, next: NextFunction): ChangePasswordResponse {
+    const data: DataForChangePassword = { password: req.body.password };
 
-  const changePasswordResponse = await charityService.changePassword(data, storedCharity);
+    const storedCharity: ICharity = res.locals.charity;
 
-  return { message: changePasswordResponse.message };
-};
-const showCharityProfile = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): ShowCharityProfileResponse => {
-  const storedCharity: ICharity = res.locals.charity;
+    const changePasswordResponse = await this.charityService.changePassword(data, storedCharity);
 
-  const responseData = charityService.getCharityProfileData(storedCharity);
+    return { message: changePasswordResponse.message };
+  }
+  showCharityProfile(req: Request, res: Response, next: NextFunction): ShowCharityProfileResponse {
+    const storedCharity: ICharity = res.locals.charity;
 
-  return {
-    charity: responseData.charity,
-  };
-};
-const editCharityProfile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): EditCharityProfileResponse => {
-  const data: DataForEditCharityProfile = {
-    name: req.body.name,
-    email: req.body.email,
-    charityLocation: req.body.location,
-    locationId: req.body.locationId,
-    contactInfo: req.body.contactInfo,
-    description: req.body.description,
-  };
+    const responseData = this.charityService.getCharityProfileData(storedCharity);
 
-  const storedCharity: ICharity = res.locals.charity;
+    return {
+      charity: responseData.charity,
+    };
+  }
+  async editCharityProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): EditCharityProfileResponse {
+    const data: DataForEditCharityProfile = {
+      name: req.body.name,
+      email: req.body.email,
+      charityLocation: req.body.location,
+      locationId: req.body.locationId,
+      contactInfo: req.body.contactInfo,
+      description: req.body.description,
+    };
 
-  const responseData = await charityService.editCharityProfile(data, storedCharity);
+    const storedCharity: ICharity = res.locals.charity;
 
-  return {
-    charity: responseData.charity,
-    message: responseData.message,
-  };
-};
-const changeProfileImage = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): ChangeProfileImageResponse => {
-  const data: DataForChangeProfileImage = {
-    image: req.body.image[0],
-  };
-  const storedCharity: ICharity = res.locals.charity;
-  const responseData = await charityService.changeProfileImage(data, storedCharity);
-  return { image: responseData.image, message: responseData.message };
-};
+    const responseData = await this.charityService.editCharityProfile(data, storedCharity);
 
-const requestEditCharityPayments = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): RequestEditCharityPaymentsResponse => {
-  const data: DataForRequestEditCharityPayments = {
-    paymentMethods: req.body.paymentMethods,
-    paymentId: req.body.payment_id,
-  };
-  const storedCharity = res.locals.charity;
-  const responseData = await charityService.requestEditCharityPayments(storedCharity, data);
-  return {
-    paymentMethods: responseData.paymentMethods,
-    message: responseData.message,
-  };
-};
+    return {
+      charity: responseData.charity,
+      message: responseData.message,
+    };
+  }
+  async changeProfileImage(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): ChangeProfileImageResponse {
+    const data: DataForChangeProfileImage = {
+      image: req.body.image[0],
+    };
+    const storedCharity: ICharity = res.locals.charity;
+    const responseData = await this.charityService.changeProfileImage(data, storedCharity);
+    return { image: responseData.image, message: responseData.message };
+  }
 
-const logout: RequestHandler = (req, res, next): logoutResponse => {
-  const responseData = charityService.logoutCharity(res);
-  return {
-    message: responseData.message,
-  };
-};
+  async requestEditCharityPayments(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): RequestEditCharityPaymentsResponse {
+    const data: DataForRequestEditCharityPayments = {
+      paymentMethods: req.body.paymentMethods,
+      paymentId: req.body.payment_id,
+    };
+    const storedCharity = res.locals.charity;
+    const responseData = await this.charityService.requestEditCharityPayments(storedCharity, data);
+    return {
+      paymentMethods: responseData.paymentMethods,
+      message: responseData.message,
+    };
+  }
 
-const sendDocs = async (req: Request, res: Response, next: NextFunction): SendDocsResponse => {
-  const data: ICharityDocs = req.body;
+  logout(req: Request, res: Response, next: NextFunction): logoutResponse {
+    const responseData = this.charityService.logoutCharity(res);
+    return {
+      message: responseData.message,
+    };
+  }
 
-  const storedCharity: ICharity = res.locals.charity;
+  async sendDocs(req: Request, res: Response, next: NextFunction): SendDocsResponse {
+    const data: ICharityDocs = req.body;
 
-  const responseData = await charityService.sendDocs(data, storedCharity);
-  return {
-    paymentMethods: responseData.paymentMethods,
-    message: responseData.message,
-  };
-};
-export const charityUseCase = {
-  activateCharityAccount,
-  requestResetPassword,
-  confirmResetPassword,
-  logout,
-  changePassword,
-  changeProfileImage,
-  sendDocs,
-  editCharityProfile,
-  showCharityProfile,
-  requestEditCharityPayments,
-};
+    const storedCharity: ICharity = res.locals.charity;
+
+    const responseData = await this.charityService.sendDocs(data, storedCharity);
+    return {
+      paymentMethods: responseData.paymentMethods,
+      message: responseData.message,
+    };
+  }
+}
+// export const charityUseCase = {
+//   activateCharityAccount,
+//   requestResetPassword,
+//   confirmResetPassword,
+//   logout,
+//   changePassword,
+//   changeProfileImage,
+//   sendDocs,
+//   editCharityProfile,
+//   showCharityProfile,
+//   requestEditCharityPayments,
+// };

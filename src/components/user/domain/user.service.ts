@@ -1,9 +1,9 @@
 import { authUserResponse } from '@components/auth/user/data-access/interfaces';
 import { ICase } from '@components/case/data-access/interfaces';
-import { caseService } from '@components/case/domain/case.service';
-import { caseUtils } from '@components/case/domain/case.utils';
-import { CharityRepository } from '@components/charity/data-access/charity.repository';
+import { caseServiceClass } from '@components/case/domain/case.service';
+import { caseUtilsClass } from '@components/case/domain/case.utils';
 import { ICharity } from '@components/charity/data-access/interfaces';
+import { CHARITY } from '@components/charity/domain/charity.class';
 import {
   EditProfile,
   IUser,
@@ -19,7 +19,7 @@ import {
   NotFoundError,
   UnauthenticatedError,
 } from '@libs/errors/components/index';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendResetPasswordEmail, setupMailSender } from '@utils/mailer';
 import { notificationManager } from '@utils/sendNotification';
 import { checkValueEquality, updateNestedProperties } from '@utils/shared';
 import { Request } from 'express';
@@ -28,9 +28,28 @@ import { Response } from 'express';
 import { userUtilsClass } from './user.utils';
 
 class userServiceClass implements userServiceSkeleton {
-  #userUtilsInstance = new userUtilsClass();
-  #notificationInstance = new notificationManager();
+  #charity: CHARITY;
+  #userUtilsInstance: userUtilsClass;
+  #notificationInstance: notificationManager;
+  caseServiceInstance: caseServiceClass;
+  caseUtilsInstance: caseUtilsClass;
+  constructor() {
+    this.caseServiceInstance = new caseServiceClass();
+    this.caseUtilsInstance = new caseUtilsClass();
+    this.resetUser = this.resetUser.bind(this);
+    this.confirmReset = this.confirmReset.bind(this);
+    this.changePassword = this.changePassword.bind(this);
+    this.activateAccount = this.activateAccount.bind(this);
+    this.bloodContribution = this.bloodContribution.bind(this);
+    this.requestFundraisingCampaign = this.requestFundraisingCampaign.bind(this);
+    this.logoutUser = this.logoutUser.bind(this);
+    this.getUserProfileData = this.getUserProfileData.bind(this);
+    this.editUserProfile = this.editUserProfile.bind(this);
 
+    this.#userUtilsInstance = new userUtilsClass();
+    this.#notificationInstance = new notificationManager();
+    this.#charity = new CHARITY();
+  }
   async resetUser(reqBody: dataForResetEmail) {
     const email = reqBody.email;
     //   if (!email) throw new BadRequestError('no email input');
@@ -38,12 +57,7 @@ class userServiceClass implements userServiceSkeleton {
     const token = await generateResetTokenTemp();
     userResponse.user.verificationCode = token;
     await userResponse.user.save();
-    await setupMailSender(
-      userResponse.user.email,
-      'reset alert',
-      'go to that link to reset the password (www.dummy.com) ' +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
+    await sendResetPasswordEmail(userResponse.user.email, token);
     return {
       message: 'email sent successfully to reset the password',
     };
@@ -69,11 +83,8 @@ class userServiceClass implements userServiceSkeleton {
 
     await setupMailSender(
       updatedUser.user.email,
-      'password changed alert',
-      `hi ${
-        updatedUser.user.name?.firstName + ' ' + updatedUser.user.name?.lastName
-      } <h3>contact us if you did not changed the password</h3>` +
-        `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+      'Password Changed',
+      `hi ${updatedUser.user.name.firstName} contact us if you did not changed the password or you can freeze your account`
     );
 
     return { message: 'user password changed successfully' };
@@ -84,12 +95,8 @@ class userServiceClass implements userServiceSkeleton {
     await updatedUser.save();
     await setupMailSender(
       updatedUser.email,
-      'password changed alert',
-      `hi ${
-        // updatedUser.name?.firstName will safely access firstName if name is not undefined.
-        updatedUser.name.firstName + ' ' + updatedUser.name?.lastName
-      }<h3>contact us if you did not changed the password</h3>` +
-        `<h3>go to link(www.dummy.com) to freeze your account</h3>`
+      'Password Changed',
+      `hi ${updatedUser.name.firstName} contact us if you did not changed the password or you can freeze your account`
     );
     return { message: 'user password changed successfully' };
   }
@@ -118,8 +125,8 @@ class userServiceClass implements userServiceSkeleton {
     await this.#userUtilsInstance.verifyUserAccount(storedUser);
     await setupMailSender(
       storedUser.email,
-      'account has been activated ',
-      `<h2>now you are ready to spread the goodness with us </h2>`
+      'Account Activated ',
+      `now you are ready to spread the goodness with us`
     );
 
     return {
@@ -133,16 +140,16 @@ class userServiceClass implements userServiceSkeleton {
   //we store nothing in the db
   async bloodContribution(req: Request, user: IUser, id: string | undefined) {
     if (!id) throw new BadRequestError('no id provided');
-    const isCaseExist = await caseUtils.getCaseByIdFromDB(req, id);
+    const isCaseExist = await this.caseUtilsInstance.getCaseByIdFromDB(req, id);
 
     if (!isCaseExist.privateNumber) throw new BadRequestError('sorry no number is added');
     if (isCaseExist.finished) throw new BadRequestError('the case had been finished');
 
     await setupMailSender(
       user.email,
-      'bloodContribution',
+      'Blood Contribution',
       'thanks for your caring' +
-        `<h3>here is the number to get contact with the case immediate</h3> <h2>${isCaseExist.privateNumber}</h2>`
+        `here is the number to get contact with the case immediate,${isCaseExist.privateNumber}`
     );
     this.#notificationInstance.sendNotification(
       'Charity',
@@ -159,9 +166,10 @@ class userServiceClass implements userServiceSkeleton {
     charityId: string,
     storedUser: IUser
   ) {
-    const _CharityRepository = new CharityRepository();
+    // const _CharityRepository = new CharityRepository();
 
-    const chosenCharity: ICharity | null = await _CharityRepository.findCharityById(charityId);
+    const chosenCharity: ICharity | null =
+      await this.#charity.chairtyModel.findCharityById(charityId);
     if (!chosenCharity) throw new BadRequestError('no charity found');
 
     if (
@@ -176,7 +184,12 @@ class userServiceClass implements userServiceSkeleton {
     caseData.freezed = true; //till the charity accept it will be false
     caseData.user = storedUser._id;
 
-    const responseData = await caseService.addCase(caseData, 'none', chosenCharity, storedUser);
+    const responseData = await this.caseServiceInstance.addCase(
+      caseData,
+      'none',
+      chosenCharity,
+      storedUser
+    );
 
     return {
       case: responseData.case,

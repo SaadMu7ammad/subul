@@ -1,4 +1,4 @@
-import { authUseCase } from '@components/auth/charity/domain/auth.use-case';
+import { authCharityUseCase } from '@components/auth/charity/domain/auth.use-case';
 import { imageAssertion, resizeImg } from '@libs/uploads/components/images/handlers';
 import {
   loginCharityValidation,
@@ -11,7 +11,7 @@ import { Application, NextFunction, Request, Response, Router } from 'express';
 
 export default function defineRoutes(expressApp: Application) {
   const router = Router();
-
+  const authCharityUseCaseInstance = new authCharityUseCase();
   router.post(
     '/register',
     imageAssertion,
@@ -26,7 +26,11 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Auth API was called to Register charity`);
-        const registerCharityResponse = await authUseCase.registerCharity(req, res, next);
+        const registerCharityResponse = await authCharityUseCaseInstance.registerCharity(
+          req,
+          res,
+          next
+        );
 
         return res.json(registerCharityResponse);
       } catch (error) {
@@ -49,7 +53,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Auth API was called to Auth charity`);
-        const authCharityResponse = await authUseCase.authCharity(req, res, next);
+        const authCharityResponse = await authCharityUseCaseInstance.authCharity(req, res, next);
         return res.json(authCharityResponse);
       } catch (error) {
         next(error);

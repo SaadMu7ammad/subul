@@ -1,6 +1,6 @@
-import { CharityRepository } from '@components/charity/data-access/charity.repository';
 import { PlainCharity } from '@components/charity/data-access/interfaces';
 import { Charity as CharityModel } from '@components/charity/data-access/models/charity.model';
+import { CHARITY } from '@components/charity/domain/charity.class';
 import { generateTokenForTesting } from '@utils/generateToken';
 import axios from 'axios';
 import FormData from 'form-data';
@@ -8,7 +8,7 @@ import fs from 'fs';
 import path from 'path';
 
 export const createDummyCharityAndReturnToken = async () => {
-  const charityRepository = new CharityRepository();
+  const charity = new CHARITY();
 
   const dummyCharityData: PlainCharity = {
     cases: [],
@@ -48,7 +48,7 @@ export const createDummyCharityAndReturnToken = async () => {
     },
   };
 
-  const dummyCharity = await charityRepository.createCharity(dummyCharityData);
+  const dummyCharity = await charity.chairtyModel.createCharity(dummyCharityData);
 
   const token = generateTokenForTesting(dummyCharity!._id.toString(), 'charity');
 
@@ -92,6 +92,7 @@ export const getDummyCharityObject = (): PlainCharity => {
       isVerified: false,
       verificationDate: '',
     },
+    phone: '01022222555',
     isEnabled: false,
     isConfirmed: false,
     isPending: false,

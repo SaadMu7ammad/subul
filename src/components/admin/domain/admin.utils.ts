@@ -1,6 +1,6 @@
-import { adminRepository } from '@components/admin/data-access/admin.repository';
 import {
   AccType,
+  CharitiesAccountsByAggregation,
   ConfirmedCharities,
   ICharity,
   ICharityDocs,
@@ -11,21 +11,28 @@ import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { deleteOldImgs } from '@utils/deleteFile';
 import { notificationManager } from '@utils/sendNotification';
 
-import { QueryObject } from './admin.service';
+import { adminUtilsSkeleton } from '../data-access/interfaces/admin.dao';
+import { QueryObject } from '../data-access/interfaces/admin.interface';
+import { ADMIN } from './admin.class';
 
 // import { QueryObject } from './admin.service';
-class adminUtilsClass {
-  #notificationInstance = new notificationManager();
+export class adminUtilsClass implements adminUtilsSkeleton {
+  notificationInstance: notificationManager;
+  adminInstance: ADMIN;
+  constructor() {
+    this.notificationInstance = new notificationManager();
+    this.adminInstance = new ADMIN();
+  }
   async getAllPendingPaymentMethodsRequestsForConfirmedCharity(
     paymentMethod: string // bankAccount | fawry...
-  ) {
+  ): Promise<CharitiesAccountsByAggregation[]> {
     const paymentMethodRequests =
-      await adminRepository.getPendingPaymentAccountByAggregation(paymentMethod);
+      await this.adminInstance.adminModel.getPendingPaymentAccountByAggregation(paymentMethod);
 
     return paymentMethodRequests; // []
   }
 
-  async confirmingCharity(charity: PendingCharities) {
+  async confirmingCharity(charity: PendingCharities): Promise<void> {
     charity.isPending = false;
     charity.isConfirmed = true;
     //enable all paymentMethods when first time the charity send the docs
@@ -41,7 +48,7 @@ class adminUtilsClass {
       });
     }
     await charity.save();
-    this.#notificationInstance.sendNotification(
+    this.notificationInstance.sendNotification(
       'Charity',
       charity._id,
       'Your charity Account has been confirmed',
@@ -50,7 +57,7 @@ class adminUtilsClass {
   }
 
   // const rejectingCharity = async (charity: ICharity) => {
-  async rejectingCharity(charity: PendingCharities) {
+  async rejectingCharity(charity: PendingCharities): Promise<void> {
     charity.isPending = false;
     charity.isConfirmed = false;
     // console.log('charity', charity); // { charityDocs:{ docs1: []... }, _id, email, name, paymentMethod: {} }
@@ -109,7 +116,7 @@ class adminUtilsClass {
     }
     await charity.save();
 
-    this.#notificationInstance.sendNotification(
+    this.notificationInstance.sendNotification(
       'Charity',
       charity._id,
       'Your charity Account has been rejected',
@@ -142,12 +149,13 @@ class adminUtilsClass {
     return idx;
   }
 
-  async getConfirmedCharities(queryObject: QueryObject) {
+  async getConfirmedCharities(queryObject: QueryObject): Promise<PendingCharities> {
     // [ { name email paymentMethods _id } ]
-    const charities: PendingCharities[] = await adminRepository.findCharitiesByQueryWithOptionalId(
-      queryObject,
-      'name email paymentMethods'
-    );
+    const charities: PendingCharities[] =
+      await this.adminInstance.adminModel.findCharitiesByQueryWithOptionalId(
+        queryObject,
+        'name email paymentMethods'
+      );
 
     if (!charities[0]) throw new BadRequestError('charity not found');
 
@@ -187,7 +195,7 @@ class adminUtilsClass {
 
     await charity.save();
 
-    this.#notificationInstance.sendNotification(
+    this.notificationInstance.sendNotification(
       'Charity',
       charity._id,
       'Your payment account has been confirmed',
@@ -245,7 +253,7 @@ class adminUtilsClass {
     }
     await charity.save();
 
-    this.#notificationInstance.sendNotification(
+    this.notificationInstance.sendNotification(
       'Charity',
       charity._id,
       'Your payment account has been rejected',
@@ -276,20 +284,19 @@ class adminUtilsClass {
 
     // await charity.save();
   }
-  async resetRegisterOperation(entity: ICharity | IUser) {
+  async resetRegisterOperation(entity: ICharity | IUser): Promise<boolean> {
     if (entity && typeof entity === 'object' && 'cases' in entity && 'cases' in entity) {
       //to ensure the entity type using type guard
-      const res = await adminRepository.deleteCharityByEmail(entity.email);
+      const res = await this.adminInstance.adminModel.deleteCharityByEmail(entity.email);
       if (!res) throw new BadRequestError('fatal error while regestering');
       return true;
     } else {
-      const res = await adminRepository.deleteUserByEmail(entity.email);
+      const res = await this.adminInstance.adminModel.deleteUserByEmail(entity.email);
       if (!res) throw new BadRequestError('fatal error while regestering');
       return true;
     }
   }
 }
-export const adminUtils = new adminUtilsClass();
 
 // export const adminUtils = {
 //   getAllPendingPaymentMethodsRequestsForConfirmedCharity,

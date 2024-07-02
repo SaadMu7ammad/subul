@@ -1,7 +1,7 @@
+import { CHARITY } from '@components/charity/domain/charity.class';
 import { USER } from '@components/user/domain/user.class';
 
 import { NotFoundError } from '../../../libraries/errors/components/not-found';
-import { CharityRepository } from '../../charity/data-access/charity.repository';
 import { FilterObj, PaginationObj, PlainNotification, SortObj } from './interfaces';
 import { NotificationDao } from './interfaces/';
 import NotificationModel from './models/notification.model';
@@ -71,9 +71,9 @@ export class NotificationRepository implements NotificationDao {
 
 const checkIfReceiverExists = async (receiverType: string, receiverId: string) => {
   if (receiverType === 'Charity') {
-    const charityRepository = new CharityRepository();
+    const chairty = new CHARITY();
 
-    const charity = await charityRepository.findCharityById(receiverId);
+    const charity = await chairty.chairtyModel.findCharityById(receiverId);
 
     if (!charity) throw new NotFoundError('Charity Not Found');
   } else if (receiverType === 'User') {

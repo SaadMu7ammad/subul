@@ -4,57 +4,65 @@ import {
   authUserResponse,
   registerUserResponse,
 } from '@components/auth/user/data-access/interfaces';
-import { RequestHandler } from 'express';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
-import { authUserService } from './auth.service';
+import { authUserUseCaseSkeleton } from '../data-access/interfaces/auth.interfaces';
+import { authUserServiceClass } from './auth.service';
 
-//@desc   submit login page
-//@route  POST /api/users/auth
-//@access public
+export class authUserUseCaseClass implements authUserUseCaseSkeleton {
+  authUserServiceInstance: authUserServiceClass;
 
-const authUser: RequestHandler = async (
-  req: Request,
-  res: Response,
-  _next
-): Promise<authUserResponse> => {
-  const { email, password }: { email: string; password: string } = req.body;
-  const data = { email, password };
-
-  const responseData = await authUserService.authUser(data, res, req);
-  const userResponsed = responseData.user;
-
-  if (responseData.emailAlert) {
-    return {
-      user: userResponsed,
-      msg: 'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
-      token: responseData.token,
-      isVerified: responseData.isVerified,
-    };
-  } else {
-    return {
-      user: userResponsed,
-      token: responseData.token,
-      isVerified: responseData.isVerified,
-    };
+  constructor() {
+    this.authUserServiceInstance = new authUserServiceClass();
   }
-};
-//@desc   submit register page
-//@route  POST /api/users/
-//@access public
 
-const registerUser: RequestHandler = async (req, _res, _next): Promise<registerUserResponse> => {
-  const registerInputsData: RegisterUserInputData = req.body;
+  //@desc   submit login page
+  //@route  POST /api/users/auth
+  //@access public
 
-  const responseData = await authUserService.registerUser(registerInputsData);
+  async authUser(req: Request, res: Response, _next: NextFunction): Promise<authUserResponse> {
+    const { email, password }: { email: string; password: string } = req.body;
+    const data = { email, password };
 
-  const userResponsed: UserObject = {
-    ...responseData.user,
-  };
+    const responseData = await this.authUserServiceInstance.authUser(data, res, req);
+    const userResponsed = responseData.user;
 
-  return { user: userResponsed };
-};
-export const authUseCase = {
-  registerUser,
-  authUser,
-};
+    if (responseData.emailAlert) {
+      return {
+        user: userResponsed,
+        msg: 'Your Account is not Activated Yet,A Token Was Sent To Your Email.',
+        token: responseData.token,
+        isVerified: responseData.isVerified,
+      };
+    } else {
+      return {
+        user: userResponsed,
+        token: responseData.token,
+        isVerified: responseData.isVerified,
+      };
+    }
+  }
+  //@desc   submit register page
+  //@route  POST /api/users/
+  //@access public
+
+  async registerUser(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<registerUserResponse> {
+    const registerInputsData: RegisterUserInputData = req.body;
+
+    const responseData = await this.authUserServiceInstance.registerUser(registerInputsData);
+
+    const userResponsed: UserObject = {
+      ...responseData.user,
+    };
+
+    return { user: userResponsed };
+  }
+}
+// export const authUseCase = {
+//   registerUser,
+//   authUser,
+// };

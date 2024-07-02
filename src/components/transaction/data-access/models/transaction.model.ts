@@ -36,6 +36,10 @@ const transactionSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    charity: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Charity',
+    },
     moneyPaid: {
       type: Number,
       required: true,

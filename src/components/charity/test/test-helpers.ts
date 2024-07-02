@@ -1,4 +1,3 @@
-import { CharityRepository } from '@components/charity/data-access/charity.repository';
 import { PlainCharity } from '@components/charity/data-access/interfaces';
 import { Charity as CharityModel } from '@components/charity/data-access/models/charity.model';
 import { generateTokenForTesting } from '@utils/generateToken';
@@ -7,12 +6,14 @@ import FormData from 'form-data';
 import fs from 'fs';
 import path from 'path';
 
+import { CHARITY } from '../domain/charity.class';
+
 export const createDummyCharityAndReturnToken = async (
   isActivated: boolean = true,
   isConfirmed: boolean = true,
   verificationCode: string = ''
 ) => {
-  const charityRepository = new CharityRepository();
+  const charity = new CHARITY();
 
   const dummyCharityData: PlainCharity = {
     paymentMethods: {
@@ -66,7 +67,7 @@ export const createDummyCharityAndReturnToken = async (
     },
   };
 
-  const dummyCharity = await charityRepository.createCharity(dummyCharityData);
+  const dummyCharity = await charity.chairtyModel.createCharity(dummyCharityData);
 
   const token = generateTokenForTesting(dummyCharity!._id.toString(), 'charity');
 

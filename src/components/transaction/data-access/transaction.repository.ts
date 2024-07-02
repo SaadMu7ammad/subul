@@ -24,6 +24,12 @@ class TransactionRepository implements TransactionDataStore {
     const transaction = await TransactionModel.findOne(queryObj);
     return transaction;
   }
+  async findTransactionsByQuery(
+    queryObj: FilterQuery<ITransaction>
+  ): Promise<ITransaction[] | null> {
+    const transactions = await TransactionModel.find(queryObj);
+    return transactions;
+  }
   async findTransactionById(id: string): Promise<ITransaction | null> {
     const transaction = await TransactionModel.findOne({
       _id: id,

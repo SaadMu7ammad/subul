@@ -1,13 +1,27 @@
 import { IUser, userUtilsSkeleton } from '@components/user/data-access/interfaces';
 import { NotFoundError } from '@libs/errors/components/index';
-import { generateResetTokenTemp, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendReactivationEmail } from '@utils/mailer';
 import { Response } from 'express';
 
 import { USER } from './user.class';
 
 export class userUtilsClass implements userUtilsSkeleton {
-  #user = new USER();
-  // constructor(){}
+  #user: USER;
+  constructor() {
+    this.#user = new USER();
+
+    this.checkUserIsExist = this.checkUserIsExist.bind(this);
+    this.checkUserIsExistById = this.checkUserIsExistById.bind(this);
+    this.logout = this.logout.bind(this);
+    this.checkIsEmailDuplicated = this.checkIsEmailDuplicated.bind(this);
+    this.changeUserEmailWithMailAlert = this.changeUserEmailWithMailAlert.bind(this);
+    this.verifyUserAccount = this.verifyUserAccount.bind(this);
+    this.checkIfCaseBelongsToUserContributions =
+      this.checkIfCaseBelongsToUserContributions.bind(this);
+    this.deleteCaseFromUserContributionsArray =
+      this.deleteCaseFromUserContributionsArray.bind(this);
+    this.resetSentToken = this.resetSentToken.bind(this);
+  }
 
   async checkUserIsExist(email: string): Promise<{ user: IUser }> {
     //return user if it exists
@@ -67,15 +81,7 @@ export class userUtilsClass implements userUtilsSkeleton {
 
     const token = await generateResetTokenTemp();
     UserBeforeUpdate.verificationCode = token;
-    await setupMailSender(
-      UserBeforeUpdate.email,
-      'email changed alert',
-      `hi ${
-        UserBeforeUpdate?.name?.firstName + ' ' + UserBeforeUpdate?.name?.lastName
-      }email has been changed You must Re activate account ` +
-        `<h3>(www.activate.com)</h3>` +
-        `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    );
+    await sendReactivationEmail(UserBeforeUpdate.email, token);
     await UserBeforeUpdate.save();
     return { user: UserBeforeUpdate };
   }
