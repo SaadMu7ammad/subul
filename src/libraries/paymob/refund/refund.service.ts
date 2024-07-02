@@ -1,6 +1,9 @@
-import { TransactionRepository } from '@components/transaction/data-access/transaction.repository';
+import { TRANSACTION } from '@components/transaction/data-access/transaction.repository';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { getTransactionByIdService } from '@libs/paymob/admin/getTransactionById.service';
+
+const transactionRepository = new TRANSACTION();
+const transactionInstance = transactionRepository.transactionModel;
 
 const refund = async (transaction_id: string) => {
   const stepOneToken = await getTransactionByIdService.getTokenStepOne();
@@ -9,9 +12,9 @@ const refund = async (transaction_id: string) => {
   if (!data) throw new NotFoundError('no transaction found');
   const { id, amount_cents, success, pending } = data;
   const orderId = data.order.id;
-  const transactionObj = new TransactionRepository();
+  // const transactionObj = new TransactionRepository();
   //a solution indexing for the transaction table on externalTransactionId
-  const transactionIsExist = await transactionObj.findTransactionByQuery({
+  const transactionIsExist = await transactionInstance.findTransactionByQuery({
     externalTransactionId: transaction_id,
   });
   console.log('transaction in refund service');

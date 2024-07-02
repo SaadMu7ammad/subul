@@ -1,65 +1,95 @@
 import { NextFunction, Request, Response } from 'express';
 
+import { notificationUseCaseSkeleton } from '../data-access/interfaces';
 import {
   GetAllNotificationsQueryParams,
+  INotification,
   ReceiverType,
 } from '../data-access/interfaces/notification.interface';
-import { notificationService } from './notification.service';
+import { notificationServiceClass } from './notification.service';
 
-const getAllNotifications = async (req: Request, res: Response, next: NextFunction) => {
-  const receiverId = res.locals.charity?._id || res.locals.user?._id;
-  const receiverType: ReceiverType = res.locals.charity ? 'Charity' : 'User';
-  const queryParams: GetAllNotificationsQueryParams = req.query;
+export class notificationUseCaseClass implements notificationUseCaseSkeleton {
+  notificationServiceInstance: notificationServiceClass;
 
-  const responseData = await notificationService.getAllNotifications(
-    receiverType,
-    receiverId.toString(),
-    queryParams
-  );
+  constructor() {
+    this.notificationServiceInstance = new notificationServiceClass();
+  }
+  async getAllNotifications(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<{
+    message: string;
+    notifications: INotification[];
+  }> {
+    const receiverId = res.locals.charity?._id || res.locals.user?._id;
+    const receiverType: ReceiverType = res.locals.charity ? 'Charity' : 'User';
+    const queryParams: GetAllNotificationsQueryParams = req.query;
 
-  return {
-    message: responseData.message,
-    notifications: responseData.notifications,
-  };
-};
+    const responseData = await this.notificationServiceInstance.getAllNotifications(
+      receiverType,
+      receiverId.toString(),
+      queryParams
+    );
 
-const markNotificationAsRead = async (req: Request, res: Response, next: NextFunction) => {
-  const receiverId = res.locals.charity?._id || res.locals.user?._id;
-  const receiverType: ReceiverType = res.locals.charity ? 'Charity' : 'User';
+    return {
+      message: responseData.message,
+      notifications: responseData.notifications,
+    };
+  }
 
-  const notificationId = req.params.id;
+  async markNotificationAsRead(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<{
+    message: string;
+    notification: INotification;
+  }> {
+    const receiverId = res.locals.charity?._id || res.locals.user?._id;
+    const receiverType: ReceiverType = res.locals.charity ? 'Charity' : 'User';
 
-  const responseData = await notificationService.markNotificationAsRead(
-    receiverType,
-    receiverId.toString(),
-    notificationId
-  );
+    const notificationId = req.params.id;
 
-  return {
-    message: responseData.message,
-    notification: responseData.notification,
-  };
-};
+    const responseData = await this.notificationServiceInstance.markNotificationAsRead(
+      receiverType,
+      receiverId.toString(),
+      notificationId
+    );
 
-const deleteNotification = async (req: Request, res: Response, next: NextFunction) => {
-  const receiverId = res.locals.charity?._id || res.locals.user?._id;
-  const receiverType: ReceiverType = res.locals.charity ? 'Charity' : 'User';
+    return {
+      message: responseData.message,
+      notification: responseData.notification,
+    };
+  }
 
-  const notificationId = req.params.id;
+  async deleteNotification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<{
+    message: string;
+    notification: INotification;
+  }> {
+    const receiverId = res.locals.charity?._id || res.locals.user?._id;
+    const receiverType: ReceiverType = res.locals.charity ? 'Charity' : 'User';
 
-  const responseData = await notificationService.deleteNotification(
-    receiverType,
-    receiverId.toString(),
-    notificationId
-  );
+    const notificationId = req.params.id;
 
-  return {
-    message: responseData.message,
-    notification: responseData.notification,
-  };
-};
-export const notificationUseCase = {
-  getAllNotifications,
-  markNotificationAsRead,
-  deleteNotification,
-};
+    const responseData = await this.notificationServiceInstance.deleteNotification(
+      receiverType,
+      receiverId.toString(),
+      notificationId
+    );
+
+    return {
+      message: responseData.message,
+      notification: responseData.notification,
+    };
+  }
+}
+// export const notificationUseCase = {
+//   getAllNotifications,
+//   markNotificationAsRead,
+//   deleteNotification,
+// };

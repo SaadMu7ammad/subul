@@ -1,32 +1,47 @@
-import { body } from 'express-validator';
+import { Request } from 'express';
+import { ValidationChain, body } from 'express-validator';
 
-const titleValidation = body('title')
-  .isString()
-  .withMessage('Title must be a string')
-  .isLength({ min: 5, max: 255 })
-  .withMessage('Title must be between 5 and 255 characters');
+const titleValidation = (req: Request) =>
+  body('title')
+    .isString()
+    .withMessage(req.t('usedItems.onlyStringTitle'))
+    .isLength({ min: 5, max: 255 })
+    .withMessage(req.t('usedItems.titleLength'));
 
-const categoryValidation = body('category')
-  .isString()
-  .withMessage('Category must be a string')
-  .isIn(['clothes', 'electronics', 'appliances', 'furniture', 'others'])
-  .withMessage('Category must be one of clothes, electronics, appliances, furniture, or others');
+const categoryValidation = (req: Request) =>
+  body('category')
+    .isString()
+    .withMessage(req.t('usedItems.onlyStringCategory'))
+    .isIn([
+      'clothes',
+      'electronics',
+      'appliances',
+      'furniture',
+      'others',
+      'ملابس',
+      'إلكترونيات',
+      'أجهزة',
+      'أثاث',
+      'آخر',
+    ])
+    .withMessage(req.t('usedItems.categoryType'));
 
-const descriptionValidation = body('description')
-  .isString()
-  .withMessage('Description must be a string')
-  .isLength({ min: 5, max: 255 })
-  .withMessage('Description must be between 5 and 255 characters');
+const descriptionValidation = (req: Request) =>
+  body('description')
+    .isString()
+    .withMessage(req.t('usedItems.onlyStringDescription'))
+    .isLength({ min: 10 })
+    .withMessage(req.t('errors.descriptionLength'));
 
-const amountValidation = body('amount')
-  .isNumeric()
-  .withMessage('Amount must be a number')
-  .isInt({ min: 1 })
-  .withMessage('Amount must be a positive integer');
+const amountValidation = (req: Request) =>
+  body('amount')
+    .isNumeric()
+    .isInt({ min: 1 })
+    .withMessage(req.t('usedItems.onlyPositiveNumberAmount'));
 
-export const usedItemValidation = {
-  titleValidation,
-  categoryValidation,
-  descriptionValidation,
-  amountValidation,
-};
+export const usedItemValidation = (req: Request): ValidationChain[] => [
+  titleValidation(req),
+  categoryValidation(req),
+  descriptionValidation(req),
+  amountValidation(req),
+];

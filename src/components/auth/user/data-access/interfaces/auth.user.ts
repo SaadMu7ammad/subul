@@ -4,31 +4,31 @@
 // export interface AuthedRequest extends Request {
 //     user: IUserDocument;
 //     charity: ICharityDocument;
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 
 export interface IloginData {
-  email: User['email'];
-  password: User['password'];
+  email: IUser['email'];
+  password: IUser['password'];
 }
 
 // Define RegisterUserInputData based on the structure of the User type
 export type RegisterUserInputData = {
-  name: User['name'];
-  email: User['email'];
-  locationUser: User['userLocation'];
-  gender: User['gender'];
-  phone: User['phone'];
-  password: User['password'];
+  name: IUser['name'];
+  email: IUser['email'];
+  locationUser: IUser['userLocation'];
+  gender: IUser['gender'];
+  phone: IUser['phone'];
+  password: IUser['password'];
 };
 
 export interface UserObject {
-  _id: User['_id'];
-  name: User['name'];
-  email: User['email'];
+  _id: IUser['_id'];
+  name: IUser['name'];
+  email: IUser['email'];
 }
 
 export type UserResponseBasedOnUserVerification = {
-  user: User;
+  user: IUser;
   emailAlert: boolean;
   token?: string;
   isVerified: boolean;

@@ -1,189 +1,235 @@
-import { BookItemRequest, PlainIUsedItem } from '@components/used-items/data-access/interfaces';
 import { deleteOldImgs } from '@utils/deleteFile';
+import { Request } from 'express';
 
-import { usedItemUtils } from './used-item.utils';
+import { BookItemRequest, IUsedItem, PlainIUsedItem } from '../data-access/interfaces';
+import { usedItemServiceSkeleton } from '../data-access/interfaces';
+import { usedItemUtilsClass } from './used-item.utils';
 
-const addUsedItem = async (usedItemData: PlainIUsedItem) => {
-  const usedItem = await usedItemUtils.addUsedItem(usedItemData);
+export class usedItemServiceClass implements usedItemServiceSkeleton {
+  usedItemUtilsInstance: usedItemUtilsClass;
 
-  return {
-    usedItem,
-    message: 'Used Item Created Successfully',
-  };
-};
+  constructor() {
+    this.usedItemUtilsInstance = new usedItemUtilsClass();
+  }
+  async addUsedItem(
+    req: Request,
+    usedItemData: PlainIUsedItem
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
+    const usedItem = await this.usedItemUtilsInstance.addUsedItem(usedItemData);
+    return {
+      usedItem,
+      message: req.t('usedItems.addUsedItem'),
+    };
+  }
 
-const findAllUsedItems = async () => {
-  const usedItems = await usedItemUtils.findAllUsedItems();
+  async findAllUsedItems(req: Request): Promise<{ usedItems: IUsedItem[]; message: string }> {
+    const usedItems = await this.usedItemUtilsInstance.findAllUsedItems();
 
-  return {
-    usedItems: usedItems,
-    message: 'All Used Items Retrieved Successfully',
-  };
-};
+    return {
+      usedItems: usedItems.usedItems,
+      message: req.t('usedItems.retrieveUsedItems'),
+    };
+  }
 
-const bookUsedItem = async (bookItemData: BookItemRequest) => {
-  await usedItemUtils.getUsedItem(bookItemData.itemId); //TODO : Delete this line and separate the logic : find the usedItem first , then book it
+  async bookUsedItem(
+    bookItemData: BookItemRequest
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
+    await this.usedItemUtilsInstance.getUsedItem(bookItemData.itemId); //TODO : Delete this line and separate the logic : find the usedItem first , then book it
 
-  const usedItem = await usedItemUtils.bookUsedItem(bookItemData);
+    const usedItem = await this.usedItemUtilsInstance.bookUsedItem(bookItemData);
 
-  return {
-    usedItem: usedItem,
-    message: 'Used Item Booked Successfully',
-  };
-};
+    return {
+      usedItem: usedItem,
+      message: 'Used Item Booked Successfully',
+    };
+  }
 
-const cancelBookingOfUsedItem = async (bookItemData: BookItemRequest) => {
-  const usedItem = await usedItemUtils.cancelBookingOfUsedItem(bookItemData);
-  // // If not null and charity is not the same as the one in the request should handle that though
-  // if (usedItems && usedItems.charity?.toString() !== bookItemData.charity) {
-  //   throw new UnauthenticatedError(
-  //     `You are not allowed to cancel the booking of this item, because it is not booked by charity with id: ${bookItemData.charity}`
-  //   );
-  // }
-  return {
-    usedItem: usedItem,
-    message: 'Used Item Cancelled Successfully',
-  };
-};
+  async cancelBookingOfUsedItem(
+    bookItemData: BookItemRequest
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
+    const usedItem = await this.usedItemUtilsInstance.cancelBookingOfUsedItem(bookItemData);
+    // // If not null and charity is not the same as the one in the request should handle that though
+    // if (usedItems && usedItems.charity?.toString() !== bookItemData.charity) {
+    //   throw new UnauthenticatedError(
+    //     `You are not allowed to cancel the booking of this item, because it is not booked by charity with id: ${bookItemData.charity}`
+    //   );
+    // }
+    return {
+      usedItem: usedItem,
+      message: 'Used Item Cancelled Successfully',
+    };
+  }
 
-const ConfirmBookingReceipt = async (bookItemData: BookItemRequest) => {
-  const usedItem = await usedItemUtils.ConfirmBookingReceipt(bookItemData);
-  // // If not null and charity is not the same as the one in the request should handle that though
-  // if (usedItem && usedItem.charity?.toString() !== bookItemData.charity) {
-  //   throw new UnauthenticatedError(
-  //     `You are not allowed to confirm this action, because it is not booked by charity with id: ${bookItemData.charity}`
-  //   );
-  // }
-  return {
-    usedItem: usedItem,
-    message: 'Used Item Confirmed Successfully',
-  };
-};
+  async ConfirmBookingReceipt(
+    bookItemData: BookItemRequest
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
+    const usedItem = await this.usedItemUtilsInstance.ConfirmBookingReceipt(bookItemData);
+    // // If not null and charity is not the same as the one in the request should handle that though
+    // if (usedItem && usedItem.charity?.toString() !== bookItemData.charity) {
+    //   throw new UnauthenticatedError(
+    //     `You are not allowed to confirm this action, because it is not booked by charity with id: ${bookItemData.charity}`
+    //   );
+    // }
+    return {
+      usedItem: usedItem,
+      message: 'Used Item Confirmed Successfully',
+    };
+  }
 
-const getUsedItem = async (id: string | undefined) => {
-  //check if the id was sent in the request
-  const validate: (id: string | undefined) => asserts id is string = usedItemUtils.validateIdParam;
-  validate(id); //it gives an error if I executed the function directly 🤕
+  async getUsedItem(
+    req: Request,
+    id: string | undefined
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
+    //check if the id was sent in the request
+    const validate: (id: string | undefined) => asserts id is string =
+      this.usedItemUtilsInstance.validateIdParam;
+    validate(id); //it gives an error if I executed the function directly 🤕
 
-  const usedItem = await usedItemUtils.getUsedItem(id);
+    const usedItem = await this.usedItemUtilsInstance.getUsedItem(id);
 
-  return {
-    usedItem,
-    message: 'Used Item Fetched Successfully',
-  };
-};
+    return {
+      usedItem,
+      message: req.t('usedItems.getUsedItem'),
+    };
+  }
 
-const updateUsedItem = async (
-  id: string | undefined,
-  userId: string,
-  usedItemData: Partial<PlainIUsedItem>
-) => {
-  //check if the id was sent in the request
-  const validate: (id: string | undefined) => asserts id is string = usedItemUtils.validateIdParam;
-  validate(id); //it gives an error if I executed the function directly 🤕
+  async updateUsedItem(
+    req: Request,
+    id: string | undefined,
+    userId: string,
+    usedItemData: Partial<IUsedItem>
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
+    //check if the id was sent in the request
+    const validate: (id: string | undefined) => asserts id is string =
+      this.usedItemUtilsInstance.validateIdParam;
+    validate(id); //it gives an error if I executed the function directly 🤕
 
-  //check if the used item exists
-  const usedItem = await usedItemUtils.getUsedItem(id);
+    //check if the used item exists
+    const usedItem = await this.usedItemUtilsInstance.getUsedItem(id);
 
-  //check if the user is the owner of the used item
-  usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
+    //check if the user is the owner of the used item
+    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
-  //check if the used item is booked or not
-  usedItemUtils.isUsedItemBooked(usedItem);
+    //check if the used item is booked or not
+    this.usedItemUtilsInstance.isUsedItemBooked(usedItem);
 
-  const filteredUsedItemData =
-    usedItemUtils.removeUndefinedAttributesFromUsedItemData(usedItemData);
+    const filteredUsedItemData =
+      this.usedItemUtilsInstance.removeUndefinedAttributesFromUsedItemData(usedItemData);
 
-  //update the used item
-  const updatedUsedItem = await usedItemUtils.updateUsedItem(id, filteredUsedItemData);
+    //update the used item
+    const updatedUsedItem = await this.usedItemUtilsInstance.updateUsedItem(
+      id,
+      filteredUsedItemData
+    );
 
-  return {
-    usedItem: updatedUsedItem,
-    message: 'Used Item Updated Successfully',
-  };
-};
+    return {
+      usedItem: updatedUsedItem,
+      message: req.t('usedItems.updateUsedItem'),
+    };
+  }
 
-const deleteUsedItem = async (id: string | undefined, userId: string) => {
-  //check if the id was sent in the request
-  const validate: (id: string | undefined) => asserts id is string = usedItemUtils.validateIdParam;
-  validate(id); //it gives an error if I executed the function directly 🤕
+  async deleteUsedItem(
+    req: Request,
+    id: string | undefined,
+    userId: string
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
+    //check if the id was sent in the request
+    const validate: (id: string | undefined) => asserts id is string =
+      this.usedItemUtilsInstance.validateIdParam;
+    validate(id); //it gives an error if I executed the function directly 🤕
 
-  //check if the used item exists
-  const usedItem = await usedItemUtils.getUsedItem(id);
+    //check if the used item exists
+    const usedItem = await this.usedItemUtilsInstance.getUsedItem(id);
 
-  //check if the user is the owner of the used item
-  usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
+    //check if the user is the owner of the used item
+    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
-  //check if the usedItem is booked or not
-  usedItemUtils.isUsedItemBooked(usedItem);
+    //check if the usedItem is booked or not
+    this.usedItemUtilsInstance.isUsedItemBooked(usedItem);
 
-  //delete the used item
-  const deletedUsedItem = await usedItemUtils.deleteUsedItem(usedItem.id);
+    //delete the used item
+    const deletedUsedItem = await this.usedItemUtilsInstance.deleteUsedItem(usedItem.id);
 
-  //Delete the imgs
-  deleteOldImgs('usedItemsImages', usedItem.images);
+    //Delete the imgs
+    deleteOldImgs('usedItemsImages', usedItem.images);
 
-  return {
-    usedItem: deletedUsedItem,
-    message: 'Used Item Deleted Successfully',
-  };
-};
+    return {
+      usedItem: deletedUsedItem,
+      message: 'Used Item Deleted Successfully',
+    };
+  }
 
-const addUsedItemImages = async (id: string | undefined, userId: string, images: string[]) => {
-  //check if the id was sent in the request
-  const validate: (id: string | undefined) => asserts id is string = usedItemUtils.validateIdParam;
-  validate(id); //it gives an error if I executed the function directly 🤕
+  async addUsedItemImages(
+    req: Request,
+    id: string | undefined,
 
-  //check if the used item exists
-  const usedItem = await usedItemUtils.getUsedItem(id);
+    userId: string,
 
-  //check if the user is the owner of the used item
-  usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
+    images: string[]
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
+    //check if the id was sent in the request
+    const validate: (id: string | undefined) => asserts id is string =
+      this.usedItemUtilsInstance.validateIdParam;
+    validate(id); //it gives an error if I executed the function directly 🤕
 
-  //check if the usedItem is booked or not
-  usedItemUtils.isUsedItemBooked(usedItem);
+    //check if the used item exists
+    const usedItem = await this.usedItemUtilsInstance.getUsedItem(id);
 
-  //add the images
-  const updatedUsedItem = await usedItemUtils.addUsedItemImages(id, images);
+    //check if the user is the owner of the used item
+    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(req, usedItem, userId);
 
-  return {
-    usedItem: updatedUsedItem,
-    message: 'Used Item Images Added Successfully',
-  };
-};
+    //check if the usedItem is booked or not
+    this.usedItemUtilsInstance.isUsedItemBooked(usedItem);
 
-const deleteUsedItemImage = async (id: string | undefined, userId: string, imageName: string) => {
-  //check if the id was sent in the request
-  const validate: (id: string | undefined) => asserts id is string = usedItemUtils.validateIdParam;
-  validate(id); //it gives an error if I executed the function directly 🤕
+    //add the images
+    const updatedUsedItem = await this.usedItemUtilsInstance.addUsedItemImages(id, images);
 
-  //check if the used item exists
-  const usedItem = await usedItemUtils.getUsedItem(id);
+    return {
+      usedItem: updatedUsedItem,
+      message: 'Used Item Images Added Successfully',
+    };
+  }
 
-  //check if the user is the owner of the used item
-  usedItemUtils.checkIfUsedItemBelongsToUser(usedItem, userId);
+  async deleteUsedItemImage(
+    req: Request,
+    id: string | undefined,
 
-  //check if the usedItem is booked or not
-  usedItemUtils.isUsedItemBooked(usedItem);
+    userId: string,
 
-  //delete the image
-  const updatedUsedItem = await usedItemUtils.deleteUsedItemImage(id, imageName);
+    imageName: string
+  ): Promise<{ usedItem: IUsedItem; message: string }> {
+    //check if the id was sent in the request
+    const validate: (id: string | undefined) => asserts id is string =
+      this.usedItemUtilsInstance.validateIdParam;
+    validate(id); //it gives an error if I executed the function directly 🤕
 
-  return {
-    usedItem: updatedUsedItem,
-    message: 'Used Item Image Deleted Successfully',
-  };
-};
+    //check if the used item exists
+    const usedItem = await this.usedItemUtilsInstance.getUsedItem(id);
 
-export const usedItemService = {
-  addUsedItem,
-  findAllUsedItems,
-  bookUsedItem,
-  cancelBookingOfUsedItem,
-  ConfirmBookingReceipt,
-  deleteUsedItem,
-  getUsedItem,
-  updateUsedItem,
-  addUsedItemImages,
-  deleteUsedItemImage,
-};
+    //check if the user is the owner of the used item
+    this.usedItemUtilsInstance.checkIfUsedItemBelongsToUser(req, usedItem, userId);
+
+    //check if the usedItem is booked or not
+    this.usedItemUtilsInstance.isUsedItemBooked(usedItem);
+
+    //delete the image
+    const updatedUsedItem = await this.usedItemUtilsInstance.deleteUsedItemImage(id, imageName);
+
+    return {
+      usedItem: updatedUsedItem,
+      message: 'Used Item Image Deleted Successfully',
+    };
+  }
+}
+// export const usedItemService = {
+//   addUsedItem,
+//   findAllUsedItems,
+//   bookUsedItem,
+//   cancelBookingOfUsedItem,
+//   ConfirmBookingReceipt,
+//   deleteUsedItem,
+//   getUsedItem,
+//   updateUsedItem,
+//   addUsedItemImages,
+//   deleteUsedItemImage,
+// };

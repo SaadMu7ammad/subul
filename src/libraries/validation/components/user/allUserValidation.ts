@@ -1,72 +1,86 @@
-import { body } from 'express-validator';
+import { Request } from 'express';
+import { ValidationChain, body } from 'express-validator';
 
-const tokenUserValidation = body('token')
-  .trim()
-  .notEmpty()
-  .isLength({ min: 60, max: 60 })
-  .withMessage('Invalid Token!');
-const firstName = body('name.firstName').trim().notEmpty().withMessage('firstName is required');
-const lastName = body('name.lastName').trim().notEmpty().withMessage('lastName is required');
-const nameUserValidation = [firstName, lastName];
-const emailValidation = body('email')
-  .trim()
-  .notEmpty()
-  .withMessage('Email Required')
-  .isEmail()
-  .withMessage('Invalid email');
+const tokenUserValidation = (req: Request) =>
+  body('token')
+    .trim()
+    .notEmpty()
+    .isLength({ min: 60, max: 60 })
+    .withMessage(req.t('errors.invalidToken'));
 
-const passwordValidation = body('password')
-  .trim()
-  .notEmpty()
-  .withMessage('Password Required')
-  .isLength({ min: 6, max: 20 })
-  .withMessage('Password must be at least 6 characters long');
+const firstNameValidation = (req: Request): ValidationChain =>
+  body('name.firstName').trim().notEmpty().withMessage(req.t('errors.firstNameRequired'));
 
-const phoneValidation = body('phone')
-  .trim()
-  .notEmpty()
-  .isMobilePhone('any')
-  .withMessage('Invalid PhoneNumber')
-  .isLength({ min: 11, max: 11 })
-  .withMessage('Invalid PhoneNumber');
+const lastNameValidation = (req: Request): ValidationChain =>
+  body('name.lastName').trim().notEmpty().withMessage(req.t('errors.lastNameRequired'));
 
-const genderValidtion = body('gender')
-  .isIn(['male', 'female'])
-  .withMessage('Gender must be "male" or "female"');
+const nameUserValidation = (req: Request): ValidationChain[] => [
+  firstNameValidation(req),
+  lastNameValidation(req),
+];
 
-const governorateValidation = body('location.governorate')
-  .isIn([
-    'Alexandria',
-    'Assiut',
-    'Aswan',
-    'Beheira',
-    'Bani Suef',
-    'Cairo',
-    'Daqahliya',
-    'Damietta',
-    'Fayyoum',
-    'Gharbiya',
-    'Giza',
-    'Helwan',
-    'Ismailia',
-    'Kafr El Sheikh',
-    'Luxor',
-    'Marsa Matrouh',
-    'Minya',
-    'Monofiya',
-    'New Valley',
-    'North Sinai',
-    'Port Said',
-    'Qalioubiya',
-    'Qena',
-    'Red Sea',
-    'Sharqiya',
-    'Sohag',
-    'South Sinai',
-    'Suez',
-    'Tanta',
-  ])
-  .withMessage('governorate Invalid');
+const emailValidation = (req: Request): ValidationChain =>
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.emailRequired'))
+    .isEmail()
+    .withMessage(req.t('errors.emailInvalid'));
+
+const passwordValidation = (req: Request) =>
+  body('password')
+    .trim()
+    .notEmpty()
+    .withMessage(req.t('errors.passwordRequired'))
+    .isLength({ min: 6, max: 20 })
+    .withMessage(req.t('errors.passwordLength'));
+
+const phoneValidation = (req: Request) =>
+  body('phone')
+    .trim()
+    .notEmpty()
+    .isMobilePhone('any')
+    .withMessage(req.t('errors.phoneNumberRequired'))
+    .isLength({ min: 11, max: 11 })
+    .withMessage(req.t('errors.invalidPhoneNumber'));
+
+const genderValidtion = (req: Request) =>
+  body('gender').isIn(['male', 'female']).withMessage(req.t('errors.genderInvalid'));
+
+const governorateValidation = (req: Request) =>
+  body('userLocation.governorate')
+    .isIn([
+      'Alexandria',
+      'Assiut',
+      'Aswan',
+      'Beheira',
+      'Bani Suef',
+      'Cairo',
+      'Daqahliya',
+      'Damietta',
+      'Fayyoum',
+      'Gharbiya',
+      'Giza',
+      'Helwan',
+      'Ismailia',
+      'Kafr El Sheikh',
+      'Luxor',
+      'Marsa Matrouh',
+      'Minya',
+      'Monofiya',
+      'New Valley',
+      'North Sinai',
+      'Port Said',
+      'Qalioubiya',
+      'Qena',
+      'Red Sea',
+      'Sharqiya',
+      'Sohag',
+      'South Sinai',
+      'Suez',
+      'Tanta',
+    ])
+    .withMessage(req.t('errors.governorateInvalid'));
 
 const nameValidation = body('name').trim().notEmpty().withMessage('Name Required');
 
@@ -285,11 +299,15 @@ const fawryValidation = body('paymentMethods.fawry[0].number')
   .withMessage('Invalid PhoneNumber');
 
 //for changing password
-const changePasswordUserValidation = [passwordValidation];
+const changePasswordUserValidation = (req: Request) => passwordValidation(req);
 //for confirming reset password for user
-const confirmResetUserValidation = [emailValidation, passwordValidation, tokenUserValidation];
+const confirmResetUserValidation = (req: Request): ValidationChain[] => [
+  emailValidation(req),
+  passwordValidation(req),
+  tokenUserValidation(req),
+];
 //for requesting reset email for User
-const requestResetEmailUserValidation = [emailValidation];
+const requestResetEmailUserValidation = (req: Request): ValidationChain => emailValidation(req);
 
 export {
   nameUserValidation,

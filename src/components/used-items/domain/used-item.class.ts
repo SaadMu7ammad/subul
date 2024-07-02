@@ -1,7 +1,7 @@
-import { BookItemRequest, PlainIUsedItem, UsedItemDao } from './interfaces';
-import UsedItem from './models/used-item.model';
+import { BookItemRequest, PlainIUsedItem, UsedItemDao } from '../data-access/interfaces';
+import UsedItem from '../data-access/models/used-item.model';
 
-export class UsedItemRepository implements UsedItemDao {
+class usedItemRepository implements UsedItemDao {
   async addUsedItem(usedItemData: PlainIUsedItem) {
     const usedItem = await UsedItem.create(usedItemData);
     return usedItem;
@@ -110,4 +110,12 @@ export class UsedItemRepository implements UsedItemDao {
 
   //   return usedItem;
   // }
+}
+
+export class USED_ITEM {
+  public usedItemdModel = new usedItemRepository();
+
+  constructor() {
+    // super();
+  }
 }

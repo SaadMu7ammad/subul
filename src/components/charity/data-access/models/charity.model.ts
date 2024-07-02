@@ -122,6 +122,15 @@ const charitySchema = new Schema(
         ref: 'Case',
       },
     ],
+    numberOfCases: {
+      type: Number,
+      default: 0,
+    },
+    // based on donationNumbers of each case in cases array of the charity
+    totalNumberOfDonors: {
+      type: Number,
+      default: 0,
+    },
     image: {
       type: String,
       required: true, // Ensure it's required
@@ -143,7 +152,7 @@ const charitySchema = new Schema(
       type: {
         email: {
           type: String,
-          required: true,
+          required: false,
         },
         phone: {
           type: String,
@@ -151,10 +160,10 @@ const charitySchema = new Schema(
         },
         websiteUrl: {
           type: String,
-          required: true,
+          required: false,
         },
       },
-      required: true,
+      required: false,
     },
     description: {
       type: String,
@@ -264,12 +273,14 @@ const charitySchema = new Schema(
 );
 
 charitySchema.pre('save', async function (next) {
+  // Skip password hashing if password is not modified
   if (!this.isModified('password')) {
-    //to not change password every time we edit the user data
-    next();
+    return next();
   }
+
   const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 declare module '../interfaces/charity.interface' {

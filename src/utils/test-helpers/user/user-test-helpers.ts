@@ -1,10 +1,10 @@
 import { PlainUser } from '@components/user/data-access/interfaces';
 import UserModel from '@components/user/data-access/models/user.model';
-import { userRepository as UserRepository } from '@components/user/data-access/user.repository';
+import { USER } from '@components/user/domain/user.class';
 import { generateTokenForTesting } from '@utils/generateToken';
 
 export const createDummyUserAndReturnToken = async () => {
-  const userRepository = new UserRepository();
+  const user = new USER();
 
   const dummyUserData: PlainUser = {
     name: {
@@ -31,7 +31,7 @@ export const createDummyUserAndReturnToken = async () => {
     },
   };
 
-  const dummyUser = await userRepository.createUser(dummyUserData);
+  const dummyUser = await user.userModel.createUser(dummyUserData);
 
   const token = generateTokenForTesting(dummyUser._id.toString(), 'user');
 

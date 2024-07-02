@@ -1,10 +1,12 @@
-import { CharityRepository } from '@components/charity/data-access/charity.repository';
 import { PlainCharity } from '@components/charity/data-access/interfaces';
 import { Charity as CharityModel } from '@components/charity/data-access/models/charity.model';
+import { CHARITY } from '@components/charity/domain/charity.class';
 import { generateTokenForTesting } from '@utils/generateToken';
 import FormData from 'form-data';
 
 import { appendDummyImageToFormData } from '..';
+
+const charityObj = new CHARITY();
 
 export const clearCharityDatabase = async () => {
   await CharityModel.deleteMany({});
@@ -93,7 +95,7 @@ export const createDummyCharityAndReturnToken = async (
   isConfirmed: boolean = true,
   verificationCode: string = ''
 ) => {
-  const charityRepository = new CharityRepository();
+  const charityRepository = charityObj.charityModel;
 
   const dummyCharityData: PlainCharity = getDummyCharityObject(
     isActivated,

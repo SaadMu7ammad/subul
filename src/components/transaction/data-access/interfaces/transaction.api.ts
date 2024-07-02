@@ -1,6 +1,6 @@
 import { ITransaction } from '.';
 
-export type GetAllTransactionRequest = {};
+// export type GetAllTransactionRequest = {};
 
 export type GetAllTransactionResponse = {
   status: string;
