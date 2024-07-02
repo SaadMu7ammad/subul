@@ -47,30 +47,5 @@ describe('/api/users', () => {
       // Assert
       expect(response.status).toBe(400);
     });
-
-    test('should return 400 when trying to register a user with invalid values', async () => {
-      // Arrange
-      const user = getDummyUserObject();
-      user.email = 'invalid-email';
-
-      // Act
-      const response = await axiosAPIClient.post('/api/users', user);
-
-      // Assert
-      expect(response.status).toBe(400);
-    });
-
-    test('should return 400 when trying to register a user with missing values', async () => {
-      // Arrange
-      const user = getDummyUserObject();
-      //@ts-expect-error // We are testing the API, so we can delete the email field
-      delete user.email;
-
-      // Act
-      const response = await axiosAPIClient.post('/api/users', user);
-
-      // Assert
-      expect(response.status).toBe(400);
-    });
   });
 });

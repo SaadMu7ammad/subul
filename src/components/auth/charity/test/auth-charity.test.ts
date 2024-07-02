@@ -3,7 +3,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/g
 import {
   DUMMY_CHARITY,
   INVALID_PASSWORD,
-  NON_EXISTING_CHARITY_EMAIL,
+  NON_EXISTING_EMAIL,
   authenticatedCharityTestingEnvironment,
   clearCharityDatabase,
   getDummyCharityObject,
@@ -43,7 +43,7 @@ describe('/api/charities', () => {
   });
   test("should not auth a charity with when Email doesn't exist", async () => {
     const response = await axiosAPIClient.post('/api/charities/auth', {
-      email: NON_EXISTING_CHARITY_EMAIL,
+      email: NON_EXISTING_EMAIL,
       password: DUMMY_CHARITY.password,
     });
 

@@ -18,5 +18,5 @@ export const BANK_ACCOUNT_INFO = {
   swiftCode: 'ECBAEGCA',
   iban: 'EG890003000930603696309000540',
 };
-export const NON_EXISTING_CHARITY_EMAIL = 'none@none.ape';
+export const NON_EXISTING_EMAIL = 'none@none.ape';
 export const INVALID_PASSWORD = 'invalidPassword';
