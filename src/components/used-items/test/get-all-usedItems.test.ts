@@ -1,5 +1,9 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { authenticatedUserTestingEnvironment, clearUsedItemsDatabase } from '@utils/test-helpers';
+import {
+  DUMMY_USED_ITEM,
+  authenticatedUserTestingEnvironment,
+  clearUsedItemsDatabase,
+} from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
@@ -32,11 +36,11 @@ describe('api/usedItem/', () => {
     test('should return 200 and return all usedItems when usedItems array is not empty', async () => {
       //Arrange
       const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.jpg'],
-        amount: 10,
+        title: DUMMY_USED_ITEM.title,
+        category: DUMMY_USED_ITEM.category,
+        description: DUMMY_USED_ITEM.description,
+        images: [DUMMY_USED_ITEM.images[0]],
+        amount: DUMMY_USED_ITEM.amount,
       };
 
       await axiosAPIClient.post('/api/usedItem', usedItem);

@@ -7,3 +7,5 @@ export * from './used-item/used-item-testing-environment';
 export * from './shared/testing-environments';
 export * from './shared/shared-test-helpers';
 export * from './constants/charity-constants';
+export * from './constants/user-constants';
+export * from './constants/usedItem-constants';

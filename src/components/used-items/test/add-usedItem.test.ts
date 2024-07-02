@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
 import {
+  DUMMY_USED_ITEM,
   appendDummyImageToFormData,
   authenticatedUserTestingEnvironment,
   clearUsedItemsDatabase,
@@ -30,10 +31,10 @@ describe('/api/usedItem', () => {
 
       //Arrange
       const usedItem: { [key: string]: string | number } = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        amount: 10,
+        title: DUMMY_USED_ITEM.title,
+        category: DUMMY_USED_ITEM.category,
+        description: DUMMY_USED_ITEM.description,
+        amount: DUMMY_USED_ITEM.amount,
       };
 
       const formData = new FormData();
@@ -58,11 +59,11 @@ describe('/api/usedItem', () => {
   test('When adding a new valid usedItem, Then should be able to retrieve it', async () => {
     //Arrange
     const usedItem = {
-      title: 'Used Item 1',
-      category: 'clothes',
-      description: 'This is a used item',
-      images: ['image1.png', 'image2.png'],
-      amount: 10,
+      title: DUMMY_USED_ITEM.title,
+      category: DUMMY_USED_ITEM.category,
+      description: DUMMY_USED_ITEM.description,
+      images: [DUMMY_USED_ITEM.images[0], DUMMY_USED_ITEM.images[1]],
+      amount: DUMMY_USED_ITEM.amount,
     };
 
     //Act
@@ -79,10 +80,10 @@ describe('/api/usedItem', () => {
   test('when adding a usedItem with missing required fields, then should get back a 500 response', async () => {
     //Arrange
     const usedItem = {
-      title: 'Used Item 1',
-      category: 'clothes',
-      description: 'This is a used item',
-      amount: 10,
+      title: DUMMY_USED_ITEM.title,
+      category: DUMMY_USED_ITEM.category,
+      description: DUMMY_USED_ITEM.description,
+      amount: DUMMY_USED_ITEM.amount,
     };
 
     //Act

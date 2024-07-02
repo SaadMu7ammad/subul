@@ -1,5 +1,10 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { authenticatedUserTestingEnvironment, clearUsedItemsDatabase } from '@utils/test-helpers';
+import {
+  DUMMY_USED_ITEM,
+  UPDATED_DUMMY_USED_ITEM,
+  authenticatedUserTestingEnvironment,
+  clearUsedItemsDatabase,
+} from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
@@ -23,21 +28,21 @@ describe('api/usedItem', () => {
     test('should return 200 when updating a usedItem, and values should be updated', async () => {
       //Arrange
       const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.png', 'image2.png'],
-        amount: 10,
+        title: DUMMY_USED_ITEM.title,
+        category: DUMMY_USED_ITEM.category,
+        description: DUMMY_USED_ITEM.description,
+        images: [DUMMY_USED_ITEM.images[0], DUMMY_USED_ITEM.images[1]],
+        amount: DUMMY_USED_ITEM.amount,
       };
       const {
         data: { usedItem: createdUsedItem },
       } = await axiosAPIClient.post('/api/usedItem', usedItem);
 
       const updatedUsedItem = {
-        title: 'updated Used Item 1',
-        category: 'others',
-        description: 'This is an updated used item',
-        amount: 10,
+        title: UPDATED_DUMMY_USED_ITEM.title,
+        category: UPDATED_DUMMY_USED_ITEM.category,
+        description: UPDATED_DUMMY_USED_ITEM.description,
+        amount: UPDATED_DUMMY_USED_ITEM.amount,
       };
       //Act
       const { status, data } = await axiosAPIClient.put(
