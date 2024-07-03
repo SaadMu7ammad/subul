@@ -21,7 +21,7 @@ const resourceSchema: Schema = new Schema(
     type: {
       type: String,
       required: true,
-      enum: ['case', 'usedItem'],
+      enum: ['case', 'usedItem', 'conversation'],
     },
     id: {
       type: mongoose.Schema.Types.ObjectId,

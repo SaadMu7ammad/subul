@@ -33,7 +33,7 @@ export interface chatUseCaseSkeleton {
 
 export interface chatServiceSkeleton {
   sendMessage(
-    typeSender: string,
+    senderType: string,
     message: string,
     senderId: string,
     receiverId: string,
