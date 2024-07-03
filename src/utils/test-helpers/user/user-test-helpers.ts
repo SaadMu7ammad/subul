@@ -2,7 +2,6 @@ import { PlainUser } from '@components/user/data-access/interfaces';
 import UserModel from '@components/user/data-access/models/user.model';
 import { USER } from '@components/user/domain/user.class';
 import { generateTokenForTesting } from '@utils/generateToken';
-import axios from 'axios';
 
 export const createDummyUserAndReturnToken = async () => {
   const user = new USER();
@@ -41,17 +40,6 @@ export const createDummyUserAndReturnToken = async () => {
 
 export const clearUserDatabase = async () => {
   await UserModel.deleteMany({});
-};
-
-export const createAxiosApiClient = (token: string, port: number) => {
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-    headers: {
-      cookie: `jwt=${token}`,
-    },
-  };
-  return axios.create(axiosConfig);
 };
 
 export const getDummyUserObject = (): PlainUser => {

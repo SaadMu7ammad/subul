@@ -1,31 +1,24 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
 import {
+  DUMMY_USED_ITEM,
+  authenticatedUserTestingEnvironment,
   clearUsedItemsDatabase,
-  clearUserDatabase,
-  createDummyUserAndReturnToken,
-} from './test-helpers';
+} from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
-beforeAll(async () => {
-  const apiConnection = await startWebServer();
-  const token = await createDummyUserAndReturnToken();
+const env = authenticatedUserTestingEnvironment;
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-    headers: {
-      cookie: `jwt=${token}`,
-    },
-  };
-  axiosAPIClient = axios.create(axiosConfig);
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+const usedItem = {
+  title: DUMMY_USED_ITEM.title,
+  category: DUMMY_USED_ITEM.category,
+  description: DUMMY_USED_ITEM.description,
+  images: [DUMMY_USED_ITEM.images[0]],
+  amount: DUMMY_USED_ITEM.amount,
+};
+beforeAll(async () => {
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -33,25 +26,13 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearUserDatabase();
-  await clearUsedItemsDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('api/usedItem', () => {
   describe('DELETE /:id', () => {
     test('When deleting an existing usedItem, Then it should return a 200 status', async () => {
       //Arrange
-      const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.png', 'image2.png'],
-        amount: 10,
-      };
-
       //Act
       const {
         data: { usedItem: createdUsedItem },
@@ -76,15 +57,6 @@ describe('api/usedItem', () => {
     });
 
     test('When deleting an existing usedItem, Then it should NOT be retrievable', async () => {
-      //Arrange
-      const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.png', 'image2.png'],
-        amount: 10,
-      };
-
       //Act
       const {
         data: { usedItem: createdUsedItem },

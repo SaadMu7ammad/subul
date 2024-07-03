@@ -1,24 +1,19 @@
 import Charity from '@components/charity/data-access/models/charity.model';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
-import { clearCharityDatabase, getDummyCharityObject } from './test-helpers';
+import {
+  NON_EXISTING_EMAIL,
+  clearCharityDatabase,
+  getDummyCharityObject,
+  unauthenticatedCharityTestingEnvironment,
+} from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
-beforeAll(async () => {
-  const apiConnection = await startWebServer();
+const env = unauthenticatedCharityTestingEnvironment;
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-  };
-  axiosAPIClient = axios.create(axiosConfig);
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+beforeAll(async () => {
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -26,10 +21,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('/api/charities', () => {
@@ -54,7 +46,7 @@ describe('/api/charities', () => {
     test('Should Send a 404 status code when the email is not found', async () => {
       //Act
       const response = await axiosAPIClient.post('/api/charities/reset', {
-        email: 'none@none.ape',
+        email: NON_EXISTING_EMAIL,
       });
 
       //Assert

@@ -1,24 +1,20 @@
 import Charity from '@components/charity/data-access/models/charity.model';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
-import { clearCharityDatabase, getDummyCharityObject } from './test-helpers';
+import {
+  DUMMY_TOKEN,
+  NEW_PASSWORD,
+  clearCharityDatabase,
+  getDummyCharityObject,
+  unauthenticatedCharityTestingEnvironment,
+} from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
-beforeAll(async () => {
-  const apiConnection = await startWebServer();
+const env = unauthenticatedCharityTestingEnvironment;
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-  };
-  axiosAPIClient = axios.create(axiosConfig);
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+beforeAll(async () => {
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -26,10 +22,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('/api/charities', () => {
@@ -51,13 +44,13 @@ describe('/api/charities', () => {
         {
           email: charity.email,
           token: fetchedCharity?.verificationCode,
-          password: 'newPassword',
+          password: NEW_PASSWORD,
         }
       );
 
       const charityAuthResponse = await axiosAPIClient.post('/api/charities/auth', {
         email: charity.email,
-        password: 'newPassword',
+        password: NEW_PASSWORD,
       });
 
       //Assert
@@ -79,8 +72,8 @@ describe('/api/charities', () => {
         '/api/charities/reset/confirm',
         {
           email: charity.email,
-          token: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
-          password: 'newPassword',
+          token: DUMMY_TOKEN,
+          password: NEW_PASSWORD,
         }
       );
 
