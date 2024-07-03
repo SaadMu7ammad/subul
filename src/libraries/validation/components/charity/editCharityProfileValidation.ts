@@ -1,3 +1,6 @@
+import { Request } from 'express';
+import { ValidationChain } from 'express-validator';
+
 import {
   bankAccountValidation,
   fawryValidation,
@@ -6,20 +9,23 @@ import {
 } from './allCharityValidation';
 import { registerCharityValidation } from './charityAuthValidation';
 
-const editCharityProfileValidation = [...registerCharityValidation];
-const reqEditPaymentMethodsValidation = [
-  ...bankAccountValidation,
-  vodafoneCashValidation,
-  fawryValidation,
-  paymentIdValidation,
+const editCharityProfileValidation = (req: Request): ValidationChain[] => {
+  return registerCharityValidation(req).map(validator => validator.optional());
+};
+
+const reqEditPaymentMethodsValidation = (req: Request): ValidationChain[] => [
+  ...bankAccountValidation(req).map(v => v.optional()),
+  vodafoneCashValidation(req).optional(),
+  fawryValidation(req).optional(),
+  paymentIdValidation(req).optional(),
 ];
 
-editCharityProfileValidation.forEach(validator => {
-  validator.optional();
-});
+// editCharityProfileValidation.forEach(validator => {
+//   validator.optional();
+// });
 
-reqEditPaymentMethodsValidation.forEach(validator => {
-  validator.optional();
-});
+// reqEditPaymentMethodsValidation.forEach(validator => {
+//   validator.optional();
+// });
 
 export { editCharityProfileValidation, reqEditPaymentMethodsValidation };

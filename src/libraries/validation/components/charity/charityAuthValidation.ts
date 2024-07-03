@@ -1,3 +1,6 @@
+import { Request } from 'express';
+import { ValidationChain } from 'express-validator';
+
 import {
   charityInfoValidation,
   contactValidation,
@@ -10,20 +13,23 @@ import {
   phoneValidation,
 } from './allCharityValidation';
 
-const registerCharityValidation = [
-  emailValidation,
-  passwordValidation,
-  nameValidation,
-  descriptionValidation,
-  ...contactValidation,
-  currencyValidation,
-  governorateValidation,
-  ...charityInfoValidation,
+const registerCharityValidation = (req: Request): ValidationChain[] => [
+  emailValidation(req),
+  passwordValidation(req),
+  nameValidation(req),
+  descriptionValidation(req),
+  ...contactValidation(req).map(v => v.optional()),
+  currencyValidation(req),
+  governorateValidation(req),
+  ...charityInfoValidation(req),
   // ...bankAccountValidation,
   // vodafoneCashValidation,
   // fawryValidation,
-  phoneValidation,
+  phoneValidation(req),
 ];
-const loginCharityValidation = [emailValidation, passwordValidation];
+const loginCharityValidation = (req: Request): ValidationChain[] => [
+  emailValidation(req),
+  passwordValidation(req),
+];
 
 export { registerCharityValidation, loginCharityValidation };

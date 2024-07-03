@@ -1,6 +1,7 @@
+import { Request } from 'express';
 import { query } from 'express-validator';
 
-const getAllCasesValidation = [
+const getAllCasesValidation = (req: Request) => [
   query('sort')
     .optional()
     .isIn([
@@ -31,7 +32,7 @@ const getAllCasesValidation = [
       '-targetDonationAmount',
       '-currentDonationAmount',
     ])
-    .withMessage('Invalid Sort Parameter!'),
+    .withMessage(req.t('errors.invalidSort')),
   query('mainType')
     .optional()
     .isIn([
@@ -44,7 +45,7 @@ const getAllCasesValidation = [
       'UsedProperties',
       'customizedCampaigns',
     ])
-    .withMessage('Invalid mainType!'),
+    .withMessage(req.t('errors.invalidMainType')),
   query('subType')
     .optional()
     .isIn([
@@ -63,7 +64,7 @@ const getAllCasesValidation = [
       'usedBefore',
       'customizedCampaigns',
     ])
-    .withMessage('Invalid subType!'),
+    .withMessage(req.t('errors.invalidSubType')),
   query('nestedSubType')
     .optional()
     .isIn([

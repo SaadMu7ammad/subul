@@ -1,30 +1,22 @@
 import Charity from '@components/charity/data-access/models/charity.model';
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import FormData from 'form-data';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
 import {
+  DUMMY_CHARITY,
   appendDummyCharityToFormData,
   appendDummyImageToFormData,
   clearCharityDatabase,
   getDummyCharityObject,
-} from './test-helpers';
+  unauthenticatedCharityTestingEnvironment,
+} from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
+import FormData from 'form-data';
 
 let axiosAPIClient: AxiosInstance;
 
-beforeAll(async () => {
-  const apiConnection = await startWebServer();
+const env = unauthenticatedCharityTestingEnvironment;
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-  };
-  axiosAPIClient = axios.create(axiosConfig);
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+beforeAll(async () => {
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -32,10 +24,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('/api/charities', () => {
@@ -43,7 +32,7 @@ describe('/api/charities', () => {
     test('should register a new charity with success', async () => {
       //Arrange
       const formData = new FormData();
-      appendDummyImageToFormData(formData);
+      appendDummyImageToFormData(formData, 'image');
       appendDummyCharityToFormData(formData);
 
       //Act
@@ -59,7 +48,7 @@ describe('/api/charities', () => {
   test('should not register a new charity with missing data', async () => {
     //Arrange
     const formData = new FormData();
-    formData.append('name', 'Charity Name');
+    formData.append('name', DUMMY_CHARITY.name);
 
     //Act
     const response = await axiosAPIClient.post('/api/charities/register', formData, {
@@ -73,7 +62,7 @@ describe('/api/charities', () => {
   test('should not register a charity with email already in use', async () => {
     //Arrange
     const formData = new FormData();
-    appendDummyImageToFormData(formData);
+    appendDummyImageToFormData(formData, 'image');
     appendDummyCharityToFormData(formData);
 
     //Act

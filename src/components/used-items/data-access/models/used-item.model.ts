@@ -17,7 +17,18 @@ const usedItemSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['clothes', 'electronics', 'appliances', 'furniture', 'others'],
+    enum: [
+      'clothes',
+      'electronics',
+      'appliances',
+      'furniture',
+      'others',
+      'ملابس',
+      'إلكترونيات',
+      'أجهزة',
+      'أثاث',
+      'آخر',
+    ],
     required: true,
   },
   description: {

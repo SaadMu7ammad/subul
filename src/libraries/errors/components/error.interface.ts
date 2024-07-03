@@ -1,6 +1,6 @@
 export type IError = {
-  stack: any;
+  stack: unknown;
   statusCode: number;
-  message: any;
+  message: string;
   path: string;
 };

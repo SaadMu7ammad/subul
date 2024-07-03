@@ -1,5 +1,5 @@
 import { auth, isConfirmed } from '@components/auth/shared/index';
-import { caseUseCase } from '@components/case/domain/case.use-case';
+import { caseUseCaseClass } from '@components/case/domain/case.use-case';
 import { imageAssertion, resizeImg } from '@libs/uploads/components/images/handlers';
 import { editCaseValidation } from '@libs/validation/components/case/editCaseValidation';
 import { getAllCasesValidation } from '@libs/validation/components/case/getAllCasesValidation';
@@ -10,6 +10,7 @@ import logger from '@utils/logger';
 import express, { Application, NextFunction, Request, Response } from 'express';
 
 export default function defineRoutes(expressApp: Application) {
+  const caseUseCaseInstance = new caseUseCaseClass();
   const router = express.Router();
 
   router.post(
@@ -17,13 +18,18 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isConfirmed,
     imageAssertion,
-    postCaseValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = postCaseValidation(req);
+      Promise.all(validations.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     resizeImg,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Case API was called to Add Case`);
-        const addCaseResponse = await caseUseCase.addCase(req, res, next);
+        const addCaseResponse = await caseUseCaseInstance.addCase(req, res, next);
         return res.json(addCaseResponse);
       } catch (error) {
         deleteOldImgs('caseCoverImages', req.body.image);
@@ -36,13 +42,18 @@ export default function defineRoutes(expressApp: Application) {
     '/addBloodCase',
     auth,
     isConfirmed,
-    postCaseValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = postCaseValidation(req);
+      Promise.all(validations.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         console.log(req.body);
         logger.info(`Case API was called to Add blood Case`);
-        const addCaseResponse = await caseUseCase.addCase(req, res, next);
+        const addCaseResponse = await caseUseCaseInstance.addCase(req, res, next);
         return res.json(addCaseResponse);
       } catch (error) {
         next(error);
@@ -54,12 +65,17 @@ export default function defineRoutes(expressApp: Application) {
     '/allCasesOfCharity',
     auth,
     isConfirmed,
-    getAllCasesValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = getAllCasesValidation(req);
+      Promise.all(validations.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Case API was called to Get All Cases`);
-        const getAllCasesResponse = await caseUseCase.getAllCases(req, res, next);
+        const getAllCasesResponse = await caseUseCaseInstance.getAllCases(req, res, next);
         return res.json(getAllCasesResponse);
       } catch (error) {
         next(error);
@@ -72,12 +88,17 @@ export default function defineRoutes(expressApp: Application) {
   router.get(
     '/allCases',
     auth,
-    getAllCasesValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validations = getAllCasesValidation(req);
+      Promise.all(validations.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Case API was called to Get All Cases For User`);
-        const getAllCasesResponse = await caseUseCase.getAllCasesForUser(req, res, next);
+        const getAllCasesResponse = await caseUseCaseInstance.getAllCasesForUser(req, res, next);
         return res.json(getAllCasesResponse);
       } catch (error) {
         next(error);
@@ -91,7 +112,7 @@ export default function defineRoutes(expressApp: Application) {
     .get(auth, isConfirmed, async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Case API was called to Get Case By Id`);
-        const getCaseByIdResponse = await caseUseCase.getCaseById(req, res, next);
+        const getCaseByIdResponse = await caseUseCaseInstance.getCaseById(req, res, next);
         return res.json(getCaseByIdResponse);
       } catch (error) {
         next(error);
@@ -101,7 +122,7 @@ export default function defineRoutes(expressApp: Application) {
     .delete(auth, isConfirmed, async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Case API was called to Delete Case By Id`);
-        const deleteCaseResponse = await caseUseCase.deleteCase(req, res, next);
+        const deleteCaseResponse = await caseUseCaseInstance.deleteCase(req, res, next);
         return res.json(deleteCaseResponse);
       } catch (error) {
         next(error);
@@ -111,12 +132,17 @@ export default function defineRoutes(expressApp: Application) {
     .put(
       auth,
       isConfirmed,
-      editCaseValidation,
+      (req: Request, res: Response, next: NextFunction) => {
+        const validations = editCaseValidation(req);
+        Promise.all(validations.map(v => v.run(req)))
+          .then(() => next())
+          .catch(next);
+      },
       validate,
       async (req: Request, res: Response, next: NextFunction) => {
         try {
           logger.info(`Case API was called to Edit Case`);
-          const editCaseResponse = await caseUseCase.editCase(req, res, next);
+          const editCaseResponse = await caseUseCaseInstance.editCase(req, res, next);
           return res.json(editCaseResponse);
         } catch (error) {
           const image = req.body.coverImage || req.body.image;
@@ -135,7 +161,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Case API was called to update coverImage Case`);
-        const editCaseResponse = await caseUseCase.editCase(req, res, next);
+        const editCaseResponse = await caseUseCaseInstance.editCase(req, res, next);
         return res.json(editCaseResponse);
       } catch (error) {
         const image = req.body.coverImage || req.body.image;

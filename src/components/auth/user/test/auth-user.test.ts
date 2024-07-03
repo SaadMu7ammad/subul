@@ -1,23 +1,20 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
-import { clearUserDatabase, getDummyUserObject } from './test-helpers';
+import {
+  INVALID_PASSWORD,
+  NON_EXISTING_EMAIL,
+  authenticatedUserTestingEnvironment,
+  clearUserDatabase,
+  getDummyUserObject,
+} from '@utils/test-helpers';
+import { DUMMY_USER } from '@utils/test-helpers/constants/user-constants';
+import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
-beforeAll(async () => {
-  const apiConnection = await startWebServer();
+const env = authenticatedUserTestingEnvironment;
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-  };
-  axiosAPIClient = axios.create(axiosConfig);
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+beforeAll(async () => {
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -25,12 +22,8 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearUserDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
-
 describe('/api/users', () => {
   describe('POST /auth', () => {
     test('should auth user with success', async () => {
@@ -51,8 +44,8 @@ describe('/api/users', () => {
     test('should return 401 when user does not exist', async () => {
       // Arrange
       const { email, password } = {
-        email: 'notRegistered@folan.teltan',
-        password: 'folanTeltan1234',
+        email: NON_EXISTING_EMAIL,
+        password: DUMMY_USER.password,
       };
 
       // Act
@@ -67,7 +60,7 @@ describe('/api/users', () => {
       const user = getDummyUserObject();
       await axiosAPIClient.post('/api/users', user);
       const { email } = user;
-      const password = 'wrongPassword';
+      const password = INVALID_PASSWORD;
 
       // Act
       const response = await axiosAPIClient.post('/api/users/auth', { email, password });

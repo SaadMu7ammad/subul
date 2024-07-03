@@ -1,83 +1,108 @@
-import { GetAllNotificationsQueryParams, ReceiverType } from '../data-access/interfaces';
-import { notificationUtils } from './notification.utils';
+import {
+  GetAllNotificationsQueryParams,
+  INotification,
+  ReceiverType,
+  notificationServiceSkeleton,
+} from '../data-access/interfaces';
+import { notificationUtilsClass } from './notification.utils';
 
-const getAllNotifications = async (
-  receiverType: ReceiverType,
-  receiverId: string,
-  queryParams: GetAllNotificationsQueryParams
-) => {
-  const sortObj = notificationUtils.getSortObj(queryParams.sort);
+export class notificationServiceClass implements notificationServiceSkeleton {
+  notificationUtilsInstance: notificationUtilsClass;
 
-  const filterObj = notificationUtils.getFilterObj(receiverType, receiverId, queryParams);
+  constructor() {
+    this.notificationUtilsInstance = new notificationUtilsClass();
+  }
+  async getAllNotifications(
+    receiverType: ReceiverType,
+    receiverId: string,
+    queryParams: GetAllNotificationsQueryParams
+  ): Promise<{
+    message: string;
+    notifications: INotification[];
+  }> {
+    const sortObj = this.notificationUtilsInstance.getSortObj(queryParams.sort);
 
-  const paginationObj = notificationUtils.getPaginationObj(queryParams);
+    const filterObj = this.notificationUtilsInstance.getFilterObj(
+      receiverType,
+      receiverId,
+      queryParams
+    );
 
-  await notificationUtils.deleteOutdatedNotifications(receiverType, receiverId);
+    const paginationObj = this.notificationUtilsInstance.getPaginationObj(queryParams);
 
-  const notifications = await notificationUtils.getAllNotifications(
-    filterObj,
-    sortObj,
-    paginationObj
-  );
+    await this.notificationUtilsInstance.deleteOutdatedNotifications(receiverType, receiverId);
 
-  return {
-    message: 'All Notifications Fetched Successfully',
-    notifications: notifications,
-  };
-};
+    const notifications = await this.notificationUtilsInstance.getAllNotifications(
+      filterObj,
+      sortObj,
+      paginationObj
+    );
 
-const markNotificationAsRead = async (
-  receiverType: string,
-  receiverId: string,
-  notificationId: string | undefined
-) => {
-  const validateId: (id: string | undefined) => asserts id is string =
-    notificationUtils.validateIdParam;
-  validateId(notificationId);
+    return {
+      message: 'All Notifications Fetched Successfully',
+      notifications: notifications,
+    };
+  }
 
-  const notification = await notificationUtils.getNotification(
-    receiverType,
-    receiverId,
-    notificationId
-  );
+  async markNotificationAsRead(
+    receiverType: string,
+    receiverId: string,
+    notificationId: string | undefined
+  ): Promise<{
+    message: string;
+    notification: INotification;
+  }> {
+    const validateId: (id: string | undefined) => asserts id is string =
+      this.notificationUtilsInstance.validateIdParam;
+    validateId(notificationId);
 
-  const readNotification = await notificationUtils.markNotificationAsRead(notification);
+    const notification = await this.notificationUtilsInstance.getNotification(
+      receiverType,
+      receiverId,
+      notificationId
+    );
 
-  return {
-    message: 'Notification Is Marked as Read Successfully',
-    notification: readNotification,
-  };
-};
+    const readNotification =
+      await this.notificationUtilsInstance.markNotificationAsRead(notification);
 
-const deleteNotification = async (
-  receiverType: string,
-  receiverId: string,
-  notificationId: string | undefined
-) => {
-  const validateId: (id: string | undefined) => asserts id is string =
-    notificationUtils.validateIdParam;
-  validateId(notificationId);
+    return {
+      message: 'Notification Is Marked as Read Successfully',
+      notification: readNotification,
+    };
+  }
 
-  const notification = await notificationUtils.getNotification(
-    receiverType,
-    receiverId,
-    notificationId
-  );
+  async deleteNotification(
+    receiverType: string,
+    receiverId: string,
+    notificationId: string | undefined
+  ): Promise<{
+    message: string;
+    notification: INotification;
+  }> {
+    const validateId: (id: string | undefined) => asserts id is string =
+      this.notificationUtilsInstance.validateIdParam;
+    validateId(notificationId);
 
-  const deletedNotification = await notificationUtils.deleteNotification(
-    receiverType,
-    receiverId,
-    notification
-  );
+    const notification = await this.notificationUtilsInstance.getNotification(
+      receiverType,
+      receiverId,
+      notificationId
+    );
 
-  return {
-    message: 'Notification Is Deleted Successfully',
-    notification: deletedNotification,
-  };
-};
+    const deletedNotification = await this.notificationUtilsInstance.deleteNotification(
+      receiverType,
+      receiverId,
+      notification
+    );
 
-export const notificationService = {
-  getAllNotifications,
-  markNotificationAsRead,
-  deleteNotification,
-};
+    return {
+      message: 'Notification Is Deleted Successfully',
+      notification: deletedNotification,
+    };
+  }
+}
+// export const notificationService = {
+//   getAllNotifications,
+//   markNotificationAsRead,
+//   deleteNotification,
+// };

@@ -1,183 +1,205 @@
 import {
   AddUsedItemImageRequest,
   AddUsedItemImageResponse,
-  AddUsedItemRequest,
   AddUsedItemResponse,
   DeleteUsedItemImageRequest,
   DeletedUsedItemResponse,
+  GetAllUsedItemsResponse,
   GetUsedItemResponse,
   UpdateUsedItemRequest,
   UpdateUsedItemResponse,
 } from '@components/used-items/data-access/interfaces/used-item.api';
-import { User } from '@components/user/data-access/interfaces';
+import { IUser } from '@components/user/data-access/interfaces';
 import { NextFunction, Request, Response } from 'express';
 
-import { usedItemService } from './used-item.service';
-import { usedItemUtils } from './used-item.utils';
+import { PlainIUsedItem } from '../data-access/interfaces';
+import { usedItemUseCaseSkeleton } from '../data-access/interfaces';
+import { usedItemServiceClass } from './used-item.service';
+import { usedItemUtilsClass } from './used-item.utils';
 
-const addUsedItem = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<AddUsedItemResponse> => {
-  const user: User = res.locals.user;
+export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
+  usedItemServiceInstance: usedItemServiceClass;
+  usedItemUtilsInstance: usedItemUtilsClass;
+  constructor() {
+    this.usedItemServiceInstance = new usedItemServiceClass();
+    this.usedItemUtilsInstance = new usedItemUtilsClass();
+  }
+  async addUsedItem(req: Request, res: Response, next: NextFunction): Promise<AddUsedItemResponse> {
+    const user: IUser = res.locals.user;
 
-  const { title, description, category, amount, images } = req.body;
+    const { title, description, category, amount, images } = req.body;
 
-  const usedItemData: AddUsedItemRequest = {
-    title,
-    description,
-    category,
-    amount,
-    images,
-    user: user._id,
-  };
+    const usedItemData: PlainIUsedItem = {
+      title,
+      description,
+      category,
+      amount,
+      images,
+      user: user._id,
+    };
 
-  const responseData = await usedItemService.addUsedItem(usedItemData);
+    const responseData = await this.usedItemServiceInstance.addUsedItem(req, usedItemData);
 
-  return {
-    usedItem: responseData.usedItem,
-    message: responseData.message,
-  };
-};
+    return {
+      usedItem: responseData.usedItem,
+      message: responseData.message,
+    };
+  }
 
-//public route
-const getUsedItem = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<GetUsedItemResponse> => {
-  const { id } = req.params;
-  const responseData = await usedItemService.getUsedItem(id);
+  //public route
+  async getUsedItem(req: Request, res: Response, next: NextFunction): Promise<GetUsedItemResponse> {
+    const { id } = req.params;
+    const responseData = await this.usedItemServiceInstance.getUsedItem(req, id);
 
-  return {
-    usedItem: responseData.usedItem,
-    message: responseData.message,
-  };
-};
+    return {
+      usedItem: responseData.usedItem,
+      message: responseData.message,
+    };
+  }
 
-const deleteUsedItem = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<DeletedUsedItemResponse> => {
-  const { id } = req.params;
-  const userId = res.locals.user._id.toString();
-  const responseData = await usedItemService.deleteUsedItem(id, userId);
+  async deleteUsedItem(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<DeletedUsedItemResponse> {
+    const { id } = req.params;
+    const userId = res.locals.user._id.toString();
+    const responseData = await this.usedItemServiceInstance.deleteUsedItem(req, id, userId);
 
-  return {
-    usedItem: responseData.usedItem,
-    message: responseData.message,
-  };
-};
+    return {
+      usedItem: responseData.usedItem,
+      message: responseData.message,
+    };
+  }
 
-const updateUsedItem = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<UpdateUsedItemResponse> => {
-  const { id } = req.params;
-  const userId = res.locals.user._id.toString();
+  async updateUsedItem(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<UpdateUsedItemResponse> {
+    const { id } = req.params;
+    const userId = res.locals.user._id.toString();
 
-  const { title, description, category, amount } = req.body;
-  const usedItemData: UpdateUsedItemRequest = {
-    title,
-    description,
-    category,
-    amount,
-  };
+    const { title, description, category, amount } = req.body;
+    const usedItemData: UpdateUsedItemRequest = {
+      title,
+      description,
+      category,
+      amount,
+    };
 
-  const responseData = await usedItemService.updateUsedItem(id, userId, usedItemData);
+    const responseData = await this.usedItemServiceInstance.updateUsedItem(
+      req,
+      id,
+      userId,
+      usedItemData
+    );
 
-  return {
-    usedItem: responseData.usedItem,
-    message: responseData.message,
-  };
-};
+    return {
+      usedItem: responseData.usedItem,
+      message: responseData.message,
+    };
+  }
 
-const addUsedItemImages = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<AddUsedItemImageResponse> => {
-  const { id } = req.params;
-  const userId = res.locals.user._id.toString();
-  const { images }: AddUsedItemImageRequest = req.body;
-  const responseData = await usedItemService.addUsedItemImages(id, userId, images);
+  async addUsedItemImages(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<AddUsedItemImageResponse> {
+    const { id } = req.params;
+    const userId = res.locals.user._id.toString();
+    const { images }: AddUsedItemImageRequest = req.body;
+    const responseData = await this.usedItemServiceInstance.addUsedItemImages(
+      req,
+      id,
+      userId,
+      images
+    );
 
-  return {
-    usedItem: responseData.usedItem,
-    message: responseData.message,
-  };
-};
+    return {
+      usedItem: responseData.usedItem,
+      message: responseData.message,
+    };
+  }
 
-const deleteUsedItemImage = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<AddUsedItemResponse> => {
-  const { id } = req.params;
-  const userId = res.locals.user._id.toString();
-  const { imageName }: DeleteUsedItemImageRequest = req.body;
+  async deleteUsedItemImage(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<AddUsedItemResponse> {
+    const { id } = req.params;
+    const userId = res.locals.user._id.toString();
+    const { imageName }: DeleteUsedItemImageRequest = req.body;
 
-  const responseData = await usedItemService.deleteUsedItemImage(id, userId, imageName);
+    const responseData = await this.usedItemServiceInstance.deleteUsedItemImage(
+      req,
+      id,
+      userId,
+      imageName
+    );
 
-  return {
-    usedItem: responseData.usedItem,
-    message: responseData.message,
-  };
-};
+    return {
+      usedItem: responseData.usedItem,
+      message: responseData.message,
+    };
+  }
 
-const getAllUsedItems = async () => {
-  const usedItemsResponse = await usedItemService.findAllUsedItems();
+  async getAllUsedItems(req: Request): Promise<GetAllUsedItemsResponse> {
+    const usedItemsResponse = await this.usedItemServiceInstance.findAllUsedItems(req);
 
-  return {
-    usedItems: usedItemsResponse.usedItems,
-    message: usedItemsResponse.message,
-  };
-};
+    return {
+      usedItems: usedItemsResponse.usedItems,
+      message: usedItemsResponse.message,
+    };
+  }
 
-const bookUsedItem = async (req: Request, res: Response) => {
-  const bookItemData = await usedItemUtils.createBookItemData(req, res);
+  async bookUsedItem(req: Request, res: Response): Promise<GetUsedItemResponse> {
+    const bookItemData = await this.usedItemUtilsInstance.createBookItemData(req, res);
 
-  const usedItemResponse = await usedItemService.bookUsedItem(bookItemData);
-  return {
-    usedItem: usedItemResponse.usedItem,
-    message: usedItemResponse.message,
-  };
-};
+    const usedItemResponse = await this.usedItemServiceInstance.bookUsedItem(req, bookItemData);
+    return {
+      usedItem: usedItemResponse.usedItem,
+      message: usedItemResponse.message,
+    };
+  }
 
-const cancelBookingOfUsedItem = async (req: Request, res: Response) => {
-  const bookItemData = await usedItemUtils.createBookItemData(req, res);
+  async cancelBookingOfUsedItem(req: Request, res: Response): Promise<GetUsedItemResponse> {
+    const bookItemData = await this.usedItemUtilsInstance.createBookItemData(req, res);
 
-  const usedItemsResponse = await usedItemService.cancelBookingOfUsedItem(bookItemData);
+    const usedItemsResponse = await this.usedItemServiceInstance.cancelBookingOfUsedItem(
+      req,
+      bookItemData
+    );
 
-  return {
-    usedItem: usedItemsResponse.usedItem,
-    message: usedItemsResponse.message,
-  };
-};
+    return {
+      usedItem: usedItemsResponse.usedItem,
+      message: usedItemsResponse.message,
+    };
+  }
 
-const ConfirmBookingReceipt = async (req: Request, res: Response) => {
-  const bookItemData = await usedItemUtils.createBookItemData(req, res);
+  async ConfirmBookingReceipt(req: Request, res: Response): Promise<GetUsedItemResponse> {
+    const bookItemData = await this.usedItemUtilsInstance.createBookItemData(req, res);
 
-  const usedItemsResponse = await usedItemService.ConfirmBookingReceipt(bookItemData);
+    const usedItemsResponse = await this.usedItemServiceInstance.ConfirmBookingReceipt(
+      req,
+      bookItemData
+    );
 
-  return {
-    usedItem: usedItemsResponse.usedItem,
-    message: usedItemsResponse.message,
-  };
-};
-
-export const usedItemUseCase = {
-  addUsedItem,
-  deleteUsedItem,
-  getUsedItem,
-  updateUsedItem,
-  addUsedItemImages,
-  deleteUsedItemImage,
-  getAllUsedItems,
-  bookUsedItem,
-  cancelBookingOfUsedItem,
-  ConfirmBookingReceipt,
-};
+    return {
+      usedItem: usedItemsResponse.usedItem,
+      message: usedItemsResponse.message,
+    };
+  }
+}
+// export const usedItemUseCase = {
+//   addUsedItem,
+//   deleteUsedItem,
+//   getUsedItem,
+//   updateUsedItem,
+//   addUsedItemImages,
+//   deleteUsedItemImage,
+//   getAllUsedItems,
+//   bookUsedItem,
+//   cancelBookingOfUsedItem,
+//   ConfirmBookingReceipt,
+// };

@@ -1,6 +1,7 @@
 import { auth, isActivated, isConfirmed } from '@components/auth/shared/index';
-import { charityUseCase } from '@components/charity/domain/charity.use-case';
-import { usedItemUseCase } from '@components/used-items/domain/used-item.use-case';
+import { charityUseCaseClass } from '@components/charity/domain/charity.use-case';
+import { tranactionUseCaseClass } from '@components/transaction/domain/transaction.use-case';
+import { usedItemUseCaseClass } from '@components/used-items/domain/used-item.use-case';
 import { resizeDoc, uploadDocs } from '@libs/uploads/components/docs/images/handler';
 import { resizeDocReq, uploadDocsReq } from '@libs/uploads/components/docs/images/handler2';
 import { imageAssertion, resizeImg } from '@libs/uploads/components/images/handlers';
@@ -20,16 +21,24 @@ import logger from '@utils/logger';
 import express, { Application, NextFunction, Request, Response } from 'express';
 
 export default function defineRoutes(expressApp: Application) {
+  const usedItemUseCaseInstance = new usedItemUseCaseClass();
+  const charityUseCaseInstance = new charityUseCaseClass();
   const router = express.Router();
   router.post(
     '/activate',
-    tokenCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = tokenCharityValidation(req);
+      validation
+        .run(req)
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     auth,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Activate Account`);
-        const activateCharityAccountResponse = await charityUseCase.activateCharityAccount(
+        const activateCharityAccountResponse = await charityUseCaseInstance.activateCharityAccount(
           req,
           res,
           next
@@ -43,12 +52,18 @@ export default function defineRoutes(expressApp: Application) {
   );
   router.post(
     '/reset',
-    requestResetEmailCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = requestResetEmailCharityValidation(req);
+      validation
+        .run(req)
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Reset Password`);
-        const requestResetPasswordResponse = await charityUseCase.requestResetPassword(
+        const requestResetPasswordResponse = await charityUseCaseInstance.requestResetPassword(
           req,
           res,
           next
@@ -62,12 +77,17 @@ export default function defineRoutes(expressApp: Application) {
   );
   router.post(
     '/reset/confirm',
-    confirmResetCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = confirmResetCharityValidation(req);
+      Promise.all(validation.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Confirm Reset Password`);
-        const confirmResetPasswordResponse = await charityUseCase.confirmResetPassword(
+        const confirmResetPasswordResponse = await charityUseCaseInstance.confirmResetPassword(
           req,
           res,
           next
@@ -81,14 +101,20 @@ export default function defineRoutes(expressApp: Application) {
   );
   router.post(
     '/change-password',
-    changePasswordCharityValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = changePasswordCharityValidation(req);
+      validation
+        .run(req)
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     auth,
     isActivated,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Change Password`);
-        const changePasswordResponse = await charityUseCase.changePassword(req, res, next);
+        const changePasswordResponse = await charityUseCaseInstance.changePassword(req, res, next);
         return res.json(changePasswordResponse);
       } catch (error) {
         next(error);
@@ -100,7 +126,7 @@ export default function defineRoutes(expressApp: Application) {
   router.post('/logout', (req: Request, res: Response, next: NextFunction) => {
     try {
       logger.info(`Charity API was called to logout`);
-      const logoutResponse = charityUseCase.logout(req, res, next);
+      const logoutResponse = charityUseCaseInstance.logout(req, res, next);
       return res.json(logoutResponse);
     } catch (error) {
       next(error);
@@ -110,7 +136,7 @@ export default function defineRoutes(expressApp: Application) {
   router.get('/profile', auth, (req: Request, res: Response, next: NextFunction) => {
     try {
       logger.info(`Charity API was called to Show Profile`);
-      const showCharityProfileResponse = charityUseCase.showCharityProfile(req, res, next);
+      const showCharityProfileResponse = charityUseCaseInstance.showCharityProfile(req, res, next);
       return res.json(showCharityProfileResponse);
     } catch (error) {
       next(error);
@@ -123,12 +149,21 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     isConfirmed,
-    editCharityProfileValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = editCharityProfileValidation(req);
+      Promise.all(validation.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Edit Profile`);
-        const changePasswordResponse = await charityUseCase.editCharityProfile(req, res, next);
+        const changePasswordResponse = await charityUseCaseInstance.editCharityProfile(
+          req,
+          res,
+          next
+        );
         return res.json(changePasswordResponse);
       } catch (error) {
         next(error);
@@ -146,7 +181,11 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Edit Profile Img`);
-        const changeProfileImageResponse = await charityUseCase.changeProfileImage(req, res, next);
+        const changeProfileImageResponse = await charityUseCaseInstance.changeProfileImage(
+          req,
+          res,
+          next
+        );
         return res.json(changeProfileImageResponse);
       } catch (error) {
         next(error);
@@ -161,13 +200,18 @@ export default function defineRoutes(expressApp: Application) {
     auth,
     isActivated,
     isConfirmed,
-    reqEditPaymentMethodsValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = reqEditPaymentMethodsValidation(req);
+      Promise.all(validation.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     resizeDocReq,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Request Edit Payments`);
-        const editCharityPaymentResponse = await charityUseCase.requestEditCharityPayments(
+        const editCharityPaymentResponse = await charityUseCaseInstance.requestEditCharityPayments(
           req,
           res,
           next
@@ -187,13 +231,18 @@ export default function defineRoutes(expressApp: Application) {
     '/send-docs',
     uploadDocs,
     auth,
-    reqEditPaymentMethodsValidation,
+    (req: Request, res: Response, next: NextFunction) => {
+      const validation = reqEditPaymentMethodsValidation(req);
+      Promise.all(validation.map(v => v.run(req)))
+        .then(() => next())
+        .catch(next);
+    },
     validate,
     resizeDoc,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Charity API was called to Send Docs`);
-        const sendDocsResponse = await charityUseCase.sendDocs(req, res, next);
+        const sendDocsResponse = await charityUseCaseInstance.sendDocs(req, res, next);
         return res.json(sendDocsResponse);
       } catch (error) {
         deleteOldImgs('charityDocs', req?.body?.charityDocs?.docs1);
@@ -218,7 +267,7 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Get All Used Items`);
-        const bookUsedItemResponse = await usedItemUseCase.bookUsedItem(req, res);
+        const bookUsedItemResponse = await usedItemUseCaseInstance.bookUsedItem(req, res);
         return res.json(bookUsedItemResponse);
       } catch (error) {
         next(error);
@@ -235,10 +284,8 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Cancel Booking Of Used Items`);
-        const cancelBookingOfUsedItemResponse = await usedItemUseCase.cancelBookingOfUsedItem(
-          req,
-          res
-        );
+        const cancelBookingOfUsedItemResponse =
+          await usedItemUseCaseInstance.cancelBookingOfUsedItem(req, res);
         return res.json(cancelBookingOfUsedItemResponse);
       } catch (error) {
         next(error);
@@ -255,8 +302,30 @@ export default function defineRoutes(expressApp: Application) {
     async (req: Request, res: Response, next: NextFunction) => {
       try {
         logger.info(`Used Items API was called to Confirm Booking Receipt`);
-        const confirmBookingReceiptResponse = await usedItemUseCase.ConfirmBookingReceipt(req, res);
+        const confirmBookingReceiptResponse = await usedItemUseCaseInstance.ConfirmBookingReceipt(
+          req,
+          res
+        );
         return res.json(confirmBookingReceiptResponse);
+      } catch (error) {
+        next(error);
+        return undefined;
+      }
+    }
+  );
+
+  router.get(
+    '/charityTransactionsLogs',
+    auth,
+    isActivated,
+    isConfirmed,
+    async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        logger.info(`charity API was called to get transactions donation for the charity`);
+        const transactionUseCaseInstance = new tranactionUseCaseClass();
+        const getAllTransactionsResponse =
+          await transactionUseCaseInstance.getAllTransactionsToCharity(req, res, next);
+        return res.json(getAllTransactionsResponse);
       } catch (error) {
         next(error);
         return undefined;
