@@ -15,7 +15,7 @@ export interface IloginData {
 export type RegisterUserInputData = {
   name: IUser['name'];
   email: IUser['email'];
-  locationUser: IUser['userLocation'];
+  userLocation: IUser['userLocation'];
   gender: IUser['gender'];
   phone: IUser['phone'];
   password: IUser['password'];
