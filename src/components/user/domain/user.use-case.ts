@@ -135,6 +135,7 @@ class userUseCaseClass implements userUseCaseSkeleton {
     const charityId: string = req.body.charity;
 
     const responseData = await userService.requestFundraisingCampaign(
+      req,
       caseData,
       'none',
       charityId,

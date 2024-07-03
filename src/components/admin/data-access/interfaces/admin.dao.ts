@@ -33,6 +33,7 @@ export interface adminServiceSkeleton {
   ): Promise<{ allPendingCharities: PendingCharities[] }>;
 
   confirmPaymentAccountRequestForConfirmedCharities(
+    req: Request,
     charityId: string,
     // paymentMethod: string, // Allows any string value, which could include invalid keys
     paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
@@ -43,6 +44,7 @@ export interface adminServiceSkeleton {
   }>;
 
   rejectPaymentAccountRequestForConfirmedCharities(
+    req: Request,
     charityId: string,
     // paymentMethod: string, // Allows any string value, which could include invalid keys
     paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
@@ -127,9 +129,9 @@ export interface adminUtilsSkeleton {
     paymentMethod: string // bankAccount | fawry...
   ): Promise<CharitiesAccountsByAggregation[]>;
 
-  confirmingCharity(charity: PendingCharities): Promise<void>;
+  confirmingCharity(req: Request, charity: PendingCharities): Promise<void>;
 
-  rejectingCharity(charity: PendingCharities): Promise<void>;
+  rejectingCharity(req: Request, charity: PendingCharities): Promise<void>;
 
   checkPaymentMethodAvailability(
     // charity: ICharity,
@@ -140,12 +142,14 @@ export interface adminUtilsSkeleton {
   getConfirmedCharities(queryObject: QueryObject): Promise<PendingCharities>;
 
   confirmingPaymentAccount(
+    req: Request,
     charity: PendingCharities,
     // paymentMethod: string, // Allows any string value, which could include invalid keys
     paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
     idx: number
   ): Promise<void>;
   rejectingPaymentAccount(
+    req: Request,
     charity: ConfirmedCharities,
     // paymentMethod: string, // Allows any string value, which could include invalid keys
     paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod

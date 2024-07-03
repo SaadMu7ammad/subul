@@ -31,12 +31,17 @@ export interface usedItemServiceSkeleton {
     usedItemData: PlainIUsedItem
   ): Promise<{ usedItem: IUsedItem; message: string }>;
   findAllUsedItems(req: Request): Promise<{ usedItems: IUsedItem[]; message: string }>;
-  bookUsedItem(bookItemData: BookItemRequest): Promise<{ usedItem: IUsedItem; message: string }>;
+  bookUsedItem(
+    req: Request,
+    bookItemData: BookItemRequest
+  ): Promise<{ usedItem: IUsedItem; message: string }>;
 
   cancelBookingOfUsedItem(
+    req: Request,
     bookItemData: BookItemRequest
   ): Promise<{ usedItem: IUsedItem; message: string }>;
   ConfirmBookingReceipt(
+    req: Request,
     bookItemData: BookItemRequest
   ): Promise<{ usedItem: IUsedItem; message: string }>;
 
@@ -113,15 +118,16 @@ export interface usedItemUtilsSkeleton {
   findAllUsedItems(): Promise<{ usedItems: IUsedItem[]; message?: string }>;
   createBookItemData(req: Request, res: Response): Promise<BookItemRequest>;
 
-  bookUsedItem(bookItemData: BookItemRequest): Promise<IUsedItem>;
+  bookUsedItem(req: Request, bookItemData: BookItemRequest): Promise<IUsedItem>;
 
-  cancelBookingOfUsedItem(bookItemData: BookItemRequest): Promise<IUsedItem>;
+  cancelBookingOfUsedItem(req: Request, bookItemData: BookItemRequest): Promise<IUsedItem>;
 
-  ConfirmBookingReceipt(bookItemData: BookItemRequest): Promise<IUsedItem>;
+  ConfirmBookingReceipt(req: Request, bookItemData: BookItemRequest): Promise<IUsedItem>;
 
   isUsedItemBooked(usedItem: IUsedItem): void;
 
   notifyUserAboutUsedItemBooking(
+    req: Request,
     usedItem: IUsedItem,
     notificationType: 'booking' | 'bookingConfirmation' | 'bookingCancelation',
     maxAge: number | undefined
