@@ -1,31 +1,28 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
 import {
-  clearCharityDatabase,
+  DUMMY_USED_ITEM,
+  NON_EXISTING_ID,
   clearUsedItemsDatabase,
-  clearUserDatabase,
-  createAxiosApiClient,
-  createDummyCharityAndReturnToken,
-  createDummyUserAndReturnToken,
-} from './test-helpers';
+  usedItemTestingEnvironment,
+} from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
 
 let userAxiosAPIClient: AxiosInstance;
+
 let charityAxiosAPIClient: AxiosInstance;
 
+const env = usedItemTestingEnvironment;
+
+const usedItem = {
+  title: DUMMY_USED_ITEM.title,
+  category: DUMMY_USED_ITEM.category,
+  description: DUMMY_USED_ITEM.description,
+  images: [DUMMY_USED_ITEM.images[0]],
+  amount: DUMMY_USED_ITEM.amount,
+};
+
 beforeAll(async () => {
-  const apiConnection = await startWebServer();
-  const charityToken = await createDummyCharityAndReturnToken();
-  const userToken = await createDummyUserAndReturnToken();
-
-  userAxiosAPIClient = createAxiosApiClient(userToken, apiConnection.port);
-  charityAxiosAPIClient = createAxiosApiClient(charityToken, apiConnection.port);
-
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+  ({ userAxiosAPIClient, charityAxiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -33,26 +30,13 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearUserDatabase();
-  await clearUsedItemsDatabase();
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('api/charities/confirmBookingReceipt', () => {
   describe('POST /:id', () => {
     test('Should return 200 when confirming booking the usedItem , and When we retrieve it , is should be confirmed', async () => {
       //Arrange
-      const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.jpg'],
-        amount: 10,
-      };
-
       const createUsedItemResponse = await userAxiosAPIClient.post('/api/usedItem', usedItem);
       await charityAxiosAPIClient.post(
         `/api/charities/bookUsedItem/${createUsedItemResponse.data.usedItem._id}`
@@ -71,7 +55,7 @@ describe('api/charities/confirmBookingReceipt', () => {
 
     test('Should return 404 when confirming booking the usedItem that does not exist', async () => {
       //Arrange
-      const usedItemId = '60b1f1b1b4b4f3f1b4b4f3f1';
+      const usedItemId = NON_EXISTING_ID;
 
       //Act
       const confirmBookingUsedItemResponse = await charityAxiosAPIClient.post(
@@ -84,14 +68,6 @@ describe('api/charities/confirmBookingReceipt', () => {
 
     test('Should return 404 when confirming booking the usedItem that is not booked', async () => {
       //Arrange
-      const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.jpg'],
-        amount: 10,
-      };
-
       const createUsedItemResponse = await userAxiosAPIClient.post('/api/usedItem', usedItem);
 
       //Act

@@ -24,7 +24,7 @@ class CharityRepository implements CharityDao {
 }
 
 export class CHARITY {
-  public chairtyModel = new CharityRepository();
+  public charityModel = new CharityRepository();
 
   constructor() {
     // super();

@@ -1,32 +1,22 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
+import { CharityTestingEnvironment, DUMMY_TOKEN, INVALID_TOKEN } from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
 
 import Charity from '../data-access/models/charity.model';
-import { clearCharityDatabase, createDummyCharityAndReturnToken } from './test-helpers';
 
 let axiosAPIClient: AxiosInstance;
 
-beforeAll(async () => {
-  const apiConnection = await startWebServer();
-  const token = await createDummyCharityAndReturnToken(
-    false,
-    false,
-    '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha'
-  );
+const env = new CharityTestingEnvironment(
+  { authenticated: true, usedDbs: ['charity'] },
+  {
+    isActivated: true,
+    isConfirmed: false,
+    verificationCode: DUMMY_TOKEN,
+  }
+);
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-    headers: {
-      cookie: `jwt=${token}`,
-    },
-  };
-  axiosAPIClient = axios.create(axiosConfig);
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+beforeAll(async () => {
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -37,17 +27,14 @@ beforeEach(async () => {
 
     charity.emailVerification.verificationDate = '';
 
-    charity.verificationCode = '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha';
+    charity.verificationCode = DUMMY_TOKEN;
 
     await charity.save();
   }
 });
 
 afterAll(async () => {
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('api/charities', () => {
@@ -69,7 +56,7 @@ describe('api/charities', () => {
     test('Should return 401 Status Code if token is invalid', async () => {
       // Act
       const response = await axiosAPIClient.post('/api/charities/activate', {
-        token: 'invalidTokeninvalidTokeninvalidTokeninvalidTokeninvalidToken',
+        token: INVALID_TOKEN,
       });
 
       // Assert
@@ -79,12 +66,12 @@ describe('api/charities', () => {
     test('Should return 400 Status Code if account is already activated', async () => {
       // Arrange
       await axiosAPIClient.post('/api/charities/activate', {
-        token: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
+        token: DUMMY_TOKEN,
       });
 
       // Act
       const response = await axiosAPIClient.post('/api/charities/activate', {
-        token: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
+        token: DUMMY_TOKEN,
       });
 
       // Assert

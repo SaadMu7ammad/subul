@@ -1,34 +1,20 @@
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
-import { clearCharityDatabase, createDummyCharityAndReturnToken } from './test-helpers';
+import {
+  EDIT_CHARITY_PROFILE_DATA,
+  authenticatedCharityTestingEnvironment,
+} from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
-beforeAll(async () => {
-  const apiConnection = await startWebServer();
-  const token = await createDummyCharityAndReturnToken();
+const env = authenticatedCharityTestingEnvironment;
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-    headers: {
-      cookie: `jwt=${token}`,
-    },
-  };
-  axiosAPIClient = axios.create(axiosConfig);
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+beforeAll(async () => {
+  ({ axiosAPIClient } = await env.setup());
 });
 
 afterAll(async () => {
-  await clearCharityDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('api/charities', () => {
@@ -36,12 +22,12 @@ describe('api/charities', () => {
     test('Should edit profile with 200 status code', async () => {
       // Arrange
       const charityData = {
-        name: 'Charity Name',
+        name: EDIT_CHARITY_PROFILE_DATA.name,
         location: {
-          governorate: 'Cairo',
-          city: 'apeCity',
+          governorate: EDIT_CHARITY_PROFILE_DATA.location.governorate,
+          city: EDIT_CHARITY_PROFILE_DATA.location.city,
         },
-        description: 'this is a description',
+        description: EDIT_CHARITY_PROFILE_DATA.description,
       };
 
       // Act
@@ -66,8 +52,8 @@ describe('api/charities', () => {
       // Arrange
       const charityData = {
         location: {
-          governorate: 'Cairo',
-          city: 'apeCity',
+          governorate: EDIT_CHARITY_PROFILE_DATA.location.governorate,
+          city: EDIT_CHARITY_PROFILE_DATA.location.city,
         },
         locationId: charityLocation[0]._id,
       };
@@ -94,7 +80,7 @@ describe('api/charities', () => {
     test('When the email is changed, the old email should not be in the database & and Account needs to be verified again', async () => {
       // Arrange
       const charityData = {
-        email: 'dummy@dummy.dummy',
+        email: EDIT_CHARITY_PROFILE_DATA.email,
       };
 
       // Act

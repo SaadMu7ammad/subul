@@ -71,9 +71,9 @@ export class NotificationRepository implements NotificationDao {
 
 const checkIfReceiverExists = async (receiverType: string, receiverId: string) => {
   if (receiverType === 'Charity') {
-    const chairty = new CHARITY();
+    const charityObj = new CHARITY();
 
-    const charity = await chairty.chairtyModel.findCharityById(receiverId);
+    const charity = await charityObj.charityModel.findCharityById(receiverId);
 
     if (!charity) throw new NotFoundError('Charity Not Found');
   } else if (receiverType === 'User') {

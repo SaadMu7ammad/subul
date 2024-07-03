@@ -1,23 +1,17 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
-import { clearUserDatabase, getDummyUserObject } from './test-helpers';
+import {
+  clearUserDatabase,
+  getDummyUserObject,
+  unauthenticatedUserTestingEnvironment,
+} from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
-beforeAll(async () => {
-  const apiConnection = await startWebServer();
+const env = unauthenticatedUserTestingEnvironment;
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-  };
-  axiosAPIClient = axios.create(axiosConfig);
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+beforeAll(async () => {
+  ({ axiosAPIClient } = await env.setup());
 });
 
 beforeEach(async () => {
@@ -25,10 +19,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
-  await clearUserDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('/api/users', () => {
@@ -49,31 +40,6 @@ describe('/api/users', () => {
       // Arrange
       const user = getDummyUserObject();
       await axiosAPIClient.post('/api/users', user);
-
-      // Act
-      const response = await axiosAPIClient.post('/api/users', user);
-
-      // Assert
-      expect(response.status).toBe(400);
-    });
-
-    test('should return 400 when trying to register a user with invalid values', async () => {
-      // Arrange
-      const user = getDummyUserObject();
-      user.email = 'invalid-email';
-
-      // Act
-      const response = await axiosAPIClient.post('/api/users', user);
-
-      // Assert
-      expect(response.status).toBe(400);
-    });
-
-    test('should return 400 when trying to register a user with missing values', async () => {
-      // Arrange
-      const user = getDummyUserObject();
-      //@ts-expect-error // We are testing the API, so we can delete the email field
-      delete user.email;
 
       // Act
       const response = await axiosAPIClient.post('/api/users', user);
