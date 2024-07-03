@@ -1,36 +1,18 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { startWebServer, stopWebServer } from '@src/server';
-import axios, { AxiosInstance } from 'axios';
-import mongoose from 'mongoose';
-import nock from 'nock';
-
-import { clearUserDatabase, createDummyUserAndReturnToken } from './test-helpers';
+import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
+import { DUMMY_USER, authenticatedUserTestingEnvironment } from '@utils/test-helpers';
+import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
-beforeAll(async () => {
-  const apiConnection = await startWebServer();
-  const token = await createDummyUserAndReturnToken();
+const env = authenticatedUserTestingEnvironment;
 
-  const axiosConfig = {
-    baseURL: `http://127.0.0.1:${apiConnection.port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-    headers: {
-      cookie: `jwt=${token}`,
-    },
-  };
-  axiosAPIClient = axios.create(axiosConfig);
-  nock.disableNetConnect();
-  nock.enableNetConnect('127.0.0.1');
+beforeAll(async () => {
+  const { axiosAPIClient: client } = await env.setup();
+  axiosAPIClient = client;
 });
 
-beforeEach(async () => {});
-
 afterAll(async () => {
-  await clearUserDatabase();
-  nock.enableNetConnect();
-  mongoose.connection.close();
-  stopWebServer();
+  await env.teardown();
 });
 
 describe('/api/users', () => {
@@ -41,7 +23,7 @@ describe('/api/users', () => {
 
       //Assert
       expect(response.status).toBe(200);
-      expect(response.data.user.email).toBe('dummy@dummy.com');
+      expect(response.data.user.email).toBe(DUMMY_USER.email);
     });
   });
 });
