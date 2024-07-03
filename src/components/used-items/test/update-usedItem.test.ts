@@ -101,12 +101,10 @@ describe('api/usedItem', () => {
     };
     const nonExistingUsedItemId = NON_EXISTING_ID;
     //Act
-    const { status, data } = await axiosAPIClient.put(
+    const { status } = await axiosAPIClient.put(
       `/api/usedItem/${nonExistingUsedItemId}`,
       updatedUsedItem
     );
-
-    console.log(data);
 
     //Assert
     expect(status).toBe(404);
