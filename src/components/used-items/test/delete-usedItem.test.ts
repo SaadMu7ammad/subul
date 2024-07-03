@@ -1,11 +1,22 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { authenticatedUserTestingEnvironment, clearUsedItemsDatabase } from '@utils/test-helpers';
+import {
+  DUMMY_USED_ITEM,
+  authenticatedUserTestingEnvironment,
+  clearUsedItemsDatabase,
+} from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
 const env = authenticatedUserTestingEnvironment;
 
+const usedItem = {
+  title: DUMMY_USED_ITEM.title,
+  category: DUMMY_USED_ITEM.category,
+  description: DUMMY_USED_ITEM.description,
+  images: [DUMMY_USED_ITEM.images[0]],
+  amount: DUMMY_USED_ITEM.amount,
+};
 beforeAll(async () => {
   ({ axiosAPIClient } = await env.setup());
 });
@@ -22,14 +33,6 @@ describe('api/usedItem', () => {
   describe('DELETE /:id', () => {
     test('When deleting an existing usedItem, Then it should return a 200 status', async () => {
       //Arrange
-      const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.png', 'image2.png'],
-        amount: 10,
-      };
-
       //Act
       const {
         data: { usedItem: createdUsedItem },
@@ -54,15 +57,6 @@ describe('api/usedItem', () => {
     });
 
     test('When deleting an existing usedItem, Then it should NOT be retrievable', async () => {
-      //Arrange
-      const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.png', 'image2.png'],
-        amount: 10,
-      };
-
       //Act
       const {
         data: { usedItem: createdUsedItem },

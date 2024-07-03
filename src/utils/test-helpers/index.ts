@@ -9,3 +9,4 @@ export * from './shared/shared-test-helpers';
 export * from './constants/charity-constants';
 export * from './constants/user-constants';
 export * from './constants/usedItem-constants';
+export * from './constants/shared-constants';

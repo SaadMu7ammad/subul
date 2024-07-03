@@ -1,5 +1,10 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { clearUsedItemsDatabase, usedItemTestingEnvironment } from '@utils/test-helpers';
+import {
+  DUMMY_USED_ITEM,
+  NON_EXISTING_ID,
+  clearUsedItemsDatabase,
+  usedItemTestingEnvironment,
+} from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 let userAxiosAPIClient: AxiosInstance;
@@ -7,6 +12,14 @@ let userAxiosAPIClient: AxiosInstance;
 let charityAxiosAPIClient: AxiosInstance;
 
 const env = usedItemTestingEnvironment;
+
+const usedItem = {
+  title: DUMMY_USED_ITEM.title,
+  category: DUMMY_USED_ITEM.category,
+  description: DUMMY_USED_ITEM.description,
+  images: [DUMMY_USED_ITEM.images[0]],
+  amount: DUMMY_USED_ITEM.amount,
+};
 
 beforeAll(async () => {
   ({ userAxiosAPIClient, charityAxiosAPIClient } = await env.setup());
@@ -24,14 +37,6 @@ describe('api/charities/confirmBookingReceipt', () => {
   describe('POST /:id', () => {
     test('Should return 200 when confirming booking the usedItem , and When we retrieve it , is should be confirmed', async () => {
       //Arrange
-      const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.jpg'],
-        amount: 10,
-      };
-
       const createUsedItemResponse = await userAxiosAPIClient.post('/api/usedItem', usedItem);
       await charityAxiosAPIClient.post(
         `/api/charities/bookUsedItem/${createUsedItemResponse.data.usedItem._id}`
@@ -50,7 +55,7 @@ describe('api/charities/confirmBookingReceipt', () => {
 
     test('Should return 404 when confirming booking the usedItem that does not exist', async () => {
       //Arrange
-      const usedItemId = '60b1f1b1b4b4f3f1b4b4f3f1';
+      const usedItemId = NON_EXISTING_ID;
 
       //Act
       const confirmBookingUsedItemResponse = await charityAxiosAPIClient.post(
@@ -63,14 +68,6 @@ describe('api/charities/confirmBookingReceipt', () => {
 
     test('Should return 404 when confirming booking the usedItem that is not booked', async () => {
       //Arrange
-      const usedItem = {
-        title: 'Used Item 1',
-        category: 'clothes',
-        description: 'This is a used item',
-        images: ['image1.jpg'],
-        amount: 10,
-      };
-
       const createUsedItemResponse = await userAxiosAPIClient.post('/api/usedItem', usedItem);
 
       //Act
