@@ -84,10 +84,10 @@ export default function defineRoutes(expressApp: Application) {
     }
   );
 
-  // get all cases from all charities in the DB to user
+  // get all cases from all charities in the DB to Public
   router.get(
     '/allCases',
-    auth,
+    // auth,
     (req: Request, res: Response, next: NextFunction) => {
       const validations = getAllCasesValidation(req);
       Promise.all(validations.map(v => v.run(req)))
@@ -97,8 +97,8 @@ export default function defineRoutes(expressApp: Application) {
     validate,
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        logger.info(`Case API was called to Get All Cases For User`);
-        const getAllCasesResponse = await caseUseCaseInstance.getAllCasesForUser(req, res, next);
+        logger.info(`Case API was called to Get All Cases For ALL`);
+        const getAllCasesResponse = await caseUseCaseInstance.getAllCases(req, res, next);
         return res.json(getAllCasesResponse);
       } catch (error) {
         next(error);

@@ -9,7 +9,7 @@ import {
 import { ICharity } from '@components/charity/data-access/interfaces';
 import { NotFoundError } from '@libs/errors/components/not-found';
 import { deleteOldImgs } from '@utils/deleteFile';
-import { Response } from 'express';
+// import { Response } from 'express';
 import { Request } from 'express';
 
 import { CASE } from './case.class';
@@ -41,8 +41,12 @@ export class caseUtilsClass implements caseUtilsSkeleton {
     return sortObj;
   }
 
-  getFilterObj(charityId: string, queryParams: GetAllCasesQueryParams): FilterObj {
-    const filterObject: FilterObj = { charity: charityId };
+  getFilterObj(charityId: string | undefined, queryParams: GetAllCasesQueryParams): FilterObj {
+    let filterObject: FilterObj;
+
+    if (charityId)
+      filterObject = { charity: charityId }; //if the req is from charity itself ONLY
+    else filterObject = {};
     //each element of the array should be a key of the GetAllCasesQueryParams type.
     const filterQueryParameters: (keyof GetAllCasesQueryParams)[] = [
       'mainType',
@@ -91,17 +95,28 @@ export class caseUtilsClass implements caseUtilsSkeleton {
 
     return cases;
   }
-
-  async getAllCasesForUser(
-    res: Response,
-    sortObj: SortObj,
-    page: number,
-    limit: number
-  ): Promise<ICase[] | null> {
-    const cases = await this.caseInstance.caseModel.getAllCasesForUser(res, sortObj, page, limit);
-
-    return cases;
+  sortCases(allCases: ICase[]): ICase[] {
+    allCases.sort((a, b) => {
+      if (!a.finished && b.finished) {
+        return -1; // a comes before b
+      } else if (a.finished && !b.finished) {
+        return 1; // b comes before a
+      } else {
+        return 0; // no change in order
+      }
+    });
+    return allCases;
   }
+  // async getAllCasesForUser(
+  //   res: Response,
+  //   sortObj: SortObj,
+  //   page: number,
+  //   limit: number
+  // ): Promise<ICase[] | null> {
+  //   const cases = await this.caseInstance.caseModel.getAllCasesForUser(res, sortObj, page, limit);
+
+  //   return cases;
+  // }
 
   async getCaseByIdFromDB(req: Request, caseId: string): Promise<ICase> {
     const _case: ICase | null = await this.caseInstance.caseModel.getCaseById(caseId);

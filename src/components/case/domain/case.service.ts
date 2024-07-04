@@ -19,7 +19,6 @@ import { BadRequestError, NotFoundError } from '@libs/errors/components';
 import { setupMailSender } from '@utils/mailer';
 import { notificationManager } from '@utils/sendNotification';
 import { Request } from 'express';
-import { Response } from 'express';
 
 import { caseUtilsClass } from './case.utils';
 
@@ -62,7 +61,7 @@ export class caseServiceClass implements caseServiceSkeleton {
   }
 
   getAllCases = async (
-    charityId: string,
+    charityId: string | undefined,
     queryParams: GetAllCasesQueryParams
   ): Promise<GetAllCasesResponse> => {
     const sortObj: SortObj = this.caseUtilsInstance.getSortObj(queryParams.sort);
@@ -71,25 +70,28 @@ export class caseServiceClass implements caseServiceSkeleton {
 
     const { page, limit }: PaginationObj = this.caseUtilsInstance.getCasesPagination(queryParams);
 
+    console.log(sortObj);
+    console.log(filterObj);
+    console.log(page, limit);
     const cases = await this.caseUtilsInstance.getAllCases(sortObj, filterObj, page, limit);
 
     if (!cases) throw new NotFoundError('no cases found');
     return { cases: cases };
   };
 
-  async getAllCasesForUser(
-    res: Response,
-    queryParams: GetAllCasesQueryParams
-  ): Promise<GetAllCasesResponse> {
-    const sortObj: SortObj = this.caseUtilsInstance.getSortObj(queryParams.sort);
+  // async getAllCasesForUser(
+  //   res: Response,
+  //   queryParams: GetAllCasesQueryParams
+  // ): Promise<GetAllCasesResponse> {
+  //   const sortObj: SortObj = this.caseUtilsInstance.getSortObj(queryParams.sort);
 
-    const { page, limit }: PaginationObj = this.caseUtilsInstance.getCasesPagination(queryParams);
+  //   const { page, limit }: PaginationObj = this.caseUtilsInstance.getCasesPagination(queryParams);
 
-    const cases = await this.caseUtilsInstance.getAllCasesForUser(res, sortObj, page, limit);
+  //   const cases = await this.caseUtilsInstance.getAllCasesForUser(res, sortObj, page, limit);
 
-    if (!cases) throw new NotFoundError('no cases found');
-    return { cases: cases };
-  }
+  //   if (!cases) throw new NotFoundError('no cases found');
+  //   return { cases: cases };
+  // }
 
   async getCaseById(
     req: Request,
