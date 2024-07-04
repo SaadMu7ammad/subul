@@ -15,8 +15,7 @@ let axiosAPIClient: AxiosInstance;
 const env = unauthenticatedUserTestingEnvironment;
 
 beforeAll(async () => {
-  const { axiosAPIClient: client } = await env.setup();
-  axiosAPIClient = client;
+  ({ axiosAPIClient } = await env.setup());
 });
 
 afterAll(async () => {
