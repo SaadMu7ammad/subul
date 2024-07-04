@@ -39,7 +39,7 @@ export class adminServiceClass implements adminServiceSkeleton {
     this.charityUtilsInstance.getTotalNumberOfDonorsAndDonationsIncome();
 
     const charities = await this.adminInstance.adminModel.findAllCharities(
-      'name email isPending isConfirmed'
+      'name email isPending isConfirmed numberOfCases image createdAt totalNumberOfDonors totalDonationsIncome'
     );
 
     return { charities: charities };
