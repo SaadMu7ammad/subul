@@ -46,16 +46,23 @@ export class chatServiceClass implements chatServiceSkeleton {
     //store message id in the messages array of the conversation
     await this.chatiUtilsInstance.addMsgIDInMsgsArrayOfConversation(conversation, createdMessage);
 
-    const notificationManager = new NotificationManager();
+    const isThereUnreadNotificationFromThisConversation =
+      await this.chatiUtilsInstance.checkIfThereIsAnUnreadNotficationFromThisConversation(
+        conversation._id.toString()
+      );
 
-    await notificationManager.sendNotification(
-      senderType === 'user' ? 'Charity' : 'User',
-      receiverId,
-      `You have a new message`,
-      undefined,
-      'conversation',
-      conversation._id
-    );
+    if (!isThereUnreadNotificationFromThisConversation) {
+      const notificationManager = new NotificationManager();
+
+      await notificationManager.sendNotification(
+        senderType === 'user' ? 'Charity' : 'User',
+        receiverId,
+        `You have a new message`,
+        undefined,
+        'conversation',
+        conversation._id
+      );
+    }
 
     return { message: createdMessage };
   }

@@ -1,5 +1,6 @@
 import { chatRepository } from '@components/chat/data-access/chat.repository';
 import { IConversation, IMessage, chatUtilSkeleton } from '@components/chat/data-access/interfaces';
+import NotificationModel from '@components/notification/data-access/models/notification.model';
 
 export class chatiUtilsClass implements chatUtilSkeleton {
   async createConversationOrGetTheExist(
@@ -39,6 +40,17 @@ export class chatiUtilsClass implements chatUtilSkeleton {
     const conversation = await _chatRepository.getConversation(receiverId, senderId);
 
     return conversation;
+  }
+
+  async checkIfThereIsAnUnreadNotficationFromThisConversation(
+    conversationId: string
+  ): Promise<boolean> {
+    const notifications = await NotificationModel.find({
+      resource: { id: conversationId, type: 'conversation' },
+      read: false,
+    });
+
+    return notifications.length > 0;
   }
 }
 // export const chatUtils = {
