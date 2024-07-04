@@ -4,8 +4,21 @@ import { AxiosInstance } from 'axios';
 import { createDummyUserAndReturnToken } from '..';
 import { TestingEnvironment, TestingEnvironmentOptions } from '../shared/testing-environments';
 
+type UserOptions = {
+  isEnabled: boolean;
+  isVerified: boolean;
+  verificationCode: string;
+};
+
 export class UserTestingEnvironment extends TestingEnvironment {
-  constructor(options: TestingEnvironmentOptions) {
+  constructor(
+    options: TestingEnvironmentOptions,
+    private userOptions: UserOptions = {
+      isEnabled: false,
+      isVerified: false,
+      verificationCode: 'dummy',
+    }
+  ) {
     super(options);
   }
 
@@ -14,7 +27,8 @@ export class UserTestingEnvironment extends TestingEnvironment {
     let token = '';
 
     if (this.authenticated) {
-      token = await createDummyUserAndReturnToken();
+      const { isEnabled, isVerified, verificationCode } = this.userOptions;
+      token = await createDummyUserAndReturnToken(isEnabled, isVerified, verificationCode);
     }
 
     this.axiosAPIClient = this.createAxiosApiClient(apiConnection.port, token);

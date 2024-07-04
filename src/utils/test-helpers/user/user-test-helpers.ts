@@ -3,10 +3,14 @@ import UserModel from '@components/user/data-access/models/user.model';
 import { USER } from '@components/user/domain/user.class';
 import { generateTokenForTesting } from '@utils/generateToken';
 
-export const createDummyUserAndReturnToken = async () => {
+export const createDummyUserAndReturnToken = async (
+  isEnabled: boolean = false,
+  isVerified: boolean = false,
+  verificationCode: string = 'dummy'
+) => {
   const user = new USER();
 
-  const dummyUserData: PlainUser = getDummyUserObject(true, true);
+  const dummyUserData: PlainUser = getDummyUserObject(isEnabled, isVerified, verificationCode);
 
   const dummyUser = await user.userModel.createUser(dummyUserData);
 
@@ -21,7 +25,8 @@ export const clearUserDatabase = async () => {
 
 export const getDummyUserObject = (
   isEnabled: boolean = false,
-  isVerified: boolean = false
+  isVerified: boolean = false,
+  verificationCode: string = 'dummy'
 ): PlainUser => {
   return {
     name: {
@@ -41,7 +46,7 @@ export const getDummyUserObject = (
     pointsOnDonations: 0,
     totalDonationsAmount: 0,
     transactions: [],
-    verificationCode: 'dummy',
+    verificationCode,
     emailVerification: {
       isVerified,
       verificationDate: new Date().toString(),
