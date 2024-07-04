@@ -55,7 +55,7 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
     res: Response,
     next: NextFunction
   ): Promise<GetAllTransactionResponse> {
-    const myTransactions: { allTransactions: (ITransaction | null)[] } =
+    const myTransactions: { allTransactions: (ITransaction | null)[] | ITransaction[] } =
       await this.transactionService.getAllTransactions(res.locals.user);
 
     if (!myTransactions) {

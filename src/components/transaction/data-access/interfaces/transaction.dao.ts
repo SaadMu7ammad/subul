@@ -22,6 +22,7 @@ export interface TransactionDataStore {
     orderId: string;
   }): Promise<ITransaction | null>;
   findTransactionById(id: string): Promise<ITransaction | null>;
+  findAllTransactions(): Promise<ITransaction[]>;
   findTransactionsByQuery(queryObj: FilterQuery<ITransaction>): Promise<ITransaction[] | null>;
   findUserByEmail(email: string): Promise<IUser | null>;
   createTransaction(transaction: ITransaction): Promise<ITransaction | null>;

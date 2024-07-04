@@ -124,12 +124,13 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
   async confirmSavingUser(user: IUser) {
     await user.save();
   }
-  async getAllTransactionsPromised(user: IUser): Promise<(ITransaction | null)[]> {
-    const transactionPromises: Promise<ITransaction | null>[] = user.transactions.map(
+  async getAllTransactionsPromised(user: IUser): Promise<(ITransaction | null)[] | ITransaction[]> {
+    const transactionPromises = user.transactions.map(
       async (itemId, index) => {
         const myTransaction = await this.#transactionInstance.transactionModel.findTransactionById(
           itemId.toString()
         );
+        // console.log(myTransaction);
         if (!myTransaction) {
           user.transactions.splice(index, 1);
           return null;
@@ -141,7 +142,15 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
           return myTransaction;
         }
       }
+      // Add one for AllTransactions if user.isAdmin == true
     );
+    if (user.isAdmin) {
+      const allTransactions =
+        await this.#transactionInstance.transactionModel.findAllTransactions();
+      // console.log('findAllTransactions', allTransactions);
+      return allTransactions;
+    }
+    // console.log(transactionPromises); // []
 
     const allTransactionsPromised = await Promise.all(transactionPromises);
     await this.confirmSavingUser(user);

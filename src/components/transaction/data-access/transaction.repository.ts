@@ -36,6 +36,11 @@ class TransactionRepository implements TransactionDataStore {
     });
     return transaction;
   }
+  async findAllTransactions(): Promise<ITransaction[]> {
+    const transactions = await TransactionModel.find();
+
+    return transactions;
+  }
   async findUserByEmail(email: string): Promise<IUser | null> {
     const user = await UserModel.findOne({
       email: email,
