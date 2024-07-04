@@ -92,7 +92,7 @@ describe('/api/users', () => {
         token: INVALID_TOKEN,
         password: NEW_PASSWORD,
       });
-      console.log(confirmResetResponse.data);
+
       // Assert
       expect(confirmResetResponse.status).toBe(404);
     });

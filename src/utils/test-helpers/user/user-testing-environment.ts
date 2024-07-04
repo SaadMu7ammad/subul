@@ -14,8 +14,8 @@ export class UserTestingEnvironment extends TestingEnvironment {
   constructor(
     options: TestingEnvironmentOptions,
     private userOptions: UserOptions = {
-      isEnabled: false,
-      isVerified: false,
+      isEnabled: true,
+      isVerified: true,
       verificationCode: 'dummy',
     }
   ) {
