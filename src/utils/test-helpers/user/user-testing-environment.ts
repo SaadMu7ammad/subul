@@ -33,7 +33,8 @@ export const authenticatedUserTestingEnvironment = new UserTestingEnvironment({
   authenticated: true,
   usedDbs: ['user', 'usedItem'],
 });
+
 export const unauthenticatedUserTestingEnvironment = new UserTestingEnvironment({
   authenticated: true,
-  usedDbs: ['charity'],
+  usedDbs: ['user'],
 });

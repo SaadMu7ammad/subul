@@ -7,6 +7,7 @@ import {
 } from '@components/chat/data-access/interfaces';
 import { userUtilsClass } from '@components/user/domain/user.utils';
 import { BadRequestError } from '@libs/errors/components';
+import { notificationManager as NotificationManager } from '@utils/sendNotification';
 
 import { chatiUtilsClass } from './chat.utils';
 
@@ -18,7 +19,7 @@ export class chatServiceClass implements chatServiceSkeleton {
     this.chatiUtilsInstance = new chatiUtilsClass();
   }
   async sendMessage(
-    typeSender: string,
+    senderType: string,
     message: string,
     senderId: string,
     receiverId: string,
@@ -29,7 +30,7 @@ export class chatServiceClass implements chatServiceSkeleton {
       throw new BadRequestError('Charity Account is not Completed to start chatting');
 
     //check the reciever id is exist
-    if (typeSender === 'user') await this.charityUtilsInstance.checkCharityIsExistById(receiverId);
+    if (senderType === 'user') await this.charityUtilsInstance.checkCharityIsExistById(receiverId);
     else await userUtilsInstance.checkUserIsExistById(receiverId);
 
     const conversation = await this.chatiUtilsInstance.createConversationOrGetTheExist(
@@ -44,6 +45,24 @@ export class chatServiceClass implements chatServiceSkeleton {
 
     //store message id in the messages array of the conversation
     await this.chatiUtilsInstance.addMsgIDInMsgsArrayOfConversation(conversation, createdMessage);
+
+    const isThereUnreadNotificationFromThisConversation =
+      await this.chatiUtilsInstance.checkIfThereIsAnUnreadNotficationFromThisConversation(
+        conversation._id.toString()
+      );
+
+    if (!isThereUnreadNotificationFromThisConversation) {
+      const notificationManager = new NotificationManager();
+
+      await notificationManager.sendNotification(
+        senderType === 'user' ? 'Charity' : 'User',
+        receiverId,
+        `You have a new message`,
+        undefined,
+        'conversation',
+        conversation._id
+      );
+    }
 
     return { message: createdMessage };
   }

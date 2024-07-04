@@ -14,7 +14,7 @@ export class notificationManager {
 
   async sendNotification(
     receiverType: 'Charity' | 'User',
-    receiverId: mongoose.Types.ObjectId,
+    receiverId: mongoose.Types.ObjectId | string,
     message: string,
     maxAge?: number,
     resourceType?: ResourceType,

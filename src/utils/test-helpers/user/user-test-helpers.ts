@@ -6,30 +6,7 @@ import { generateTokenForTesting } from '@utils/generateToken';
 export const createDummyUserAndReturnToken = async () => {
   const user = new USER();
 
-  const dummyUserData: PlainUser = {
-    name: {
-      firstName: 'dummy',
-      lastName: 'dummy',
-    },
-    email: 'dummy@dummy.com',
-    password: 'dummy',
-    phone: '01234567890',
-    gender: 'male',
-    userLocation: {
-      governorate: 'Cairo',
-    },
-    isAdmin: false,
-    contributions: [],
-    isEnabled: true,
-    pointsOnDonations: 0,
-    totalDonationsAmount: 0,
-    transactions: [],
-    verificationCode: 'dummy',
-    emailVerification: {
-      isVerified: true,
-      verificationDate: new Date().toString(),
-    },
-  };
+  const dummyUserData: PlainUser = getDummyUserObject(true, true);
 
   const dummyUser = await user.userModel.createUser(dummyUserData);
 
@@ -42,7 +19,10 @@ export const clearUserDatabase = async () => {
   await UserModel.deleteMany({});
 };
 
-export const getDummyUserObject = (): PlainUser => {
+export const getDummyUserObject = (
+  isEnabled: boolean = false,
+  isVerified: boolean = false
+): PlainUser => {
   return {
     name: {
       firstName: 'folan',
@@ -55,16 +35,16 @@ export const getDummyUserObject = (): PlainUser => {
     userLocation: {
       governorate: 'Giza',
     },
-    contributions: [],
     isAdmin: false,
-    isEnabled: false,
+    contributions: [],
+    isEnabled,
     pointsOnDonations: 0,
     totalDonationsAmount: 0,
     transactions: [],
-    verificationCode: '',
+    verificationCode: 'dummy',
     emailVerification: {
-      isVerified: false,
-      verificationDate: '',
+      isVerified,
+      verificationDate: new Date().toString(),
     },
   };
 };
