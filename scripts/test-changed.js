@@ -19,14 +19,6 @@ changedFiles.forEach(file => {
   }
 });
 
-// Print a pretty message
-if (directories.size > 0) {
-  console.log('Running tests for the following directories:');
-  directories.forEach(dir => console.log(`- ${dir}`));
-} else {
-  console.log('No changes in src/components/, skipping tests.');
-}
-
 // Build the test command arguments
 const testArgs = [];
 directories.forEach(dir => {
@@ -36,6 +28,10 @@ testArgs.push('--runInBand');
 
 // Run the Jest command only if there are directories to test
 if (directories.size > 0) {
+
+  console.log('Running tests for the following directories:');
+  directories.forEach(dir => console.log(`- ${dir}`));
+
   const jestProcess = spawn('npx', ['jest', ...testArgs], { stdio: 'inherit' });
 
   jestProcess.on('close', code => {
