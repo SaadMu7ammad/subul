@@ -96,7 +96,6 @@ export class transactionServiceClass implements transactionServiceSkeleton {
       externalTransactionId: externalTransactionId,
       orderId: orderId,
     };
-
     let transactionIsExist: ITransaction | null =
       await this.#transactionInstance.transactionModel.findTransactionByQuery(queryObj);
     if (transactionIsExist) {
@@ -105,6 +104,12 @@ export class transactionServiceClass implements transactionServiceSkeleton {
         transactionIsExist,
         amount
       );
+      if (transactionIsExist.status === 'refunded') {
+        await this.#transactionUtilsInstance.updateUserAfterRefund(
+          userIsExist,
+          +transactionIsExist.moneyPaid
+        );
+      }
       //in the next middleware will update the externalTransactionId with the new refund transaction
       return transactionIsExist;
     } //else  console.log('no transaction found for refund so will create new one');
@@ -138,6 +143,7 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     const transactionData: Partial<ITransaction> = {
       case: caseIsExist._id,
       user: userIsExist._id,
+      charity: caseIsExist.charity,
       moneyPaid: +amount,
       paidAt: date,
       externalTransactionId: externalTransactionId,
@@ -158,6 +164,10 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     if (status == 'failed') {
       return newTransaction;
       // throw new BadRequestError('transaction failed please try again');
+    }
+
+    if (status === 'success') {
+      await this.#transactionUtilsInstance.updateUserAfterDonation(userIsExist, +amount);
     }
     await this.#transactionUtilsInstance.confirmSavingCase(caseIsExist);
     console.log({ status: newTransaction.status }); //, data: newTransaction });
