@@ -163,9 +163,7 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     console.log({ status: newTransaction.status }); //, data: newTransaction });
     return newTransaction;
   }
-  async getAllTransactions(
-    user: IUser
-  ): Promise<{ allTransactions: (ITransaction | null)[] | ITransaction[] }> {
+  async getAllTransactions(user: IUser): Promise<{ allTransactions: (ITransaction | null)[] }> {
     const allTransactionsPromised =
       await this.#transactionUtilsInstance.getAllTransactionsPromised(user);
     return { allTransactions: allTransactionsPromised };

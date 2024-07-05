@@ -40,6 +40,13 @@ const transactionSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Charity',
     },
+    charityName: {
+      type: String,
+    },
+    // User
+    donorName: {
+      type: String,
+    },
     moneyPaid: {
       type: Number,
       required: true,
