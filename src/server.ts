@@ -68,7 +68,7 @@ export async function startWebServer() {
 
   const allowedOrigins = [
   'https://charity-proj.netlify.app',
-  'https://subul.me/'
+  'https://subul.me'
 ];
 
 const corsOptions = {
