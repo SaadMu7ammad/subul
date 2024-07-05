@@ -1,4 +1,3 @@
-
 const shell = require('shelljs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -9,14 +8,24 @@ const changedFiles = shell
   .stdout.trim()
   .split('\n');
 
-// Get unique directories for the changed files
+// Get unique parent directories for the changed files
 const directories = new Set();
 changedFiles.forEach(file => {
   const dir = path.dirname(file);
   if (dir.startsWith('src/components/')) {
-    directories.add(dir);
+    const componentsDir = dir.split(path.sep).slice(0, 3).join(path.sep);
+    const parentDir = path.join('src', 'components', componentsDir.split(path.sep).slice(2, 3).join(path.sep));
+    directories.add(parentDir);
   }
 });
+
+// Print a pretty message
+if (directories.size > 0) {
+  console.log('Running tests for the following directories:');
+  directories.forEach(dir => console.log(`- ${dir}`));
+} else {
+  console.log('No changes in src/components/, skipping tests.');
+}
 
 // Build the test command arguments
 const testArgs = [];
