@@ -61,6 +61,10 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
+    totalDonationsCount: {
+      type: Number,
+      default: 0,
+    },
     userLocation: {
       type: locationSchema,
       // required: true, // 👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️ userLocation shouldn't be required.

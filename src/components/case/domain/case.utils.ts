@@ -53,7 +53,15 @@ export class caseUtilsClass implements caseUtilsSkeleton {
       'subType',
       'nestedSubType',
       'freezed',
+      'finished',
     ];
+
+    if (queryParams.finished == true) {
+      filterObject['finished'] = true;
+    } else {
+      filterObject['finished'] = false;
+    }
+
     // filterQueryParameters[0]='mainType'//just for remove the code temp
     for (const param of filterQueryParameters) {
       if (queryParams[`${param}`]) {

@@ -30,7 +30,7 @@ export interface TransactionDataStore {
 
 export interface transactionServiceSkeleton {
   preCreateTransactionService(data: IDataPreCreateTransaction, user: IUser): Promise<boolean>;
-  updateCaseInfo(data: IDataUpdateCaseInfo): Promise<ITransaction | null>;
+  updateCaseInfo(res: Response, data: IDataUpdateCaseInfo): Promise<ITransaction | null>;
   getAllTransactions(user: IUser): Promise<{ allTransactions: (ITransaction | null)[] }>;
 }
 

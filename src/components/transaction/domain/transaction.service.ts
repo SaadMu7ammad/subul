@@ -10,6 +10,7 @@ import { TRANSACTION } from '@components/transaction/data-access/transaction.rep
 import { IUser } from '@components/user/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { checkValueEquality } from '@utils/shared';
+import { Response } from 'express';
 
 import { transactionUtilsClass } from './transaction.utils';
 
@@ -63,8 +64,9 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     return checker;
   }
 
-  async updateCaseInfo(data: IDataUpdateCaseInfo): Promise<ITransaction | null> {
+  async updateCaseInfo(res: Response, data: IDataUpdateCaseInfo): Promise<ITransaction | null> {
     //start updating
+    const storedUser: IUser = res.locals.user;
     const {
       user,
       items,
@@ -155,10 +157,16 @@ export class transactionServiceClass implements transactionServiceSkeleton {
       userIsExist,
       newTransaction._id
     );
+
     if (status == 'failed') {
       return newTransaction;
       // throw new BadRequestError('transaction failed please try again');
     }
+    //update user total donations
+    if (status == 'success') {
+      storedUser.totalDonationsAmount += +amount;
+    }
+
     await this.#transactionUtilsInstance.confirmSavingCase(caseIsExist);
     console.log({ status: newTransaction.status }); //, data: newTransaction });
     return newTransaction;

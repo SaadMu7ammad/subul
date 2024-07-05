@@ -106,7 +106,7 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
 
       // create a new transaction here
       //before update the case info check if the transaction is a refund or payment donation
-      const transaction = await this.transactionService.updateCaseInfo(data);
+      const transaction = await this.transactionService.updateCaseInfo(res, data);
 
       if (!transaction) {
         throw new BadRequestError('transaction not completed ... please try again!');
