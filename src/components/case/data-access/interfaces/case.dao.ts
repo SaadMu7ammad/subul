@@ -35,10 +35,10 @@ export interface caseServiceSkeleton {
 
   getAllCases(charityId: string, queryParams: GetAllCasesQueryParams): Promise<GetAllCasesResponse>;
 
-  getAllCasesForUser(
-    res: Response,
-    queryParams: GetAllCasesQueryParams
-  ): Promise<GetAllCasesResponse>;
+  // getAllCasesForUser(
+  //   res: Response,
+  //   queryParams: GetAllCasesQueryParams
+  // ): Promise<GetAllCasesResponse>;
 
   getCaseById(
     req: Request,
@@ -61,11 +61,11 @@ export interface caseUseCaseSkeleton {
   addCase(req: Request, res: Response, next: NextFunction): Promise<AddCaseResponse>;
 
   getAllCases(req: Request, res: Response, next: NextFunction): Promise<GetAllCasesResponse>;
-  getAllCasesForUser(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<{ cases: ICase[]; message: string }>;
+  // getAllCasesForUser(
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<{ cases: ICase[]; message: string }>;
 
   getCaseById(req: Request, res: Response, next: NextFunction): Promise<GetCaseByIdResponse>;
 
@@ -89,12 +89,12 @@ export interface caseUtilsSkeleton {
     limit: number
   ): Promise<ICase[] | null>;
 
-  getAllCasesForUser(
-    res: Response,
-    sortObj: SortObj,
-    page: number,
-    limit: number
-  ): Promise<ICase[] | null>;
+  // getAllCasesForUser(
+  //   res: Response,
+  //   sortObj: SortObj,
+  //   page: number,
+  //   limit: number
+  // ): Promise<ICase[] | null>;
   getCaseByIdFromDB(req: Request, caseId: string): Promise<ICase>;
   checkIfCaseBelongsToCharity(
     req: Request,
@@ -109,4 +109,5 @@ export interface caseUtilsSkeleton {
     caseData: { coverImage: string; image: string[] },
     caseId: string
   ): Promise<() => void>;
+  sortCases(allCases: ICase[]): ICase[];
 }

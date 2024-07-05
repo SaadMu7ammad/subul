@@ -1,9 +1,9 @@
 import { ICharity } from '@components/charity/data-access/interfaces';
 import { charityUtilsClass } from '@components/charity/domain/charity.utils';
-import { Response } from 'express';
 
 import { CaseDao, FilterObj, ICase, SortObj } from '../data-access/interfaces';
 import Case from '../data-access/models/case.model';
+import { caseUtilsClass } from './case.utils';
 
 // import Case from '../data-access/models/case.model';
 
@@ -28,7 +28,7 @@ class CaseRepository implements CaseDao {
     page: number,
     limit: number
   ): Promise<ICase[] | null> {
-    const charityCases = await Case.aggregate([
+    let charityCases = await Case.aggregate([
       {
         $match: filterObj,
       },
@@ -48,41 +48,54 @@ class CaseRepository implements CaseDao {
         // freezed: ,
         createdAt: 0,
         updatedAt: 0,
+        privateNumber: 0,
         __v: 0,
       });
+    const caseUtilsInstance = new caseUtilsClass();
 
+    // charityCases.sort((a, b) => {
+    //   if (!a.finished && b.finished) {
+    //     return -1; // a comes before b
+    //   } else if (a.finished && !b.finished) {
+    //     return 1; // b comes before a
+    //   } else {
+    //     return 0; // no change in order
+    //   }
+    // });
+
+    charityCases = caseUtilsInstance.sortCases(charityCases);
     return charityCases;
   }
 
-  async getAllCasesForUser(
-    res: Response,
-    sortObj: SortObj,
-    page: number,
-    limit: number
-  ): Promise<ICase[] | null> {
-    let allCases = await Case.find()
-      .sort(sortObj)
-      .skip((page - 1) * limit)
-      .limit(limit);
+  // async getAllCasesForUser(
+  //   res: Response,
+  //   sortObj: SortObj,
+  //   page: number,
+  //   limit: number
+  // ): Promise<ICase[] | null> {
+  //   let allCases = await Case.find()
+  //     .sort(sortObj)
+  //     .skip((page - 1) * limit)
+  //     .limit(limit);
 
-    if (res.locals.charity || (res.locals.user && !res.locals.user.isAdmin)) {
-      // remove freezed cases
-      allCases = allCases.filter(c => !c.freezed);
-    }
+  //   if (res.locals.charity || (res.locals.user && !res.locals.user.isAdmin)) {
+  //     // remove freezed cases
+  //     allCases = allCases.filter(c => !c.freezed);
+  //   }
 
-    // make finished cases come last
-    allCases.sort((a, b) => {
-      if (!a.finished && b.finished) {
-        return -1; // a comes before b
-      } else if (a.finished && !b.finished) {
-        return 1; // b comes before a
-      } else {
-        return 0; // no change in order
-      }
-    });
+  //   // make finished cases come last
+  //   allCases.sort((a, b) => {
+  //     if (!a.finished && b.finished) {
+  //       return -1; // a comes before b
+  //     } else if (a.finished && !b.finished) {
+  //       return 1; // b comes before a
+  //     } else {
+  //       return 0; // no change in order
+  //     }
+  //   });
 
-    return allCases;
-  }
+  //   return allCases;
+  // }
 
   getCaseById = async (id: string): Promise<ICase | null> => {
     const _case = await Case.findById(id);

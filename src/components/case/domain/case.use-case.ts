@@ -34,7 +34,9 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
 
   async getAllCases(req: Request, res: Response, next: NextFunction): Promise<GetAllCasesResponse> {
     const queryParams: GetAllCasesQueryParams = req.query;
-    const charityId: string = res.locals.charity._id;
+    const charityId: string | undefined = res.locals?.charity?._id
+      ? res.locals.charity._id
+      : undefined;
 
     const responseData = await this.caseServiceInstance.getAllCases(charityId, queryParams);
 
@@ -44,20 +46,20 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
     };
   }
 
-  async getAllCasesForUser(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<{ cases: ICase[]; message: string }> {
-    const queryParams: GetAllCasesQueryParams = req.query;
+  // async getAllCasesForUser(
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction
+  // ): Promise<{ cases: ICase[]; message: string }> {
+  //   const queryParams: GetAllCasesQueryParams = req.query;
 
-    const responseData = await this.caseServiceInstance.getAllCasesForUser(res, queryParams);
+  //   const responseData = await this.caseServiceInstance.getAllCasesForUser(res, queryParams);
 
-    return {
-      cases: responseData.cases,
-      message: req.t('errors.fetchAllCases'),
-    };
-  }
+  //   return {
+  //     cases: responseData.cases,
+  //     message: req.t('errors.fetchAllCases'),
+  //   };
+  // }
 
   async getCaseById(req: Request, res: Response, next: NextFunction): Promise<GetCaseByIdResponse> {
     const charityCases: ICase['id'][] = res.locals.charity.cases;
