@@ -95,6 +95,17 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
     transaction.status = 'refunded';
     await transaction.save();
   }
+  async updateUserAfterDonation(user: IUser, amount: number) {
+    // console.log(storedUser);
+    user.totalDonationsAmount += amount;
+    await user.save();
+  }
+  async updateUserAfterRefund(user: IUser, amount: number) {
+    // console.log(storedUser);
+    user.totalDonationsAmount -= amount;
+    await user.save();
+  }
+
   async updateCaseAfterRefund(cause: ICase, amount: number) {
     if (cause.finished) cause.finished = false; //re open the case again
     if (cause.currentDonationAmount >= amount) cause.currentDonationAmount -= amount;
