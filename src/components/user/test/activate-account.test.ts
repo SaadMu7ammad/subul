@@ -67,8 +67,6 @@ describe('/api/users', () => {
         token: DUMMY_TOKEN,
       });
 
-      console.log(response);
-
       // Assert
       expect(response.status).toBe(400);
     });

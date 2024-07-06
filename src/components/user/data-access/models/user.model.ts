@@ -1,5 +1,6 @@
 import { IUser } from '@components/user/data-access/interfaces';
 import * as configurationProvider from '@libs/configuration-provider/index';
+import logger from '@utils/logger';
 import bcrypt from 'bcryptjs';
 import mongoose, { HydratedDocument, InferSchemaType, Schema } from 'mongoose';
 
@@ -147,12 +148,12 @@ const userSchema = new Schema(
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     //to not change password every time we edit the user data
-    console.log('password not change');
+    logger.warn('password not changed');
     return next();
   }
   const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
   this.password = await bcrypt.hash(this.password, salt);
-  console.log('password has been changed');
+  logger.warn('password has been changed');
 });
 // userSchema.pre('findOneAndUpdate', async function (next) {
 //     // the update operation object is stored within this.getUpdate()
