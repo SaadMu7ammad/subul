@@ -66,24 +66,24 @@ export async function startWebServer() {
   app.use(express.static(path.join(__dirname, `uploads`)));
   // app.use('/uploads',express.static( `uploads`));
 
-  const allowedOrigins = [
-  'https://charity-proj.netlify.app',
-  'https://subul.me'
-];
+  const allowedOrigins = ['https://charity-proj.netlify.app', 'https://subul.me'];
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Allow credentials
-};
+  const corsOptions = {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void
+    ) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true, // Allow credentials
+  };
 
-app.use(cors(corsOptions));
-  
+  app.use(cors(corsOptions));
+
   app.use(express.urlencoded({ extended: true })); //form data
   app.use(express.json());
 
