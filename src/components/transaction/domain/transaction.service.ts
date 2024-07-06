@@ -68,6 +68,7 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     // const storedUser: IUser = res.locals.user;
     const {
       user,
+      charityId,
       items,
       externalTransactionId,
       orderId,
@@ -91,6 +92,8 @@ export class transactionServiceClass implements transactionServiceSkeleton {
       user.email
     );
     if (!userIsExist) throw new BadRequestError('no user found');
+
+    // check charityId is valid? when user create transaction  == TO DOOOO
 
     // implement the refund here
     const queryObj: { externalTransactionId: string; orderId: string } = {
@@ -170,7 +173,12 @@ export class transactionServiceClass implements transactionServiceSkeleton {
 
     if (status === 'success') {
       await this.#transactionUtilsInstance.updateUserAfterDonation(userIsExist, +amount);
+      await this.#transactionUtilsInstance.updateCharityNumberOfDonorsAndTotalDonations(
+        charityId,
+        +amount
+      );
     }
+
     await this.#transactionUtilsInstance.confirmSavingCase(caseIsExist);
     console.log({ status: newTransaction.status }); //, data: newTransaction });
     return newTransaction;

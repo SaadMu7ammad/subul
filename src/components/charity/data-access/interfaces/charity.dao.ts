@@ -45,7 +45,7 @@ export interface charityUtilsSkeleton {
   getCharity(res: Response): { charity: ICharity };
   updateNumberOfCases(charity: ICharity): Promise<void>;
 
-  getTotalNumberOfDonorsAndDonationsIncome(): Promise<void>;
+  // getTotalNumberOfDonorsAndDonationsIncome(): Promise<void>;
 
   checkIsEmailDuplicated(email: string): Promise<void>;
   changeCharityEmailWithMailAlert(

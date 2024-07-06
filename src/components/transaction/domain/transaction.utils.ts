@@ -1,5 +1,6 @@
 import { ICase } from '@components/case/data-access/interfaces/case.interface';
 import { ICharity } from '@components/charity/data-access/interfaces';
+import CharityModel from '@components/charity/data-access/models/charity.model';
 import {
   IDataPreCreateTransaction,
   transactionUtilsSkeleton,
@@ -99,6 +100,14 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
     // console.log(storedUser);
     user.totalDonationsAmount -= amount;
     await user.save();
+  }
+
+  async updateCharityNumberOfDonorsAndTotalDonations(charityId: string, amount: number) {
+    const charity: ICharity | null = await CharityModel.findById(charityId);
+    if (!charity) return;
+    charity.totalNumberOfDonors++;
+    charity.totalDonationsIncome += amount;
+    await charity.save();
   }
 
   async updateCaseAfterRefund(cause: ICase, amount: number) {
