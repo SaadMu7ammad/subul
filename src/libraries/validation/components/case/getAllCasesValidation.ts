@@ -41,7 +41,7 @@ const getAllCasesValidation = (req: Request) => [
       'BloodDonation',
       'kafarat',
       'Adahi',
-      'Campains',
+      'Campaigns',
       'UsedProperties',
       'customizedCampaigns',
     ])
@@ -51,7 +51,7 @@ const getAllCasesValidation = (req: Request) => [
     .isIn([
       'Aqeeqa',
       'BloodDonation',
-      'Campains',
+      'Campaigns',
       'Yameen',
       'Fediat Siam',
       'Foqaraa',

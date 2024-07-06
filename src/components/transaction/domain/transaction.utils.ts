@@ -90,6 +90,17 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
     transaction.status = 'refunded';
     await transaction.save();
   }
+  async updateUserAfterDonation(user: IUser, amount: number) {
+    // console.log(storedUser);
+    user.totalDonationsAmount += amount;
+    await user.save();
+  }
+  async updateUserAfterRefund(user: IUser, amount: number) {
+    // console.log(storedUser);
+    user.totalDonationsAmount -= amount;
+    await user.save();
+  }
+
   async updateCaseAfterRefund(cause: ICase, amount: number) {
     if (cause.finished) cause.finished = false; //re open the case again
     if (cause.currentDonationAmount >= amount) cause.currentDonationAmount -= amount;
@@ -135,7 +146,10 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
           return null;
         } else {
           // console.log(myTransaction.user);
-          if (myTransaction?.user?.toString() !== user._id.toString()) {
+          if (
+            myTransaction?.user?._id.toString() !== user._id.toString() &&
+            myTransaction?.user?.toString() !== user._id.toString()
+          ) {
             throw new BadRequestError("you don't have access to this !");
           }
           return myTransaction;

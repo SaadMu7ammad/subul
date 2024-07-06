@@ -11,7 +11,7 @@ const mainTypeValidation = (req: Request) =>
   body('mainType')
     .trim()
     .notEmpty()
-    .isIn(['Sadaqa', 'Zakah', 'BloodDonation', 'kafarat', 'Adahi', 'Campains', 'UsedProperties'])
+    .isIn(['Sadaqa', 'Zakah', 'BloodDonation', 'kafarat', 'Adahi', 'Campaigns', 'UsedProperties'])
     .withMessage(req.t('errors.invalidMainType'));
 
 const subTypeValidation = (req: Request) =>
@@ -21,7 +21,7 @@ const subTypeValidation = (req: Request) =>
     .isIn([
       'Aqeeqa',
       'BloodDonation',
-      'Campains',
+      'Campaigns',
       'Yameen',
       'Fediat Siam',
       'Foqaraa',
