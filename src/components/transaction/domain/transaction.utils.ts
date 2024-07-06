@@ -179,15 +179,14 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
   //   }
   // }
 
-  async getAllTransactionsToCharity(
-    cause: string,
-    charity: ICharity
-  ): Promise<ITransaction[] | null> {
+  async getAllTransactionsToCharity(charityId: string): Promise<ITransaction[] | null> {
+    // const myTransactions = await this.#transactionInstance.transactionModel.findTransactionsByQuery(
+    //   { charity: charityId }
+    // );
     const myTransactions = await this.#transactionInstance.transactionModel.findTransactionsByQuery(
-      { charity: charity._id, case: cause }
+      { charity: charityId }
     );
     // if (!myTransaction) return null;
-
     return myTransactions;
   }
 

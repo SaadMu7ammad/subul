@@ -1,3 +1,4 @@
+import { ICharity } from '@components/charity/data-access/interfaces';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
@@ -64,15 +65,12 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
 
     return { status: 'success', data: myTransactions };
   }
-  async getAllTransactionsToCharity(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<GetAllTransactionResponse> {
-    const caseId: string = req.body.caseId;
+  async getAllTransactionsToCharity(req: Request, res: Response, next: NextFunction) {
+    // const caseId: string = req.body.caseId;
+    const charityDoc: ICharity = res.locals.charity;
 
     const myTransactions: { allTransactions: (ITransaction | null)[] } =
-      await this.transactionService.getAllTransactionsToCharity(res.locals.charity, caseId);
+      await this.transactionService.getAllTransactionsToCharity(charityDoc._id.toString());
 
     if (!myTransactions) {
       throw new BadRequestError('no transactions found');

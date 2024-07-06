@@ -1,4 +1,3 @@
-import { ICharity } from '@components/charity/data-access/interfaces';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
@@ -182,11 +181,10 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     return { allTransactions: allTransactionsPromised };
   }
   async getAllTransactionsToCharity(
-    charity: ICharity,
-    cause: string
+    charityId: string
   ): Promise<{ allTransactions: (ITransaction | null)[] }> {
     const allTransactionsPromised =
-      await this.#transactionUtilsInstance.getAllTransactionsToCharity(cause, charity);
+      await this.#transactionUtilsInstance.getAllTransactionsToCharity(charityId);
     return { allTransactions: allTransactionsPromised ? allTransactionsPromised : [] };
   }
 }
