@@ -1,14 +1,11 @@
 import { ICase } from '@components/case/data-access/interfaces/case.interface';
-import CaseModel from '@components/case/data-access/models/case.model';
 import { ICharity } from '@components/charity/data-access/interfaces';
-import Charity from '@components/charity/data-access/models/charity.model';
 import {
   IDataPreCreateTransaction,
   transactionUtilsSkeleton,
 } from '@components/transaction/data-access/interfaces';
 import { ITransaction } from '@components/transaction/data-access/interfaces';
 import { IUser } from '@components/user/data-access/interfaces';
-import UserModel from '@components/user/data-access/models/user.model';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { Types } from 'mongoose';
 
@@ -36,8 +33,6 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
     this.confirmSavingCase = this.confirmSavingCase.bind(this);
     this.confirmSavingUser = this.confirmSavingUser.bind(this);
     this.getAllTransactionsPromised = this.getAllTransactionsPromised.bind(this);
-    this.addDonorNameAndCharityNameToTransactions =
-      this.addDonorNameAndCharityNameToTransactions.bind(this);
     this.confirmSavingUser = this.confirmSavingUser.bind(this);
     this.getAllTransactionsToCharity = this.getAllTransactionsToCharity.bind(this);
     this.refundUtility = this.refundUtility.bind(this);
@@ -163,28 +158,26 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
     if (user.isAdmin) {
       const allTransactions: ITransaction[] =
         await this.#transactionInstance.transactionModel.findAllTransactions();
-      await this.addDonorNameAndCharityNameToTransactions(allTransactions);
       return allTransactions;
     }
 
     const allTransactionsPromised = await Promise.all(transactionPromises);
-    await this.addDonorNameAndCharityNameToTransactions(allTransactionsPromised);
     await this.confirmSavingUser(user);
 
     return allTransactionsPromised;
   }
 
-  async addDonorNameAndCharityNameToTransactions(transactions: (ITransaction | null)[]) {
-    for (const transaction of transactions) {
-      if (!transaction) throw new NotFoundError('transaction not found');
-      const charityObject = await CaseModel.findById(transaction?.case).select('charity').exec();
-      const charityId = charityObject?.charity;
-      const charityName = await Charity.findById(charityId).select('name').exec();
-      transaction.charityName = charityName?.name;
-      const UserObject = await UserModel.findById(transaction?.user).select('name').exec();
-      transaction.donorName = UserObject?.name.firstName + ' ' + UserObject?.name.lastName;
-    }
-  }
+  // async addDonorNameAndCharityNameToTransactions(transactions: (ITransaction | null)[]) {
+  //   for (const transaction of transactions) {
+  //     if (!transaction) throw new NotFoundError('transaction not found');
+  //     const charityObject = await CaseModel.findById(transaction?.case).select('charity').exec();
+  //     const charityId = charityObject?.charity;
+  //     const charityName = await Charity.findById(charityId).select('name').exec();
+  //     transaction.charityName = charityName?.name;
+  //     const UserObject = await UserModel.findById(transaction?.user).select('name').exec();
+  //     transaction.donorName = UserObject?.name.firstName + ' ' + UserObject?.name.lastName;
+  //   }
+  // }
 
   async getAllTransactionsToCharity(
     cause: string,

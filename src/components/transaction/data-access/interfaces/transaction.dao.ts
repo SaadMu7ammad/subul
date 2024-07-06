@@ -67,6 +67,4 @@ export interface transactionUtilsSkeleton {
 
   getAllTransactionsPromised(user: IUser): Promise<(ITransaction | null)[]>;
   refundUtility(transaction: ITransaction, amount: number): Promise<ITransaction>;
-
-  addDonorNameAndCharityNameToTransactions(transactions: ITransaction[]): Promise<void>;
 }

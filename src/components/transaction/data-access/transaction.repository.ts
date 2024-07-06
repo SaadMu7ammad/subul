@@ -39,7 +39,9 @@ class TransactionRepository implements TransactionDataStore {
     return transaction;
   }
   async findAllTransactions(): Promise<ITransaction[]> {
-    const transactions = await TransactionModel.find();
+    const transactions = await TransactionModel.find()
+      .populate('charity', 'name')
+      .populate('user', 'name');
 
     return transactions;
   }

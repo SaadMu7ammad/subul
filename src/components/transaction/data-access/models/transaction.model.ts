@@ -43,13 +43,6 @@ const transactionSchema = new Schema(
       ref: 'Charity',
       required: true,
     },
-    charityName: {
-      type: String,
-    },
-    // User
-    donorName: {
-      type: String,
-    },
     moneyPaid: {
       type: Number,
       required: true,
