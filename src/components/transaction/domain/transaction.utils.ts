@@ -149,7 +149,10 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
         user.transactions.splice(index, 1);
         return null;
       } else {
-        if (myTransaction?.user?.toString() !== user._id.toString()) {
+        if (
+          myTransaction?.user?._id.toString() !== user._id.toString() &&
+          myTransaction?.user?.toString() !== user._id.toString()
+        ) {
           throw new BadRequestError("you don't have access to this !");
         }
         return myTransaction;
