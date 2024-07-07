@@ -49,7 +49,7 @@ export class caseServiceClass implements caseServiceSkeleton {
       await user.save();
     }
 
-    this.notificatioInstance.notifyAllUsers(
+    await this.notificatioInstance.notifyAllUsers(
       // `Charity ${charity.name} has posted a new case , check it out!`,
       // req.t('notifications.charityPostedCase'),
       req.t('notifications.charityPostedCase', { name: charity.name }),
