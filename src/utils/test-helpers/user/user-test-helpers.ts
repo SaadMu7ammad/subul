@@ -3,10 +3,16 @@ import UserModel from '@components/user/data-access/models/user.model';
 import { USER } from '@components/user/domain/user.class';
 import { generateTokenForTesting } from '@utils/generateToken';
 
-export const createDummyUserAndReturnToken = async () => {
+import { DUMMY_TOKEN } from '..';
+
+export const createDummyUserAndReturnToken = async (
+  isEnabled: boolean = true,
+  isVerified: boolean = true,
+  verificationCode: string = 'dummy'
+) => {
   const user = new USER();
 
-  const dummyUserData: PlainUser = getDummyUserObject(true, true);
+  const dummyUserData: PlainUser = getDummyUserObject(isEnabled, isVerified, verificationCode);
 
   const dummyUser = await user.userModel.createUser(dummyUserData);
 
@@ -20,8 +26,9 @@ export const clearUserDatabase = async () => {
 };
 
 export const getDummyUserObject = (
-  isEnabled: boolean = false,
-  isVerified: boolean = false
+  isEnabled: boolean = true,
+  isVerified: boolean = true,
+  verificationCode: string = 'dummy'
 ): PlainUser => {
   return {
     name: {
@@ -42,10 +49,24 @@ export const getDummyUserObject = (
     totalDonationsAmount: 0,
     totalDonationsCount: 0,
     transactions: [],
-    verificationCode: 'dummy',
+    verificationCode,
     emailVerification: {
       isVerified,
       verificationDate: new Date().toString(),
     },
   };
+};
+
+export const deactivateUserAccount = async (email: string) => {
+  const user = await UserModel.findOne({ email });
+
+  if (user && user.emailVerification && user.verificationCode !== undefined) {
+    user.emailVerification.isVerified = false;
+
+    user.emailVerification.verificationDate = '';
+
+    user.verificationCode = DUMMY_TOKEN;
+
+    await user.save();
+  }
 };

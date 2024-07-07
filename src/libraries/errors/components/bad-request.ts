@@ -1,10 +1,12 @@
+import logger from '@utils/logger';
+
 import { CustomAPIError } from './custom-api';
 
 class BadRequestError extends CustomAPIError {
   statusCode: number;
   constructor(message: string) {
     super(message);
-    console.log('BadRequestError');
+    logger.error('BadRequestError');
     this.statusCode = 400;
   }
 }
