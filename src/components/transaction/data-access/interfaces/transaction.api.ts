@@ -14,7 +14,6 @@ export interface IDataUpdateCaseInfo {
   items: {
     name: string; //case id
   }[];
-  charityId: string;
   externalTransactionId: string;
   orderId: string;
   amount: number;

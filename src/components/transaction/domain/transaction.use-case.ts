@@ -89,7 +89,6 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
         user: {
           ...req.body.obj.order.shipping_data,
         },
-        charityId: req.body.obj.order.id,
         items: {
           ...req.body.obj.order.items,
         },
