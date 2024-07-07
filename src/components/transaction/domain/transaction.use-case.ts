@@ -1,3 +1,4 @@
+import { ICharity } from '@components/charity/data-access/interfaces';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
@@ -64,15 +65,12 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
 
     return { status: 'success', data: myTransactions };
   }
-  async getAllTransactionsToCharity(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<GetAllTransactionResponse> {
-    const caseId: string = req.body.caseId;
+  async getAllTransactionsToCharity(req: Request, res: Response, next: NextFunction) {
+    // const caseId: string = req.body.caseId;
+    const charityDoc: ICharity = res.locals.charity;
 
     const myTransactions: { allTransactions: (ITransaction | null)[] } =
-      await this.transactionService.getAllTransactionsToCharity(res.locals.charity, caseId);
+      await this.transactionService.getAllTransactionsToCharity(charityDoc._id.toString());
 
     if (!myTransactions) {
       throw new BadRequestError('no transactions found');
@@ -91,6 +89,7 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
         user: {
           ...req.body.obj.order.shipping_data,
         },
+        charityId: req.body.obj.order.id,
         items: {
           ...req.body.obj.order.items,
         },
@@ -106,7 +105,7 @@ export class tranactionUseCaseClass implements transactionUseCaseSkeleton {
 
       // create a new transaction here
       //before update the case info check if the transaction is a refund or payment donation
-      const transaction = await this.transactionService.updateCaseInfo(data);
+      const transaction = await this.transactionService.updateCaseInfo(res, data);
 
       if (!transaction) {
         throw new BadRequestError('transaction not completed ... please try again!');

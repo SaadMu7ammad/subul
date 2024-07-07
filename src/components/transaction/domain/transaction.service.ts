@@ -1,4 +1,3 @@
-import { ICharity } from '@components/charity/data-access/interfaces';
 import {
   IDataPreCreateTransaction,
   IDataUpdateCaseInfo,
@@ -10,6 +9,7 @@ import { TRANSACTION } from '@components/transaction/data-access/transaction.rep
 import { IUser } from '@components/user/data-access/interfaces';
 import { BadRequestError, NotFoundError } from '@libs/errors/components/index';
 import { checkValueEquality } from '@utils/shared';
+import { Response } from 'express';
 
 import { transactionUtilsClass } from './transaction.utils';
 
@@ -63,10 +63,12 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     return checker;
   }
 
-  async updateCaseInfo(data: IDataUpdateCaseInfo): Promise<ITransaction | null> {
+  async updateCaseInfo(res: Response, data: IDataUpdateCaseInfo): Promise<ITransaction | null> {
     //start updating
+    // const storedUser: IUser = res.locals.user;
     const {
       user,
+      charityId,
       items,
       externalTransactionId,
       orderId,
@@ -90,6 +92,8 @@ export class transactionServiceClass implements transactionServiceSkeleton {
       user.email
     );
     if (!userIsExist) throw new BadRequestError('no user found');
+
+    // check charityId is valid? when user create transaction  == TO DOOOO
 
     // implement the refund here
     const queryObj: { externalTransactionId: string; orderId: string } = {
@@ -161,6 +165,7 @@ export class transactionServiceClass implements transactionServiceSkeleton {
       userIsExist,
       newTransaction._id
     );
+
     if (status == 'failed') {
       return newTransaction;
       // throw new BadRequestError('transaction failed please try again');
@@ -168,7 +173,12 @@ export class transactionServiceClass implements transactionServiceSkeleton {
 
     if (status === 'success') {
       await this.#transactionUtilsInstance.updateUserAfterDonation(userIsExist, +amount);
+      await this.#transactionUtilsInstance.updateCharityNumberOfDonorsAndTotalDonations(
+        charityId,
+        +amount
+      );
     }
+
     await this.#transactionUtilsInstance.confirmSavingCase(caseIsExist);
     console.log({ status: newTransaction.status }); //, data: newTransaction });
     return newTransaction;
@@ -179,11 +189,10 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     return { allTransactions: allTransactionsPromised };
   }
   async getAllTransactionsToCharity(
-    charity: ICharity,
-    cause: string
+    charityId: string
   ): Promise<{ allTransactions: (ITransaction | null)[] }> {
     const allTransactionsPromised =
-      await this.#transactionUtilsInstance.getAllTransactionsToCharity(cause, charity);
+      await this.#transactionUtilsInstance.getAllTransactionsToCharity(charityId);
     return { allTransactions: allTransactionsPromised ? allTransactionsPromised : [] };
   }
 }

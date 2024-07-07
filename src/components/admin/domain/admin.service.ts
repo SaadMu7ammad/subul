@@ -36,8 +36,7 @@ export class adminServiceClass implements adminServiceSkeleton {
   async getAllChariteis(): Promise<{
     charities: AllCharities[];
   }> {
-    this.charityUtilsInstance.getTotalNumberOfDonorsAndDonationsIncome();
-
+    // this.charityUtilsInstance.getTotalNumberOfDonorsAndDonationsIncome();
     const charities = await this.adminInstance.adminModel.findAllCharities(
       'name email isPending isConfirmed numberOfCases image createdAt totalNumberOfDonors totalDonationsIncome'
     );
@@ -46,7 +45,9 @@ export class adminServiceClass implements adminServiceSkeleton {
   }
 
   async getAllUsers() {
-    const users = await this.adminInstance.adminModel.findAllUsers('name email');
+    const users = await this.adminInstance.adminModel.findAllUsers(
+      'name email phone totalDonationsAmount'
+    );
 
     return { users: users };
   }

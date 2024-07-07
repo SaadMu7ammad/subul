@@ -22,6 +22,7 @@ export interface TransactionDataStore {
     orderId: string;
   }): Promise<ITransaction | null>;
   findTransactionById(id: string): Promise<ITransaction | null>;
+  findAllTransactions(): Promise<ITransaction[]>;
   findTransactionsByQuery(queryObj: FilterQuery<ITransaction>): Promise<ITransaction[] | null>;
   findUserByEmail(email: string): Promise<IUser | null>;
   createTransaction(transaction: ITransaction): Promise<ITransaction | null>;
@@ -29,7 +30,7 @@ export interface TransactionDataStore {
 
 export interface transactionServiceSkeleton {
   preCreateTransactionService(data: IDataPreCreateTransaction, user: IUser): Promise<boolean>;
-  updateCaseInfo(data: IDataUpdateCaseInfo): Promise<ITransaction | null>;
+  updateCaseInfo(res: Response, data: IDataUpdateCaseInfo): Promise<ITransaction | null>;
   getAllTransactions(user: IUser): Promise<{ allTransactions: (ITransaction | null)[] }>;
 }
 

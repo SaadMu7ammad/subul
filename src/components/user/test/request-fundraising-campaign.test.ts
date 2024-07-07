@@ -1,5 +1,5 @@
 import Charity from '@components/charity/data-access/models/charity.model';
-import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, describe, expect, test } from '@jest/globals';
 import {
   authenticatedUserTestingEnvironment,
   clearCharityDatabase,
@@ -18,7 +18,7 @@ beforeAll(async () => {
   axiosAPIClient = client;
 });
 
-beforeEach(async () => {
+afterEach(async () => {
   await clearCaseDatabase();
   await clearCharityDatabase();
 });

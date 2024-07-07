@@ -15,7 +15,6 @@ class CaseRepository implements CaseDao {
   }
   async createCase(charity: ICharity, caseData: ICase): Promise<ICase | null> {
     const newCase = await Case.create(caseData);
-
     this.charityUtilsInstance.updateNumberOfCases(charity);
     await charity.save();
 

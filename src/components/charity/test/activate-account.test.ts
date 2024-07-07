@@ -38,11 +38,11 @@ describe('api/charities', () => {
     test('Should Activate Account and delete verificationCode from DB with 200 Status Code', async () => {
       // Act
       const response = await axiosAPIClient.post('/api/charities/activate', {
-        token: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
+        token: DUMMY_TOKEN,
       });
 
       // Assert
-      const charity = await Charity.findOne({ email: 'dummy@dummy.ape' });
+      const charity = await Charity.findOne({ email: DUMMY_CHARITY.email });
 
       expect(response.status).toBe(200);
       expect(charity?.emailVerification?.isVerified).toBe(true);

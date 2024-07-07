@@ -7,11 +7,12 @@ export type GetAllCasesQueryParams = {
   freezed?: boolean;
   subType?: string;
   nestedSubType?: string;
+  finished?: boolean;
 };
 
 export type FilterQueryParams = Pick<
   GetAllCasesQueryParams,
-  'mainType' | 'subType' | 'nestedSubType' | 'freezed'
+  'mainType' | 'subType' | 'nestedSubType' | 'freezed' | 'finished'
 >;
 export type FilterObj = FilterQueryParams & { charity?: string };
 export type SortObj = { [key: string]: 1 | -1 };

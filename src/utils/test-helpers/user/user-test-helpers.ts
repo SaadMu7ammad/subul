@@ -47,6 +47,7 @@ export const getDummyUserObject = (
     isEnabled,
     pointsOnDonations: 0,
     totalDonationsAmount: 0,
+    totalDonationsCount: 0,
     transactions: [],
     verificationCode,
     emailVerification: {

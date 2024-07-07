@@ -1,5 +1,6 @@
 import { ICase } from '@components/case/data-access/interfaces/case.interface';
 import { ICharity } from '@components/charity/data-access/interfaces';
+import CharityModel from '@components/charity/data-access/models/charity.model';
 import {
   IDataPreCreateTransaction,
   transactionUtilsSkeleton,
@@ -101,6 +102,14 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
     await user.save();
   }
 
+  async updateCharityNumberOfDonorsAndTotalDonations(charityId: string, amount: number) {
+    const charity: ICharity | null = await CharityModel.findById(charityId);
+    if (!charity) return;
+    charity.totalNumberOfDonors++;
+    charity.totalDonationsIncome += amount;
+    await charity.save();
+  }
+
   async updateCaseAfterRefund(cause: ICase, amount: number) {
     if (cause.finished) cause.finished = false; //re open the case again
     if (cause.currentDonationAmount >= amount) cause.currentDonationAmount -= amount;
@@ -136,41 +145,57 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
     await user.save();
   }
   async getAllTransactionsPromised(user: IUser): Promise<(ITransaction | null)[]> {
-    const transactionPromises: Promise<ITransaction | null>[] = user.transactions.map(
-      async (itemId, index) => {
-        const myTransaction = await this.#transactionInstance.transactionModel.findTransactionById(
-          itemId.toString()
-        );
-        if (!myTransaction) {
-          user.transactions.splice(index, 1);
-          return null;
-        } else {
-          // console.log(myTransaction.user);
-          if (
-            myTransaction?.user?._id.toString() !== user._id.toString() &&
-            myTransaction?.user?.toString() !== user._id.toString()
-          ) {
-            throw new BadRequestError("you don't have access to this !");
-          }
-          return myTransaction;
+    const transactionPromises = user.transactions.map(async (itemId, index) => {
+      const myTransaction = await this.#transactionInstance.transactionModel.findTransactionById(
+        itemId.toString()
+      );
+      if (!myTransaction) {
+        user.transactions.splice(index, 1);
+        return null;
+      } else {
+        if (
+          myTransaction?.user?._id.toString() !== user._id.toString() &&
+          myTransaction?.user?.toString() !== user._id.toString()
+        ) {
+          throw new BadRequestError("you don't have access to this !");
         }
+        return myTransaction;
       }
-    );
+    });
+
+    // Add one for AllTransactions if user.isAdmin == true
+    if (user.isAdmin) {
+      const allTransactions: ITransaction[] =
+        await this.#transactionInstance.transactionModel.findAllTransactions();
+      return allTransactions;
+    }
 
     const allTransactionsPromised = await Promise.all(transactionPromises);
     await this.confirmSavingUser(user);
+
     return allTransactionsPromised;
   }
 
-  async getAllTransactionsToCharity(
-    cause: string,
-    charity: ICharity
-  ): Promise<ITransaction[] | null> {
+  // async addDonorNameAndCharityNameToTransactions(transactions: (ITransaction | null)[]) {
+  //   for (const transaction of transactions) {
+  //     if (!transaction) throw new NotFoundError('transaction not found');
+  //     const charityObject = await CaseModel.findById(transaction?.case).select('charity').exec();
+  //     const charityId = charityObject?.charity;
+  //     const charityName = await Charity.findById(charityId).select('name').exec();
+  //     transaction.charityName = charityName?.name;
+  //     const UserObject = await UserModel.findById(transaction?.user).select('name').exec();
+  //     transaction.donorName = UserObject?.name.firstName + ' ' + UserObject?.name.lastName;
+  //   }
+  // }
+
+  async getAllTransactionsToCharity(charityId: string): Promise<ITransaction[] | null> {
+    // const myTransactions = await this.#transactionInstance.transactionModel.findTransactionsByQuery(
+    //   { charity: charityId }
+    // );
     const myTransactions = await this.#transactionInstance.transactionModel.findTransactionsByQuery(
-      { charity: charity._id, case: cause }
+      { charity: charityId }
     );
     // if (!myTransaction) return null;
-
     return myTransactions;
   }
 
