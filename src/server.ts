@@ -57,19 +57,18 @@ export async function startWebServer() {
 
   // Use i18next middleware
   app.use(i18nextHttpMiddleware.handle(i18next));
-  // app.get('/test', (req, res) => {
-  //   res.send(req.t('errors.notAdmin'));
-  // });
 
   //to access the img as path http://localhost:5000/charityLogos/imgName_In_DB.jpeg
   //http://localhost:5000/charityDocs/docs1-sss--.jpeg
   app.use(express.static(path.join(__dirname, `uploads`)));
-  // app.use('/uploads',express.static( `uploads`));
 
   const allowedOrigins = ['https://charity-proj.netlify.app', 'https://subul.me'];
 
   const corsOptions = {
-    origin: (origin, callback) => {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void
+    ) => {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -83,11 +82,6 @@ export async function startWebServer() {
 
   app.use(express.urlencoded({ extended: true })); //form data
   app.use(express.json());
-
-  //to access the img as path http://localhost:5000/charityLogos/imgName_In_DB.jpeg
-  //http://localhost:5000/charityDocs/docs1-sss--.jpeg
-  app.use(express.static(path.join(__dirname, `uploads`)));
-  // app.use('/uploads',express.static( `uploads`));
 
   defineRoutes(app);
 
@@ -142,13 +136,3 @@ const defineRoutes = (app: Application) => {
   chatRoutes(app);
   notificationRoutes(app);
 };
-
-//handling errors outside express
-// process.on('unhandledRejection', (err) => {
-//   console.log(`unhandledRejection Errors + ${err.name} | ${err.message}`);
-//   server.close(() => {
-//     //do exit to the program after the server their pending requests
-//     console.log('shutting down...');
-//     process.exit(1);
-//   });
-// });

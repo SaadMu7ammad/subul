@@ -1,10 +1,12 @@
 import { PlainCharity } from '@components/charity/data-access/interfaces';
-import { Charity as CharityModel } from '@components/charity/data-access/models/charity.model';
+import Charity, {
+  Charity as CharityModel,
+} from '@components/charity/data-access/models/charity.model';
 import { CHARITY } from '@components/charity/domain/charity.class';
 import { generateTokenForTesting } from '@utils/generateToken';
 import FormData from 'form-data';
 
-import { BANK_ACCOUNT_INFO, appendDummyImageToFormData } from '..';
+import { BANK_ACCOUNT_INFO, DUMMY_TOKEN, appendDummyImageToFormData } from '..';
 
 const charityObj = new CHARITY();
 
@@ -127,4 +129,18 @@ export const appendDummyCharityToFormData = (formData: FormData) => {
   Object.keys(dummyCharity).forEach(key => {
     appendToFormData(key, dummyCharity[key as keyof PlainCharity]);
   });
+};
+
+export const deactivateCharityAccount = async (email: string) => {
+  const charity = await Charity.findOne({ email });
+
+  if (charity && charity.emailVerification && charity.verificationCode !== undefined) {
+    charity.emailVerification.isVerified = false;
+
+    charity.emailVerification.verificationDate = '';
+
+    charity.verificationCode = DUMMY_TOKEN;
+
+    await charity.save();
+  }
 };

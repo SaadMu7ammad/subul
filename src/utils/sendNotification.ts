@@ -50,18 +50,9 @@ export class notificationManager {
     resourceId?: mongoose.Types.ObjectId
   ) {
     const users = await this.#user.userModel.getAllUsers();
-    const notifications = [];
 
     for (const user of users) {
-      const notification = await this.sendNotification(
-        'User',
-        user._id,
-        message,
-        maxAge,
-        resourceType,
-        resourceId
-      );
-      notifications.push(notification);
+      await this.sendNotification('User', user._id, message, maxAge, resourceType, resourceId);
     }
   }
 }

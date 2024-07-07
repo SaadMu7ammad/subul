@@ -1,5 +1,11 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, test } from '@jest/globals';
-import { CharityTestingEnvironment, DUMMY_TOKEN, INVALID_TOKEN } from '@utils/test-helpers';
+import {
+  CharityTestingEnvironment,
+  DUMMY_CHARITY,
+  DUMMY_TOKEN,
+  INVALID_TOKEN,
+  deactivateCharityAccount,
+} from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 import Charity from '../data-access/models/charity.model';
@@ -20,17 +26,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  const charity = await Charity.findOne({ email: 'dummy@dummy.ape' });
-
-  if (charity && charity.emailVerification && charity.verificationCode !== undefined) {
-    charity.emailVerification.isVerified = false;
-
-    charity.emailVerification.verificationDate = '';
-
-    charity.verificationCode = DUMMY_TOKEN;
-
-    await charity.save();
-  }
+  await deactivateCharityAccount(DUMMY_CHARITY.email);
 });
 
 afterAll(async () => {
@@ -42,11 +38,11 @@ describe('api/charities', () => {
     test('Should Activate Account and delete verificationCode from DB with 200 Status Code', async () => {
       // Act
       const response = await axiosAPIClient.post('/api/charities/activate', {
-        token: '60CharToken60CharToken60CharToken60CharToken60CharToken60Cha',
+        token: DUMMY_TOKEN,
       });
 
       // Assert
-      const charity = await Charity.findOne({ email: 'dummy@dummy.ape' });
+      const charity = await Charity.findOne({ email: DUMMY_CHARITY.email });
 
       expect(response.status).toBe(200);
       expect(charity?.emailVerification?.isVerified).toBe(true);

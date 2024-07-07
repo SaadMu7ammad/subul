@@ -108,12 +108,7 @@ class userServiceClass implements userServiceSkeleton {
   ): Promise<authUserResponse> {
     const storedUser = user;
     if (storedUser.emailVerification?.isVerified) {
-      return {
-        // message: 'account already is activated'
-        user: storedUser,
-        msg: 'account already is activated',
-        isVerified: true,
-      };
+      throw new BadRequestError('account already is activated');
     }
     if (!storedUser.verificationCode) throw new NotFoundError('verificationCode not found');
     const isMatch = checkValueEquality(storedUser.verificationCode, reqBody.token);
