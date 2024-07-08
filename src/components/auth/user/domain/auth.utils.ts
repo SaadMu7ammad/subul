@@ -46,8 +46,3 @@ export class authUserUtilsClass implements authUserUtilsSkeleton {
     return { user: user };
   }
 }
-// export const authUserUtils = {
-//   checkUserPassword,
-//   checkUserIsVerified,
-//   createUser,
-// };

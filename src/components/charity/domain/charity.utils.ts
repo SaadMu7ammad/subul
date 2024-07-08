@@ -428,30 +428,3 @@ export class charityUtilsClass implements charityUtilsSkeleton {
   //   console.log('All charities have been updated with the correct totalNumberOfDonors');
   // }
 }
-
-// export const charityUtils = {
-//   checkCharityIsExist,
-//   checkCharityIsExistById,
-//   logout,
-//   changeCharityPasswordWithMailAlert,
-//   getCharity,
-//   checkIsEmailDuplicated,
-//   verifyCharityAccount,
-//   resetSentToken,
-//   setTokenToCharity,
-//   changeCharityEmailWithMailAlert,
-//   editCharityProfileAddress,
-//   addCharityProfileAddress,
-//   replaceProfileImage,
-//   addDocs,
-//   getChangedPaymentMethod,
-//   editBankAccount,
-//   editFawryAccount,
-//   editVodafoneAccount,
-//   createBankAccount,
-//   createFawryAccount,
-//   createVodafoneAccount,
-//   checkCharityVerification,
-//   updateNumberOfCases,
-//   getTotalNumberOfDonorsAndDonationsIncome,
-// };

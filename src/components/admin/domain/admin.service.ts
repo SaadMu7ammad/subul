@@ -21,8 +21,6 @@ import { QueryObject } from '../data-access/interfaces/admin.interface';
 import { ADMIN } from './admin.class';
 import { adminUtilsClass } from './admin.utils';
 
-// import { setupMailSender } from '../../../utils/mailer';
-
 export class adminServiceClass implements adminServiceSkeleton {
   adminInstance: ADMIN;
   adminUtilsInstance: adminUtilsClass;
@@ -253,8 +251,6 @@ export class adminServiceClass implements adminServiceSkeleton {
   }
 
   async confirmCharity(req: Request, id: string): Promise<ConfirmPendingCharity> {
-    // const charity: AllPendingRequestsCharitiesResponse =
-    //   await getAllOrOnePendingRequestsCharities(id);
     const charity = await this.getAllOrOnePendingRequestsCharities(req, id);
     // { allPendingCharities: allPendingCharities }
 
@@ -299,13 +295,3 @@ export class adminServiceClass implements adminServiceSkeleton {
     };
   }
 }
-// export const adminService = {
-//   getAllChariteis,
-//   getAllOrOnePendingRequestsCharities,
-//   confirmCharity,
-//   rejectCharity,
-//   rejectPaymentAccountRequestForConfirmedCharities,
-//   confirmPaymentAccountRequestForConfirmedCharities,
-//   getAllRequestsPaymentMethodsForConfirmedCharities,
-//   getPendingPaymentRequestsForConfirmedCharityById,
-// };

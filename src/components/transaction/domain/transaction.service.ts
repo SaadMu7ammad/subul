@@ -201,8 +201,3 @@ export class transactionServiceClass implements transactionServiceSkeleton {
     return { allTransactions: allTransactionsPromised ? allTransactionsPromised : [] };
   }
 }
-// export const transactionService = {
-//   preCreateTransaction,
-//   getAllTransactions,
-//   updateCaseInfo,
-// };

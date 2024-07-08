@@ -135,16 +135,3 @@ export class userUtilsClass implements userUtilsSkeleton {
     user = await user.save();
   }
 }
-// export const userUtilsClass:userUtils = new userUtils();
-// = {
-//   checkUserIsExist,
-//   checkUserIsExistById,
-//   logout,
-//   //   getUser,
-//   checkIsEmailDuplicated,
-//   verifyUserAccount,
-//   resetSentToken,
-//   changeUserEmailWithMailAlert,
-//   deleteCaseFromUserContributionsArray,
-//   checkIfCaseBelongsToUserContributions,
-// };

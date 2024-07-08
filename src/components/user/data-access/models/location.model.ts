@@ -47,7 +47,6 @@ const locationSchema = new mongoose.Schema(
   { _id: false }
 );
 
-// export type locationSchema = InferSchemaType<typeof locationSchema>;
 export type UserLocation = InferSchemaType<typeof locationSchema>;
 
 export default locationSchema;

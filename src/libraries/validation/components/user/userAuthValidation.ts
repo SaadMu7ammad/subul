@@ -19,14 +19,6 @@ const registerUserValidation = (req: Request): ValidationChain[] => [
   passwordValidation(req),
 ];
 
-// const registerUserValidation = [
-//   ...nameUserValidation,
-//   emailValidation,
-//   phoneValidation,
-//   genderValidtion,
-//   governorateValidation,
-//   passwordValidation,
-// ];
 const loginUserValidation = (req: Request): ValidationChain[] => [
   emailValidation(req),
   passwordValidation(req),

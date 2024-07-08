@@ -342,18 +342,6 @@ const phoneValidation = (req: Request) =>
     .isLength({ min: 11, max: 11 })
     .withMessage(req.t('errors.invalidPhoneNumber'));
 
-// const _bankAccountValidation = bankAccountValidation.map(
-//   (validator) => validator.optional() //.not().isEmpty()
-// );
-// const paymentValidation = [
-//   ..._bankAccountValidation,
-//   vodafoneCashValidation.optional(),
-//   fawryValidation.optional(),
-// ];
-// const paymentValidation = validate(function (value) {
-// value.iban()
-// },'Validation input bank not completed')
-
 //for changing password
 const changePasswordCharityValidation = (req: Request): ValidationChain => passwordValidation(req);
 

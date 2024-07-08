@@ -181,15 +181,3 @@ export class charityUseCaseClass implements charityUseCaseSkeleton {
     };
   }
 }
-// export const charityUseCase = {
-//   activateCharityAccount,
-//   requestResetPassword,
-//   confirmResetPassword,
-//   logout,
-//   changePassword,
-//   changeProfileImage,
-//   sendDocs,
-//   editCharityProfile,
-//   showCharityProfile,
-//   requestEditCharityPayments,
-// };

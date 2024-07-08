@@ -189,14 +189,3 @@ export class adminUseCaseClass implements adminUseCaseSkeleton {
     };
   }
 }
-// export const adminUseCase = {
-//   getAllCharities,
-//   getAllPendingRequestsCharities,
-//   getPendingRequestCharityById,
-//   confirmCharity,
-//   rejectCharity,
-//   getAllRequestsPaymentMethodsForConfirmedCharities,
-//   getPendingPaymentRequestsForConfirmedCharityById,
-//   confirmPaymentAccountRequestForConfirmedCharities,
-//   rejectPaymentAccountRequestForConfirmedCharities,
-// };

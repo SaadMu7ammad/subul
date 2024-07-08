@@ -45,12 +45,6 @@ export class charityServiceClass implements charityServiceSkeleton {
     const charityResponse = await this.charityUtils.checkCharityIsExist(reqBody.email);
     const token = await generateResetTokenTemp();
     await this.charityUtils.setTokenToCharity(charityResponse.charity, token);
-    // await setupMailSender(
-    //   charityResponse.charity.email,
-    //   'reset alert',
-    //   'go to that link to reset the password (www.dummy.com) ' +
-    //     `<h3>use that token to confirm the new password</h3> <h2>${token}</h2>`
-    // );
     await sendResetPasswordEmail(reqBody.email, token);
 
     return {
@@ -322,15 +316,3 @@ export class charityServiceClass implements charityServiceSkeleton {
     }
   }
 }
-// export const charityService = {
-//   requestResetPassword,
-//   confirmResetPassword,
-//   changePassword,
-//   activateAccount,
-//   logoutCharity,
-//   getCharityProfileData,
-//   editCharityProfile,
-//   changeProfileImage,
-//   sendDocs,
-//   requestEditCharityPayments,
-// };

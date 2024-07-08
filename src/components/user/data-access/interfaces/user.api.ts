@@ -1,9 +1,7 @@
 import { IUser, IUserModified } from '.';
 
 export type IUserResponse = {
-  // emailEdited?: boolean;
   emailAlert?: boolean;
-  // user: Partial<IUserDocument>;
   user: Partial<IUser>;
   message?: string;
   token?: string;

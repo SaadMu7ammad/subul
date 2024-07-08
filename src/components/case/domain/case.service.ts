@@ -175,11 +175,3 @@ export class caseServiceClass implements caseServiceSkeleton {
     };
   }
 }
-// export const caseService = {
-//   addCase,
-//   getAllCases,
-//   getCaseById,
-//   deleteCase,
-//   editCase,
-//   getAllCasesForUser,
-// };

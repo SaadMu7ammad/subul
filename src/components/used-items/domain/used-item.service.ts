@@ -224,15 +224,3 @@ export class usedItemServiceClass implements usedItemServiceSkeleton {
     };
   }
 }
-// export const usedItemService = {
-//   addUsedItem,
-//   findAllUsedItems,
-//   bookUsedItem,
-//   cancelBookingOfUsedItem,
-//   ConfirmBookingReceipt,
-//   deleteUsedItem,
-//   getUsedItem,
-//   updateUsedItem,
-//   addUsedItemImages,
-//   deleteUsedItemImage,
-// };

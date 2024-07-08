@@ -191,15 +191,3 @@ export class usedItemUseCaseClass implements usedItemUseCaseSkeleton {
     };
   }
 }
-// export const usedItemUseCase = {
-//   addUsedItem,
-//   deleteUsedItem,
-//   getUsedItem,
-//   updateUsedItem,
-//   addUsedItemImages,
-//   deleteUsedItemImage,
-//   getAllUsedItems,
-//   bookUsedItem,
-//   cancelBookingOfUsedItem,
-//   ConfirmBookingReceipt,
-// };

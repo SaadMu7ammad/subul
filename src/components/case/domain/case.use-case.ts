@@ -103,11 +103,3 @@ export class caseUseCaseClass implements caseUseCaseSkeleton {
     };
   }
 }
-// export const caseUseCase = {
-//   addCase,
-//   getAllCases,
-//   getCaseById,
-//   deleteCase,
-//   editCase,
-//   getAllCasesForUser,
-// };

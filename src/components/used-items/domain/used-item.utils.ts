@@ -219,21 +219,3 @@ export class usedItemUtilsClass implements usedItemUtilsSkeleton {
     usedItem.depopulate('charity');
   }
 }
-// export const usedItemUtils = {
-// addUsedItem,
-// getUsedItem,
-// validateIdParam,
-// checkIfUsedItemBelongsToUser,
-// deleteUsedItem,
-// updateUsedItem,
-// addUsedItemImages,
-// deleteUsedItemImage,
-// removeUndefinedAttributesFromUsedItemData,
-// findAllUsedItems,
-// bookUsedItem,
-// cancelBookingOfUsedItem,
-// ConfirmBookingReceipt,
-// isUsedItemBooked,
-// createBookItemData,
-// };
-//

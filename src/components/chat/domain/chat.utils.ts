@@ -53,9 +53,3 @@ export class chatiUtilsClass implements chatUtilSkeleton {
     return notifications.length > 0;
   }
 }
-// export const chatUtils = {
-//   createConversationOrGetTheExist,
-//   createMessage,
-//   addMsgIDInMsgsArrayOfConversation,
-//   getConversation,
-// };
