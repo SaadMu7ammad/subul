@@ -206,17 +206,3 @@ export class caseUtilsClass implements caseUtilsSkeleton {
     return deleteOldImgs.bind(this, 'caseCoverImages', oldCoverImage);
   }
 }
-// export const caseUtils = {
-//   createCase,
-//   getSortObj,
-//   getFilterObj,
-//   getCasesPagination,
-//   getAllCases,
-//   getCaseByIdFromDB,
-//   checkIfCaseBelongsToCharity,
-//   deleteCaseFromCharityCasesArray,
-//   deleteCaseFromDB,
-//   editCase,
-//   replaceCaseImg,
-//   getAllCasesForUser,
-// };

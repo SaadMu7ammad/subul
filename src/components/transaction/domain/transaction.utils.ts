@@ -216,17 +216,3 @@ export class transactionUtilsClass implements transactionUtilsSkeleton {
     return transaction;
   }
 }
-// export const transactionUtils = {
-//   checkPreCreateTransaction,
-//   checkCaseIsValidToDonate,
-//   checkCharityIsValidToDonate,
-//   donationAmountAssertion,
-//   updateTransactionAfterRefund,
-//   updateCaseAfterRefund,
-//   checkIsLastDonation,
-//   updateCaseAfterDonation,
-//   addTransactionIdToUserTransactionIds,
-//   confirmSavingCase,
-//   getAllTransactionsPromised,
-//   refundUtility,
-// };

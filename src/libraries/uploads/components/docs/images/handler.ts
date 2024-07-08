@@ -30,11 +30,6 @@ type uploadDocsSchema =
   | 'vodafoneDocs';
 type charityDocsSchema = 'charityDocs1' | 'charityDocs2' | 'charityDocs3' | 'charityDocs4';
 
-// type paymentDocsSchema =
-//     'bankDocs' |
-//     'fawryDocs' |
-// 'vodafoneDocs'
-
 const uploadCharityDocsIterable = [
   'charityDocs1',
   'charityDocs2',
@@ -106,16 +101,6 @@ function checkFilesCharityDocs(key: charityDocsSchema, file: charityDocsSchema) 
     throw new BadRequestError('not completed files');
   }
 }
-// function checkFilesPaymentMethod(file: any) {
-
-//     if (file && file.length > 0) {
-//         return file;
-//     } else {
-//         throw new BadRequestError('not uploaded all docs')
-
-//     }
-
-// }
 
 const resizeDoc = async (req: Request, res: Response, next: NextFunction) => {
   if (

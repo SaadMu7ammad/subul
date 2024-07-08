@@ -6,7 +6,6 @@ import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 
 const multerStorage = multer.memoryStorage();
-// type MulterFileFilter = (req: Request, file: Express.Multer.File, cb: (error: Error | null, acceptFile?: boolean) => void) => void;
 
 const multerFilterOnlyImgs = (
   req: Request,

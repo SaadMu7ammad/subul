@@ -39,14 +39,6 @@ export class authCharityUtilsClass implements authCharityUtilsSkeleton {
     }
     return false;
   }
-  // const checkIsEmailDuplicated = async (email:string) => {
-  //   const isDuplicatedEmail = await authCharityRepository.findCharity(email);
-  //   if (isDuplicatedEmail) throw new BadRequestError('Email is already taken!');
-  // };
-  // const resetSentToken = async (charity) => {
-  //   charity.verificationCode = null;
-  //   await charity.save();
-  // };
   async setTokenToCharity(charity: ICharity, token: string): Promise<void> {
     charity.verificationCode = token;
     await charity.save();
@@ -69,9 +61,3 @@ export class authCharityUtilsClass implements authCharityUtilsSkeleton {
     return { charity: newCharity };
   }
 }
-// export const authCharityUtils = {
-//   checkCharityPassword,
-//   checkCharityIsVerified,
-//   createCharity,
-//   setTokenToCharity,
-// };

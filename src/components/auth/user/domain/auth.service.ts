@@ -56,14 +56,6 @@ export class authUserServiceClass implements authUserServiceSkeleton {
     }
   }
 
-  // export interface UserObject {
-  //   _id: mongoose.Types.ObjectId;
-  //   name: {
-  //     firstName: string;
-  //     lastName: string;
-  //   };
-  //   email: string;
-  // }
   async registerUser(reqBody: RegisterUserInputData): Promise<{
     user: UserObject;
   }> {
@@ -89,7 +81,3 @@ export class authUserServiceClass implements authUserServiceSkeleton {
     };
   }
 }
-// export const authUserService = {
-//   authUser,
-//   registerUser,
-// };

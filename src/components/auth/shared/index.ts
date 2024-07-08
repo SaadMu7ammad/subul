@@ -9,16 +9,12 @@ import { Decoded } from './interface';
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // const req = _req as AuthedRequest;
-
     if (req.headers && req.headers.cookie) {
-      // throw new customError.UnauthenticatedError('no token found');
       const authHeader = req.headers.cookie;
       const jwtToken = authHeader.split('=')[1];
       if (!jwtToken) {
         throw new UnauthenticatedError('no token found');
       }
-      // const authCookie = req.headers.jwt; //according to cookie parser
       const decoded = jwt.verify(
         jwtToken,
         configurationProvider.getValue('hashing.jwtSecret')

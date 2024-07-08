@@ -56,7 +56,6 @@ export class authCharityServiceClass implements authCharityServiceSkeleton {
 
   async registerCharity(reqBody: CharityData): Promise<{ charity: CharityObject }> {
     const newCreatedCharity = await this.authCharityUtilsInstance.createCharity(reqBody);
-    // generateToken(res, newCreatedCharity.charity._id, 'charity');
     try {
       await setupMailSender(
         newCreatedCharity.charity.email,
@@ -79,7 +78,3 @@ export class authCharityServiceClass implements authCharityServiceSkeleton {
     };
   }
 }
-// export const authCharityService = {
-//   authCharity,
-//   registerCharity,
-// };

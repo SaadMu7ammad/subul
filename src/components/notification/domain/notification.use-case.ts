@@ -88,8 +88,3 @@ export class notificationUseCaseClass implements notificationUseCaseSkeleton {
     };
   }
 }
-// export const notificationUseCase = {
-//   getAllNotifications,
-//   markNotificationAsRead,
-//   deleteNotification,
-// };

@@ -14,11 +14,6 @@ export interface CharitiesAccounts {
   fawryRequests: CharitiesAccountsByAggregation[];
   vodafoneCashRequests: CharitiesAccountsByAggregation[];
 }
-// export interface CharitiesAccountsByAggregation {
-//   _id: mongoose.Types.ObjectId;
-//   name: string;
-//   paymentMethods: ICharityPaymentMethod;
-// }
 
 export interface ConfirmedCharities extends PendingCharities {}
 
@@ -33,10 +28,6 @@ export interface PendingRequestCharityResponse {
   pendingCharity: PendingCharities[];
 }
 
-// type PickMany<T, K extends keyof T> = {
-//   [P in K]: T[P];
-// };
-
 export type AllCharities = Pick<ICharity, 'name' | 'email' | '_id' | 'isConfirmed' | 'isPending'>;
 
 export type PendingCharities = HydratedDocument<
@@ -45,11 +36,6 @@ export type PendingCharities = HydratedDocument<
     'name' | 'email' | '_id' | 'charityDocs' | 'paymentMethods' | 'isConfirmed' | 'isPending'
   >
 >;
-
-// export interface PendingToConfirmedCharity extends PendingCharities {
-//   isPending: ICharity['isPending'];
-//   isConfirmed: ICharity['isConfirmed'];
-// }
 
 export type DataForForConfirmedCharity = Pick<ICharity, '_id' | 'paymentMethods'>;
 export interface CharitiesAccountsByAggregation extends DataForForConfirmedCharity {

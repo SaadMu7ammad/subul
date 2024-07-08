@@ -266,14 +266,3 @@ class userServiceClass implements userServiceSkeleton {
   }
 }
 export const userService = new userServiceClass();
-// {
-// resetUser,
-// confirmReset,
-// changePassword,
-// activateAccount,
-// logoutUser,
-// getUserProfileData,
-// editUserProfile,
-// bloodContribution,
-// requestFundraisingCampaign,
-// };

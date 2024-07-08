@@ -20,12 +20,4 @@ const reqEditPaymentMethodsValidation = (req: Request): ValidationChain[] => [
   paymentIdValidation(req).optional(),
 ];
 
-// editCharityProfileValidation.forEach(validator => {
-//   validator.optional();
-// });
-
-// reqEditPaymentMethodsValidation.forEach(validator => {
-//   validator.optional();
-// });
-
 export { editCharityProfileValidation, reqEditPaymentMethodsValidation };
