@@ -25,6 +25,7 @@ directories.forEach(dir => {
   testArgs.push(dir);
 });
 testArgs.push('--runInBand');
+testArgs.push('--passWithNoTests');
 
 // Run the Jest command only if there are directories to test
 if (directories.size > 0) {
