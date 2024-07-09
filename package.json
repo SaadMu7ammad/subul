@@ -45,6 +45,7 @@
     "node-html-parser": "^6.1.13",
     "nodemailer": "^6.9.13",
     "sharp": "^0.33.2",
+    "socket.io": "^4.7.5",
     "tsconfig-paths": "^4.2.0",
     "uuid": "^9.0.1",
     "winston": "^3.13.0"
@@ -89,5 +90,9 @@
   "lint-staged": {
     "*.{ts,css,md}": "prettier --write"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610",
+  "optionalDependencies": {
+    "bufferutil": "^4.0.8",
+    "utf-8-validate": "^6.0.4"
+  }
 }

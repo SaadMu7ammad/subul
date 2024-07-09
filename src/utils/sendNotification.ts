@@ -1,4 +1,5 @@
 import { USER } from '@components/user/domain/user.class';
+import { io } from '@src/server';
 import mongoose from 'mongoose';
 
 import {
@@ -39,6 +40,8 @@ export class notificationManager {
     }
 
     const notification = await this.#notificationRepository.createNotification(notificationData);
+
+    io.to(`${receiverType}-${receiverId.toString()}`).emit('newNotification', notification);
 
     return notification;
   }
