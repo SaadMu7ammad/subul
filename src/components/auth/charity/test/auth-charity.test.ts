@@ -4,15 +4,15 @@ import {
   DUMMY_CHARITY,
   INVALID_PASSWORD,
   NON_EXISTING_EMAIL,
-  authenticatedCharityTestingEnvironment,
   clearCharityDatabase,
   getDummyCharityObject,
+  unauthenticatedCharityTestingEnvironment,
 } from '@utils/test-helpers';
 import { AxiosInstance } from 'axios';
 
 let axiosAPIClient: AxiosInstance;
 
-const env = authenticatedCharityTestingEnvironment;
+const env = unauthenticatedCharityTestingEnvironment;
 
 beforeAll(async () => {
   ({ axiosAPIClient } = await env.setup());
