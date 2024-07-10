@@ -1,10 +1,22 @@
-# subul
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<p align="center">
+<img width="100" height="100" alt="EverShop Logo" src="https://subul.me/images/Logo.png"/>
+</p>
+<p align="center">
+  <h1 align="center">Subul API</h1>
+</p>
+<p align="center">
+  <a href="https://subul.me">
+    <img src="https://img.shields.io/badge/website-91683a" alt="Discord">
+  </a>
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/badge/License-MIT-343d40.svg" alt="License">
+  </a>
+</p>
 
-charity project with node js
+## Introduction
 
-## overview
-
-subul website is a platform that allow users to make donation in easy way,not just that but with detailed cases to ensure where your money goes.
+Subul is a MERN Stack Charity Platform, where users can donate different Charities. This repository contains the backend API for the website.
 
 # db
 
@@ -31,3 +43,25 @@ Email Services
 
 Deployment
 cyclic: A cloud platform for hosting and deploying web applications.
+
+## Table of contents
+
+<!-- To update run: npx markdown-toc --maxdepth 2 -i README.md -->
+
+<!-- toc -->
+
+- [Installation](#installation)
+- [Upgrade from v0.4](#upgrade-from-v04)
+- [Example](#example)
+- [More examples](#more-examples)
+- [Custom blocks](#custom-blocks)
+- [Available webpack blocks](#available-webpack-blocks)
+- [Helpers](#helpers)
+- [Shorthand setters](#shorthand-setters)
+- [Third-party blocks](#third-party-blocks)
+- [Design principles](#design-principles)
+- [FAQ](#faq)
+- [Like what you see?](#like-what-you-see)
+- [License](#license)
+
+<!-- tocstop -->
