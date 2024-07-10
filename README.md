@@ -104,3 +104,5 @@ We are using a module structure for our project, where each module has its own f
 ### Request Journey
 
 The request journey starts from the entry point, where the request is validated and passed to the domain layer. The domain layer contains the business logic for the request, where the data is processed and passed to the data-access layer. The data-access layer contains the database logic for the request, where the data is fetched or updated in the database.
+
+![Request Journey](https://github.com/SaadMu7ammad/subul/assets/130322757/20e5d098-f2a1-48cc-835a-311b41af1bd0)
