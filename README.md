@@ -107,4 +107,32 @@ The request journey starts from the entry point, where the request is validated 
 
 ![Request Journey](https://github.com/SaadMu7ammad/subul/assets/130322757/fc10bf72-e229-45b1-b818-50febdc7ac76)
 
+## Installation
 
+### Requirements
+
+- Node.js & Npm
+- git
+
+### Environment Variables
+
+Fill in [exmaple.env](https://github.com/SaadMu7ammad/subul/blob/main/example.env) with your credentials and rename it to `.env`.
+
+### Steps
+
+```bash
+git clone https://github.com/SaadMu7ammad/subul.git
+cd subul
+npm i
+npm run server
+```
+
+### Run Tests
+
+```bash
+npm run test
+```
+
+## License
+
+[MIT License](https://github.com/SaadMu7ammad/subul/blob/main/LICENSE)
