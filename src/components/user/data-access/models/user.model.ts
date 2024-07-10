@@ -30,17 +30,6 @@ const userSchema = new Schema(
     // If you want the entire name object to be required, meaning both firstName and lastName must be provided,
     // you can use a custom validator.
 
-    // name: {
-    //   firstName: {
-    //     type: String,
-    //     required: [true, 'First name is required'],
-    //   },
-    //   lastName: {
-    //     type: String,
-    //     required: [true, 'Last name is required'],
-    //   },
-    // },
-
     email: {
       type: String,
       required: [true, 'Email is required'],
@@ -70,10 +59,6 @@ const userSchema = new Schema(
       type: locationSchema,
       // required: true, // 👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️👁️ userLocation shouldn't be required.
     },
-    // profileImage: {
-    //     type: String,
-    //
-    // },
     gender: {
       type: String,
       enum: ['male', 'female'],
@@ -87,19 +72,6 @@ const userSchema = new Schema(
       default: null,
       // default: '',   LOOK HERE 👁️👁️👁️
     },
-    // emailVerification: {
-    //   required: true, // 👁️👁️
-    //   isVerified: {
-    //     type: Boolean,
-    //     default: false,
-    //   },
-    //   verificationDate: {
-    //     // type: Date,
-    //     // default: null,
-    //     type: String,
-    //     default: '',
-    //   },
-    // },
 
     // If you want to make the emailVerification object itself required, you’ll need to use a custom validator as well.
     emailVerification: {
@@ -112,21 +84,6 @@ const userSchema = new Schema(
         default: '',
       },
     },
-    // Another way 👇👇
-    // emailVerification: {
-    //   // This will satisfy TypeScript’s strict null checks and prevent the error.
-    //   default: () => ({}), // Set a default empty object for emailVerification
-    //   type: {
-    //     isVerified: {
-    //       type: Boolean,
-    //       default: false,
-    //     },
-    //     verificationDate: {
-    //       type: String,
-    //       default: '',
-    //     },
-    //   },
-    // },
 
     phoneVerification: {
       isVerified: {
@@ -159,32 +116,12 @@ userSchema.pre('save', async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
   logger.warn('password has been changed');
 });
-// userSchema.pre('findOneAndUpdate', async function (next) {
-//     // the update operation object is stored within this.getUpdate()
-//     console.log('userSchemaMiddleWare')
-//     console.log(this.getUpdate())
-//     // console.log( this.getUpdate().$set.password);
-//     const passwordToUpdate = this.getUpdate().$set.password;
 
-//     if (passwordToUpdate) {
-//       const salt = await bcrypt.genSalt(configurationProvider.getValue('hashing.salt'));
-//       this.getUpdate().$set.password = await bcrypt.hash(passwordToUpdate, salt);
-//     }
-
-// });
-// export type User = InferSchemaType<typeof userSchema>;
 declare module '../interfaces/' {
   export type IUser = HydratedDocument<InferSchemaType<typeof userSchema>>;
 
   export type PlainUser = Omit<InferSchemaType<typeof userSchema>, 'createdAt' | 'updatedAt'>;
-  // export type pureUser = { [k in keyof User as User[k] extends never?never:k ]: k extends keyof mongoose.Document|mongoose.Schema ?never: User[k] }
 }
-// InferSchemaType will determine the type as follows:
-// type User = {
-//   name: string;
-//   email: string;
-//   avatar?: string;
-// }
 
 // `UserModel` will have `name: string`, etc..
 const UserModel = mongoose.model<IUser>('Users', userSchema);

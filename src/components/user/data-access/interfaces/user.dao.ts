@@ -19,8 +19,6 @@ import {
   getUserProfileDataResponse,
 } from '.';
 
-// import { IUser, IUserDocument } from './user.interface';
-
 export interface UserDao {
   findUser(email: string): Promise<IUser | null>;
   findUserById(id: string): Promise<IUser | null>;

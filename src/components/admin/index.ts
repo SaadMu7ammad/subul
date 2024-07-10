@@ -1,10 +1,7 @@
 import { UnauthenticatedError } from '@libs/errors/components/index';
 import { NextFunction, Request, Response } from 'express';
 
-// import { AuthedRequest } from '../auth/user/data-access/auth.interface';
-
 const isAdmin = (req: Request, res: Response, next: NextFunction) => {
-  // const req = _req as AuthedRequest;
   // console.log(req.t('errors.notAdmin', { lng: 'en' }));
   if (!res.locals.charity) {
     //no isAdmin attribure in req.charity to prevent error of undefined isAdmin

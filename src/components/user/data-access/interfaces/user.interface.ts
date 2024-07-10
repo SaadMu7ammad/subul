@@ -4,8 +4,6 @@ export type IUserModified = RecursivePartial<
   Pick<IUser, 'name' | 'email' | 'userLocation' | 'gender' | 'phone'>
 >;
 
-// export type IUserDocument = IUser & Document;
-
 export type EditProfile = {
   emailAlert: boolean;
   user: IUserModified;

@@ -16,7 +16,6 @@ import { adminUtilsSkeleton } from '../data-access/interfaces/admin.dao';
 import { QueryObject } from '../data-access/interfaces/admin.interface';
 import { ADMIN } from './admin.class';
 
-// import { QueryObject } from './admin.service';
 export class adminUtilsClass implements adminUtilsSkeleton {
   notificationInstance: notificationManager;
   adminInstance: ADMIN;
@@ -61,11 +60,6 @@ export class adminUtilsClass implements adminUtilsSkeleton {
   async rejectingCharity(req: Request, charity: PendingCharities) {
     charity.isPending = false;
     charity.isConfirmed = false;
-    // console.log('charity', charity); // { charityDocs:{ docs1: []... }, _id, email, name, paymentMethod: {} }
-    // for (let i = 1; i <= 4; ++i) {
-    //   deleteOldImgs('charityDocs', charity.charityDocs['docs' + i]);
-    // }
-    // charity.charityDocs = {};
 
     // U can't use the indexing operation with the string 'docs' + i on it without ensuring it's defined.
     if (charity.charityDocs) {
@@ -101,16 +95,8 @@ export class adminUtilsClass implements adminUtilsSkeleton {
 
         charity.paymentMethods[`${methodKey}`].forEach((acc: AccType) => {
           if (docs in acc) {
-            // console.log(docs); // bankDocs
             deleteOldImgs('charityDocs', docs);
           }
-          // console.log(acc[docs]); // [] of string
-          // const docsValue: string | string[] =
-          //   acc[docs as keyof Partial<ICharityPaymentMethodDocument>];
-          // // if (typeof docsValue === 'string' || Array.isArray(docsValue)) {
-          // // deleteOldImgs('charityDocs', docsValue);
-          // // }
-          // deleteOldImgs('charityDocs', docsValue);
         });
         charity.paymentMethods[`${methodKey}`] = [];
       }
@@ -167,22 +153,10 @@ export class adminUtilsClass implements adminUtilsSkeleton {
   async confirmingPaymentAccount(
     req: Request,
     charity: PendingCharities,
-    // paymentMethod: string, // Allows any string value, which could include invalid keys
     paymentMethod: keyof ICharityDocs['paymentMethods'], // Restrict the possible values for the paymentMethod
     idx: number
   ): Promise<void> {
     if (!charity.paymentMethods) throw new NotFoundError('Not found any payment methods');
-
-    // if (charity.paymentMethods[paymentMethod][idx].enable === false) {
-    // charity.paymentMethods[paymentMethod][idx].enable = true;
-    // } else {
-    //   throw new BadRequestError('Already this payment account is enabled');
-    // }
-
-    // type PaymentMethod =
-    //   | CharityPaymentMethodBankAccount
-    //   | CharityPaymentMethodFawry
-    //   | CharityPaymentMethodVodafoneCash;
 
     const paymentMethodData: AccType[] = charity.paymentMethods[`${paymentMethod}`]; // [ { Data } ]
 
@@ -214,11 +188,6 @@ export class adminUtilsClass implements adminUtilsSkeleton {
     idx: number
   ): Promise<void> {
     if (!charity.paymentMethods) throw new NotFoundError('Not found any payment methods');
-
-    // type PaymentMethod =
-    //   | CharityPaymentMethodBankAccount
-    //   | CharityPaymentMethodFawry
-    //   | CharityPaymentMethodVodafoneCash;
 
     const paymentMethodData: AccType[] = charity.paymentMethods[`${paymentMethod}`]; // [ { Data } ]
 
@@ -264,30 +233,6 @@ export class adminUtilsClass implements adminUtilsSkeleton {
       req.t('notifications.paymentAccountRejected'),
       3 * 24 * 60 * 60 * 1000
     );
-
-    // if (charity.paymentMethods[paymentMethod][idx].enable === true)
-    //   throw new BadRequestError('Already this payment account is enabled');
-
-    // let urlOldImage: string | null = null;
-
-    // if (paymentMethod === 'bankAccount') {
-    //   urlOldImage = charity.paymentMethods[paymentMethod][idx].bankDocs;
-    // } else if (paymentMethod === 'vodafoneCash') {
-    //   urlOldImage = charity.paymentMethods[paymentMethod][idx].vodafoneCashDocs;
-    // } else if (paymentMethod === 'fawry') {
-    //   urlOldImage = charity.paymentMethods[paymentMethod][idx].fawryDocs;
-    // }
-
-    // charity.paymentMethods[paymentMethod].splice(idx, 1); //delete the account
-    // // url: 'http://localhost:5000/charityDocs/bankDocs-name.jpeg';
-    // // const url = path.join('./uploads/charityDocs', charity.paymentMethods[paymentMethod][idx].fawryDocs[0])
-    // if (urlOldImage) {
-    //   deleteOldImgs('charityDocs', urlOldImage);
-    // } else {
-    //   throw new BadRequestError('No docs found for that account');
-    // }
-
-    // await charity.save();
   }
   async resetRegisterOperation(entity: ICharity | IUser): Promise<boolean> {
     if (entity && typeof entity === 'object' && 'cases' in entity && 'cases' in entity) {
@@ -302,14 +247,3 @@ export class adminUtilsClass implements adminUtilsSkeleton {
     }
   }
 }
-
-// export const adminUtils = {
-//   getAllPendingPaymentMethodsRequestsForConfirmedCharity,
-//   confirmingCharity,
-//   rejectingCharity,
-//   checkPaymentMethodAvailability,
-//   getConfirmedCharities,
-//   confirmingPaymentAccount,
-//   rejectingPaymentAccount,
-//   resetRegisterOperation,
-// };

@@ -26,7 +26,6 @@ export class authCharityUseCase implements authCharityUseCaseSkeleton {
     _res: Response,
     _next: NextFunction
   ): Promise<registerCharityResponse> {
-    // // const data: CharityData = req.body as CharityData;
     const {
       email,
       password,
@@ -52,18 +51,6 @@ export class authCharityUseCase implements authCharityUseCaseSkeleton {
       charityInfo,
       image: firstImage !== undefined ? firstImage : '', // [0]
     };
-    // const data: CharityData = {
-    //   email: req.body.email,
-    //   password: req.body.password,
-    //   name: req.body.name,
-    //   phone: req.body.phone,
-    //   contactInfo: req.body.contactInfo,
-    //   description: req.body.description,
-    //   currency: req.body.currency,
-    //   location: req.body.location,
-    //   charityInfo: req.body.charityInfo,
-    //   image: req.body.image[0],
-    // };
 
     const responseData = await this.authCharityServiceInstance.registerCharity(data);
 
@@ -128,7 +115,3 @@ export class authCharityUseCase implements authCharityUseCaseSkeleton {
     return returnedObj;
   }
 }
-// export const authUseCase = {
-//   registerCharity,
-//   authCharity,
-// };

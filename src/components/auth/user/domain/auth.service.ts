@@ -118,8 +118,3 @@ export class authUserServiceClass implements authUserServiceSkeleton {
     };
   }
 }
-
-// export const authUserService = {
-//   authUser,
-//   registerUser,
-// };

@@ -101,15 +101,6 @@ class usedItemRepository implements UsedItemDao {
 
     return usedItem;
   }
-  // async findBooked(bookItemData: BookItemRequest) {
-  //   const usedItem = await UsedItem.findOne({
-  //     _id: bookItemData.itemId,
-  //     booked: true,
-  //     charity: bookItemData.charity,
-  //   });
-
-  //   return usedItem;
-  // }
 }
 
 export class USED_ITEM {

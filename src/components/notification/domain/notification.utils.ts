@@ -133,14 +133,3 @@ export class notificationUtilsClass implements notificationUtilsSkeleton {
     await this.notificationRepository.deleteOutdatedNotifications(receiverType, receiverId);
   }
 }
-// export const notificationUtils = {
-//   getAllNotifications,
-//   markNotificationAsRead,
-//   deleteNotification,
-//   getSortObj,
-//   getPaginationObj,
-//   getFilterObj,
-//   getNotification,
-//   validateIdParam,
-//   deleteOutdatedNotifications,
-// };

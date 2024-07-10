@@ -164,19 +164,6 @@ class userUseCaseClass implements userUseCaseSkeleton {
   ): Promise<EditUserProfileResponse> {
     const editUserProfileInputsData: IUserModified = req.body;
 
-    //❌ Code below causes an error: `Cannot read prop of undefined`
-    // const editUserProfileInputsData: IUserModifed = {
-    //   //for TS
-    //   name: {
-    //     firstName: req.body.name.firstName,
-    //     lastName: req.body.name.lastName,
-    //   },
-    //   email: req.body.email,
-    //   userLocation: req.body.userLocation.governorate,
-    //   gender: req.body.gender,
-    //   phone: req.body.phone,
-    // };
-
     const storedUser: IUser = res.locals.user;
 
     const responseData = await userService.editUserProfile(editUserProfileInputsData, storedUser);
@@ -202,14 +189,3 @@ class userUseCaseClass implements userUseCaseSkeleton {
   }
 }
 export const userUseCase = new userUseCaseClass();
-// {
-// logoutUser,
-// resetUser,
-// confirmReset,
-// changePassword,
-// activateAccount,
-// editUserProfile,
-// getUserProfileData,
-// bloodContribution,
-// requestFundraisingCampaign,
-// };

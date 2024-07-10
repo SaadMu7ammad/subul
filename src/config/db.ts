@@ -17,7 +17,6 @@ const connectDB = async () => {
 
     logger.info(`mongoDB: connected successfully to ${nodeEnv} DB`);
   } catch (err) {
-    // throw new BadRequestError(err.message);
     logger.info(`DataBase Error: ${err}`);
     process.exit(1);
   }

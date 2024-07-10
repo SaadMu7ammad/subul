@@ -9,21 +9,6 @@ const paymentMethodSchema = new Schema({
   mobileWallet: {
     number: String,
   },
-  // name: {
-  //   type: String,
-  //   required: true,
-  // },
-  // bankAccount: {
-  //   // accNumber: String,
-  //   // iban: String,
-  //   // swiftCode: String,
-  // },
-  // fawry: {
-  //   number: String,
-  // },
-  // vodafoneCash: {
-  //   number: String,
-  // },
 });
 
 const transactionSchema = new Schema(

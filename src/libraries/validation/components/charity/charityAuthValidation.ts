@@ -22,9 +22,6 @@ const registerCharityValidation = (req: Request): ValidationChain[] => [
   currencyValidation(req),
   governorateValidation(req),
   ...charityInfoValidation(req),
-  // ...bankAccountValidation,
-  // vodafoneCashValidation,
-  // fawryValidation,
   phoneValidation(req),
 ];
 const loginCharityValidation = (req: Request): ValidationChain[] => [

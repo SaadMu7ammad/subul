@@ -5,8 +5,6 @@ import { CaseDao, FilterObj, ICase, SortObj } from '../data-access/interfaces';
 import Case from '../data-access/models/case.model';
 import { caseUtilsClass } from './case.utils';
 
-// import Case from '../data-access/models/case.model';
-
 class CaseRepository implements CaseDao {
   charityUtilsInstance: charityUtilsClass;
 

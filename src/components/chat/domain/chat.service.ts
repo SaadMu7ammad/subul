@@ -73,7 +73,3 @@ export class chatServiceClass implements chatServiceSkeleton {
     return conversation;
   }
 }
-// export const chatService = {
-//   sendMessage,
-//   getConversation,
-// };

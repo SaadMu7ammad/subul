@@ -24,7 +24,6 @@ const saveImg = async (
         destinationFolder,
         fileName.split('.jpeg')[0] as string
       );
-      // console.log({ imgUrl: uploadResult.secure_url });
     }
   } else {
     throw new NotFoundError('no destination found...try again');

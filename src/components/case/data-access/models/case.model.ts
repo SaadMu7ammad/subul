@@ -137,9 +137,6 @@ const caseSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-// caseSchema.virtual('charityName.name').get(function () {
-//   return this.charityName ? this.charityName.name : '';
-// });
 
 declare module '../interfaces/case.interface' {
   export type ICase = HydratedDocument<InferSchemaType<typeof caseSchema>>;

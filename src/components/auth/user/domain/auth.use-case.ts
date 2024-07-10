@@ -69,7 +69,3 @@ export class authUserUseCaseClass implements authUserUseCaseSkeleton {
     return responseData;
   }
 }
-// export const authUseCase = {
-//   registerUser,
-//   authUser,
-// };

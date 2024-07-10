@@ -101,8 +101,3 @@ export class notificationServiceClass implements notificationServiceSkeleton {
     };
   }
 }
-// export const notificationService = {
-//   getAllNotifications,
-//   markNotificationAsRead,
-//   deleteNotification,
-// };

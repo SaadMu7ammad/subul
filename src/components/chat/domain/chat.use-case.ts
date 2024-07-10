@@ -68,7 +68,3 @@ export class chatUseCaseClass implements chatUseCaseSkeleton {
     return { conversation: responseData };
   }
 }
-// export const chatUseCase = {
-//   sendMessage,
-//   getConversation,
-// };

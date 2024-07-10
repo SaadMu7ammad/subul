@@ -20,8 +20,6 @@ export type BookItemRequest = {
   itemId: string;
 };
 
-// export type GetUsedItemRequest = {};
-
 export type GetUsedItemResponse = {
   usedItem: IUsedItem;
   message: string;
