@@ -66,3 +66,4 @@
 - Triggering notifications to nearby users and blood donation centers.
 
 ### Class Diagram
+![Subul Class Diagram](https://github.com/SaadMu7ammad/subul/assets/130322757/d39d00ba-0bf1-46eb-b7bd-295952e3b061)
