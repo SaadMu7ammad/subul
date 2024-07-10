@@ -20,11 +20,31 @@
 
 [Subul](https://subul.me) is a MERN Stack Charity Platform, where users can donate different Charities. This repository contains the backend API for the website.
 
-# Technology Stack
+## Technology Stack
+
+### Main Technologies
 
 [![Technology Stack](https://skillicons.dev/icons?i=nodejs,express,ts,mongodb,jest)](https://skillicons.dev)
 
-## Third-Party Services
+### Important Packages
+
+`Mongoose`: For MongoDB Object Modeling
+
+`I18Next`: For website Translation and Localization (English, Arabic)
+
+`jsownwebtoken`: For Authentication and Authorization
+
+`Multer`: For File Uploads
+
+`Socket.io`: For Real-Time Chat & notifications
+
+`Winson`: For Logging
+
+`Eslint`: For Code Linting
+
+`Prettier`: For Code Formatting
+
+### Third-Party Services
 
 - [Paymob](https://paymob.com/): Our Payment Gateway
 - [Couldinary](https://cloudinary.com/): Our Image Hosting Service
@@ -46,7 +66,7 @@
 
 - Users can create a fundraising announcement for a specific charity.
 
-#### System Requirements(specific requirements):
+#### System Requirements (specific requirements):
 
 - The system must review the charity papers , and accept or deny it
 
@@ -65,5 +85,22 @@
 - The system must provide secure payment processing for online donations, integrating with a third-party payment gateway to ensure the safety and confidentiality of financial transactions.
 - Triggering notifications to nearby users and blood donation centers.
 
+## Application Archeticture
+
 ### Class Diagram
+
 ![Subul Class Diagram](https://github.com/SaadMu7ammad/subul/assets/130322757/d39d00ba-0bf1-46eb-b7bd-295952e3b061)
+
+### Folder Structure
+
+We are using a module structure for our project, where each module has its own folder containing the following files following the `3 Tier Archeticture`:
+
+- `entry-points`: Contains the entry points for the module (routes)
+
+- `domain`: Contains the business logic for the module (use-case - services - utils)
+
+- `data-access`: Contains the database layer for the module (repository - models - interfaces)
+
+### Request Journey
+
+The request journey starts from the entry point, where the request is validated and passed to the domain layer. The domain layer contains the business logic for the request, where the data is processed and passed to the data-access layer. The data-access layer contains the database logic for the request, where the data is fetched or updated in the database.
