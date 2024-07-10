@@ -1,6 +1,6 @@
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 <p align="center">
-<img width="100" height="100" alt="EverShop Logo" src="https://subul.me/images/Logo.png"/>
+<img width="100" height="100" alt="Subul Logo" src="https://subul.me/images/Logo.png"/>
 </p>
 <p align="center">
   <h1 align="center">Subul API</h1>
@@ -16,55 +16,53 @@
 
 ![Home-Page2](https://github.com/SaadMu7ammad/subul/assets/130322757/6c54cbce-78e8-447c-bdd6-cd75347589ff)
 
-
 ## Introduction
 
-Subul is a MERN Stack Charity Platform, where users can donate different Charities. This repository contains the backend API for the website.
+[Subul](https://subul.me) is a MERN Stack Charity Platform, where users can donate different Charities. This repository contains the backend API for the website.
 
-# db
+# Technology Stack
 
-![image5](https://github.com/SaadMu7ammad/subul/assets/74321306/f04b4878-48b4-44bf-954b-a00f08ed92ca)
+[![Technology Stack](https://skillicons.dev/icons?i=nodejs,express,ts,mongodb,jest)](https://skillicons.dev)
 
-## Endpoints
+## Third-Party Services
 
-# technology stack
+- [Paymob](https://paymob.com/): Our Payment Gateway
+- [Couldinary](https://cloudinary.com/): Our Image Hosting Service
+- [Render](https://render.com/): Our Deployment Service
 
-### Backend
+## Requirements
 
-- Node.js: The server-side runtime environment for executing JavaScript code.
-- Express.js: A minimal and flexible Node.js web application framework for building robust APIs.
-  mongodb:
-  mongoose
+#### User Requirements:
 
-Authentication
-JWT (JSON Web Tokens): Used for secure user authentication.
-Email Services
+- Every charity has the ability to post a variety of cases that need help.
 
-## payment gateway
+- Every Case has a clear description to ensure transparency and trust.
 
-- paymob
+- Blood donation for urgent cases in hospitals according to your location.
 
-Deployment
-cyclic: A cloud platform for hosting and deploying web applications.
+- Used clothing or used electric products that donors can apply for the announcements according to the charity posts.
 
-## Table of contents
+- Built-in Chat System to allow charities to contact donors.
 
-<!-- To update run: npx markdown-toc --maxdepth 2 -i README.md -->
+- Users can create a fundraising announcement for a specific charity.
 
-<!-- toc -->
+#### System Requirements(specific requirements):
 
-- [Installation](#installation)
-- [Upgrade from v0.4](#upgrade-from-v04)
-- [Example](#example)
-- [More examples](#more-examples)
-- [Custom blocks](#custom-blocks)
-- [Available webpack blocks](#available-webpack-blocks)
-- [Helpers](#helpers)
-- [Shorthand setters](#shorthand-setters)
-- [Third-party blocks](#third-party-blocks)
-- [Design principles](#design-principles)
-- [FAQ](#faq)
-- [Like what you see?](#like-what-you-see)
-- [License](#license)
+- The system must review the charity papers , and accept or deny it
 
-<!-- tocstop -->
+- The system allows registered charities to post new cases, review, edit and close posted cases
+
+- Each case must include fields for title, description(and urgency level), main type & sub type, image, case location gender, target donation amount needed with a progress bar of donations for each case
+
+- The system must display all transactions payment made to charity in dashboard , or made by user in dashboard
+
+- Users shall be able to filter cases and donation opportunities and create fundraising announcements for specific charities..
+
+- The system must provide a feature for users to post and apply for donations of used clothing and electrical products.
+
+- The system shall include a built-in chat system to facilitate communication between charities and donors.
+
+- The system must provide secure payment processing for online donations, integrating with a third-party payment gateway to ensure the safety and confidentiality of financial transactions.
+- Triggering notifications to nearby users and blood donation centers.
+
+### Class Diagram
