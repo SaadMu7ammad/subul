@@ -7,7 +7,7 @@
 </p>
 <p align="center">
   <a href="https://subul.me">
-    <img src="https://img.shields.io/badge/website-91683a" alt="Discord">
+    <img src="https://img.shields.io/badge/Website-91683a" alt="Discord">
   </a>
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/License-MIT-343d40.svg" alt="License">
@@ -105,4 +105,5 @@ We are using a module structure for our project, where each module has its own f
 
 The request journey starts from the entry point, where the request is validated and passed to the domain layer. The domain layer contains the business logic for the request, where the data is processed and passed to the data-access layer. The data-access layer contains the database logic for the request, where the data is fetched or updated in the database.
 
-![Request Journey](https://github.com/SaadMu7ammad/subul/assets/130322757/20e5d098-f2a1-48cc-835a-311b41af1bd0)
+
+![Request Journey](https://github.com/SaadMu7ammad/subul/assets/130322757/28ded137-ae3d-4dd9-9678-b3cd12e52e51)
