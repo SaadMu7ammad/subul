@@ -15,7 +15,10 @@ export interface authUserServiceSkeleton {
     res: Response,
     req: Request
   ): Promise<UserResponseBasedOnUserVerification>;
-  registerUser(reqBody: RegisterUserInputData): Promise<{
+  registerUser(
+    res: Response,
+    reqBody: RegisterUserInputData
+  ): Promise<{
     user: UserObject;
   }>;
 }

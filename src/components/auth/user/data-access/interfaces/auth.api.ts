@@ -1,6 +1,6 @@
 import { IUser } from '@components/user/data-access/interfaces';
 
-import { UserObject } from './auth.user';
+// import { UserObject } from './auth.user';
 
 export interface authUserResponse {
   user: IUser;
@@ -10,5 +10,7 @@ export interface authUserResponse {
 }
 
 export interface registerUserResponse {
-  user: UserObject;
+  user: IUser;
+  emailAlert: boolean;
+  isVerified: boolean;
 }

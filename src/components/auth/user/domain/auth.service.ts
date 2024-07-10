@@ -2,12 +2,11 @@
 import {
   IloginData,
   RegisterUserInputData,
-  UserObject,
   UserResponseBasedOnUserVerification,
 } from '@components/auth/user/data-access/interfaces';
 import { IUser } from '@components/user/data-access/interfaces';
 import generateToken from '@utils/generateToken';
-import { generateResetTokenTemp, sendActivationEmail, setupMailSender } from '@utils/mailer';
+import { generateResetTokenTemp, sendActivationEmail } from '@utils/mailer';
 import { Request, Response } from 'express';
 
 import logger from '../../../../utils/logger';
@@ -30,7 +29,7 @@ export class authUserServiceClass implements authUserServiceSkeleton {
     const userResponse: { isMatch: boolean; user: IUser } =
       await this.authUserUtilsInstance.checkUserPassword(req, email, password);
 
-    const token = generateToken(res, userResponse.user.id, 'user');
+    const token = generateToken(res, userResponse.user.id, 'user'); // jwt
 
     const IsUserVerified: boolean = this.authUserUtilsInstance.checkUserIsVerified(
       userResponse.user
@@ -43,8 +42,8 @@ export class authUserServiceClass implements authUserServiceSkeleton {
         isVerified: true,
       };
     } else {
-      //not verified(not activated)
-      const token: string = await generateResetTokenTemp();
+      // not verified(not activated)
+      const token: string = await generateResetTokenTemp(); // hashed string
       userResponse.user.verificationCode = token;
       await userResponse.user.save();
       await sendActivationEmail(userResponse.user.email, token);
@@ -64,31 +63,62 @@ export class authUserServiceClass implements authUserServiceSkeleton {
   //   };
   //   email: string;
   // }
-  async registerUser(reqBody: RegisterUserInputData): Promise<{
-    user: UserObject;
-  }> {
+  async registerUser(
+    res: Response,
+    reqBody: RegisterUserInputData
+  ): Promise<UserResponseBasedOnUserVerification> {
     const newCreatedUser = await this.authUserUtilsInstance.createUser(reqBody);
     // generateToken(res, newCreatedUser.user._id, 'user');
     try {
-      await setupMailSender(
-        newCreatedUser.user.email,
-        'Welcome Alert',
-        `hi ${newCreatedUser.user.name?.firstName + ' ' + newCreatedUser.user.name?.lastName} ` +
-          ' we are happy that you joined our community ... keep spreading goodness with us'
-      );
+      // await setupMailSender(
+      //   newCreatedUser.user.email,
+      //   'Welcome Alert',
+      //   `hi ${newCreatedUser.user.name?.firstName + ' ' + newCreatedUser.user.name?.lastName} ` +
+      //     ' we are happy that you joined our community ... keep spreading goodness with us'
+      // );
+      // const token = generateToken(res, newCreatedUser.user.id, 'user');
+
+      await generateToken(res, newCreatedUser.user.id, 'user'); // jwt
+
+      // const IsUserVerified: boolean = this.authUserUtilsInstance.checkUserIsVerified(
+      //   userResponse.user
+      // );
+
+      // Must not verified cuz it's a new user
+      // not verified(not activated)
+      const token: string = await generateResetTokenTemp(); // hashed string
+      newCreatedUser.user.verificationCode = token;
+      await newCreatedUser.user.save();
+      await sendActivationEmail(newCreatedUser.user.email, token);
+      return {
+        user: newCreatedUser.user,
+        emailAlert: true,
+        isVerified: false,
+      };
+
+      //   const tempToken: string = await generateResetTokenTemp(); // hashed string
+      //   // userResponse.user.verificationCode = token;
+      //   newCreatedUser.user.verificationCode = tempToken;
+      //   // await userResponse.user.save();
+      //   await newCreatedUser.user.save();
+      //   await sendActivationEmail(newCreatedUser.user.email, tempToken);
     } catch (err) {
       logger.warn('error happened while sending welcome email');
     }
-    const userObj: UserObject = {
-      _id: newCreatedUser.user._id,
-      name: newCreatedUser.user.name,
-      email: newCreatedUser.user.email,
-    };
+    // const userObj: UserObject = {
+    //   _id: newCreatedUser.user._id,
+    //   name: newCreatedUser.user.name,
+    //   email: newCreatedUser.user.email,
+    // };
     return {
-      user: userObj,
+      // user: userObj,
+      user: newCreatedUser.user,
+      emailAlert: true,
+      isVerified: false,
     };
   }
 }
+
 // export const authUserService = {
 //   authUser,
 //   registerUser,

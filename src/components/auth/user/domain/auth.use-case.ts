@@ -1,5 +1,8 @@
 // import { UserLocation } from '../../../user/data-access/interfaces/user.interface';
-import { RegisterUserInputData, UserObject } from '@components/auth/user/data-access/interfaces';
+import {
+  RegisterUserInputData,
+  UserResponseBasedOnUserVerification,
+} from '@components/auth/user/data-access/interfaces';
 import {
   authUserResponse,
   registerUserResponse,
@@ -60,13 +63,10 @@ export class authUserUseCaseClass implements authUserUseCaseSkeleton {
       phone,
       password,
     };
-    const responseData = await this.authUserServiceInstance.registerUser(registerInputsData);
+    const responseData: UserResponseBasedOnUserVerification =
+      await this.authUserServiceInstance.registerUser(res, registerInputsData);
 
-    const userResponsed: UserObject = {
-      ...responseData.user,
-    };
-
-    return { user: userResponsed };
+    return responseData;
   }
 }
 // export const authUseCase = {
