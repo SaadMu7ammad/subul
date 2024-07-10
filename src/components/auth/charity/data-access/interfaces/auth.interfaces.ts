@@ -10,7 +10,7 @@ export interface authCharityServiceSkeleton {
     res: Response
   ): Promise<AuthCharityObject>;
 
-  registerCharity(reqBody: CharityData): Promise<{ charity: CharityObject }>;
+  registerCharity(res: Response, reqBody: CharityData): Promise<{ charity: CharityObject }>;
 }
 
 export interface authCharityUseCaseSkeleton {

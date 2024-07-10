@@ -1,7 +1,6 @@
 import { AuthCharityObject, CharityData } from '@components/auth/charity/data-access/interfaces';
 import {
-  AuthCharityResponse,
-  registerCharityResponse,
+  AuthCharityResponse, // registerCharityResponse,
 } from '@components/auth/charity/data-access/interfaces';
 import { NextFunction, Request, Response } from 'express';
 
@@ -21,11 +20,7 @@ export class authCharityUseCase implements authCharityUseCaseSkeleton {
     this.authCharity = this.authCharity.bind(this);
   }
 
-  async registerCharity(
-    req: Request,
-    _res: Response,
-    _next: NextFunction
-  ): Promise<registerCharityResponse> {
+  async registerCharity(req: Request, res: Response, _next: NextFunction) {
     const {
       email,
       password,
@@ -52,18 +47,14 @@ export class authCharityUseCase implements authCharityUseCaseSkeleton {
       image: firstImage !== undefined ? firstImage : '', // [0]
     };
 
-    const responseData = await this.authCharityServiceInstance.registerCharity(data);
+    const responseData = await this.authCharityServiceInstance.registerCharity(res, data);
 
-    const charityResponsed = {
-      ...responseData.charity,
-    };
+    // const charityResponsed = {
+    //   ...responseData.charity,
+    // };
 
-    return {
-      charity: {
-        ...charityResponsed,
-        // image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
-      },
-    };
+    return responseData;
+    // image: charity.image, //notice the image url return as a imgUrl on the fly not in the db itself
   }
 
   async authCharity(

@@ -80,28 +80,11 @@ export class authUserServiceClass implements authUserServiceSkeleton {
 
       await generateToken(res, newCreatedUser.user.id, 'user'); // jwt
 
-      // const IsUserVerified: boolean = this.authUserUtilsInstance.checkUserIsVerified(
-      //   userResponse.user
-      // );
-
-      // Must not verified cuz it's a new user
       // not verified(not activated)
       const token: string = await generateResetTokenTemp(); // hashed string
       newCreatedUser.user.verificationCode = token;
       await newCreatedUser.user.save();
       await sendActivationEmail(newCreatedUser.user.email, token);
-      return {
-        user: newCreatedUser.user,
-        emailAlert: true,
-        isVerified: false,
-      };
-
-      //   const tempToken: string = await generateResetTokenTemp(); // hashed string
-      //   // userResponse.user.verificationCode = token;
-      //   newCreatedUser.user.verificationCode = tempToken;
-      //   // await userResponse.user.save();
-      //   await newCreatedUser.user.save();
-      //   await sendActivationEmail(newCreatedUser.user.email, tempToken);
     } catch (err) {
       logger.warn('error happened while sending welcome email');
     }
