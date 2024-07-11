@@ -60,7 +60,9 @@
 
 - Blood donation for urgent cases in hospitals according to your location.
 
-- Used clothing or used electric products that donors can apply for the announcements according to the charity posts.
+- Donors can upload used items (e.g. clothes , electrical products) to donate.
+
+- Charities can book used items uploaded by donors.
 
 - Built-in Chat System to allow charities to contact donors.
 
@@ -68,9 +70,9 @@
 
 #### System Requirements (specific requirements):
 
-- The system must review the charity papers , and accept or deny it
+- The admin must review the charity papers , and accept or reject it
 
-- The system allows registered charities to post new cases, review, edit and close posted cases
+- The system allows registered charities to post new cases, review, edit and mark cases as completed.
 
 - Each case must include fields for title, description(and urgency level), main type & sub type, image, case location gender, target donation amount needed with a progress bar of donations for each case
 
@@ -83,6 +85,7 @@
 - The system shall include a built-in chat system to facilitate communication between charities and donors.
 
 - The system must provide secure payment processing for online donations, integrating with a third-party payment gateway to ensure the safety and confidentiality of financial transactions.
+
 - Triggering notifications to nearby users and blood donation centers.
 
 ## Application Archeticture
@@ -93,13 +96,147 @@
 
 ### Folder Structure
 
-We are using a module structure for our project, where each module has its own folder containing the following files following the `3 Tier Archeticture`:
+We are using a module structure for our project, where each module has its own folder (under `src/components/`) containing the following files following the `3 Tier Archeticture`:
 
 - `entry-points`: Contains the entry points for the module (routes)
 
 - `domain`: Contains the business logic for the module (use-case - services - utils)
 
 - `data-access`: Contains the database layer for the module (repository - models - interfaces)
+
+### System Components & Their Features
+
+The Main Components of the system are located in the `src/components` folder:
+
+[auth](https://github.com/SaadMu7ammad/subul/tree/main/src/components/auth): In this folder we include the authentication logic (login & register) for the system.
+
+- [user](https://github.com/SaadMu7ammad/subul/tree/main/src/components/auth/user) contains the user authentication logic.
+
+- [charity](https://github.com/SaadMu7ammad/subul/tree/main/src/components/auth/charity) contains the charity authentication logic.
+
+- [shared](https://github.com/SaadMu7ammad/subul/tree/main/src/components/auth/shared) contains shared middlewares used by both user and charity e.g. `auth`,`isActivated` functions.
+
+[admin](https://github.com/SaadMu7ammad/subul/tree/main/src/components/admin): In this folder we include the admin logic, which includes the following features :
+
+- `getAllCharities` : return all charities in the system.
+
+- `getAllUsers` : return all users in the system.
+
+- `getCharityById` : return a specific charity by id.
+
+- `getAllPendingRequestsCharities` : return all charities that are not confirmed yet.
+
+- `getPendingRequestCharityById` : return a specific charity that is not confirmed yet.
+
+- `getPendingPaymentRequestsForConfirmedCharityById` : return all payment confirmation requests for a specific confirmed charity.
+
+- `getAllRequestsPaymentMethodsForConfirmedCharities` : return all payment confirmation requests for all confirmed charities.
+
+- `confirmCharity` : admin confirms a charity.
+
+- `rejectCharity` : admin rejects a charity.
+
+- `confirmPaymentAccountRequestForConfirmedCharities` : admin confirms a payment account confirmation request for a confirmed charity.
+
+- `rejectPaymentAccountRequestForConfirmedCharities` : admin rejects a payment account confirmation request for a confirmed charity.
+
+[case](https://github.com/SaadMu7ammad/subul/tree/main/src/components/case): In this folder we include the case logic, which includes the following features :
+
+- `addCase` : charity adds a new case.
+
+- `getAllCases` : charity gets all cases.
+
+- `getAllCasesForUser` : user gets all cases.
+
+- `getCaseById` : charity gets a specific case by id.
+
+- `deleteCase` : charity deletes a specific case by id.
+
+[charity](https://github.com/SaadMu7ammad/subul/tree/main/src/components/charity): In this folder we include the charity logic, which includes the following features :
+
+- `activateCharityAccount` : charity activates its account using the token that is sent to its email.
+
+- `requestResetPassword` : when a charity forgets its password, it can request a reset password email.
+
+- `confirmResetPassword` : charity confirms the reset password request.
+
+- `changePassword` : charity changes its password.
+
+- `editCharityProfile` : charity edits its profile.
+
+- `changeProfileImage` : charity changes its profile image.
+
+- `requestEditCharityPayments` : charity requests to edit its payment methods waiting for the admin to review them.
+
+- `sendDocs` : charity sends the required documents to the admin.
+
+- `logout` : charity logs out.
+
+[chat](https://github.com/SaadMu7ammad/subul/tree/main/src/components/chat) : In this folder we include the Built-in chat logic, which includes the following features :
+
+- `sendMessage` : charity/user sends a message to another charity/user .
+
+- `getConversation` : charity/user gets the conversation between him and another charity/user .
+
+[notification](https://github.com/SaadMu7ammad/subul/tree/main/src/components/notification) : In this folder we include the notification logic, which includes the following features :
+
+- `getAllNotifications` : charity/user gets all notifications.
+
+- `markNotificationAsRead` : charity/user marks a notification as read.
+
+- `deleteNotification` : charity/user deletes a notification.
+
+[used-items](https://github.com/SaadMu7ammad/subul/tree/main/src/components/used-items) : In this folder we include the used-items logic, which includes the following features :
+
+- `addUsedItem` : user adds usedItem.
+
+- `getUsedItem` : user gets usedItem by id.
+
+- `deleteUsedItem` : user deletes usedItem by id.
+
+- `updateUsedItem` : user updates usedItem by id.
+
+- `addUsedItemImages` : user adds images to usedItem.
+
+- `deleteUsedItemImage` : user deletes an image from usedItem.
+
+- `getAllUsedItems` : charity gets all usedItems.
+
+- `bookUsedItem` : charity books a usedItem.
+
+- `cancelBookingOfUsedItem` : charity cancels booking of a usedItem.
+
+- `ConfirmBookingReceipt` : charity confirms booking receipt of a usedItem.
+
+[user](https://github.com/SaadMu7ammad/subul/tree/main/src/components/user) : In this folder we include the user logic, which includes the following features :
+
+- `resetUser` : if the user forgets his password, he can request a reset password email.
+
+- `confirmReset` : user confirms the reset password request.
+
+- `changePassword` : user changes his password.
+
+- `activateAccount` : user activates his account using the token that is sent to his email.
+
+- `bloodContribution` : user contributes blood.
+
+- `requestFundraisingCampaign` : user requests a fundraising campaign.
+
+- `editUserProfile` : user edits his profile.
+
+- `logoutUser` : user logs out.
+
+- `getUserProfileData` : user gets his profile data.
+
+[transaction](https://github.com/SaadMu7ammad/subul/tree/main/src/components/transaction) : In this folder we include the transaction logic, which includes the following features :
+
+- `preCreateTransaction` : Assertions and validations before creating a transaction.
+
+- `getAllTransactions` : users gets all transactions.
+
+- `getAllTransactionsToCharity` : charity gets all transactions.
+
+- `updateCaseInfo` : User donates to a case and update its info after `preCreateTransaction`.
 
 ### Request Journey
 
