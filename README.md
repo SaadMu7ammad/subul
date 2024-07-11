@@ -16,6 +16,61 @@
 
 ![Home-Page2](https://github.com/SaadMu7ammad/subul/assets/130322757/6c54cbce-78e8-447c-bdd6-cd75347589ff)
 
+## Table of Contents
+
+<summary>
+    <a href="#introduction">1. Introduction</a>
+<summary>
+
+<details>
+  <summary>
+    <a href="#technology-stack">2. Technology Stack</a>
+  </summary>
+
+&emsp;&emsp;[2.1 Main Technologies](#main-technologies)</br>
+&emsp;&emsp;[2.2 Important Packages](#important-packages)</br>
+&emsp;&emsp;[2.3 Third-Party Services](#third-party-services)</br>
+
+</details>
+
+<details>
+  <summary>
+    <a href="#requirements">3. Requirements</a>
+  </summary>
+
+&emsp;&emsp;[3.1 User Requirements](#user-requirements)</br>
+&emsp;&emsp;[3.2 System Requirements](#system-requirements)</br>
+
+</details>
+
+<details>
+  <summary>
+    <a href="#application-architecture">4. Application Architecture</a>
+  </summary>
+
+&emsp;&emsp;[4.1 Class Diagram](#class-diagram)</br>
+&emsp;&emsp;[4.2 Folder Structure](#folder-structure)</br>
+&emsp;&emsp;[4.3 System Components and Use Cases](#system-components-and-use-cases)</br>
+&emsp;&emsp;[4.4 Request Journey](#request-journey)</br>
+
+</details>
+
+<details>
+  <summary>
+    <a href="#installation">5. Installation</a>
+  </summary>
+
+&emsp;&emsp;[6.1 Requirements](#requirements-2)</br>
+&emsp;&emsp;[6.2 Environment Variables](#environment-variables)</br>
+&emsp;&emsp;[6.3 Steps](#steps)</br>
+&emsp;&emsp;[6.4 Run Tests](#run-tests)</br>
+
+</details>
+
+<summary>
+    <a href="#license">6. License</a>
+</summary>
+
 ## Introduction
 
 [Subul](https://subul.me) is a MERN Stack Charity Platform, where users can donate different Charities. This repository contains the backend API for the website.
@@ -113,7 +168,7 @@ other folders include:
 - `locales` : Contains the translation files for the system.
 - `scripts` : Contains Custom scripts.
 
-### System Components & Their Features
+### System Components and Use Cases
 
 The Main Components of the system are located in the `src/components` folder:
 
@@ -125,7 +180,7 @@ The Main Components of the system are located in the `src/components` folder:
 
 - [shared](https://github.com/SaadMu7ammad/subul/tree/main/src/components/auth/shared) contains shared middlewares used by both user and charity e.g. `auth`,`isActivated` functions.
 
-[admin](https://github.com/SaadMu7ammad/subul/tree/main/src/components/admin): In this folder we include the admin logic, which includes the following features :
+[admin](https://github.com/SaadMu7ammad/subul/tree/main/src/components/admin) use cases :
 
 - `getAllCharities` : return all charities in the system.
 
@@ -149,7 +204,7 @@ The Main Components of the system are located in the `src/components` folder:
 
 - `rejectPaymentAccountRequestForConfirmedCharities` : admin rejects a payment account confirmation request for a confirmed charity.
 
-[case](https://github.com/SaadMu7ammad/subul/tree/main/src/components/case): In this folder we include the case logic, which includes the following features :
+[case](https://github.com/SaadMu7ammad/subul/tree/main/src/components/case) use cases :
 
 - `addCase` : charity adds a new case.
 
@@ -161,7 +216,7 @@ The Main Components of the system are located in the `src/components` folder:
 
 - `deleteCase` : charity deletes a specific case by id.
 
-[charity](https://github.com/SaadMu7ammad/subul/tree/main/src/components/charity): In this folder we include the charity logic, which includes the following features :
+[charity](https://github.com/SaadMu7ammad/subul/tree/main/src/components/charity) use cases :
 
 - `activateCharityAccount` : charity activates its account using the token that is sent to its email.
 
@@ -181,13 +236,13 @@ The Main Components of the system are located in the `src/components` folder:
 
 - `logout` : charity logs out.
 
-[chat](https://github.com/SaadMu7ammad/subul/tree/main/src/components/chat) : In this folder we include the Built-in chat logic, which includes the following features :
+[chat](https://github.com/SaadMu7ammad/subul/tree/main/src/components/chat) use cases :
 
 - `sendMessage` : charity/user sends a message to another charity/user .
 
 - `getConversation` : charity/user gets the conversation between him and another charity/user .
 
-[notification](https://github.com/SaadMu7ammad/subul/tree/main/src/components/notification) : In this folder we include the notification logic, which includes the following features :
+[notification](https://github.com/SaadMu7ammad/subul/tree/main/src/components/notification) use cases :
 
 - `getAllNotifications` : charity/user gets all notifications.
 
@@ -195,7 +250,7 @@ The Main Components of the system are located in the `src/components` folder:
 
 - `deleteNotification` : charity/user deletes a notification.
 
-[used-items](https://github.com/SaadMu7ammad/subul/tree/main/src/components/used-items) : In this folder we include the used-items logic, which includes the following features :
+[used-items](https://github.com/SaadMu7ammad/subul/tree/main/src/components/used-items) use cases :
 
 - `addUsedItem` : user adds usedItem.
 
@@ -217,7 +272,7 @@ The Main Components of the system are located in the `src/components` folder:
 
 - `ConfirmBookingReceipt` : charity confirms booking receipt of a usedItem.
 
-[user](https://github.com/SaadMu7ammad/subul/tree/main/src/components/user) : In this folder we include the user logic, which includes the following features :
+[user](https://github.com/SaadMu7ammad/subul/tree/main/src/components/user) use cases :
 
 - `resetUser` : if the user forgets his password, he can request a reset password email.
 
@@ -237,7 +292,7 @@ The Main Components of the system are located in the `src/components` folder:
 
 - `getUserProfileData` : user gets his profile data.
 
-[transaction](https://github.com/SaadMu7ammad/subul/tree/main/src/components/transaction) : In this folder we include the transaction logic, which includes the following features :
+[transaction](https://github.com/SaadMu7ammad/subul/tree/main/src/components/transaction) use cases :
 
 - `preCreateTransaction` : Assertions and validations before creating a transaction.
 
