@@ -7,7 +7,7 @@
 </p>
 <p align="center">
   <a href="https://subul.me">
-    <img src="https://img.shields.io/badge/Website-91683a" alt="Discord">
+    <img src="https://img.shields.io/badge/Website-91683a" alt="Website">
   </a>
   <a href="https://opensource.org/licenses/MIT">
     <img src="https://img.shields.io/badge/License-MIT-343d40.svg" alt="License">
@@ -37,6 +37,8 @@
    - [Steps](#steps)
    - [Run Tests](#run-tests)
 6. [License](#license)
+
+## Introduction
 
 [Subul](https://subul.me) is a MERN Stack Charity Platform, where users can donate different Charities. This repository contains the backend API for the website.
 
