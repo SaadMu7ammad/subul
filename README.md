@@ -18,60 +18,25 @@
 
 ## Table of Contents
 
-<summary>
-    <a href="#introduction">1. Introduction</a>
-<summary>
-
-<details>
-  <summary>
-    <a href="#technology-stack">2. Technology Stack</a>
-  </summary>
-
-&emsp;&emsp;[2.1 Main Technologies](#main-technologies)</br>
-&emsp;&emsp;[2.2 Important Packages](#important-packages)</br>
-&emsp;&emsp;[2.3 Third-Party Services](#third-party-services)</br>
-
-</details>
-
-<details>
-  <summary>
-    <a href="#requirements">3. Requirements</a>
-  </summary>
-
-&emsp;&emsp;[3.1 User Requirements](#user-requirements)</br>
-&emsp;&emsp;[3.2 System Requirements](#system-requirements)</br>
-
-</details>
-
-<details>
-  <summary>
-    <a href="#application-architecture">4. Application Architecture</a>
-  </summary>
-
-&emsp;&emsp;[4.1 Class Diagram](#class-diagram)</br>
-&emsp;&emsp;[4.2 Folder Structure](#folder-structure)</br>
-&emsp;&emsp;[4.3 System Components and Use Cases](#system-components-and-use-cases)</br>
-&emsp;&emsp;[4.4 Request Journey](#request-journey)</br>
-
-</details>
-
-<details>
-  <summary>
-    <a href="#installation">5. Installation</a>
-  </summary>
-
-&emsp;&emsp;[6.1 Requirements](#requirements-2)</br>
-&emsp;&emsp;[6.2 Environment Variables](#environment-variables)</br>
-&emsp;&emsp;[6.3 Steps](#steps)</br>
-&emsp;&emsp;[6.4 Run Tests](#run-tests)</br>
-
-</details>
-
-<summary>
-    <a href="#license">6. License</a>
-</summary>
-
-## Introduction
+1. [Introduction](#introduction)
+2. [Technology Stack](#technology-stack)
+   - [Main Technologies](#main-technologies)
+   - [Important Packages](#important-packages)
+   - [Third-Party Services](#third-party-services)
+3. [Requirements](#requirements)
+   - [User Requirements](#user-requirements)
+   - [System Requirements](#system-requirements)
+4. [Application Architecture](#application-architecture)
+   - [Class Diagram](#class-diagram)
+   - [Folder Structure](#folder-structure)
+   - [System Components and Use Cases](#system-components-and-use-cases)
+   - [Request Journey](#request-journey)
+5. [Installation](#installation)
+   - [Requirements](#requirements-2)
+   - [Environment Variables](#environment-variables)
+   - [Steps](#steps)
+   - [Run Tests](#run-tests)
+6. [License](#license)
 
 [Subul](https://subul.me) is a MERN Stack Charity Platform, where users can donate different Charities. This repository contains the backend API for the website.
 
