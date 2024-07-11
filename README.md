@@ -60,7 +60,7 @@
 
 - Blood donation for urgent cases in hospitals according to your location.
 
-- Donors can upload used items (e.g. clothes , electrical products) to donate.
+- Donors can upload used items (e.g. clothing , electrical products) to donate.
 
 - Charities can book used items uploaded by donors.
 
@@ -103,6 +103,15 @@ We are using a module structure for our project, where each module has its own f
 - `domain`: Contains the business logic for the module (use-case - services - utils)
 
 - `data-access`: Contains the database layer for the module (repository - models - interfaces)
+
+- `test`: Contains the tests for the module
+
+other folders include:
+
+- `libraries` : Contains libraries configuraiton files e.g. (configuration provider, error handling setup, paymob ...).
+- `utils` : Contains the shared utilities used by the system (e.g. sendNotifications,deleteFile) .
+- `locales` : Contains the translation files for the system.
+- `scripts` : Contains Custom scripts.
 
 ### System Components & Their Features
 
@@ -269,6 +278,14 @@ npm run server
 ```bash
 npm run test
 ```
+
+> **Note:**
+> If you set the `NODE_ENV` to `development` in the `.env` file
+> make sure to run this command :
+>
+> ```bash
+> mkdir uploads{,/caseCoverImages,/usedItemsImages,/charityDocs,/charityLogos}
+> ```
 
 ## License
 
