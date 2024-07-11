@@ -89,7 +89,7 @@
 
 ### Class Diagram
 
-![Subul Class Diagram](https://github.com/SaadMu7ammad/subul/assets/130322757/d39d00ba-0bf1-46eb-b7bd-295952e3b061)
+![Subul Class Diagram](https://github.com/SaadMu7ammad/subul/assets/130322757/b10fa06f-985e-46a8-b77a-3732c0a31fb4)
 
 ### Folder Structure
 
