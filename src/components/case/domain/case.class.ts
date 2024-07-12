@@ -32,6 +32,20 @@ class CaseRepository implements CaseDao {
       {
         $sort: sortObj,
       },
+      {
+        $lookup: {
+          from: 'charities', // The collection name in the database for charities
+          localField: 'charity', // Field in the Case schema that contains the charity ID
+          foreignField: '_id', // Field in the Charity schema that matches the localField value
+          as: 'charityDetails', // The resulting field after the join
+        },
+      },
+      {
+        $addFields: {
+          charityName: { $arrayElemAt: ['$charityDetails.name', 0] }, // Extract the charity name
+          charityImage: { $arrayElemAt: ['$charityDetails.image', 0] },
+        },
+      },
     ])
       .skip((page - 1) * limit)
       .limit(limit)
@@ -47,6 +61,7 @@ class CaseRepository implements CaseDao {
         updatedAt: 0,
         privateNumber: 0,
         __v: 0,
+        charityDetails: 0,
       });
     const caseUtilsInstance = new caseUtilsClass();
 
@@ -95,7 +110,7 @@ class CaseRepository implements CaseDao {
   // }
 
   getCaseById = async (id: string): Promise<ICase | null> => {
-    const _case = await Case.findById(id);
+    const _case = await Case.findById(id).populate('charity', 'name image');
     return _case;
   };
 
