@@ -40,7 +40,7 @@
 
 ## Introduction
 
-[Subul](https://subul.me) is a MERN Stack Charity Platform, where users can donate different Charities. This repository contains the backend API for the website.
+[Subul](https://subul.me) is a MERN Stack Charity Platform, where users can donate to different Charities. This repository contains the backend API for the website.
 
 ## Technology Stack
 
