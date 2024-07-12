@@ -17,17 +17,19 @@ import * as configurationProvider from '@libs/configuration-provider/index';
 import { NotFound, errorHandler } from '@libs/errors/index';
 // Logger 📝
 import logger from '@utils/logger';
+import { authSocketMiddleware } from '@utils/socket-io';
 // Packages 📦️
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Application } from 'express';
-import { Server } from 'http';
+import { Server as HTTPServer, createServer } from 'http';
 import i18next from 'i18next';
 import FsBackend from 'i18next-fs-backend';
 // Imports the i18next HTTP middleware for use with Express.
 import i18nextHttpMiddleware from 'i18next-http-middleware';
 import { AddressInfo } from 'net';
 import * as path from 'path';
+import { Server as SocketIOServer } from 'socket.io';
 
 i18next
   .use(FsBackend) // Uses the file system backend to load translation files.
@@ -46,7 +48,8 @@ i18next
 
 dotenv.config();
 
-let connection: Server;
+let connection: HTTPServer;
+export let io: SocketIOServer;
 
 export async function startWebServer() {
   dotenv.config();
@@ -117,7 +120,39 @@ export async function openConnection(expressApp: express.Application): Promise<A
   return new Promise(resolve => {
     logger.info(`Server is about to listen to port ${webServerPort}`);
 
-    connection = expressApp.listen(webServerPort, () => {
+    connection = createServer(expressApp);
+
+    io = new SocketIOServer(connection, {
+      cors: {
+        origin: 'https://subul.me',
+        credentials: true,
+      },
+    });
+
+    io.use(authSocketMiddleware);
+
+    io.on('connection', socket => {
+      console.log('New client connected');
+
+      const userId = (socket as any).userId;
+      const charityId = (socket as any).charityId;
+
+      if (userId) {
+        socket.join(`User-${userId}`);
+        console.log(`User with ID ${userId} joined room User-${userId}`);
+      }
+
+      if (charityId) {
+        socket.join(`Charity-${charityId}`);
+        console.log(`Charity with ID ${charityId} joined room Charity-${charityId}`);
+      }
+
+      socket.on('disconnect', () => {
+        console.log('Client disconnected');
+      });
+    });
+
+    connection.listen(webServerPort, () => {
       logger.info(`Server is listening to port ${webServerPort} 🚀`);
       resolve(connection.address() as AddressInfo);
     });
