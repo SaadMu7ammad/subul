@@ -69,7 +69,10 @@ class userServiceClass implements userServiceSkeleton {
 
     if (!updatedUser.user.verificationCode) throw new NotFoundError('code not exist');
 
-    const isEqual = checkValueEquality(updatedUser.user.verificationCode, reqBody.token);
+    const isEqual = checkValueEquality(
+      updatedUser.user.verificationCode,
+      decodeURIComponent(reqBody.token)
+    );
 
     if (!isEqual) {
       updatedUser.user.verificationCode = '';
@@ -111,7 +114,10 @@ class userServiceClass implements userServiceSkeleton {
       throw new BadRequestError('account already is activated');
     }
     if (!storedUser.verificationCode) throw new NotFoundError('verificationCode not found');
-    const isMatch = checkValueEquality(storedUser.verificationCode, reqBody.token);
+    const isMatch = checkValueEquality(
+      storedUser.verificationCode,
+      decodeURIComponent(reqBody.token)
+    );
     if (!isMatch) {
       await this.#userUtilsInstance.resetSentToken(storedUser);
       this.#userUtilsInstance.logout(res);
@@ -146,9 +152,10 @@ class userServiceClass implements userServiceSkeleton {
       'thanks for your caring' +
         `here is the number to get contact with the case immediate,${isCaseExist.privateNumber}`
     );
+
     this.#notificationInstance.sendNotification(
       'Charity',
-      isCaseExist.charity,
+      isCaseExist.charity._id,
       // `User ${user.name.firstName} ${user.name.lastName} offered to donate blood to your case ${isCaseExist.title}`
       req.t('notifications.bloodContribution', {
         firstName: user.name.firstName,

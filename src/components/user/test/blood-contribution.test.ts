@@ -40,6 +40,7 @@ describe('/api/users', () => {
         ...DUMMY_CASE,
         charity: createdCharity._id,
       };
+
       const createdCase = await Case.create(_case);
 
       // Act

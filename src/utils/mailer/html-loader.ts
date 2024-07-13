@@ -68,7 +68,7 @@ const addPageButton = (
       if (nodeEnv === 'development') {
         button.setAttribute('href', `http://localhost:5173/activateAccount/${token}`);
       } else if (nodeEnv === 'production') {
-        button.setAttribute('href', `https://charity-proj.netlify.app/activateAccount/${token}`);
+        button.setAttribute('href', `https://subul.me/activateAccount/${token}`);
       }
     }
   }

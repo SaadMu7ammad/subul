@@ -57,13 +57,16 @@ const setupMailSender = async (receiverEmail: string, subject: string, content: 
 const sendActivationEmail = async (receiverEmail: string, token: string) => {
   logger.info(`sending mail to ${receiverEmail}`);
   try {
+    const encodedToken = encodeURIComponent(token);
+
     const transporter = await createTransporter(
       receiverEmail,
       'Activate Your Account',
       "Welcome to Subul Organization! We're excited to have you on board. To get started, please activate your account by clicking the button below.",
       'activation',
-      token
+      encodedToken
     );
+
     await transporter.sendMail();
   } catch (error) {
     logger.error(`Mailer Error : ${error}`);
@@ -74,12 +77,14 @@ const sendActivationEmail = async (receiverEmail: string, token: string) => {
 const sendReactivationEmail = async (receiverEmail: string, token: string) => {
   logger.info(`sending mail to ${receiverEmail}`);
   try {
+    const encodedToken = encodeURIComponent(token);
+
     const transporter = await createTransporter(
       receiverEmail,
       'Reactivate Your Account',
       'Your Email Has Been Changed! Please reactivate your account by clicking the button below.',
       'activation',
-      token
+      encodedToken
     );
     await transporter.sendMail();
   } catch (error) {
@@ -92,10 +97,12 @@ const sendReactivationEmail = async (receiverEmail: string, token: string) => {
 const sendResetPasswordEmail = async (receiverEmail: string, token: string) => {
   logger.info(`sending mail to ${receiverEmail}`);
   try {
+    const encodedToken = encodeURIComponent(token);
+
     const transporter = await createTransporter(
       receiverEmail,
       'Reset Your Password',
-      `You are receiving this email because you requested to reset your password. Please use this token to reset your password.\n ${token}`,
+      `You are receiving this email because you requested to reset your password. Please use this token to reset your password.\n ${encodedToken}`,
       'alert'
     );
     await transporter.sendMail();
