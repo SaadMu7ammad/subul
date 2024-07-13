@@ -6,7 +6,11 @@ import {
 } from '@components/auth/user/data-access/interfaces';
 import { IUser } from '@components/user/data-access/interfaces';
 import generateToken from '@utils/generateToken';
-import { generateResetTokenTemp, sendActivationEmail } from '@utils/mailer';
+import {
+  generateResetTokenTemp,
+  sendActivationEmail,
+  sendActivationEmailFromMobile,
+} from '@utils/mailer';
 import { Request, Response } from 'express';
 
 import logger from '../../../../utils/logger';
@@ -24,7 +28,11 @@ export class authUserServiceClass implements authUserServiceSkeleton {
     res: Response,
     req: Request
   ): Promise<UserResponseBasedOnUserVerification> {
-    const { email, password }: { email: string; password: string } = reqBody;
+    const {
+      email,
+      password,
+      platform,
+    }: { email: string; password: string; platform?: 'web' | 'mobile' } = reqBody;
 
     const userResponse: { isMatch: boolean; user: IUser } =
       await this.authUserUtilsInstance.checkUserPassword(req, email, password);
@@ -46,7 +54,11 @@ export class authUserServiceClass implements authUserServiceSkeleton {
       const token: string = await generateResetTokenTemp(); // hashed string
       userResponse.user.verificationCode = token;
       await userResponse.user.save();
-      await sendActivationEmail(userResponse.user.email, token);
+      if (platform === 'mobile') {
+        await sendActivationEmailFromMobile(userResponse.user.email, token);
+      } else {
+        await sendActivationEmail(userResponse.user.email, token);
+      }
       return {
         user: userResponse.user,
         emailAlert: true,
@@ -84,7 +96,11 @@ export class authUserServiceClass implements authUserServiceSkeleton {
       const token: string = await generateResetTokenTemp(); // hashed string
       newCreatedUser.user.verificationCode = token;
       await newCreatedUser.user.save();
-      await sendActivationEmail(newCreatedUser.user.email, token);
+      if (reqBody.platform === 'mobile') {
+        await sendActivationEmailFromMobile(newCreatedUser.user.email, token);
+      } else {
+        await sendActivationEmail(newCreatedUser.user.email, token);
+      }
     } catch (err) {
       logger.warn('error happened while sending welcome email');
     }

@@ -54,7 +54,7 @@ export class authUserUseCaseClass implements authUserUseCaseSkeleton {
     res: Response,
     _next: NextFunction
   ): Promise<registerUserResponse> {
-    const { name, email, userLocation, gender, phone, password } = req.body;
+    const { name, email, userLocation, gender, phone, password, platform } = req.body;
     const registerInputsData: RegisterUserInputData = {
       name,
       email,
@@ -62,6 +62,7 @@ export class authUserUseCaseClass implements authUserUseCaseSkeleton {
       gender,
       phone,
       password,
+      platform,
     };
     const responseData: UserResponseBasedOnUserVerification =
       await this.authUserServiceInstance.registerUser(res, registerInputsData);

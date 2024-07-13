@@ -111,10 +111,30 @@ const sendResetPasswordEmail = async (receiverEmail: string, token: string) => {
     throw new Error('An Error Occurred While Sending The Mail');
   }
 };
+
+const sendActivationEmailFromMobile = async (receiverEmail: string, token: string) => {
+  logger.info(`sending mail to ${receiverEmail}`);
+  try {
+    const encodedToken = encodeURIComponent(token);
+
+    const transporter = await createTransporter(
+      receiverEmail,
+      'Activate Your Account',
+      `Welcome to Subul Organization! We're excited to have you on board. To get started, please copy this token and paste it in the app to activate your account.\n ${encodedToken}`,
+      'alert'
+    );
+    await transporter.sendMail();
+  } catch (error) {
+    logger.error(`Mailer Error : ${error}`);
+    throw new Error('An Error Occurred While Sending The Mail');
+  }
+};
+
 export {
   setupMailSender,
   generateResetTokenTemp,
   sendActivationEmail,
   sendReactivationEmail,
   sendResetPasswordEmail,
+  sendActivationEmailFromMobile,
 };

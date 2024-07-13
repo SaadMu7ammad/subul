@@ -3,6 +3,7 @@ import { IUser } from '@components/user/data-access/interfaces';
 export interface IloginData {
   email: IUser['email'];
   password: IUser['password'];
+  platform?: 'web' | 'mobile';
 }
 
 // Define RegisterUserInputData based on the structure of the User type
@@ -13,6 +14,7 @@ export type RegisterUserInputData = {
   gender: IUser['gender'];
   phone: IUser['phone'];
   password: IUser['password'];
+  platform?: 'web' | 'mobile';
 };
 
 export interface UserObject {

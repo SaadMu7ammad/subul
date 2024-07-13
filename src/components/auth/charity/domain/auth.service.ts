@@ -1,7 +1,11 @@
 import { AuthCharityObject, CharityData } from '@components/auth/charity/data-access/interfaces';
 import { ICharity } from '@components/charity/data-access/interfaces';
 import generateToken from '@utils/generateToken';
-import { generateResetTokenTemp, sendActivationEmail } from '@utils/mailer';
+import {
+  generateResetTokenTemp,
+  sendActivationEmail,
+  sendActivationEmailFromMobile,
+} from '@utils/mailer';
 import { Response } from 'express';
 
 import logger from '../../../../utils/logger';
@@ -18,7 +22,8 @@ export class authCharityServiceClass implements authCharityServiceSkeleton {
   }
   async authCharity(
     reqBody: { email: string; password: string },
-    res: Response
+    res: Response,
+    platform?: 'mobile' | 'web'
   ): Promise<AuthCharityObject> {
     const { email, password }: { email: string; password: string } = reqBody;
 
@@ -42,7 +47,11 @@ export class authCharityServiceClass implements authCharityServiceSkeleton {
       //not verified(not activated)
       const token = await generateResetTokenTemp();
       await this.authCharityUtilsInstance.setTokenToCharity(charityResponse.charity, token);
-      await sendActivationEmail(charityResponse.charity.email, token);
+      if (platform === 'mobile') {
+        await sendActivationEmailFromMobile(charityResponse.charity.email, token);
+      } else {
+        await sendActivationEmail(charityResponse.charity.email, token);
+      }
       return {
         charity: charityResponse.charity,
         emailAlert: true,
@@ -51,7 +60,11 @@ export class authCharityServiceClass implements authCharityServiceSkeleton {
     }
   }
 
-  async registerCharity(res: Response, reqBody: CharityData): Promise<{ charity: ICharity }> {
+  async registerCharity(
+    res: Response,
+    reqBody: CharityData,
+    platform?: 'mobile' | 'web'
+  ): Promise<{ charity: ICharity }> {
     const newCreatedCharity = await this.authCharityUtilsInstance.createCharity(reqBody);
     try {
       generateToken(res, newCreatedCharity.charity._id.toString(), 'charity');
@@ -60,6 +73,11 @@ export class authCharityServiceClass implements authCharityServiceSkeleton {
       const token = await generateResetTokenTemp();
       await this.authCharityUtilsInstance.setTokenToCharity(newCreatedCharity.charity, token);
       await sendActivationEmail(newCreatedCharity.charity.email, token);
+      if (platform === 'mobile') {
+        await sendActivationEmailFromMobile(newCreatedCharity.charity.email, token);
+      } else {
+        await sendActivationEmail(newCreatedCharity.charity.email, token);
+      }
 
       // await setupMailSender(
       //   newCreatedCharity.charity.email,
