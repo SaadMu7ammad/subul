@@ -70,7 +70,8 @@ export default function defineRoutes(expressApp: Application) {
     try {
       logger.info(`transaction API was called to finish the callback`);
       console.log('get cb');
-      res.send(req.query);
+      // res.send(req.query);
+      res.redirect('https://subul.me');
     } catch (error) {
       next(error);
       return undefined;
