@@ -71,7 +71,7 @@ class userUseCaseClass implements userUseCaseSkeleton {
 
     const storedUser: IUser = res.locals.user; // req.app gives you access to the main Express application object.
 
-    //   /** اعتقد الاصل اننا نأتي من الريز أولا لو موجودة نكمل لو مش موجودة نروح للريك  req.app.locals
+    //   /**
     //    * res.locals is used for request-specific data that is only relevant to the current request,
     //    *  while req.app.locals is used for storing data that needs to be accessed globally across the entire application
     //    *  and continue throughout the application's lifecycle.

@@ -57,7 +57,10 @@ export class charityServiceClass implements charityServiceSkeleton {
     const updatedCharity = await this.charityUtils.checkCharityIsExist(reqBody.email);
     if (!updatedCharity.charity.verificationCode)
       throw new NotFoundError('verificationCode not found');
-    const isEqual = checkValueEquality(updatedCharity.charity.verificationCode, reqBody.token);
+    const isEqual = checkValueEquality(
+      updatedCharity.charity.verificationCode,
+      decodeURIComponent(reqBody.token)
+    );
     if (!isEqual) {
       await this.charityUtils.resetSentToken(updatedCharity.charity);
       throw new UnauthenticatedError('invalid token send request again to reset a password');
@@ -85,7 +88,10 @@ export class charityServiceClass implements charityServiceSkeleton {
       throw new BadRequestError('account already is activated');
     }
     if (!storedCharity.verificationCode) throw new NotFoundError('verificationCode not found');
-    const isMatch = checkValueEquality(storedCharity.verificationCode, reqBody.token);
+    const isMatch = checkValueEquality(
+      storedCharity.verificationCode,
+      decodeURIComponent(reqBody.token)
+    );
     if (!isMatch) {
       await this.charityUtils.resetSentToken(charity);
       this.charityUtils.logout(res);
