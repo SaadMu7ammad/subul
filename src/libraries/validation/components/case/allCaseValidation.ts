@@ -94,7 +94,7 @@ const cityValidation = (req: Request) =>
     .withMessage(req.t('errors.cityInvalid'));
 
 const genderValidtion = (req: Request) =>
-  body('gender').isIn(['male', 'female']).withMessage(req.t('errors.genderInvalid'));
+  body('gender').isIn(['male', 'female', 'none']).withMessage(req.t('errors.genderInvalid'));
 
 const helpedNumbersValidation = (req: Request) =>
   body('helpedNumbers').trim().notEmpty().isNumeric().withMessage(req.t('errors.helpedNumbers'));

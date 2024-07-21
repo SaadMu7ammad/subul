@@ -2,11 +2,7 @@ import { Request } from 'express';
 import { ValidationChain, body } from 'express-validator';
 
 const tokenUserValidation = (req: Request) =>
-  body('token')
-    .trim()
-    .notEmpty()
-    .isLength({ min: 60, max: 60 })
-    .withMessage(req.t('errors.invalidToken'));
+  body('token').trim().notEmpty().withMessage(req.t('errors.invalidToken'));
 
 const firstNameValidation = (req: Request): ValidationChain =>
   body('name.firstName').trim().notEmpty().withMessage(req.t('errors.firstNameRequired'));

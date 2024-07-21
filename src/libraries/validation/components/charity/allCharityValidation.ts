@@ -326,12 +326,7 @@ const passwordValidation = (req: Request): ValidationChain =>
     .withMessage(req.t('errors.passwordLength'));
 
 const tokenCharityValidation = (req: Request): ValidationChain =>
-  body('token')
-    .trim()
-    .notEmpty()
-    // .isLength({ min: 64, max: 64 })
-    .isLength({ min: 60, max: 60 })
-    .withMessage(req.t('errors.invalidToken'));
+  body('token').trim().notEmpty().withMessage(req.t('errors.invalidToken'));
 
 const phoneValidation = (req: Request) =>
   body('phone')
