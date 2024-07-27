@@ -31,12 +31,13 @@
    - [Folder Structure](#folder-structure)
    - [System Components and Use Cases](#system-components-and-use-cases)
    - [Request Journey](#request-journey)
-5. [Installation](#installation)
+5. [API Documenataion](#api-documentation)
+6. [Installation](#installation)
    - [Requirements](#requirements-2)
    - [Environment Variables](#environment-variables)
    - [Steps](#steps)
    - [Run Tests](#run-tests)
-6. [License](#license)
+7. [License](#license)
 
 ## Introduction
 
@@ -274,6 +275,10 @@ The Main Components of the system are located in the `src/components` folder:
 The request journey starts from the entry point, where the request is validated and passed to the domain layer. The domain layer contains the business logic for the request, where the data is processed and passed to the data-access layer. The data-access layer contains the database logic for the request, where the data is fetched or updated in the database.
 
 ![Request Journey](https://github.com/SaadMu7ammad/subul/assets/130322757/fc10bf72-e229-45b1-b818-50febdc7ac76)
+
+## API Documentation
+
+# The API Documentation is available as [Postman-Docs](https://documenter.getpostman.com/view/30221335/2sA3kaAyP4)
 
 ## Installation
 
