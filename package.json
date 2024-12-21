@@ -5,7 +5,7 @@
   "main": "start.js",
   "scripts": {
     "server": "cross-env PORT=5000 nodemon",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && npx tsc-alias",
     "dev": "cross-env PORT=5000 ts-node-dev  -r tsconfig-paths/register ./src/start.ts",
     "watch": "tsc -w ",
     "start": "cross-env PORT=5000 npx ts-node --transpile-only -r tsconfig-paths/register src/start.ts",
@@ -85,6 +85,7 @@
     "ts-jest": "^29.1.4",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.10",
     "typescript-eslint": "^7.9.0"
   },
   "lint-staged": {
